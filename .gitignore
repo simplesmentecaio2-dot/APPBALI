@@ -32,9 +32,26 @@ packages/
 
 # Backups/copias antigas dentro da raiz
 BKP*/
+BKP*
+**/BKP*/
+**/*BKP*/
+**/*backup*/
+**/*Backup*/
+**/*ANTIGO*/
+**/*antigo*/
+**/Copy of *
+**/Copia*
 * - Copia/
 Nova pasta/
 Bibliotecas e exemplos/
+
+# Artefatos de deploy/ASP.NET que nao devem entrar no repositorio
+Bin/
+bin/
+App_Data/*.log
+App_Data/*.tmp
+App_Data/wkhtmltoimage/
+*.pdb
 
 # Intranet: versionar paginas e recursos, manter instaladores/copias pesadas fora
 Intranet/**/*.exe
