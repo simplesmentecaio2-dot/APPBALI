@@ -102,7 +102,7 @@
                                 <asp:BoundField DataField="status" HeaderText="Status" />
                                 <asp:TemplateField HeaderText="Ação">
                                     <ItemTemplate>
-                                        <asp:LinkButton ID="lnkEditarConsulta" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return solicitarSenhaRamal('editar');">Editar</asp:LinkButton>
+                                        <asp:LinkButton ID="lnkEditarConsulta" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return solicitarSenhaRamal('editar', this);">Editar</asp:LinkButton>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
@@ -150,8 +150,8 @@
                                 <asp:BoundField DataField="status" HeaderText="Status" />
                                 <asp:TemplateField HeaderText="Ações">
                                     <ItemTemplate>
-                                        <asp:LinkButton ID="lnkEditarRamal" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return solicitarSenhaRamal('editar');">Editar</asp:LinkButton>
-                                        <asp:LinkButton ID="lnkExcluirRamal" runat="server" CssClass="table-action danger" CommandName="ExcluirRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return confirmarExclusaoRamal();">Excluir</asp:LinkButton>
+                                        <asp:LinkButton ID="lnkEditarRamal" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return solicitarSenhaRamal('editar', this);">Editar</asp:LinkButton>
+                                        <asp:LinkButton ID="lnkExcluirRamal" runat="server" CssClass="table-action danger" CommandName="ExcluirRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return confirmarExclusaoRamal(this);">Excluir</asp:LinkButton>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
@@ -236,25 +236,81 @@
                 </section>
             </main>
         </div>
+
+        <div class="password-modal" id="modalSenhaRamal" aria-hidden="true">
+            <div class="password-dialog" role="dialog" aria-modal="true" aria-labelledby="tituloSenhaRamal">
+                <span class="eyebrow">Manutenção protegida</span>
+                <h3 id="tituloSenhaRamal">Confirmar ação no ramal</h3>
+                <p id="textoSenhaRamal">Informe a senha para continuar.</p>
+                <label>Senha
+                    <input id="txtSenhaRamalCliente" class="text-field" type="password" autocomplete="current-password" />
+                </label>
+                <div class="modal-actions">
+                    <button type="button" class="secondary-button" onclick="fecharSenhaRamal();">Cancelar</button>
+                    <button type="button" class="primary-button" onclick="confirmarSenhaRamal();">Continuar</button>
+                </div>
+            </div>
+        </div>
+
         <script>
             (function () {
-                function preencherSenhaRamal(acao) {
-                    var senha = window.prompt('Informe a senha de manutenção para ' + acao + ' este ramal:');
-                    if (senha === null) return false;
+                var postbackPendente = null;
+                var modal = document.getElementById('modalSenhaRamal');
+                var campoSenha = document.getElementById('txtSenhaRamalCliente');
+                var textoSenha = document.getElementById('textoSenhaRamal');
 
-                    var campoSenha = document.getElementById('<%= hfSenhaManutencao.ClientID %>');
-                    if (campoSenha) campoSenha.value = senha;
-                    return true;
+                function executarPostbackPendente() {
+                    if (!postbackPendente) return;
+
+                    var href = postbackPendente;
+                    postbackPendente = null;
+
+                    if (href.indexOf('javascript:') === 0) {
+                        href = href.replace(/^javascript:/, '');
+                    }
+
+                    if (href) {
+                        window.setTimeout(function () {
+                            eval(href);
+                        }, 0);
+                    }
                 }
 
-                window.solicitarSenhaRamal = function (acao) {
-                    return preencherSenhaRamal(acao || 'alterar');
+                window.solicitarSenhaRamal = function (acao, link) {
+                    postbackPendente = link ? link.href : null;
+                    if (textoSenha) textoSenha.textContent = 'Informe a senha de manutenção para ' + (acao || 'alterar') + ' este ramal.';
+                    if (campoSenha) campoSenha.value = '';
+                    if (modal) modal.classList.add('is-open');
+                    if (campoSenha) window.setTimeout(function () { campoSenha.focus(); }, 80);
+                    return false;
                 };
 
-                window.confirmarExclusaoRamal = function () {
+                window.confirmarExclusaoRamal = function (link) {
                     if (!window.confirm('Deseja inativar este ramal?')) return false;
-                    return preencherSenhaRamal('excluir');
+                    return window.solicitarSenhaRamal('excluir', link);
                 };
+
+                window.fecharSenhaRamal = function () {
+                    postbackPendente = null;
+                    if (modal) modal.classList.remove('is-open');
+                    if (campoSenha) campoSenha.value = '';
+                };
+
+                window.confirmarSenhaRamal = function () {
+                    var campoServidor = document.getElementById('<%= hfSenhaManutencao.ClientID %>');
+                    if (campoServidor && campoSenha) campoServidor.value = campoSenha.value;
+                    if (modal) modal.classList.remove('is-open');
+                    executarPostbackPendente();
+                };
+
+                document.addEventListener('keydown', function (event) {
+                    if (!modal || !modal.classList.contains('is-open')) return;
+                    if (event.key === 'Escape') window.fecharSenhaRamal();
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        window.confirmarSenhaRamal();
+                    }
+                });
             })();
         </script>
     </form>
