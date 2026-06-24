@@ -695,6 +695,30 @@ body.bali-contract-page *::after {
   text-align: right;
 }
 
+.bali-contract-page .contract-query-empty {
+  display: grid;
+  gap: 4px;
+  max-width: 680px;
+  margin: 14px 0;
+  padding: 14px;
+  border: 1px solid rgba(200, 58, 58, .22);
+  border-left: 4px solid #c83a3a;
+  border-radius: 8px;
+  background: #fff8f8;
+  color: #7f1d1d;
+  box-shadow: 0 10px 24px rgba(127, 29, 29, .07);
+}
+
+.bali-contract-page .contract-query-empty strong {
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.bali-contract-page .contract-query-empty small {
+  font-size: 12px;
+  font-weight: 750;
+}
+
 .bali-contract-page #tblConsultaProcesso,
 .bali-contract-page #tblConsultaProcesso2,
 .bali-contract-page table.contract-lookup-table,

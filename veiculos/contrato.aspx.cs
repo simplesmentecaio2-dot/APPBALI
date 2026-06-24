@@ -15,6 +15,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     private const string TabelaContratosBI = "APP.dbo.veiculos_contrato_venda";
     private const string MarcaContrato = "Fiat";
     private const int DiasMaximosBI = 370;
+    private const int DiasMaximosConsulta = 370;
     private const int TimeoutConsultaSegundos = 60;
 
     protected void Page_Load(object sender, EventArgs e)
@@ -621,6 +622,13 @@ public partial class veiculos_contrato : System.Web.UI.Page
         if (!ObterPeriodoConsulta(campoInicio.Text, campoFim.Text, out inicio, out fim))
         {
             ExibirAlerta("Informe uma data inicial e uma data final válidas para consultar contratos " + descricao + ".");
+            return false;
+        }
+
+        if ((fim.Date - inicio.Date).TotalDays > DiasMaximosConsulta)
+        {
+            RegistrarContratoOperacao("CONSULTA_PERIODO_EXTENSO", "Filtro=" + descricao + "; Inicio=" + inicio.ToString("dd/MM/yyyy") + "; Fim=" + fim.ToString("dd/MM/yyyy"));
+            ExibirAlerta("Para manter a consulta rápida, selecione um período de até 12 meses para contratos " + descricao + ".");
             return false;
         }
 
@@ -1437,7 +1445,15 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
 
         string tabelaR;
-        select_Tab_Consulta(txtDtInicialVN.Text,txtDtFinalVN.Text, out tabelaR);
+        try
+        {
+            select_Tab_ConsultaPeriodo("Print-ContratoVN.aspx", "VN", dtInicio, dtFim, out tabelaR);
+        }
+        catch (Exception ex)
+        {
+            RegistrarContratoOperacao("ERRO_CONSULTA", "Tipo=VN; Inicio=" + dtInicio.ToString("dd/MM/yyyy") + "; Fim=" + dtFim.ToString("dd/MM/yyyy") + "; Erro=" + ex.Message);
+            tabelaR = ConsultaErroHtml("contratos novos");
+        }
         tabela = tabelaR;
     }
     protected void Button2_Click(object sender, EventArgs e)
@@ -1451,7 +1467,15 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
         string tabelaVUR;
 
-        select_Tab_ConsultaVU(txtDtInicialVU.Text,txtDtFinalVU.Text, out tabelaVUR);
+        try
+        {
+            select_Tab_ConsultaPeriodo("Print-ContratoVU.aspx", "VU", dtInicio, dtFim, out tabelaVUR);
+        }
+        catch (Exception ex)
+        {
+            RegistrarContratoOperacao("ERRO_CONSULTA", "Tipo=VU; Inicio=" + dtInicio.ToString("dd/MM/yyyy") + "; Fim=" + dtFim.ToString("dd/MM/yyyy") + "; Erro=" + ex.Message);
+            tabelaVUR = ConsultaErroHtml("contratos usados");
+        }
 
         tabelaVU = tabelaVUR;
     }
@@ -1465,9 +1489,112 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
 
         string tabelaVDR;
-        select_Tab_ConsultaVD(txtDtInicialVD.Text, txtDtFinalVD.Text, out tabelaVDR);
+        try
+        {
+            select_Tab_ConsultaPeriodo("Print-ContratoVD.aspx", "VD", dtInicio, dtFim, out tabelaVDR);
+        }
+        catch (Exception ex)
+        {
+            RegistrarContratoOperacao("ERRO_CONSULTA", "Tipo=VD; Inicio=" + dtInicio.ToString("dd/MM/yyyy") + "; Fim=" + dtFim.ToString("dd/MM/yyyy") + "; Erro=" + ex.Message);
+            tabelaVDR = ConsultaErroHtml("contratos de venda direta");
+        }
 
         tabelaVD = tabelaVDR;
+    }
+
+
+    private string ConsultaErroHtml(string descricao)
+    {
+        return "<div class='contract-query-empty'><strong>Não foi possível carregar a consulta.</strong><small>Revise o período e tente novamente. Se continuar, acione a TI informando: "
+            + HttpUtility.HtmlEncode(descricao) + ".</small></div>";
+    }
+
+    private string ConsultaCell(object valor)
+    {
+        return "<td style='text-align:center; font-size:12px;'>" + HttpUtility.HtmlEncode(Convert.ToString(valor)) + "</td>";
+    }
+
+    private void select_Tab_ConsultaPeriodo(string paginaImpressao, string tipo, DateTime dtInicio, DateTime dtFim, out string tabelaHtml)
+    {
+        string tableId = tipo == "VN" ? "tblConsultaProcesso" : "tblConsultaProcesso2";
+        StringBuilder html = new StringBuilder();
+        html.Append("<table cellpadding='0' cellspacing='0' border='0' id='")
+            .Append(tableId)
+            .Append(@"' class='display' style='font-family:arial;'>
+                        <thead>
+                            <tr>
+                                <td style='text-align:center; font-size:12px;'>ID</td>
+                                <td style='text-align:center; font-size:12px;'>Cliente</td>
+                                <td style='text-align:center; font-size:12px;'>CPF</td>
+                                <td style='text-align:center; font-size:12px;'>RG</td>
+                                <td style='text-align:center; font-size:12px;'>Telefone1</td>
+                                <td style='text-align:center; font-size:12px;'>Telefone2</td>
+                                <td style='text-align:center; font-size:12px;'>Telefone3</td>
+                                <td style='text-align:center; font-size:12px;'>email</td>
+                                <td style='text-align:center; font-size:12px;'>vendedor</td>
+                            </tr>
+                        </thead><tbody>");
+
+        Veiculos vec = new Veiculos();
+        try
+        {
+            vec.Conexao();
+            using (SqlCommand oCmd = new SqlCommand())
+            {
+                oCmd.Connection = vec.oCon;
+                oCmd.CommandTimeout = TimeoutConsultaSegundos;
+                oCmd.CommandText = @"select id,
+                                            isnull(cliente, '') cliente,
+                                            isnull(cpfcnpj, '') cpfcnpj,
+                                            isnull(RGIE, '') RGIE,
+                                            isnull(tel_residencial, '') tel_residencial,
+                                            isnull(tel_comercial, '') tel_comercial,
+                                            isnull(tel_celular, '') tel_celular,
+                                            isnull(email, '') email,
+                                            isnull(vendedor, '') vendedor
+                                     from " + TabelaContratosBI + @"
+                                     where tipo = @tipo
+                                       and [data] >= @dtInicio
+                                       and [data] < dateadd(day, 1, @dtFim)
+                                     order by [data] desc, id desc";
+                oCmd.CommandType = CommandType.Text;
+                oCmd.Parameters.Add("@tipo", SqlDbType.VarChar).Value = tipo;
+                oCmd.Parameters.Add("@dtInicio", SqlDbType.Date).Value = dtInicio;
+                oCmd.Parameters.Add("@dtFim", SqlDbType.Date).Value = dtFim;
+
+                using (SqlDataReader odr = oCmd.ExecuteReader())
+                {
+                    while (odr.Read())
+                    {
+                        string id = Convert.ToString(odr["id"]);
+                        html.Append("<tr>");
+                        html.Append("<td style='text-align:center; font-size:12px;'><a href='")
+                            .Append(HttpUtility.HtmlAttributeEncode(paginaImpressao))
+                            .Append("?contrato=")
+                            .Append(HttpUtility.UrlEncode(id))
+                            .Append("'>")
+                            .Append(HttpUtility.HtmlEncode(id))
+                            .Append("</a></td>");
+                        html.Append(ConsultaCell(odr["cliente"]));
+                        html.Append(ConsultaCell(odr["cpfcnpj"]));
+                        html.Append(ConsultaCell(odr["RGIE"]));
+                        html.Append(ConsultaCell(odr["tel_residencial"]));
+                        html.Append(ConsultaCell(odr["tel_comercial"]));
+                        html.Append(ConsultaCell(odr["tel_celular"]));
+                        html.Append(ConsultaCell(odr["email"]));
+                        html.Append(ConsultaCell(odr["vendedor"]));
+                        html.Append("</tr>");
+                    }
+                }
+            }
+        }
+        finally
+        {
+            vec.FecharConexao();
+        }
+
+        html.Append("</tbody></table>");
+        tabelaHtml = html.ToString();
     }
 
 

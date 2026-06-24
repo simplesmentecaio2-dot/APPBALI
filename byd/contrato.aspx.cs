@@ -15,6 +15,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     private const string TabelaContratosBI = "APP.dbo.veiculos_contrato_vendaBYD";
     private const string MarcaContrato = "BYD";
     private const int DiasMaximosBI = 370;
+    private const int DiasMaximosConsulta = 370;
     private const int TimeoutConsultaSegundos = 60;
 
     protected void Page_Load(object sender, EventArgs e)
@@ -1382,7 +1383,6 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
   protected void Button1_Click(object sender, EventArgs e)
   {
-      Veiculos ovec = new Veiculos();
       string tabelaR;
       DateTime dtInicio;
       DateTime dtFim;
@@ -1391,7 +1391,15 @@ public partial class veiculos_contrato : System.Web.UI.Page
           return;
       }
 
-      ovec.select_Tab_ConsultaBYD(txtDtInicialVN.Text, txtDtFinalVN.Text, out tabelaR);
+      try
+      {
+          select_Tab_ConsultaPeriodo("Print-ContratoVNBYD.aspx", "VN", dtInicio, dtFim, out tabelaR);
+      }
+      catch (Exception ex)
+      {
+          RegistrarContratoOperacao("ERRO_CONSULTA", "Tipo=VN; Inicio=" + dtInicio.ToString("dd/MM/yyyy") + "; Fim=" + dtFim.ToString("dd/MM/yyyy") + "; Erro=" + ex.Message);
+          tabelaR = ConsultaErroHtml("contratos novos");
+      }
 
       tabela = tabelaR;
   }
@@ -1406,7 +1414,15 @@ public partial class veiculos_contrato : System.Web.UI.Page
           return;
       }
 
-      select_Tab_ConsultaVUPeriodo("Print-ContratoVUBYD.aspx", dtInicio, dtFim, out tabelaVUR);
+      try
+      {
+          select_Tab_ConsultaPeriodo("Print-ContratoVUBYD.aspx", "VU", dtInicio, dtFim, out tabelaVUR);
+      }
+      catch (Exception ex)
+      {
+          RegistrarContratoOperacao("ERRO_CONSULTA", "Tipo=VU; Inicio=" + dtInicio.ToString("dd/MM/yyyy") + "; Fim=" + dtFim.ToString("dd/MM/yyyy") + "; Erro=" + ex.Message);
+          tabelaVUR = ConsultaErroHtml("contratos usados");
+      }
 
       tabelaVU = tabelaVUR;
   }
@@ -1439,9 +1455,22 @@ public partial class veiculos_contrato : System.Web.UI.Page
           return false;
       }
 
+      if ((fim.Date - inicio.Date).TotalDays > DiasMaximosConsulta)
+      {
+          RegistrarContratoOperacao("CONSULTA_PERIODO_EXTENSO", "Filtro=" + descricao + "; Inicio=" + inicio.ToString("dd/MM/yyyy") + "; Fim=" + fim.ToString("dd/MM/yyyy"));
+          ExibirAlerta("Para manter a consulta rápida, selecione um período de até 12 meses para contratos " + descricao + ".");
+          return false;
+      }
+
       campoInicio.Text = inicio.ToString("dd/MM/yyyy");
       campoFim.Text = fim.ToString("dd/MM/yyyy");
       return true;
+  }
+
+  private string ConsultaErroHtml(string descricao)
+  {
+      return "<div class='contract-query-empty'><strong>Não foi possível carregar a consulta.</strong><small>Revise o período e tente novamente. Se continuar, acione a TI informando: "
+          + HttpUtility.HtmlEncode(descricao) + ".</small></div>";
   }
 
   private string ConsultaCell(object valor)
@@ -1449,10 +1478,13 @@ public partial class veiculos_contrato : System.Web.UI.Page
       return "<td style='text-align:center; font-size:12px;'>" + HttpUtility.HtmlEncode(Convert.ToString(valor)) + "</td>";
   }
 
-  private void select_Tab_ConsultaVUPeriodo(string paginaImpressao, DateTime dtInicio, DateTime dtFim, out string tabelaHtml)
+  private void select_Tab_ConsultaPeriodo(string paginaImpressao, string tipo, DateTime dtInicio, DateTime dtFim, out string tabelaHtml)
   {
+      string tableId = tipo == "VN" ? "tblConsultaProcesso" : "tblConsultaProcesso2";
       StringBuilder html = new StringBuilder();
-      html.Append(@"<table cellpadding='0' cellspacing='0' border='0' id='tblConsultaProcesso2' class='display' style='font-family:arial;'>
+      html.Append("<table cellpadding='0' cellspacing='0' border='0' id='")
+          .Append(tableId)
+          .Append(@"' class='display' style='font-family:arial;'>
                         <thead>
                             <tr>
                                 <td style='text-align:center; font-size:12px;'>ID</td>
@@ -1489,7 +1521,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
                                      and [data] >= @dtInicio
                                      and [data] < dateadd(day, 1, @dtFim)
                                    order by [data] desc, id desc";
-              oCmd.Parameters.Add("@tipo", SqlDbType.VarChar).Value = "VU";
+              oCmd.CommandType = CommandType.Text;
+              oCmd.Parameters.Add("@tipo", SqlDbType.VarChar).Value = tipo;
               oCmd.Parameters.Add("@dtInicio", SqlDbType.Date).Value = dtInicio;
               oCmd.Parameters.Add("@dtFim", SqlDbType.Date).Value = dtFim;
 

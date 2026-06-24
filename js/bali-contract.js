@@ -2196,7 +2196,9 @@
       wrapper.insertBefore(summary, wrapper.firstChild);
     }
 
-    var label = /tblConsultaProcesso2$/i.test(table.id || '') ? 'Consulta Usado' : 'Consulta Novo';
+    var label = closestIdContains(table, 'TabPanel4')
+      ? 'Consulta Venda Direta'
+      : (/tblConsultaProcesso2$/i.test(table.id || '') ? 'Consulta Usado' : 'Consulta Novo');
     var count = countLookupRows(table);
     summary.innerHTML = '<div><span>' + label + '</span><strong>' + count + ' contrato(s)</strong></div><small>Use o filtro para localizar cliente, CPF ou vendedor. Clique em Imprimir para abrir o contrato.</small>';
   }
