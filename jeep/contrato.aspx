@@ -7,6 +7,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>Contrato de Venda - Jeep</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../css/estilo.css" rel="stylesheet" />
     <script src="../js/jquery-1.10.2.js"></script>
     <script src="../js/js.js"></script>
@@ -15,10 +16,8 @@
     <script src="../js/maskPhone.js"></script>
 
     <script src="../tables/js/jquery.dataTables.min.js"></script>
-    <link href="../tables/estilo/jquery-ui-1.8.4.custom.css" rel="stylesheet" />
     <link href="../tables/estilo/table.css" rel="stylesheet" />
-    <link href="../tables/estilo/table_jui.css" rel="stylesheet" />
-    <link href="../css/bali-contract.css?v=20260624-tabelas" rel="stylesheet" />
+    <link href="../css/bali-contract.css?v=20260624-contratos1" rel="stylesheet" />
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -26,7 +25,21 @@
                 "bPaginate": true,
                 "bJQueryUI": false,
                 "sPaginationType": "full_numbers",
-                "iDisplayLength": 10
+                "iDisplayLength": 10,
+                "oLanguage": {
+                    "sLengthMenu": "Mostrar _MENU_ contratos",
+                    "sZeroRecords": "Nenhum contrato encontrado",
+                    "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ contratos",
+                    "sInfoEmpty": "Mostrando 0 contratos",
+                    "sInfoFiltered": "(filtrado de _MAX_ contratos)",
+                    "sSearch": "Filtrar",
+                    "oPaginate": {
+                        "sFirst": "Primeiro",
+                        "sPrevious": "Anterior",
+                        "sNext": "Próximo",
+                        "sLast": "Último"
+                    }
+                }
             });
         });
     </script>
@@ -37,7 +50,21 @@
                 "bPaginate": true,
                 "bJQueryUI": false,
                 "sPaginationType": "full_numbers",
-                "iDisplayLength": 10
+                "iDisplayLength": 10,
+                "oLanguage": {
+                    "sLengthMenu": "Mostrar _MENU_ contratos",
+                    "sZeroRecords": "Nenhum contrato encontrado",
+                    "sInfo": "Mostrando _START_ a _END_ de _TOTAL_ contratos",
+                    "sInfoEmpty": "Mostrando 0 contratos",
+                    "sInfoFiltered": "(filtrado de _MAX_ contratos)",
+                    "sSearch": "Filtrar",
+                    "oPaginate": {
+                        "sFirst": "Primeiro",
+                        "sPrevious": "Anterior",
+                        "sNext": "Próximo",
+                        "sLast": "Último"
+                    }
+                }
             });
         });
     </script>
