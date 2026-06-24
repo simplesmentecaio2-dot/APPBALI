@@ -2893,6 +2893,27 @@
     return uppercase ? cleaned.toUpperCase() : cleaned;
   }
 
+  function enhanceTextCleanupFields() {
+    [
+      'txtCliente', 'txtEndereco', 'txtBairro', 'txtCidade', 'txtMarca', 'txtModelo', 'txtCorExterna',
+      'txtModMarca', 'txtAnoModelo', 'txtFinanceira', 'txtFormasPagamento', 'ddlVendedor',
+      'txtEdCliente', 'txtEdEndereco', 'txtEdBairro', 'txtEdCidade', 'txtEdMarca', 'txtEdModelo',
+      'txtEdCorExt', 'txtEdModMarcaUSADO', 'txtEdAnoMOdUSADO', 'txtEdFinanceira', 'txtEdFormasPagamento',
+      'txtEdVendedor'
+    ].forEach(function (id) {
+      allBySuffix(id).forEach(function (field) {
+        if (field.getAttribute('data-contract-clean-text') === 'true') return;
+        field.setAttribute('data-contract-clean-text', 'true');
+        field.addEventListener('blur', function () {
+          if (field.tagName === 'SELECT') return;
+          var cleaned = String(field.value || '').replace(/\s+/g, ' ').trim();
+          if (field.value !== cleaned) field.value = cleaned;
+          scheduleQualityPanelUpdate();
+        });
+      });
+    });
+  }
+
   function enhanceIdentityFields() {
     [
       { id: 'txtCPFCNPJ', uppercase: false },
@@ -2949,6 +2970,7 @@
     enhanceFields();
     enhanceFormatFields();
     enhanceIdentityFields();
+    enhanceTextCleanupFields();
     enhanceChecklist();
     enhanceDateFilters();
     enhanceBiPeriodShortcuts();
