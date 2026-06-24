@@ -1,8 +1,10 @@
 body.bali-contract-page {
-  --contract-brand: #c83a3a;
-  --contract-brand-strong: #8f2028;
-  --contract-brand-soft: rgba(200, 58, 58, .12);
-  --contract-brand-ring: rgba(200, 58, 58, .22);
+  --contract-brand: #c94747;
+  --contract-brand-strong: #98303a;
+  --contract-brand-light: #e57979;
+  --contract-brand-soft: rgba(201, 71, 71, .10);
+  --contract-brand-glow: rgba(201, 71, 71, .18);
+  --contract-brand-ring: rgba(201, 71, 71, .20);
   --contract-ink: #17202a;
   --contract-muted: #667085;
   --contract-line: #dce4ee;
@@ -12,25 +14,30 @@ body.bali-contract-page {
   min-height: 100%;
   overflow-x: hidden;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, .72), rgba(255, 255, 255, .96) 260px),
-    radial-gradient(circle at 14% 0, var(--contract-brand-soft), transparent 280px),
+    linear-gradient(180deg, rgba(255, 255, 255, .76), rgba(255, 255, 255, .98) 320px),
+    radial-gradient(circle at 14% -8%, var(--contract-brand-glow), transparent 360px),
+    radial-gradient(circle at 92% 6%, rgba(255, 255, 255, .72), transparent 320px),
     var(--contract-page);
   color: var(--contract-ink);
   font-family: Arial, Helvetica, sans-serif;
 }
 
 body.bali-contract-page.contrato-jeep {
-  --contract-brand: #5e7f42;
-  --contract-brand-strong: #3f5b2e;
-  --contract-brand-soft: rgba(94, 127, 66, .14);
-  --contract-brand-ring: rgba(94, 127, 66, .24);
+  --contract-brand: #65824c;
+  --contract-brand-strong: #435f34;
+  --contract-brand-light: #91aa72;
+  --contract-brand-soft: rgba(101, 130, 76, .12);
+  --contract-brand-glow: rgba(101, 130, 76, .20);
+  --contract-brand-ring: rgba(101, 130, 76, .22);
 }
 
 body.bali-contract-page.contrato-byd {
-  --contract-brand: #2f6fbd;
-  --contract-brand-strong: #1f5594;
-  --contract-brand-soft: rgba(47, 111, 189, .14);
-  --contract-brand-ring: rgba(47, 111, 189, .24);
+  --contract-brand: #3678bd;
+  --contract-brand-strong: #245f9f;
+  --contract-brand-light: #72a8dc;
+  --contract-brand-soft: rgba(54, 120, 189, .12);
+  --contract-brand-glow: rgba(54, 120, 189, .20);
+  --contract-brand-ring: rgba(54, 120, 189, .22);
 }
 
 body.bali-contract-page *,
@@ -46,8 +53,9 @@ body.bali-contract-page *::after {
 .bali-contract-page #topo {
   height: 64px;
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, .28), transparent 55%),
-    linear-gradient(135deg, var(--contract-brand-strong), var(--contract-brand));
+    linear-gradient(115deg, rgba(255, 255, 255, .18), transparent 36%),
+    linear-gradient(90deg, rgba(20, 28, 38, .18), transparent 58%),
+    linear-gradient(135deg, var(--contract-brand-strong), var(--contract-brand) 54%, var(--contract-brand-light));
   border-bottom: 1px solid rgba(255, 255, 255, .24);
   box-shadow: 0 14px 32px rgba(15, 23, 42, .16);
 }

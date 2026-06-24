@@ -2,7 +2,7 @@ body.patio-modern-page {
   --patio-brand: #5e7f42;
   --patio-brand-strong: #39572a;
   --patio-brand-soft: rgba(94, 127, 66, .13);
-  --patio-logo: url("../img/logojeep.png?v=20260624-logo");
+  --patio-logo: url("../img/logojeep.png?v=20260624-logo2");
   --patio-line: #dce4ee;
   --patio-ink: #15202b;
   --patio-muted: #667085;
@@ -19,7 +19,7 @@ body.patio-modern-page.patio-brand-fiat {
   --patio-brand: #c83a3a;
   --patio-brand-strong: #8f2028;
   --patio-brand-soft: rgba(200, 58, 58, .13);
-  --patio-logo: url("../img/logobali.png?v=20260624-logo");
+  --patio-logo: url("../img/logobali.png?v=20260624-logo2");
 }
 
 body.patio-modern-page.patio-brand-byd {
