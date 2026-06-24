@@ -1,0 +1,309 @@
+body.patio-modern-page {
+  --patio-brand: #5e7f42;
+  --patio-brand-strong: #39572a;
+  --patio-brand-soft: rgba(94, 127, 66, .13);
+  --patio-line: #dce4ee;
+  --patio-ink: #15202b;
+  --patio-muted: #667085;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .84), rgba(246, 248, 251, .96) 260px),
+    radial-gradient(circle at 0 0, rgba(94, 127, 66, .15), transparent 320px),
+    #f3f6fa;
+  color: var(--patio-ink);
+}
+
+.patio-modern-page *,
+.patio-modern-page *::before,
+.patio-modern-page *::after {
+  box-sizing: border-box;
+}
+
+.patio-modern-page .app-header.header-shadow,
+.patio-modern-page .app-header__content,
+.patio-modern-page .scrollbar-sidebar,
+.patio-modern-page footer.bg-dark {
+  background:
+    linear-gradient(135deg, rgba(94, 127, 66, .96), rgba(29, 45, 35, .98)) !important;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, .18);
+}
+
+.patio-modern-page .app-header__logo,
+.patio-modern-page .app-sidebar .app-header__logo {
+  background: transparent !important;
+}
+
+.patio-modern-page .logo-src {
+  width: 172px;
+  height: 42px;
+  background: url("../../img/logojeep.png?v=20260624-logo") center/contain no-repeat;
+}
+
+.patio-modern-page .app-main {
+  background: transparent !important;
+}
+
+.patio-modern-page .app-sidebar {
+  border-right: 1px solid rgba(255, 255, 255, .1);
+  box-shadow: 18px 0 42px rgba(15, 23, 42, .14);
+}
+
+.patio-modern-page .app-sidebar__inner {
+  padding: 18px 14px;
+}
+
+.patio-modern-page .vertical-nav-menu {
+  margin: 0;
+}
+
+.patio-modern-page .vertical-nav-menu li a {
+  height: auto;
+  min-height: 42px;
+  margin: 4px 0;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, .78);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 42px;
+  transition: background .16s ease, color .16s ease, transform .16s ease;
+}
+
+.patio-modern-page .vertical-nav-menu li a:hover,
+.patio-modern-page .vertical-nav-menu li a.mm-active {
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+  transform: translateX(2px);
+}
+
+.patio-modern-page .vertical-nav-menu i.metismenu-icon {
+  color: rgba(255, 255, 255, .9);
+}
+
+.patio-modern-page .app-sidebar__heading {
+  margin-top: 18px;
+  color: rgba(255, 255, 255, .62);
+  font-size: 11px;
+  letter-spacing: .08em;
+}
+
+.patio-modern-page .app-main__inner {
+  padding: 24px 24px 88px;
+}
+
+.patio-modern-page .app-page-title {
+  margin: 0 0 18px;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, .55);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(94, 127, 66, .96), rgba(57, 87, 42, .94)) !important;
+  box-shadow: 0 20px 44px rgba(57, 87, 42, .24);
+}
+
+.patio-modern-page .page-title-icon {
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .16) !important;
+  box-shadow: none;
+}
+
+.patio-modern-page .page-title-heading b {
+  color: #fff;
+  font-size: 22px;
+  letter-spacing: 0;
+}
+
+.patio-modern-page .page-title-subheading {
+  color: rgba(255, 255, 255, .8);
+}
+
+.patio-modern-page .card {
+  overflow: hidden;
+  border: 1px solid var(--patio-line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .97);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, .12);
+}
+
+.patio-modern-page .card-header {
+  min-height: 54px;
+  border-bottom: 1px solid var(--patio-line);
+  background: #fff;
+}
+
+.patio-modern-page .card-header-title {
+  color: var(--patio-ink);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+.patio-modern-page .card-body,
+.patio-modern-page .card-footer {
+  background: #fff;
+}
+
+.patio-modern-page .card-footer {
+  border-top: 1px solid var(--patio-line);
+}
+
+.patio-modern-page .input-group {
+  align-items: stretch;
+}
+
+.patio-modern-page .input-group-text {
+  min-width: 104px;
+  justify-content: center;
+  border-color: #d9e2ec;
+  background: #f5f8fb;
+  color: var(--patio-muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.patio-modern-page .form-control,
+.patio-modern-page select.form-control {
+  min-height: 40px;
+  border-color: #d9e2ec;
+  background-color: #f8fbff;
+  color: var(--patio-ink);
+  font-weight: 700;
+}
+
+.patio-modern-page .form-control:focus,
+.patio-modern-page select.form-control:focus {
+  border-color: var(--patio-brand);
+  box-shadow: 0 0 0 3px rgba(94, 127, 66, .22);
+}
+
+.patio-modern-page .btn {
+  border-radius: 8px;
+  font-weight: 900;
+}
+
+.patio-modern-page .btn-primary,
+.patio-modern-page .btn-success {
+  border-color: var(--patio-brand) !important;
+  background: var(--patio-brand) !important;
+}
+
+.patio-modern-page .btn-warning {
+  border-color: #d59a22 !important;
+  background: #d59a22 !important;
+  color: #fff !important;
+}
+
+.patio-modern-page .btn-secondary {
+  min-width: 148px;
+  padding: 18px 20px;
+  border: 1px solid var(--patio-line);
+  background: #fff;
+  color: var(--patio-ink);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, .08);
+}
+
+.patio-modern-page .btn-secondary:hover {
+  border-color: transparent;
+  background: var(--patio-brand);
+  color: #fff;
+}
+
+.patio-modern-page .table,
+.patio-modern-page table[id],
+.patio-modern-page .dataTable {
+  width: 100% !important;
+}
+
+.patio-modern-page .table-responsive,
+.patio-modern-page .dataTables_wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.patio-modern-page #scanner-container {
+  max-width: 100%;
+  border-radius: 8px;
+  background: #101828;
+}
+
+.patio-modern-page .progress.container {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  max-width: none;
+  height: 100vh;
+  background: rgba(255, 255, 255, .76);
+  backdrop-filter: blur(2px);
+}
+
+.patio-modern-page .loader {
+  background-color: rgba(255, 255, 255, .76);
+}
+
+@media (max-width: 991.98px) {
+  .patio-modern-page .app-main__inner {
+    padding: 16px 14px 28px;
+  }
+
+  .patio-modern-page .app-page-title {
+    margin: 0 0 14px;
+    padding: 16px;
+    text-align: left;
+  }
+
+  .patio-modern-page .app-page-title .page-title-heading,
+  .patio-modern-page .app-page-title .page-title-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .patio-modern-page .card-body,
+  .patio-modern-page .card-footer {
+    padding: 14px;
+  }
+
+  .patio-modern-page footer.fixed-bottom {
+    position: static;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .patio-modern-page .form-row {
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .patio-modern-page .form-row > [class*="col-"],
+  .patio-modern-page .row > [class*="col-"] {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .patio-modern-page .input-group {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .patio-modern-page .input-group-prepend,
+  .patio-modern-page .input-group-append {
+    width: 100%;
+  }
+
+  .patio-modern-page .input-group-text,
+  .patio-modern-page .input-group .btn,
+  .patio-modern-page .form-control,
+  .patio-modern-page select.form-control {
+    width: 100%;
+    border-radius: 8px !important;
+  }
+
+  .patio-modern-page .btn-lg.col-6,
+  .patio-modern-page .btn-lg.offset-3 {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    flex: 0 0 100%;
+  }
+}

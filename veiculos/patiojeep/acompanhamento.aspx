@@ -9,7 +9,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head id="Head1" runat="server">
-    <title></title>
+    <title>ACOMPANHAMENTO | Pátio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <!-- STYLE MARCIO       ////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
     <script src="../assets/jquery-1.9.1.min.js"></script>
@@ -18,6 +18,7 @@
     <script src="./assets/dataTables.bootstrap4.min.js"></script>
     <script src="./assets/dataTables.responsive.min.js"></script>
     <link href="./main.css" rel="stylesheet" />
+    <link href="./patio-modern.css?v=20260624-1" rel="stylesheet" />
     <script src="../ChartJS.js"></script>
     <link href="../assets/all.min.css" rel="stylesheet" />
     <script type="text/javascript" src="../assets/toastr.min.js"></script>
@@ -47,7 +48,7 @@
     </script>
 </head>
 
-<body>
+<body class="patio-modern-page">
     <form id="form1" runat="server">
         <asp:SqlDataSource ID="SqlDataSource2" runat="server" ConnectionString="<%$ ConnectionStrings:APPConnectionString %>" SelectCommand="veiculos_patio_lojas_ativas" SelectCommandType="StoredProcedure"></asp:SqlDataSource>
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
@@ -153,7 +154,7 @@
                                 <li>
                                     <a href="./">
                                         <i class="metismenu-icon fas fa-home"></i>
-                                        Inicio
+                                        Início
                                     </a>
                                 </li>
                                 <li class="app-sidebar__heading">Patio</li>
@@ -166,7 +167,7 @@
                                 <li>
                                     <a href="./transferir.aspx">
                                         <i class="metismenu-icon fas fa-exchange-alt"></i>
-                                        Tranferir
+                                        Transferir
                                     </a>
                                 </li>
                                 <li>
@@ -343,7 +344,7 @@
                                                                 <div class="card-body">
                                                                     <div id="divRevisaoIniciada" runat="server">
                                                                         <p class="card-text">
-                                                                            <i class="fas fa-calendar"></i>Inicio:
+                                                                            <i class="fas fa-calendar"></i>Início:
                                                                             <asp:Literal ID="literalRevisaoInicio" runat="server"></asp:Literal>
                                                                         </p>
                                                                         <p class="card-text">
@@ -398,7 +399,7 @@
                                                                 <div id="divInstalAcessorioIniciado" runat="server">
                                                                     <p class="card-text">
 
-                                                                        <i class="fas fa-calendar"></i>Inicio:
+                                                                        <i class="fas fa-calendar"></i>Início:
                                                                                 <asp:Literal ID="literalInicioInstalAcessorio" runat="server"></asp:Literal>
                                                                     </p>
                                                                     <p class="card-text">
@@ -430,7 +431,7 @@
 
                                                                 <div id="divServicoTerceiroIniciado" runat="server">
                                                                     <p class="card-text">
-                                                                        <i class="fas fa-calendar"></i>Inicio:
+                                                                        <i class="fas fa-calendar"></i>Início:
                                                                                 <asp:Literal ID="literalServicoTerceiroInicio" runat="server"></asp:Literal>
                                                                     </p>
                                                                     <p class="card-text">
