@@ -965,6 +965,62 @@
     });
   }
 
+  function enhanceAuditTools() {
+    Array.prototype.slice.call(document.querySelectorAll('.contract-audit-panel')).forEach(function (panel) {
+      if (panel.getAttribute('data-contract-audit-tools') === 'true') return;
+
+      var items = Array.prototype.slice.call(panel.querySelectorAll('.contract-audit-list article, .contract-audit-history article'));
+      if (!items.length) return;
+
+      panel.setAttribute('data-contract-audit-tools', 'true');
+      var actions = [];
+      items.forEach(function (item) {
+        var action = item.querySelector('strong');
+        action = action ? String(action.textContent || '').trim() : '';
+        if (action && actions.indexOf(action) < 0) actions.push(action);
+      });
+      actions.sort();
+
+      var tools = document.createElement('div');
+      tools.className = 'contract-audit-tools';
+      tools.innerHTML = '<input type="text" placeholder="Filtrar por contrato, usu\u00e1rio ou texto" aria-label="Filtrar auditoria" /><select aria-label="Filtrar por ocorr\u00eancia"><option value="">Todas as ocorr\u00eancias</option></select><small></small>';
+
+      var select = tools.querySelector('select');
+      actions.forEach(function (action) {
+        var option = document.createElement('option');
+        option.value = action;
+        option.textContent = action;
+        select.appendChild(option);
+      });
+
+      var input = tools.querySelector('input');
+      var status = tools.querySelector('small');
+      var applyFilter = function () {
+        var text = normalizeText(input.value);
+        var actionValue = select.value;
+        var visible = 0;
+
+        items.forEach(function (item) {
+          var itemAction = item.querySelector('strong');
+          itemAction = itemAction ? String(itemAction.textContent || '').trim() : '';
+          var matchAction = !actionValue || itemAction === actionValue;
+          var matchText = !text || normalizeText(item.textContent).indexOf(text) >= 0;
+          item.style.display = matchAction && matchText ? '' : 'none';
+          if (matchAction && matchText) visible++;
+        });
+
+        status.textContent = visible + ' registro(s) vis\u00edvel(is)';
+      };
+
+      input.addEventListener('input', applyFilter);
+      select.addEventListener('change', applyFilter);
+
+      var anchor = panel.querySelector('.contract-audit-cards') || panel.firstChild;
+      panel.insertBefore(tools, anchor ? anchor.nextSibling : null);
+      applyFilter();
+    });
+  }
+
   function enhanceFormSections() {
     Array.prototype.slice.call(document.querySelectorAll('.ajax__tab_body table')).forEach(function (table) {
       if (table.getAttribute('data-contract-section') === 'true') return;
@@ -2101,6 +2157,7 @@
     enhanceDateFilters();
     enhanceBiPeriodShortcuts();
     enhanceBiActions();
+    enhanceAuditTools();
     enhanceFormSections();
     enhanceSectionNavigator();
     enhanceUnsavedWarning();
