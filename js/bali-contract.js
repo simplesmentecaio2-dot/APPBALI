@@ -8,6 +8,8 @@
   var contractStepIndex = 0;
   var contractStepSignature = '';
   var wizardKeyboardBound = false;
+  var qualityUpdateTimer = null;
+  var editChangeTimer = null;
   var moneyFields = [
     'txtValoVeiculo',
     'txtEmplacamento',
@@ -639,7 +641,12 @@
       setValue(group.balance, formatMoney(balance));
     });
 
-    updateQualityPanel();
+    scheduleQualityPanelUpdate();
+  }
+
+  function scheduleQualityPanelUpdate() {
+    window.clearTimeout(qualityUpdateTimer);
+    qualityUpdateTimer = window.setTimeout(updateQualityPanel, 80);
   }
 
   function currentRequiredFields(isEdit) {
@@ -2095,6 +2102,11 @@
     }
   }
 
+  function scheduleEditChangePanelUpdate() {
+    window.clearTimeout(editChangeTimer);
+    editChangeTimer = window.setTimeout(updateEditChangePanel, 120);
+  }
+
   function enhanceEditChangeTracking() {
     if (currentContractMode() !== 'edicao') return;
     markEditBaseline(false);
@@ -2104,7 +2116,7 @@
       var field = getEditTrackedField(item);
       if (!field || field.getAttribute('data-contract-edit-watch') === 'true') return;
       field.setAttribute('data-contract-edit-watch', 'true');
-      field.addEventListener('input', updateEditChangePanel);
+      field.addEventListener('input', scheduleEditChangePanelUpdate);
       field.addEventListener('change', updateEditChangePanel);
       field.addEventListener('click', updateEditChangePanel);
     });
@@ -2379,7 +2391,7 @@
         field.setAttribute('data-contract-upper', 'true');
         field.addEventListener('blur', function () {
           field.value = String(field.value || '').trim().toUpperCase();
-          updateQualityPanel();
+          scheduleQualityPanelUpdate();
         });
       });
     });
@@ -2388,7 +2400,7 @@
       allBySuffix(id).forEach(function (field) {
         if (field.getAttribute('data-contract-watch') === 'true') return;
         field.setAttribute('data-contract-watch', 'true');
-        field.addEventListener('input', updateQualityPanel);
+        field.addEventListener('input', scheduleQualityPanelUpdate);
         field.addEventListener('input', function () { showFieldMessage(field, ''); });
         field.addEventListener('change', function () {
           showFieldMessage(field, '');
@@ -2436,7 +2448,7 @@
 
           field.addEventListener('input', function () {
             showFieldMessage(field, '');
-            updateQualityPanel();
+            scheduleQualityPanelUpdate();
           });
         });
       });
