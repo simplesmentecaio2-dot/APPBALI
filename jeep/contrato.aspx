@@ -17,7 +17,7 @@
 
     <script src="../tables/js/jquery.dataTables.min.js"></script>
     <link href="../tables/estilo/table.css" rel="stylesheet" />
-    <link href="../css/bali-contract.css?v=20260624-contratos49" rel="stylesheet" />
+    <link href="../css/bali-contract.css?v=20260624-contratos50" rel="stylesheet" />
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -152,7 +152,7 @@
         }
     </script>
 
-    <script src="../js/bali-contract.js?v=20260624-contratos49"></script>
+    <script src="../js/bali-contract.js?v=20260624-contratos50"></script>
 </head>
 <body class="bali-contract-page contrato-jeep">
     <form id="form1" style="height: 100%;" runat="server">
@@ -290,7 +290,7 @@ WHERE        (ga.GrupoAcesso_Descricao = 'VENDEDOR DE VEICULOS NOVOS')"></asp:Sq
                                                 <label class="contract-check"><asp:CheckBox ID="chkConfereDocumento" runat="server" /> Documento do cliente conferido</label>
                                                 <label class="contract-check"><asp:CheckBox ID="chkConfereValores" runat="server" /> Valores conferidos</label>
                                                 <label class="contract-check"><asp:CheckBox ID="chkConferePagamento" runat="server" /> Forma de pagamento conferida</label>
-                                                <label class="contract-check"><asp:CheckBox ID="chkConfirmarDuplicidade" runat="server" /> Estou ciente caso exista contrato semelhante recente</label>
+                                                <label class="contract-check contract-check-duplicate"><asp:CheckBox ID="chkConfirmarDuplicidade" runat="server" /> Estou ciente caso exista contrato semelhante recente</label>
                                             </div>
                                         </div>
                                         <asp:Button ID="btnGravar" runat="server" Text="Gravar" OnClick="btnGravar_Click" CssClass="btns" />

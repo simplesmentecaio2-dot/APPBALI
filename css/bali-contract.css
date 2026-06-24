@@ -2075,6 +2075,18 @@ body.bali-contract-page *::after {
   color: var(--contract-brand-strong);
 }
 
+.bali-contract-page .contract-check-duplicate {
+  border-color: rgba(200, 132, 0, .28);
+  background: #fffbeb;
+  color: #8a5b00;
+}
+
+.bali-contract-page .contract-check-duplicate.is-checked {
+  border-color: rgba(22, 138, 85, .34);
+  background: #f0fdf4;
+  color: #13764b;
+}
+
 .bali-contract-page .contract-check.is-checked::after {
   margin-left: auto;
   color: #168a55;
