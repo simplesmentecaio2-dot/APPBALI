@@ -737,6 +737,14 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         List<string> erros = new List<string>();
         NormalizarFormatosNovo();
+        decimal valorVeiculo = LerMoeda(txtValoVeiculo.Text);
+        decimal entrada = LerMoeda(txtEntrada.Text);
+        decimal avaliacaoUsado = LerMoeda(txtCarroUsado.Text);
+        decimal avaliacaoUtilizada = LerMoeda(txtVlUtilzadoAvaliacao.Text);
+        decimal quitacao = LerMoeda(txtQuitacao.Text);
+        decimal valorParcela = LerMoeda(txtVlParcelas.Text);
+        decimal financiamento = LerMoeda(txtVlFinanciamento.Text);
+        decimal saldoAvaliacao = LerMoeda(txtSaldoAvaliacao.Text);
 
         if (CampoVazio(txtCliente.Text)) erros.Add("Informe o cliente.");
         if (CampoVazio(txtCPFCNPJ.Text)) erros.Add("Informe o CPF/CNPJ.");
@@ -747,19 +755,19 @@ public partial class veiculos_contrato : System.Web.UI.Page
         if (CampoVazio(tipo)) erros.Add("Selecione se o contrato é novo, usado ou venda direta.");
         if (CampoVazio(modalidadePagamento)) erros.Add("Selecione a modalidade de pagamento: à vista ou financiamento.");
         if (!TextoSelecionadoValido(ddlVendedor.Text)) erros.Add("Selecione o vendedor.");
-        if (LerMoeda(txtValoVeiculo.Text) <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
+        if (valorVeiculo <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
         ValidarFormatosNovo(erros);
-        ValidarValoresRelacionados(erros, LerMoeda(txtValoVeiculo.Text), LerMoeda(txtEntrada.Text), LerMoeda(txtCarroUsado.Text), LerMoeda(txtVlUtilzadoAvaliacao.Text), LerMoeda(txtQuitacao.Text));
+        ValidarValoresRelacionados(erros, valorVeiculo, entrada, avaliacaoUsado, avaliacaoUtilizada, quitacao);
 
         if (modalidadePagamento == "F")
         {
             if (CampoVazio(txtNrParcelas.Text)) erros.Add("Informe a quantidade de parcelas do financiamento.");
             else if (!NumeroParcelasValido(txtNrParcelas.Text)) erros.Add("Quantidade de parcelas deve ser um número entre 1 e 120.");
-            if (LerMoeda(txtVlParcelas.Text) <= 0) erros.Add("Valor da parcela deve ser maior que zero para financiamento.");
+            if (valorParcela <= 0) erros.Add("Valor da parcela deve ser maior que zero para financiamento.");
         }
 
-        if (LerMoeda(txtVlFinanciamento.Text) < 0) erros.Add("Financiamento ficou negativo: entrada + avaliação utilizada superam o valor do veículo.");
-        if (LerMoeda(txtSaldoAvaliacao.Text) < 0) erros.Add("Saldo da avaliação ficou negativo: quitação + valor utilizado superam a avaliação do usado.");
+        if (financiamento < 0) erros.Add("Financiamento ficou negativo: entrada + avaliação utilizada superam o valor do veículo.");
+        if (saldoAvaliacao < 0) erros.Add("Saldo da avaliação ficou negativo: quitação + valor utilizado superam a avaliação do usado.");
 
         if (erros.Count > 0)
         {
@@ -776,6 +784,14 @@ public partial class veiculos_contrato : System.Web.UI.Page
         List<string> erros = new List<string>();
         int contrato;
         NormalizarFormatosEdicao();
+        decimal valorVeiculo = LerMoeda(txtEdValorVeic.Text);
+        decimal entrada = LerMoeda(txtEdEntrada.Text);
+        decimal avaliacaoUsado = LerMoeda(txtEdValorUSADO.Text);
+        decimal avaliacaoUtilizada = LerMoeda(txtEdVALORUSADOAVAILACAO.Text);
+        decimal quitacao = LerMoeda(txtEdQuitacao.Text);
+        decimal valorParcela = LerMoeda(txtEdValorParcela.Text);
+        decimal financiamento = LerMoeda(txtEdFinanciamento.Text);
+        decimal saldoAvaliacao = LerMoeda(txtEdSaldoAvaliacao.Text);
 
         if (!Int32.TryParse((txtContrato.Text ?? "").Trim(), out contrato) || contrato <= 0) erros.Add("Informe um número de contrato válido para edição.");
         if (CampoVazio(txtEdCliente.Text)) erros.Add("Informe o cliente.");
@@ -786,19 +802,19 @@ public partial class veiculos_contrato : System.Web.UI.Page
         else if (!ChassiPlacaValido(txtEdChassi.Text)) erros.Add("Chassi/placa deve ter pelo menos 7 letras ou números.");
         if (CampoVazio(modalidadePagamento)) erros.Add("Selecione a modalidade de pagamento.");
         if (!TextoSelecionadoValido(txtEdVendedor.Text)) erros.Add("Informe o vendedor.");
-        if (LerMoeda(txtEdValorVeic.Text) <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
+        if (valorVeiculo <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
         ValidarFormatosEdicao(erros);
-        ValidarValoresRelacionados(erros, LerMoeda(txtEdValorVeic.Text), LerMoeda(txtEdEntrada.Text), LerMoeda(txtEdValorUSADO.Text), LerMoeda(txtEdVALORUSADOAVAILACAO.Text), LerMoeda(txtEdQuitacao.Text));
+        ValidarValoresRelacionados(erros, valorVeiculo, entrada, avaliacaoUsado, avaliacaoUtilizada, quitacao);
 
         if (modalidadePagamento == "F")
         {
             if (CampoVazio(txtEdNumeroParcelas.Text)) erros.Add("Informe a quantidade de parcelas do financiamento.");
             else if (!NumeroParcelasValido(txtEdNumeroParcelas.Text)) erros.Add("Quantidade de parcelas deve ser um número entre 1 e 120.");
-            if (LerMoeda(txtEdValorParcela.Text) <= 0) erros.Add("Valor da parcela deve ser maior que zero para financiamento.");
+            if (valorParcela <= 0) erros.Add("Valor da parcela deve ser maior que zero para financiamento.");
         }
 
-        if (LerMoeda(txtEdFinanciamento.Text) < 0) erros.Add("Financiamento ficou negativo: entrada + avaliação utilizada superam o valor do veículo.");
-        if (LerMoeda(txtEdSaldoAvaliacao.Text) < 0) erros.Add("Saldo da avaliação ficou negativo: quitação + valor utilizado superam a avaliação do usado.");
+        if (financiamento < 0) erros.Add("Financiamento ficou negativo: entrada + avaliação utilizada superam o valor do veículo.");
+        if (saldoAvaliacao < 0) erros.Add("Saldo da avaliação ficou negativo: quitação + valor utilizado superam a avaliação do usado.");
 
         if (erros.Count > 0)
         {
