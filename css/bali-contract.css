@@ -2432,6 +2432,32 @@ body.bali-contract-page *::after {
   text-transform: none;
 }
 
+.bali-contract-page .contract-context-alert {
+  display: none;
+  margin-top: 6px;
+  padding: 8px 10px;
+  border: 1px solid rgba(217, 119, 6, .26);
+  border-radius: 8px;
+  background: #fffbeb;
+  color: #8a5b00;
+  font-size: 11px;
+  font-weight: 820;
+  line-height: 1.35;
+  text-transform: none;
+}
+
+.bali-contract-page .contract-context-alert.is-risk {
+  border-color: rgba(200, 58, 58, .26);
+  background: #fff8f8;
+  color: #b42318;
+}
+
+.bali-contract-page .contract-context-alert.is-attention {
+  border-color: rgba(217, 119, 6, .26);
+  background: #fffbeb;
+  color: #8a5b00;
+}
+
 .bali-contract-page .contract-required-label::after {
   content: " *";
   color: #c83a3a;

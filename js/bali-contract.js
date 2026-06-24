@@ -10,6 +10,7 @@
   var wizardKeyboardBound = false;
   var qualityUpdateTimer = null;
   var editChangeTimer = null;
+  var identityContextTimer = null;
   var draftMaxAgeMs = 72 * 60 * 60 * 1000;
   var moneyFields = [
     'txtValoVeiculo',
@@ -3092,6 +3093,7 @@
         Array.prototype.slice.call(wrapper.querySelectorAll('table.contract-lookup-table')).forEach(function (table) {
           enhanceLookupSummary(table);
         });
+        updateIdentityContext();
       }, 80);
     };
     wrapper.addEventListener('click', refresh);
@@ -3228,6 +3230,77 @@
     });
   }
 
+  function allLookupRows(includeHiddenByFilter) {
+    var rows = [];
+    var seen = [];
+    Array.prototype.slice.call(document.querySelectorAll('table.contract-lookup-table, #tblConsultaProcesso, #tblConsultaProcesso2')).forEach(function (table) {
+      if (seen.indexOf(table) >= 0) return;
+      seen.push(table);
+      rows = rows.concat(lookupRows(table, !includeHiddenByFilter));
+    });
+    return rows;
+  }
+
+  function countLookupMatches(value, digitsMode) {
+    var term = digitsMode ? digitsOnly(value) : normalizeText(value);
+    if (!term || term.length < (digitsMode ? 11 : 7)) return 0;
+
+    return allLookupRows(true).filter(function (row) {
+      var text = row ? row.textContent || '' : '';
+      var haystack = digitsMode ? digitsOnly(text) : normalizeText(text);
+      return haystack.indexOf(term) >= 0;
+    }).length;
+  }
+
+  function ensureContextAlert(field) {
+    if (!field) return null;
+    var cell = field.closest ? field.closest('td') : null;
+    var host = cell || field.parentNode;
+    if (!host || !host.querySelector) return null;
+
+    var alert = host.querySelector('.contract-context-alert');
+    if (!alert) {
+      alert = document.createElement('div');
+      alert.className = 'contract-context-alert';
+      host.appendChild(alert);
+    }
+    return alert;
+  }
+
+  function showContextAlert(field, message, kind) {
+    var alert = ensureContextAlert(field);
+    if (!alert) return;
+    alert.textContent = message || '';
+    alert.style.display = message ? 'block' : 'none';
+    removeClass(alert, 'is-attention');
+    removeClass(alert, 'is-risk');
+    if (kind) addClass(alert, kind);
+  }
+
+  function scheduleIdentityContextUpdate() {
+    window.clearTimeout(identityContextTimer);
+    identityContextTimer = window.setTimeout(updateIdentityContext, 180);
+  }
+
+  function updateIdentityContext() {
+    var cpfField = bySuffix(currentContractMode() === 'edicao' ? 'txtEdCPF' : 'txtCPFCNPJ');
+    var chassiField = bySuffix(currentContractMode() === 'edicao' ? 'txtEdChassi' : 'txtChassiPlaca');
+    var cpfMatches = cpfField ? countLookupMatches(cpfField.value, true) : 0;
+    var chassiMatches = chassiField ? countLookupMatches(chassiField.value, false) : 0;
+
+    if (cpfField) {
+      showContextAlert(cpfField, cpfMatches
+        ? 'Cliente já aparece em ' + cpfMatches + ' contrato(s) carregado(s). Isso pode ser normal para cliente recorrente; confira se não está repetindo o mesmo negócio.'
+        : '', 'is-attention');
+    }
+
+    if (chassiField) {
+      showContextAlert(chassiField, chassiMatches
+        ? 'Placa/chassi já aparece em ' + chassiMatches + ' contrato(s) carregado(s). Confira possível duplicidade antes de gravar.'
+        : '', 'is-risk');
+    }
+  }
+
   function enhanceIdentityFields() {
     [
       { id: 'txtCPFCNPJ', uppercase: false },
@@ -3249,7 +3322,12 @@
         };
 
         field.addEventListener('blur', normalize);
-        field.addEventListener('change', normalize);
+        field.addEventListener('blur', updateIdentityContext);
+        field.addEventListener('input', scheduleIdentityContextUpdate);
+        field.addEventListener('change', function () {
+          normalize();
+          updateIdentityContext();
+        });
       });
     });
   }
@@ -3299,6 +3377,7 @@
     enhanceUnsavedWarning();
     enhanceDraftRecovery();
     enhanceLookupTables();
+    updateIdentityContext();
     bindSubmitButtons();
     bindProcessingButtons();
     prepareMoneyFields(false);
