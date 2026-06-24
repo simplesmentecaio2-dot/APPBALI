@@ -673,6 +673,14 @@ public partial class veiculos_contrato : System.Web.UI.Page
         int totalVU = contratos.Count(x => x.Tipo == "VU");
         int totalVD = contratos.Count(x => x.Tipo == "VD");
         decimal valorTotal = contratos.Sum(x => x.Valor);
+        int diasPeriodo = Math.Max(1, (fim.Date - inicio.Date).Days + 1);
+        decimal ticketMedio = total > 0 ? valorTotal / total : 0M;
+        decimal mediaDiaria = total > 0 ? Convert.ToDecimal(total) / Convert.ToDecimal(diasPeriodo) : 0M;
+        string topVendedor = contratos.GroupBy(x => (x.Vendedor ?? "").Trim().Length == 0 ? "Não informado" : x.Vendedor)
+            .OrderByDescending(x => x.Count())
+            .ThenBy(x => x.Key)
+            .Select(x => x.Key + " (" + x.Count() + ")")
+            .FirstOrDefault() ?? "-";
 
         StringBuilder html = new StringBuilder();
         html.Append("<div class='contract-bi-period'>Período analisado: ");
@@ -687,6 +695,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
         html.Append(BiCard("Usados", totalVU.ToString(), "Contratos VU"));
         html.Append(BiCard("Venda direta", totalVD.ToString(), "Contratos VD"));
         html.Append(BiCard("Valor total", valorTotal.ToString("C0", new CultureInfo("pt-BR")), "Soma dos veículos"));
+        html.Append(BiCard("Ticket médio", ticketMedio.ToString("C0", new CultureInfo("pt-BR")), "Valor médio por contrato"));
+        html.Append(BiCard("Média/dia", mediaDiaria.ToString("N1", new CultureInfo("pt-BR")), "Contratos por dia"));
+        html.Append(BiCard("Top vendedor", topVendedor, "Maior volume no período"));
         html.Append("</div>");
 
         if (total == 0)
@@ -698,6 +709,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         Dictionary<string, int> porVendedor = AgruparPorTexto(contratos, "vendedor");
         Dictionary<string, int> porTipo = AgruparPorTexto(contratos, "tipo");
         Dictionary<string, int> porPagamento = AgruparPorTexto(contratos, "pagamento");
+        Dictionary<string, decimal> valorPorTipo = AgruparValorPorTexto(contratos, "tipo");
         SortedDictionary<DateTime, int> porDia = AgruparPorDia(contratos, inicio, fim);
 
         html.Append("<div class='contract-bi-layout'>");
@@ -712,6 +724,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
         html.Append("</section>");
         html.Append("<section class='contract-bi-chart'><h3>Forma de pagamento</h3>");
         html.Append(MontarBarras(porPagamento, false));
+        html.Append("</section>");
+        html.Append("<section class='contract-bi-chart'><h3>Valor por tipo</h3>");
+        html.Append(MontarBarrasValor(valorPorTipo));
         html.Append("</section>");
         html.Append("</div>");
 
@@ -761,6 +776,24 @@ public partial class veiculos_contrato : System.Web.UI.Page
         return grupo;
     }
 
+    private Dictionary<string, decimal> AgruparValorPorTexto(List<ContratoBIItem> contratos, string campo)
+    {
+        Dictionary<string, decimal> grupo = new Dictionary<string, decimal>();
+
+        foreach (ContratoBIItem contrato in contratos)
+        {
+            string chave = "";
+            if (campo == "tipo") chave = NomeTipo(contrato.Tipo);
+            if (campo == "vendedor") chave = contrato.Vendedor;
+            if (chave.Trim().Length == 0) chave = "Não informado";
+
+            if (!grupo.ContainsKey(chave)) grupo[chave] = 0M;
+            grupo[chave] += contrato.Valor;
+        }
+
+        return grupo;
+    }
+
     private string MontarBarras(Dictionary<string, int> dados, bool limitar)
     {
         if (dados.Count == 0) return "<p class='contract-bi-muted'>Sem dados para exibir.</p>";
@@ -778,6 +811,31 @@ public partial class veiculos_contrato : System.Web.UI.Page
             html.Append(HttpUtility.HtmlEncode(item.Key));
             html.Append("</span><strong>");
             html.Append(item.Value);
+            html.Append("</strong></div><div class='contract-bi-track'><span style='width:");
+            html.Append(porcentagem);
+            html.Append("%'></span></div></div>");
+        }
+
+        html.Append("</div>");
+        return html.ToString();
+    }
+
+    private string MontarBarrasValor(Dictionary<string, decimal> dados)
+    {
+        if (dados.Count == 0) return "<p class='contract-bi-muted'>Sem dados para exibir.</p>";
+        List<KeyValuePair<string, decimal>> ordenados = dados.OrderByDescending(x => x.Value).ThenBy(x => x.Key).ToList();
+
+        decimal max = ordenados.Max(x => x.Value);
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class='contract-bi-bars'>");
+
+        foreach (KeyValuePair<string, decimal> item in ordenados)
+        {
+            int porcentagem = max == 0 ? 0 : Convert.ToInt32(Math.Round((item.Value * 100M) / max));
+            html.Append("<div class='contract-bi-bar'><div class='contract-bi-bar-head'><span>");
+            html.Append(HttpUtility.HtmlEncode(item.Key));
+            html.Append("</span><strong>");
+            html.Append(item.Value.ToString("C0", new CultureInfo("pt-BR")));
             html.Append("</strong></div><div class='contract-bi-track'><span style='width:");
             html.Append(porcentagem);
             html.Append("%'></span></div></div>");
