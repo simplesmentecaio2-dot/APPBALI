@@ -1138,6 +1138,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
             string caminho = Server.MapPath("~/App_Data/contrato-operacoes.log");
             if (!File.Exists(caminho)) return logs;
 
+            FileInfo arquivo = new FileInfo(caminho);
+            string cacheKey = "contrato-logs:" + MarcaContrato + ":" + arquivo.Length + ":" + arquivo.LastWriteTimeUtc.Ticks;
+            List<ContratoLogItem> logsCache = HttpRuntime.Cache[cacheKey] as List<ContratoLogItem>;
+            if (logsCache != null) return logsCache;
+
             string[] linhas = File.ReadAllLines(caminho, Encoding.UTF8);
             int inicio = Math.Max(0, linhas.Length - 1500);
             for (int i = inicio; i < linhas.Length; i++)
@@ -1156,12 +1161,15 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     Detalhe = partes[4]
                 });
             }
+
+            logs = logs.OrderByDescending(x => x.Data).ToList();
+            HttpRuntime.Cache.Insert(cacheKey, logs, null, DateTime.Now.AddSeconds(30), System.Web.Caching.Cache.NoSlidingExpiration);
         }
         catch
         {
         }
 
-        return logs.OrderByDescending(x => x.Data).ToList();
+        return logs;
     }
 
     private string AuditCard(string label, string value, string caption)
@@ -1189,7 +1197,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         int sucessos = recentes.Count(x => x.Acao == "GRAVACAO_SUCESSO" || x.Acao == "EDICAO_SUCESSO");
         int edicoes = recentes.Count(x => x.Acao.StartsWith("EDICAO"));
 
-        StringBuilder html = new StringBuilder();
+        StringBuilder html = new StringBuilder(8192);
         html.Append("<div class='contract-audit-cards'>");
         html.Append(AuditCard("Ocorrências", recentes.Count.ToString(), "Últimos registros analisados"));
         html.Append(AuditCard("Atenção", atencoes.ToString(), "Validações, erros e duplicidades"));
@@ -1250,7 +1258,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
         if (logs.Count == 0) return "<div class='contract-audit-empty'>Nenhuma ocorrência encontrada para o contrato " + HttpUtility.HtmlEncode(contrato) + ".</div>";
 
-        StringBuilder html = new StringBuilder();
+        StringBuilder html = new StringBuilder(4096);
         html.Append("<section class='contract-audit-history'><h3>Histórico do contrato ")
             .Append(HttpUtility.HtmlEncode(contrato)).Append("</h3>");
         foreach (ContratoLogItem item in logs)
