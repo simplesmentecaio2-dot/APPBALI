@@ -815,6 +815,8 @@
     panel.id = 'contractSubmitSummary';
     panel.className = 'contract-submit-summary is-hidden';
     panel.setAttribute('role', 'alert');
+    panel.setAttribute('aria-live', 'assertive');
+    panel.setAttribute('tabindex', '-1');
     placeSubmitSummary(panel, isEdit);
     return panel;
   }
@@ -843,6 +845,13 @@
 
     panel.innerHTML = html;
     panel.classList.remove('is-hidden');
+    if (panel.focus) {
+      try {
+        panel.focus({ preventScroll: true });
+      } catch (ignore) {
+        panel.focus();
+      }
+    }
   }
 
   function focusFirstInvalidField() {
@@ -874,6 +883,8 @@
     var panel = document.createElement('div');
     panel.id = 'contractQualityPanel';
     panel.className = 'contract-quality-panel is-attention is-hidden';
+    panel.setAttribute('role', 'status');
+    panel.setAttribute('aria-live', 'polite');
     panel.innerHTML =
       '<div class="contract-quality-main">' +
       '<span class="contract-quality-label">Qualidade do contrato</span>' +
@@ -1842,6 +1853,7 @@
     if (!warning) {
       warning = document.createElement('small');
       warning.className = 'contract-checklist-warning';
+      warning.setAttribute('role', 'alert');
       checklist.appendChild(warning);
     }
 
