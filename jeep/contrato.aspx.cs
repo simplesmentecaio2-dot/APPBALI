@@ -450,6 +450,15 @@ public partial class veiculos_contrato : System.Web.UI.Page
         return (valor ?? "").Trim().Length == 0;
     }
 
+    private bool TextoSelecionadoValido(string valor)
+    {
+        string texto = (valor ?? "").Trim();
+        if (texto.Length == 0) return false;
+        if (texto == "0" || texto == "-1") return false;
+        return !texto.Equals("Selecione", StringComparison.OrdinalIgnoreCase)
+            && !texto.Equals("Selecionar", StringComparison.OrdinalIgnoreCase);
+    }
+
     private string SomenteDigitos(string valor)
     {
         StringBuilder digitos = new StringBuilder();
@@ -613,6 +622,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         ValidarFormatoOpcional(erros, txtTelREsidencial.Text, TelefoneValido, "Telefone residencial deve ter DDD + número.");
         ValidarFormatoOpcional(erros, txtTelCom.Text, TelefoneValido, "Telefone comercial deve ter DDD + número.");
         ValidarFormatoOpcional(erros, txtCelular.Text, TelefoneValido, "Celular deve ter DDD + número.");
+        ValidarFormatoOpcional(erros, txtPlacaVU.Text, ChassiPlacaValido, "Placa do usado deve ter pelo menos 7 letras ou números quando preenchida.");
     }
 
     private void ValidarFormatosEdicao(List<string> erros)
@@ -625,6 +635,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         ValidarFormatoOpcional(erros, txtEdTelRes.Text, TelefoneValido, "Telefone residencial deve ter DDD + número.");
         ValidarFormatoOpcional(erros, txtEdComercial.Text, TelefoneValido, "Telefone comercial deve ter DDD + número.");
         ValidarFormatoOpcional(erros, txtEdCelular.Text, TelefoneValido, "Celular deve ter DDD + número.");
+        ValidarFormatoOpcional(erros, txtEdPlacaUSADO.Text, ChassiPlacaValido, "Placa do usado deve ter pelo menos 7 letras ou números quando preenchida.");
     }
 
     private bool ValidarContratoNovo(string modalidadePagamento, string tipo, out string mensagem)
@@ -639,7 +650,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
         if (CampoVazio(txtChassiPlaca.Text)) erros.Add("Informe chassi/placa.");
         else if (!ChassiPlacaValido(txtChassiPlaca.Text)) erros.Add("Chassi/placa deve ter pelo menos 7 letras ou números.");
         if (CampoVazio(tipo)) erros.Add("Selecione se o contrato é novo ou usado.");
-        if (CampoVazio(ddlVendedor.Text)) erros.Add("Selecione o vendedor.");
+        if (CampoVazio(modalidadePagamento)) erros.Add("Selecione a modalidade de pagamento: à vista ou financiamento.");
+        if (!TextoSelecionadoValido(ddlVendedor.Text)) erros.Add("Selecione o vendedor.");
         if (LerMoeda(txtValoVeiculo.Text) <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
         ValidarFormatosNovo(erros);
 
@@ -677,7 +689,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         if (CampoVazio(txtEdChassi.Text)) erros.Add("Informe chassi/placa.");
         else if (!ChassiPlacaValido(txtEdChassi.Text)) erros.Add("Chassi/placa deve ter pelo menos 7 letras ou números.");
         if (CampoVazio(modalidadePagamento)) erros.Add("Selecione a modalidade de pagamento.");
-        if (CampoVazio(txtEdVendedor.Text)) erros.Add("Informe o vendedor.");
+        if (!TextoSelecionadoValido(txtEdVendedor.Text)) erros.Add("Informe o vendedor.");
         if (LerMoeda(txtEdValorVeic.Text) <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
         ValidarFormatosEdicao(erros);
 
