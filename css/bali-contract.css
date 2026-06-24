@@ -2136,6 +2136,20 @@ body.bali-contract-page *::after {
 }
 
 @media (max-width: 640px) {
+  .bali-contract-page,
+  .bali-contract-page #form1,
+  .bali-contract-page #Cont,
+  .bali-contract-page .tabPanelConsultar,
+  .bali-contract-page .tabPanelConsultar .ajax__tab_body {
+    min-height: auto;
+    overflow-y: visible !important;
+  }
+
+  .bali-contract-page #Cont {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
   .bali-contract-page .contract-dirty-notice {
     right: 12px;
     bottom: 12px;
@@ -2162,10 +2176,52 @@ body.bali-contract-page *::after {
 
   .bali-contract-page .contract-step-actions {
     grid-template-columns: 1fr;
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
   }
 
   .bali-contract-page .contract-step-actions button {
     width: 100%;
+  }
+
+  .bali-contract-page .ajax__tab_body table.contract-form-section {
+    display: block;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .bali-contract-page .ajax__tab_body table.contract-form-section tbody,
+  .bali-contract-page .ajax__tab_body table.contract-form-section tr,
+  .bali-contract-page .ajax__tab_body table.contract-form-section td {
+    display: block;
+    width: 100% !important;
+  }
+
+  .bali-contract-page .ajax__tab_body table.contract-form-section td {
+    min-height: 0;
+    padding: 8px 10px !important;
+  }
+
+  .bali-contract-page .ajax__tab_body table.contract-form-section tr:first-child td {
+    border-radius: 8px 8px 0 0;
+  }
+
+  .bali-contract-page .form-contrato,
+  .bali-contract-page .txts,
+  .bali-contract-page input[type="text"],
+  .bali-contract-page input[type="password"],
+  .bali-contract-page select,
+  .bali-contract-page textarea {
+    min-width: 0 !important;
+  }
+
+  .bali-contract-page #tblConsultaProcesso_wrapper,
+  .bali-contract-page #tblConsultaProcesso2_wrapper,
+  .bali-contract-page .dataTables_wrapper {
+    width: 100%;
+    padding: 10px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .bali-contract-page .dataTables_wrapper .dataTables_filter {
@@ -2221,6 +2277,7 @@ body.bali-contract-page *::after {
   }
 
   .bali-contract-page .contract-date-filter-shell {
+    width: 100%;
     padding: 12px;
   }
 
