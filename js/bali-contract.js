@@ -4,6 +4,7 @@
   var contractDirty = false;
   var contractAllowUnload = false;
   var draftTimer = null;
+  var draftSavedAt = 0;
   var pageLoadedAt = new Date().getTime();
   var contractStepIndex = 0;
   var contractStepSignature = '';
@@ -2357,7 +2358,7 @@
     notice.id = 'contractDirtyNotice';
     notice.className = 'contract-dirty-notice is-hidden';
     notice.setAttribute('role', 'status');
-    notice.textContent = 'Alterações não salvas';
+    notice.innerHTML = '<strong>Alterações não salvas</strong><small>Rascunho aguardando gravação local</small>';
     document.body.appendChild(notice);
     return notice;
   }
@@ -2366,6 +2367,10 @@
     var notice = ensureDirtyNotice();
     if (!notice) return;
     if (contractDirty) {
+      var title = notice.querySelector('strong');
+      var detail = notice.querySelector('small');
+      if (title) title.textContent = draftSavedAt ? 'Rascunho salvo localmente' : 'Alterações não salvas';
+      if (detail) detail.textContent = draftSavedAt ? 'Salvo ' + draftAgeText(draftSavedAt) + ' neste navegador' : 'Salvando rascunho local...';
       notice.classList.remove('is-hidden');
     } else {
       notice.classList.add('is-hidden');
@@ -2597,9 +2602,12 @@
     try {
       if (!draft) {
         window.localStorage.removeItem(draftKey());
+        draftSavedAt = 0;
       } else {
         window.localStorage.setItem(draftKey(), JSON.stringify(draft));
+        draftSavedAt = draft.savedAt;
       }
+      updateDirtyNotice();
     } catch (ignore) {
     }
   }
@@ -2625,7 +2633,9 @@
   }
 
   function draftAgeText(savedAt) {
-    var minutes = Math.max(1, Math.round((new Date().getTime() - savedAt) / 60000));
+    var elapsed = Math.max(0, new Date().getTime() - savedAt);
+    if (elapsed < 45000) return 'agora';
+    var minutes = Math.max(1, Math.round(elapsed / 60000));
     if (minutes < 60) return 'há ' + minutes + ' min';
     var hours = Math.round(minutes / 60);
     if (hours < 24) return 'há ' + hours + ' h';
@@ -2634,6 +2644,8 @@
 
   function clearContractDraft() {
     window.clearTimeout(draftTimer);
+    draftSavedAt = 0;
+    updateDirtyNotice();
     if (!canUseStorage()) return;
     try {
       window.localStorage.removeItem(draftKey());

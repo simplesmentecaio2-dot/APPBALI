@@ -2673,12 +2673,14 @@ body.bali-contract-page *::after {
   right: 24px;
   bottom: 24px;
   z-index: 9999;
-  display: inline-flex;
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr);
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
+  gap: 4px 9px;
+  min-width: 220px;
+  padding: 10px 14px 10px 12px;
   border: 1px solid rgba(148, 163, 184, 0.34);
-  border-radius: 999px;
+  border-radius: 8px;
   background: rgba(15, 23, 42, 0.92);
   box-shadow: 0 18px 36px rgba(15, 23, 42, 0.22);
   color: #ffffff;
@@ -2693,6 +2695,26 @@ body.bali-contract-page *::after {
   border-radius: 999px;
   background: #facc15;
   content: "";
+}
+
+.bali-contract-page .contract-dirty-notice strong,
+.bali-contract-page .contract-dirty-notice small {
+  display: block;
+  grid-column: 2;
+  min-width: 0;
+}
+
+.bali-contract-page .contract-dirty-notice strong {
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.bali-contract-page .contract-dirty-notice small {
+  color: rgba(255, 255, 255, .76);
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.2;
 }
 
 .bali-contract-page .contract-dirty-notice.is-hidden {
