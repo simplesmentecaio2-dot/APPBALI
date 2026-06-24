@@ -137,6 +137,151 @@
     field.value = formatMoney(parseMoney(current));
   }
 
+  function padDatePart(value) {
+    return value < 10 ? '0' + value : String(value);
+  }
+
+  function formatDate(value) {
+    return padDatePart(value.getDate()) + '/' + padDatePart(value.getMonth() + 1) + '/' + value.getFullYear();
+  }
+
+  function parseDate(value) {
+    var match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(value || '').trim());
+    if (!match) return null;
+
+    var day = parseInt(match[1], 10);
+    var month = parseInt(match[2], 10) - 1;
+    var year = parseInt(match[3], 10);
+    var date = new Date(year, month, day);
+
+    if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day) return null;
+    return date;
+  }
+
+  function periodRange(type) {
+    var now = new Date();
+    var start;
+    var end;
+
+    if (type === 'today') {
+      start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    } else if (type === 'last7') {
+      end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      start = new Date(end.getFullYear(), end.getMonth(), end.getDate() - 6);
+    } else if (type === 'previousMonth') {
+      start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      end = new Date(now.getFullYear(), now.getMonth(), 0);
+    } else {
+      start = new Date(now.getFullYear(), now.getMonth(), 1);
+      end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    }
+
+    return { start: start, end: end };
+  }
+
+  function bySuffixIn(root, id) {
+    return root && root.querySelector ? root.querySelector('[id$="' + id + '"]') : bySuffix(id);
+  }
+
+  function setPeriodFields(startField, endField, type) {
+    if (!startField || !endField) return;
+    if (type === 'clear') {
+      startField.value = '';
+      endField.value = '';
+    } else {
+      var range = periodRange(type);
+      startField.value = formatDate(range.start);
+      endField.value = formatDate(range.end);
+    }
+
+    [startField, endField].forEach(function (field) {
+      field.classList.remove('contract-field-error');
+      if (document.createEvent) {
+        var event = document.createEvent('HTMLEvents');
+        event.initEvent('change', true, false);
+        field.dispatchEvent(event);
+      }
+    });
+  }
+
+  function validatePeriodFields(startField, endField) {
+    var startText = startField ? String(startField.value || '').trim() : '';
+    var endText = endField ? String(endField.value || '').trim() : '';
+
+    if (!startText && !endText) return '';
+    if (!startText || !endText) return 'Informe a data inicial e final para consultar.';
+
+    var start = parseDate(startText);
+    var end = parseDate(endText);
+    if (!start || !end) return 'Use datas no formato dd/mm/aaaa.';
+    if (start.getTime() > end.getTime()) return 'A data inicial não pode ser maior que a data final.';
+
+    return '';
+  }
+
+  function periodShortcutHtml() {
+    return [
+      { type: 'currentMonth', label: 'Este mês' },
+      { type: 'previousMonth', label: 'Mês anterior' },
+      { type: 'last7', label: 'Últimos 7 dias' },
+      { type: 'today', label: 'Hoje' },
+      { type: 'clear', label: 'Limpar' }
+    ].map(function (item) {
+      return '<button type="button" class="contract-period-chip" data-period="' + item.type + '">' + item.label + '</button>';
+    }).join('');
+  }
+
+  function bindPeriodShortcuts(host, startField, endField) {
+    if (!host || host.getAttribute('data-contract-period-bound') === 'true') return;
+    host.setAttribute('data-contract-period-bound', 'true');
+
+    Array.prototype.slice.call(host.querySelectorAll('[data-period]')).forEach(function (button) {
+      button.addEventListener('click', function () {
+        setPeriodFields(startField, endField, button.getAttribute('data-period'));
+        showPeriodMessage(host, '');
+      });
+    });
+  }
+
+  function showPeriodMessage(host, message) {
+    if (!host || !host.querySelector) return;
+    var target = host.querySelector('.contract-period-shortcuts') || host;
+    var warning = target.querySelector('.contract-period-warning');
+    if (!warning) {
+      warning = document.createElement('small');
+      warning.className = 'contract-period-warning';
+      target.appendChild(warning);
+    }
+
+    warning.textContent = message || '';
+    warning.style.display = message ? 'block' : 'none';
+  }
+
+  function bindPeriodValidation(host, button, startField, endField) {
+    if (!button || button.getAttribute('data-contract-period-validation') === 'true') return;
+    button.setAttribute('data-contract-period-validation', 'true');
+    button.addEventListener('click', function (event) {
+      var message = validatePeriodFields(startField, endField);
+      if (!message) {
+        [startField, endField].forEach(function (field) {
+          if (field) field.classList.remove('contract-field-error');
+        });
+        showPeriodMessage(host, '');
+        return true;
+      }
+
+      event.preventDefault();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      [startField, endField].forEach(function (field) {
+        if (field) field.classList.add('contract-field-error');
+      });
+      showPeriodMessage(host, message);
+      if (startField && startField.focus) startField.focus();
+      return false;
+    }, true);
+  }
+
   function showFieldMessage(field, message) {
     if (!field) return;
     var cell = field.closest ? field.closest('td') : null;
@@ -318,29 +463,65 @@
 
   function enhanceDateFilters() {
     [
-      { start: 'txtDtInicialVN', button: 'Button1' },
-      { start: 'txtDtInicialVU', button: 'Button2' },
-      { start: 'txtDtInicialVD', button: 'Button3' }
+      { start: 'txtDtInicialVN', end: 'txtDtFinalVN', button: 'Button1' },
+      { start: 'txtDtInicialVU', end: 'txtDtFinalVU', button: 'Button2' },
+      { start: 'txtDtInicialVD', end: 'txtDtFinalVD', button: 'Button3' }
     ].forEach(function (filter) {
       allBySuffix(filter.start).forEach(function (field) {
         var table = closestTag(field, 'table');
-        if (!table || table.getAttribute('data-contract-date-filter') === 'true') return;
-
-        table.setAttribute('data-contract-date-filter', 'true');
-        table.className = (table.className ? table.className + ' ' : '') + 'contract-date-filter';
-
-        var rows = table.rows;
-        if (rows && rows.length > 1 && rows[0].cells.length < 3) {
-          rows[0].insertCell(-1).innerHTML = '&nbsp;';
-        }
-
+        if (!table) return;
+        var endField = bySuffixIn(table, filter.end);
         var button = bySuffix(filter.button);
-        if (button && rows && rows.length > 1) {
-          var targetCell = rows[1].cells.length >= 3 ? rows[1].cells[2] : rows[1].insertCell(-1);
-          if (button.parentNode !== targetCell) targetCell.appendChild(button);
+
+        if (table.getAttribute('data-contract-date-filter') !== 'true') {
+          table.setAttribute('data-contract-date-filter', 'true');
+          table.className = (table.className ? table.className + ' ' : '') + 'contract-date-filter';
+
+          var rows = table.rows;
+          if (rows && rows.length > 1 && rows[0].cells.length < 3) {
+            rows[0].insertCell(-1).innerHTML = '&nbsp;';
+          }
+
+          if (button && rows && rows.length > 1) {
+            var targetCell = rows[1].cells.length >= 3 ? rows[1].cells[2] : rows[1].insertCell(-1);
+            if (button.parentNode !== targetCell) targetCell.appendChild(button);
+          }
+
+          if (rows && rows.length > 1) {
+            var shortcutRow = table.insertRow(2);
+            shortcutRow.className = 'contract-date-shortcut-row';
+            var shortcutCell = shortcutRow.insertCell(0);
+            shortcutCell.colSpan = 3;
+            shortcutCell.innerHTML = '<div class="contract-period-shortcuts">' + periodShortcutHtml() + '</div>';
+          }
         }
+
+        bindPeriodShortcuts(table, field, endField);
+        bindPeriodValidation(table, button, field, endField);
       });
     });
+  }
+
+  function enhanceBiPeriodShortcuts() {
+    var startField = bySuffix('txtBiDtInicial');
+    var endField = bySuffix('txtBiDtFinal');
+    var button = bySuffix('btnAtualizarBI');
+    if (!startField || !endField || !button) return;
+
+    var controls = closestTag(button, 'div');
+    if (!controls || controls.getAttribute('data-contract-bi-period') === 'true') {
+      bindPeriodValidation(controls, button, startField, endField);
+      return;
+    }
+
+    controls.setAttribute('data-contract-bi-period', 'true');
+    var shortcuts = document.createElement('div');
+    shortcuts.className = 'contract-period-shortcuts contract-bi-shortcuts';
+    shortcuts.innerHTML = periodShortcutHtml();
+    controls.appendChild(shortcuts);
+
+    bindPeriodShortcuts(shortcuts, startField, endField);
+    bindPeriodValidation(controls, button, startField, endField);
   }
 
   function enhanceFormSections() {
@@ -594,6 +775,7 @@
     enhanceFields();
     enhanceChecklist();
     enhanceDateFilters();
+    enhanceBiPeriodShortcuts();
     enhanceFormSections();
     bindSubmitButtons();
     prepareMoneyFields(false);
