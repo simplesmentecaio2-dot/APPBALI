@@ -1456,13 +1456,14 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 {
                     InvalidarCachesContrato();
                     RegistrarContratoOperacao("GRAVACAO_SUCESSO", DetalheContratoNovo(tipo) + "; Contrato=" + codigo);
+                    string contratoUrl = HttpUtility.UrlEncode(codigo);
                     if (tipo == "VN")
                     {
-                        Response.Redirect("Print-ContratoVNJEEP.aspx?contrato=" + codigo);
+                        Response.Redirect("Print-ContratoVNJEEP.aspx?contrato=" + contratoUrl);
                     }
                     if (tipo == "VU")
                     {
-                        Response.Redirect("Print-ContratoVUJEEP.aspx?contrato=" + codigo);
+                        Response.Redirect("Print-ContratoVUJEEP.aspx?contrato=" + contratoUrl);
                     }
                 }
                 else if (RetornoProcedureDuplicidade(obs, codigo))

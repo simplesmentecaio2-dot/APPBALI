@@ -1508,17 +1508,18 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 {
                     InvalidarCachesContrato();
                     RegistrarContratoOperacao("GRAVACAO_SUCESSO", DetalheContratoNovo(tipo) + "; Contrato=" + codigo);
+                    string contratoUrl = HttpUtility.UrlEncode(codigo);
                     if (tipo == "VN")
                     {
-                        Response.Redirect("Print-ContratoVN.aspx?contrato=" + codigo);
+                        Response.Redirect("Print-ContratoVN.aspx?contrato=" + contratoUrl);
                     }
                     else if (tipo == "VU")
                     {
-                        Response.Redirect("Print-ContratoVU.aspx?contrato=" + codigo);
+                        Response.Redirect("Print-ContratoVU.aspx?contrato=" + contratoUrl);
                     }
                     else if (tipo == "VD")
                     {
-                        Response.Redirect("Print-ContratoVD.aspx?contrato=" + codigo);
+                        Response.Redirect("Print-ContratoVD.aspx?contrato=" + contratoUrl);
                     }
                 }
                 else if (RetornoProcedureDuplicidade(obs, codigo))
