@@ -1639,10 +1639,14 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
 
         string tableId = tipo == "VN" ? "tblConsultaProcesso" : "tblConsultaProcesso2";
-        StringBuilder html = new StringBuilder();
+        StringBuilder html = new StringBuilder(32768);
         html.Append("<table cellpadding='0' cellspacing='0' border='0' id='")
             .Append(tableId)
-            .Append(@"' class='display' style='font-family:arial;'>
+            .Append("' class='display contract-lookup-table' data-contract-type='")
+            .Append(HttpUtility.HtmlAttributeEncode(tipo))
+            .Append("' data-contract-print='")
+            .Append(HttpUtility.HtmlAttributeEncode(paginaImpressao))
+            .Append(@"' style='font-family:arial;'>
                         <thead>
                             <tr>
                                 <td style='text-align:center; font-size:12px;'>ID</td>
@@ -1680,12 +1684,12 @@ public partial class veiculos_contrato : System.Web.UI.Page
                                        and [data] < dateadd(day, 1, @dtFim)
                                      order by [data] desc, id desc";
                 oCmd.CommandType = CommandType.Text;
-                oCmd.Parameters.Add("@tipo", SqlDbType.VarChar).Value = tipo;
+                oCmd.Parameters.Add("@tipo", SqlDbType.VarChar, 2).Value = tipo;
                 oCmd.Parameters.Add("@dtInicio", SqlDbType.Date).Value = dtInicio;
                 oCmd.Parameters.Add("@dtFim", SqlDbType.Date).Value = dtFim;
 
                 int totalLinhas = 0;
-                using (SqlDataReader odr = oCmd.ExecuteReader())
+                using (SqlDataReader odr = oCmd.ExecuteReader(CommandBehavior.SequentialAccess))
                 {
                     while (odr.Read())
                     {
