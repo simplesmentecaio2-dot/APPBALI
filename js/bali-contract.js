@@ -2914,6 +2914,24 @@
     });
   }
 
+  function markRequiredLabels() {
+    requiredNewFields.concat(requiredEditFields).forEach(function (item) {
+      allBySuffix(item.id).forEach(function (field) {
+        if (!field || field.getAttribute('data-contract-required-label') === 'true') return;
+        field.setAttribute('data-contract-required-label', 'true');
+        field.setAttribute('aria-required', 'true');
+        var cell = field.closest ? field.closest('td') : null;
+        var labelCell = cell && cell.previousElementSibling && cell.previousElementSibling.tagName === 'TD'
+          ? cell.previousElementSibling
+          : null;
+        if (labelCell) {
+          addClass(labelCell, 'contract-required-label');
+          labelCell.setAttribute('title', 'Campo obrigatório');
+        }
+      });
+    });
+  }
+
   function enhanceIdentityFields() {
     [
       { id: 'txtCPFCNPJ', uppercase: false },
@@ -2971,6 +2989,7 @@
     enhanceFormatFields();
     enhanceIdentityFields();
     enhanceTextCleanupFields();
+    markRequiredLabels();
     enhanceChecklist();
     enhanceDateFilters();
     enhanceBiPeriodShortcuts();

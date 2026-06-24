@@ -2380,6 +2380,12 @@ body.bali-contract-page *::after {
   text-transform: none;
 }
 
+.bali-contract-page .contract-required-label::after {
+  content: " *";
+  color: #c83a3a;
+  font-weight: 950;
+}
+
 .bali-contract-page .contract-payment-hint {
   margin-top: 8px;
   padding: 8px 10px;
