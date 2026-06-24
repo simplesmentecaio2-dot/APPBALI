@@ -2798,10 +2798,11 @@
     var index = 0;
 
     var work = function () {
+      if (table.getAttribute('data-contract-id-scheduled') !== signature) return;
       var limit = Math.min(index + 40, rows.length);
       while (index < limit) {
         var row = rows[index];
-        if (row.cells && row.cells.length) {
+        if (row.cells && row.cells.length && elementContains(table, row)) {
           var cell = row.cells[0];
           var url = contractUrlForCell(cell, table);
           var id = getContractIdFromCell(cell);
