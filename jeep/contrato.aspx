@@ -246,7 +246,7 @@
 
 
                                                 </td>
-                                                <td>FINANCEIRA: </td><td colspan="2"><asp:TextBox ID="txtFinanceira" CssClass="form-contrato" runat="server"></asp:TextBox></td></tr><tr><td style="width: 4.5cm;">VALOR DO VEÍCULO: </td><td><asp:TextBox ID="txtValoVeiculo" runat="server" AutoPostBack="True" CssClass="form-contrato" onKeyPress="return(MascaraMoeda(this,'.',',',event))" OnTextChanged="txtCarroUsado_TextChanged"></asp:TextBox></td><td colspan="6"><asp:Label ID="lblEmpTrans" runat="server"></asp:Label>(SERVIÇOS DE DESPACHANTE + TAXAS OPERACIONAIS) </td><td><asp:TextBox ID="txtEmplacamento" runat="server" AutoPostBack="True" CssClass="form-contrato" onKeyPress="return(MascaraMoeda(this,'.',',',event))"></asp:TextBox></td></tr><tr><td>ENTRADA: </td><td><asp:TextBox ID="txtEntrada" runat="server" AutoPostBack="True" CssClass="real form-contrato" onKeyPress="return(MascaraMoeda(this,'.',',',event))" OnTextChanged="txtCarroUsado_TextChanged"></asp:TextBox></td><td colspan="2">FORMAS DE PAGAMENTO: </td><td colspan="5"><asp:TextBox ID="txtFormasPagamento" CssClass="form-contrato" runat="server"></asp:TextBox></td></tr><tr><td>AVALIAÇÃO USADO: </td><td><asp:TextBox ID="txtCarroUsado" runat="server" AutoPostBack="True" CssClass="form-contrato" onKeyPress="return(MascaraMoeda(this,'.',',',event))" OnTextChanged="txtCarroUsado_TextChanged"></asp:TextBox></td><td>MOD/MARCA: </td><td colspan="2"><asp:TextBox ID="txtModMarca" runat="server" CssClass="form-contrato"></asp:TextBox></td><td>ANO/MOD: </td><td><asp:TextBox ID="txtAnoModelo" runat="server" CssClass="form-contrato"></asp:TextBox></td><td>PLACA: </td><td><asp:TextBox ID="txtPlacaVU" runat="server" CssClass="form-contrato"></asp:TextBox></td></tr><tr><td>VALOR UTILIZADO NA AVALIAÇÃO: </td><td><asp:TextBox ID="txtVlUtilzadoAvaliacao" runat="server" AutoPostBack="True" CssClass="form-contrato" onKeyPress="return(MascaraMoeda(this,'.',',',event))" OnTextChanged="txtCarroUsado_TextChanged"></asp:TextBox></td><td>QUITAÇÃO:</td><td><asp:TextBox ID="txtQuitacao" runat="server" AutoPostBack="True" CssClass="form-contrato" onKeyPress="return(MascaraMoeda(this,'.',',',event))" OnTextChanged="txtCarroUsado_TextChanged"></asp:TextBox></td><td>SALDO AVALIAÇÃO:</td><td><asp:TextBox ID="txtSaldoAvaliacao" runat="server" AutoPostBack="True" CssClass="form-contrato" Enabled="False" onKeyPress="return(MascaraMoeda(this,'.',',',event))" OnTextChanged="txtCarroUsado_TextChanged"></asp:TextBox></td></tr><tr><td style="width: 3.5cm;">FINANCIAMENTO: </td><td><asp:TextBox ID="txtVlFinanciamento" runat="server" AutoPostBack="True" CssClass="real form-contrato" Enabled="False" onKeyPress="return(MascaraMoeda(this,'.',',',event))" OnTextChanged="txtCarroUsado_TextChanged"></asp:TextBox></td><td>Nº PARC.: </td><td><asp:TextBox ID="txtNrParcelas" runat="server" CssClass="form-contrato"></asp:TextBox></td><td>VL PARC.: </td><td><asp:TextBox ID="txtVlParcelas" runat="server" CssClass="real form-contrato" onKeyPress="return(MascaraMoeda(this,'.',',',event))"></asp:TextBox></td><td colspan="2">PLANO FINANCIAMENTO: </td><td><asp:TextBox ID="txtPlano" runat="server" CssClass="form-contrato"></asp:TextBox></td></tr><tr><td>CORTESIAS: </td><td colspan="8"><asp:TextBox ID="txtCortesias" runat="server" CssClass="form-contrato"></asp:TextBox></td></tr><tr><td>OBS: </td><td colspan="8"><asp:TextBox ID="txtObs" runat="server" CssClass="form-contrato"></asp:TextBox></td></tr><tr><td>PREVISÃO DE ENTREGA: </td><td colspan="8"><asp:TextBox ID="txtPrevisao" runat="server" CssClass="form-contrato" Width="30px"></asp:TextBox>DIAS ÚTEIS A PARTIR DA CONFIRMAÇÃO DO PEDIDO. </td></tr><tr><td>VENDEDOR: </td><td colspan="8"><asp:DropDownList runat="server" id="ddlVendedor" CssClass="form-contrato" DataSourceID="SqlDataSource1" DataTextField="vend" DataValueField="vend"></asp:DropDownList>
+                                                <td>FINANCEIRA: </td><td colspan="2"><asp:TextBox ID="txtFinanceira" CssClass="form-contrato" runat="server"></asp:TextBox></td></tr><tr><td style="width: 4.5cm;">VALOR DO VEÍCULO: </td><td><asp:TextBox ID="txtValoVeiculo" runat="server" CssClass="form-contrato"></asp:TextBox></td><td colspan="6"><asp:Label ID="lblEmpTrans" runat="server"></asp:Label>(SERVIÇOS DE DESPACHANTE + TAXAS OPERACIONAIS) </td><td><asp:TextBox ID="txtEmplacamento" runat="server" CssClass="form-contrato"></asp:TextBox></td></tr><tr><td>ENTRADA: </td><td><asp:TextBox ID="txtEntrada" runat="server" CssClass="real form-contrato"></asp:TextBox></td><td colspan="2">FORMAS DE PAGAMENTO: </td><td colspan="5"><asp:TextBox ID="txtFormasPagamento" CssClass="form-contrato" runat="server"></asp:TextBox></td></tr><tr><td>AVALIAÇÃO USADO: </td><td><asp:TextBox ID="txtCarroUsado" runat="server" CssClass="form-contrato"></asp:TextBox></td><td>MOD/MARCA: </td><td colspan="2"><asp:TextBox ID="txtModMarca" runat="server" CssClass="form-contrato"></asp:TextBox></td><td>ANO/MOD: </td><td><asp:TextBox ID="txtAnoModelo" runat="server" CssClass="form-contrato"></asp:TextBox></td><td>PLACA: </td><td><asp:TextBox ID="txtPlacaVU" runat="server" CssClass="form-contrato"></asp:TextBox></td></tr><tr><td>VALOR UTILIZADO NA AVALIAÇÃO: </td><td><asp:TextBox ID="txtVlUtilzadoAvaliacao" runat="server" CssClass="form-contrato"></asp:TextBox></td><td>QUITAÇÃO:</td><td><asp:TextBox ID="txtQuitacao" runat="server" CssClass="form-contrato"></asp:TextBox></td><td>SALDO AVALIAÇÃO:</td><td><asp:TextBox ID="txtSaldoAvaliacao" runat="server" CssClass="form-contrato" Enabled="False"></asp:TextBox></td></tr><tr><td style="width: 3.5cm;">FINANCIAMENTO: </td><td><asp:TextBox ID="txtVlFinanciamento" runat="server" CssClass="real form-contrato" Enabled="False"></asp:TextBox></td><td>Nº PARC.: </td><td><asp:TextBox ID="txtNrParcelas" runat="server" CssClass="form-contrato"></asp:TextBox></td><td>VL PARC.: </td><td><asp:TextBox ID="txtVlParcelas" runat="server" CssClass="real form-contrato"></asp:TextBox></td><td colspan="2">PLANO FINANCIAMENTO: </td><td><asp:TextBox ID="txtPlano" runat="server" CssClass="form-contrato"></asp:TextBox></td></tr><tr><td>CORTESIAS: </td><td colspan="8"><asp:TextBox ID="txtCortesias" runat="server" CssClass="form-contrato"></asp:TextBox></td></tr><tr><td>OBS: </td><td colspan="8"><asp:TextBox ID="txtObs" runat="server" CssClass="form-contrato"></asp:TextBox></td></tr><tr><td>PREVISÃO DE ENTREGA: </td><td colspan="8"><asp:TextBox ID="txtPrevisao" runat="server" CssClass="form-contrato" Width="30px"></asp:TextBox>DIAS ÚTEIS A PARTIR DA CONFIRMAÇÃO DO PEDIDO. </td></tr><tr><td>VENDEDOR: </td><td colspan="8"><asp:DropDownList runat="server" id="ddlVendedor" CssClass="form-contrato" DataSourceID="SqlDataSource1" DataTextField="vend" DataValueField="vend"></asp:DropDownList>
 
 
 
@@ -512,7 +512,7 @@ WHERE        (ga.GrupoAcesso_Descricao = 'VENDEDOR DE VEICULOS NOVOS')"></asp:Sq
                                                 <td style="width: 4.5cm;">VALOR DO VEÍCULO:
                                                 </td>
                                                 <td>
-                                                    <asp:TextBox ID="txtEdValorVeic" CssClass="form-contrato" runat="server" onKeyPress="return(MascaraMoeda(this,'.',',',event))" OnTextChanged="txtCarroUsado_TextChanged" AutoPostBack="True"></asp:TextBox>
+                                                    <asp:TextBox ID="txtEdValorVeic" CssClass="form-contrato" runat="server"></asp:TextBox>
                                                 </td>
                                                 <td colspan="6">
                                                     <asp:Label ID="Label1" runat="server"></asp:Label>
@@ -526,7 +526,7 @@ WHERE        (ga.GrupoAcesso_Descricao = 'VENDEDOR DE VEICULOS NOVOS')"></asp:Sq
                                                 <td>ENTRADA:
                                                 </td>
                                                 <td>
-                                                    <asp:TextBox ID="txtEdEntrada" CssClass="real form-contrato" runat="server" OnTextChanged="txtCarroUsado_TextChanged" onKeyPress="return(MascaraMoeda(this,'.',',',event))" AutoPostBack="True"></asp:TextBox>
+                                                    <asp:TextBox ID="txtEdEntrada" CssClass="real form-contrato" runat="server"></asp:TextBox>
 
                                                 </td>
                                                 <td colspan="2">FORMAS DE PAGAMENTO:
@@ -539,7 +539,7 @@ WHERE        (ga.GrupoAcesso_Descricao = 'VENDEDOR DE VEICULOS NOVOS')"></asp:Sq
                                                 <td>AVALIAÇÃO USADO:
                                                 </td>
                                                 <td>
-                                                    <asp:TextBox ID="txtEdValorUSADO" CssClass="form-contrato" runat="server" AutoPostBack="True" OnTextChanged="txtCarroUsado_TextChanged" onKeyPress="return(MascaraMoeda(this,'.',',',event))"></asp:TextBox>
+                                                    <asp:TextBox ID="txtEdValorUSADO" CssClass="form-contrato" runat="server"></asp:TextBox>
 
 
                                                 </td>
@@ -563,24 +563,24 @@ WHERE        (ga.GrupoAcesso_Descricao = 'VENDEDOR DE VEICULOS NOVOS')"></asp:Sq
                                                 <td>VALOR UTILIZADO NA AVALIAÇÃO:
                                                 </td>
                                                 <td>
-                                                    <asp:TextBox ID="txtEdVALORUSADOAVAILACAO" CssClass="form-contrato" runat="server" AutoPostBack="True" OnTextChanged="txtCarroUsado_TextChanged" onKeyPress="return(MascaraMoeda(this,'.',',',event))"></asp:TextBox>
+                                                    <asp:TextBox ID="txtEdVALORUSADOAVAILACAO" CssClass="form-contrato" runat="server"></asp:TextBox>
 
 
 
                                                 </td>
                                                 <td>QUITAÇÃO:</td>
                                                 <td>
-                                                    <asp:TextBox ID="txtEdQuitacao" CssClass="form-contrato" runat="server" onKeyPress="return(MascaraMoeda(this,'.',',',event))" OnTextChanged="txtCarroUsado_TextChanged" AutoPostBack="True"></asp:TextBox></td>
+                                                    <asp:TextBox ID="txtEdQuitacao" CssClass="form-contrato" runat="server"></asp:TextBox></td>
                                                 <td>SALDO AVALIAÇÃO:</td>
                                                 <td>
-                                                    <asp:TextBox ID="txtEdSaldoAvaliacao" CssClass="form-contrato" Enabled="False" runat="server" OnTextChanged="txtCarroUsado_TextChanged" AutoPostBack="True" onKeyPress="return(MascaraMoeda(this,'.',',',event))"></asp:TextBox></td>
+                                                    <asp:TextBox ID="txtEdSaldoAvaliacao" CssClass="form-contrato" Enabled="False" runat="server"></asp:TextBox></td>
 
                                             </tr>
                                             <tr>
                                                 <td style="width: 3.5cm;">FINANCIAMENTO:
                                                 </td>
                                                 <td>
-                                                    <asp:TextBox ID="txtEdFinanciamento" CssClass="real form-contrato" runat="server" Enabled="False" OnTextChanged="txtCarroUsado_TextChanged" AutoPostBack="True" onKeyPress="return(MascaraMoeda(this,'.',',',event))"></asp:TextBox>
+                                                    <asp:TextBox ID="txtEdFinanciamento" CssClass="real form-contrato" runat="server" Enabled="False"></asp:TextBox>
 
 
                                                 </td>
@@ -592,7 +592,7 @@ WHERE        (ga.GrupoAcesso_Descricao = 'VENDEDOR DE VEICULOS NOVOS')"></asp:Sq
                                                 <td>VL PARC.:
                                                 </td>
                                                 <td>
-                                                    <asp:TextBox ID="txtEdValorParcela" CssClass="real form-contrato" runat="server" onKeyPress="return(MascaraMoeda(this,'.',',',event))"></asp:TextBox>
+                                                    <asp:TextBox ID="txtEdValorParcela" CssClass="real form-contrato" runat="server"></asp:TextBox>
                                                 </td>
                                                 <td colspan="2">PLANO FINANCIAMENTO:
                                                 </td>
