@@ -7,6 +7,7 @@
   var pageLoadedAt = new Date().getTime();
   var contractStepIndex = 0;
   var contractStepSignature = '';
+  var wizardKeyboardBound = false;
   var moneyFields = [
     'txtValoVeiculo',
     'txtEmplacamento',
@@ -1729,6 +1730,20 @@
     updateSectionProgress();
   }
 
+  function bindWizardKeyboard() {
+    if (wizardKeyboardBound) return;
+    document.addEventListener('keydown', function (event) {
+      if (!event.ctrlKey || event.altKey || event.shiftKey) return;
+      if (event.target && /textarea/i.test(event.target.tagName || '')) return;
+      var key = event.key || '';
+      if (key !== 'ArrowRight' && key !== 'ArrowLeft') return;
+      if (!getWizardHost()) return;
+      event.preventDefault();
+      setWizardStep(contractStepIndex + (key === 'ArrowRight' ? 1 : -1), key === 'ArrowRight');
+    });
+    wizardKeyboardBound = true;
+  }
+
   function prepareMoneyFields(forceZero) {
     moneyFields.forEach(function (id) {
       allBySuffix(id).forEach(function (field) {
@@ -2713,6 +2728,7 @@
     enhanceAuditTools();
     enhanceFormSections();
     enhanceSectionNavigator();
+    bindWizardKeyboard();
     enhanceEditChangeTracking();
     enhanceUnsavedWarning();
     enhanceDraftRecovery();
