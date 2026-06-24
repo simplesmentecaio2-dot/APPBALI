@@ -1002,17 +1002,20 @@ public partial class veiculos_contrato : System.Web.UI.Page
     private string MontarBarras(Dictionary<string, int> dados, bool limitar)
     {
         if (dados.Count == 0) return "<p class='contract-bi-muted'>Sem dados para exibir.</p>";
-        List<KeyValuePair<string, int>> ordenados = dados.OrderByDescending(x => x.Value).ThenBy(x => x.Key).ToList();
-        if (limitar) ordenados = ordenados.Take(12).ToList();
+        List<KeyValuePair<string, int>> ordenados = limitar
+            ? LimitarRankingComOutros(dados, 12)
+            : dados.OrderByDescending(x => x.Value).ThenBy(x => x.Key).ToList();
 
         int max = ordenados.Max(x => x.Value);
-        StringBuilder html = new StringBuilder();
+        StringBuilder html = new StringBuilder(4096);
         html.Append("<div class='contract-bi-bars'>");
 
         foreach (KeyValuePair<string, int> item in ordenados)
         {
             int porcentagem = max == 0 ? 0 : Convert.ToInt32(Math.Round((item.Value * 100.0) / max));
-            html.Append("<div class='contract-bi-bar'><div class='contract-bi-bar-head'><span>");
+            html.Append("<div class='contract-bi-bar' title='");
+            html.Append(HttpUtility.HtmlAttributeEncode(item.Key + " - " + item.Value + " contrato(s)"));
+            html.Append("'><div class='contract-bi-bar-head'><span>");
             html.Append(HttpUtility.HtmlEncode(item.Key));
             html.Append("</span><strong>");
             html.Append(item.Value);
@@ -1025,13 +1028,24 @@ public partial class veiculos_contrato : System.Web.UI.Page
         return html.ToString();
     }
 
+    private List<KeyValuePair<string, int>> LimitarRankingComOutros(Dictionary<string, int> dados, int limite)
+    {
+        List<KeyValuePair<string, int>> ordenados = dados.OrderByDescending(x => x.Value).ThenBy(x => x.Key).ToList();
+        if (ordenados.Count <= limite) return ordenados;
+
+        List<KeyValuePair<string, int>> visiveis = ordenados.Take(limite).ToList();
+        int outros = ordenados.Skip(limite).Sum(x => x.Value);
+        if (outros > 0) visiveis.Add(new KeyValuePair<string, int>("Outros", outros));
+        return visiveis;
+    }
+
     private string MontarBarrasValor(Dictionary<string, decimal> dados)
     {
         if (dados.Count == 0) return "<p class='contract-bi-muted'>Sem dados para exibir.</p>";
         List<KeyValuePair<string, decimal>> ordenados = dados.OrderByDescending(x => x.Value).ThenBy(x => x.Key).ToList();
 
         decimal max = ordenados.Max(x => x.Value);
-        StringBuilder html = new StringBuilder();
+        StringBuilder html = new StringBuilder(2048);
         html.Append("<div class='contract-bi-bars'>");
 
         foreach (KeyValuePair<string, decimal> item in ordenados)
