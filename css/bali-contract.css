@@ -425,10 +425,11 @@ body.bali-contract-page *::after {
 
 .bali-contract-page .dataTables_wrapper {
   overflow-x: auto;
-  padding: 12px;
+  padding: 10px;
   border: 1px solid var(--contract-line);
   border-radius: 8px;
   background: #fff;
+  box-shadow: none;
 }
 
 .bali-contract-page table.display,
@@ -436,26 +437,32 @@ body.bali-contract-page *::after {
   width: 100% !important;
   border-collapse: separate !important;
   border-spacing: 0;
+  border: 1px solid #e7edf5 !important;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .bali-contract-page table.display thead th,
 .bali-contract-page table.display thead td,
 .bali-contract-page table.dataTable thead th,
 .bali-contract-page table.dataTable thead td {
-  padding: 11px 12px;
-  border: 0;
-  background: var(--contract-brand) !important;
-  color: #fff;
+  padding: 10px 12px;
+  border: 0 !important;
+  border-bottom: 1px solid #dfe7f1 !important;
+  background: #f7f9fc !important;
+  color: #263241 !important;
   font-size: 12px;
+  font-weight: 900;
   text-align: left;
   white-space: nowrap;
 }
 
 .bali-contract-page table.display tbody td,
 .bali-contract-page table.dataTable tbody td {
-  padding: 10px 12px;
-  border-top: 1px solid #edf1f6;
-  background: #fff;
+  padding: 9px 12px;
+  border: 0 !important;
+  border-top: 1px solid #eef3f8 !important;
+  background: #fff !important;
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
@@ -463,12 +470,28 @@ body.bali-contract-page *::after {
 
 .bali-contract-page table.display tbody tr:nth-child(even) td,
 .bali-contract-page table.dataTable tbody tr:nth-child(even) td {
-  background: #f8fbff;
+  background: #fbfdff !important;
 }
 
 .bali-contract-page table.display tbody tr:hover td,
 .bali-contract-page table.dataTable tbody tr:hover td {
-  background: var(--contract-brand-soft);
+  background: #f4f8fd !important;
+  color: var(--contract-brand-strong);
+}
+
+.bali-contract-page .dataTables_wrapper .fg-toolbar,
+.bali-contract-page .dataTables_wrapper .ui-widget-header,
+.bali-contract-page .dataTables_wrapper .ui-state-default,
+.bali-contract-page table.dataTable thead .ui-state-default,
+.bali-contract-page table.display thead .ui-state-default {
+  border-color: #e5edf5 !important;
+  background: #fff !important;
+  color: #344054 !important;
+  box-shadow: none !important;
+}
+
+.bali-contract-page .dataTables_wrapper .fg-toolbar {
+  padding: 8px 0;
 }
 
 .bali-contract-page .dataTables_filter input,
@@ -498,21 +521,27 @@ body.bali-contract-page *::after {
   border: 1px solid var(--contract-line) !important;
   border-radius: 7px !important;
   background: #fff !important;
-  color: var(--contract-ink) !important;
+  color: #344054 !important;
   cursor: pointer;
   font-weight: 800;
+  box-shadow: none !important;
 }
 
 .bali-contract-page .dataTables_paginate .paginate_button.current,
 .bali-contract-page .fg-button.ui-state-disabled {
-  background: var(--contract-brand) !important;
-  color: #fff !important;
+  border-color: var(--contract-brand-ring) !important;
+  background: var(--contract-brand-soft) !important;
+  color: var(--contract-brand-strong) !important;
 }
 
+.bali-contract-page .ajax__calendar,
 .bali-contract-page .ajax__calendar_container {
   z-index: 30000 !important;
-  width: 286px !important;
-  min-width: 286px !important;
+  width: 292px !important;
+  min-width: 292px !important;
+  height: auto !important;
+  min-height: 330px !important;
+  max-height: none !important;
   padding: 12px !important;
   border: 1px solid var(--contract-line) !important;
   border-radius: 8px !important;
@@ -520,12 +549,31 @@ body.bali-contract-page *::after {
   box-shadow: 0 20px 48px rgba(15, 23, 42, .22) !important;
   font-family: Arial, Helvetica, sans-serif !important;
   box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+.bali-contract-page .ajax__calendar_container table,
+.bali-contract-page .ajax__calendar table {
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-collapse: collapse !important;
+  background: transparent !important;
+}
+
+.bali-contract-page .ajax__calendar_container table td,
+.bali-contract-page .ajax__calendar table td {
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
 }
 
 .bali-contract-page .ajax__calendar_header,
 .bali-contract-page .ajax__calendar_footer {
   position: relative !important;
-  width: 260px !important;
+  width: 266px !important;
   height: 34px !important;
   line-height: 34px !important;
   margin: 0 auto !important;
@@ -534,10 +582,11 @@ body.bali-contract-page *::after {
 
 .bali-contract-page .ajax__calendar_body {
   position: relative !important;
-  width: 260px !important;
-  height: 234px !important;
+  width: 266px !important;
+  height: 246px !important;
+  min-height: 246px !important;
   margin: 0 auto !important;
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
 .bali-contract-page .ajax__calendar_title {
@@ -559,8 +608,9 @@ body.bali-contract-page *::after {
   inset: 0 auto auto 0 !important;
   top: 0 !important;
   left: 0 !important;
-  width: 260px !important;
-  height: 224px !important;
+  width: 266px !important;
+  height: 238px !important;
+  min-height: 238px !important;
   margin: 0 !important;
   overflow: visible !important;
   text-align: center !important;
@@ -588,9 +638,9 @@ body.bali-contract-page *::after {
 
 .bali-contract-page .ajax__calendar_dayname,
 .bali-contract-page .ajax__calendar_day {
-  width: 37px !important;
-  height: 30px !important;
-  line-height: 30px !important;
+  width: 38px !important;
+  height: 31px !important;
+  line-height: 31px !important;
 }
 
 .bali-contract-page .ajax__calendar_month,
