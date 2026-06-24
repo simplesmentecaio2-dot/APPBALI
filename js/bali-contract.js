@@ -1953,6 +1953,32 @@
     hideSubmitSummary();
   }
 
+  function markProcessingButton(button, label) {
+    if (!button) return;
+    button.setAttribute('data-contract-processing', 'true');
+    button.setAttribute('aria-busy', 'true');
+    if (!button.getAttribute('data-contract-label') && button.value) {
+      button.setAttribute('data-contract-label', button.value);
+    }
+    if (label && button.value) button.value = label;
+    addClass(button, 'is-submitting');
+    window.clearTimeout(button._contractProcessingTimer);
+    button._contractProcessingTimer = window.setTimeout(resetProcessingButtons, 20000);
+  }
+
+  function resetProcessingButtons() {
+    Array.prototype.slice.call(document.querySelectorAll('[data-contract-processing="true"]')).forEach(function (button) {
+      button.removeAttribute('data-contract-processing');
+      button.removeAttribute('aria-busy');
+      window.clearTimeout(button._contractProcessingTimer);
+      if (button.getAttribute('data-contract-label')) {
+        button.value = button.getAttribute('data-contract-label');
+        button.removeAttribute('data-contract-label');
+      }
+      removeClass(button, 'is-submitting');
+    });
+  }
+
   function setLoadingVisible(visible) {
     var indicator = document.getElementById('ag');
     if (!indicator) return;
@@ -1965,6 +1991,28 @@
       return true;
     };
     setLoadingVisible(false);
+  }
+
+  function bindProcessingButtons() {
+    [
+      { id: 'btnAtualizarBI', label: 'Atualizando...' },
+      { id: 'Button1', label: 'Processando...' },
+      { id: 'Button2', label: 'Processando...' },
+      { id: 'Button3', label: 'Processando...' }
+    ].forEach(function (item) {
+      allBySuffix(item.id).forEach(function (button) {
+        if (button.getAttribute('data-contract-processing-bound') === 'true') return;
+        button.setAttribute('data-contract-processing-bound', 'true');
+        button.addEventListener('click', function (event) {
+          if (button.getAttribute('data-contract-processing') === 'true') {
+            event.preventDefault();
+            return false;
+          }
+          markProcessingButton(button, item.label);
+          return true;
+        });
+      });
+    });
   }
 
   function ensureDirtyNotice() {
@@ -2872,6 +2920,7 @@
   function init() {
     if (!isContractPage()) return;
     resetSubmittingButtons();
+    resetProcessingButtons();
     enhanceLoadingIndicator();
     enhanceFields();
     enhanceFormatFields();
@@ -2889,6 +2938,7 @@
     enhanceDraftRecovery();
     enhanceLookupTables();
     bindSubmitButtons();
+    bindProcessingButtons();
     prepareMoneyFields(false);
     updateQualityPanel();
     bindAjaxEndRequest();
