@@ -1,0 +1,40 @@
+# Backups e compactados grandes
+*.rar
+*.zip
+*.7z
+*.bak
+*.backup
+*.old
+*.orig
+
+# Temporarios gerados por editor/servidor
+*.tmp
+*.TMP
+*~
+~RF*.TMP
+*.log
+
+# Windows / Visual Studio
+.vs/
+Thumbs.db
+Desktop.ini
+*.user
+*.suo
+*.cache
+
+# Build intermediario
+**/obj/
+**/Debug/
+**/Release/
+
+# Pacotes restauraveis
+packages/
+
+# Backups/copias antigas dentro da raiz
+BKP*/
+* - Copia/
+Nova pasta/
+Bibliotecas e exemplos/
+Intranet/
+
+# Intranet ficara fora do primeiro versionamento
