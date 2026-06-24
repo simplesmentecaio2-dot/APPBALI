@@ -21,6 +21,7 @@ body.premium-login {
 
 body.premium-login.login-fiat {
   --login-brand: #c83a3a;
+  --login-brand-rgb: 200, 58, 58;
   --login-brand-dark: #321114;
   --login-brand-mid: #79373b;
   --login-brand-soft: rgba(200, 58, 58, .14);
@@ -29,6 +30,7 @@ body.premium-login.login-fiat {
 
 body.premium-login.login-jeep {
   --login-brand: #5e7f42;
+  --login-brand-rgb: 94, 127, 66;
   --login-brand-dark: #111912;
   --login-brand-mid: #435b33;
   --login-brand-soft: rgba(94, 127, 66, .16);
@@ -37,6 +39,7 @@ body.premium-login.login-jeep {
 
 body.premium-login.login-byd {
   --login-brand: #2f6fbd;
+  --login-brand-rgb: 47, 111, 189;
   --login-brand-dark: #0b1728;
   --login-brand-mid: #255b95;
   --login-brand-soft: rgba(47, 111, 189, .16);
@@ -45,6 +48,7 @@ body.premium-login.login-byd {
 
 body.premium-login.login-neutral {
   --login-brand: #374151;
+  --login-brand-rgb: 55, 65, 81;
   --login-brand-dark: #111827;
   --login-brand-mid: #334155;
   --login-brand-soft: rgba(55, 65, 81, .16);
@@ -64,8 +68,9 @@ body.premium-login.login-neutral {
   min-height: 100vh;
   padding: 32px min(7vw, 86px);
   background:
-    linear-gradient(90deg, rgba(10, 16, 28, .62) 0%, rgba(10, 16, 28, .48) 45%, rgba(10, 16, 28, .20) 100%),
-    linear-gradient(135deg, var(--login-brand-dark) 0%, var(--login-brand-mid) 54%, #101827 100%),
+    linear-gradient(90deg, rgba(5, 8, 16, .58) 0%, rgba(5, 8, 16, .36) 45%, rgba(5, 8, 16, .06) 100%),
+    radial-gradient(circle at 76% 20%, rgba(var(--login-brand-rgb), .22), transparent 34%),
+    linear-gradient(135deg, rgba(var(--login-brand-rgb), .20) 0%, rgba(16, 24, 39, .12) 58%, rgba(16, 24, 39, .34) 100%),
     var(--login-bg-image, url('../img/papeldeparede.jpg')) center center / cover no-repeat !important;
   overflow: hidden;
   position: relative;

@@ -28,7 +28,7 @@
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="./assets/css/util.css">
     <link rel="stylesheet" type="text/css" href="./assets/css/main.css">
-    <link rel="stylesheet" type="text/css" href="../../css/bali-login.css?v=20260624-bg">
+    <link rel="stylesheet" type="text/css" href="../../css/bali-login.css?v=20260624-bg2">
     <!--===============================================================================================-->
 </head>
 <body class="premium-login login-byd">
