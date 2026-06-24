@@ -163,6 +163,16 @@
       message: 'CPF/CNPJ deve ter 11 ou 14 n\u00fameros.'
     },
     {
+      ids: ['txtChassiPlaca', 'txtEdChassi'],
+      placeholder: 'Placa ou chassi',
+      normalize: normalizePlateOrChassi,
+      validate: function (value) {
+        var length = lettersNumbersOnly(value).length;
+        return length >= 7;
+      },
+      message: 'Placa ou chassi deve ter pelo menos 7 letras/números.'
+    },
+    {
       ids: ['txtCEP', 'txtEdCep'],
       placeholder: '00000-000',
       inputmode: 'numeric',
@@ -211,6 +221,8 @@
       placeholder: '(00) 00000-0000',
       inputmode: 'tel',
       numericBlank: true,
+      maxLength: 15,
+      normalize: formatPhone,
       validate: function (value) {
         var digits = digitsOnly(value);
         return digits.length >= 10 && digits.length <= 11;
@@ -394,6 +406,21 @@
       return digits.substr(0, 2) + '.' + digits.substr(2, 3) + '.' + digits.substr(5, 3) + '/' + digits.substr(8, 4) + '-' + digits.substr(12, 2);
     }
     return String(value || '').trim();
+  }
+
+  function formatPhone(value) {
+    var digits = digitsOnly(value);
+    if (digits.length === 10) {
+      return '(' + digits.substr(0, 2) + ') ' + digits.substr(2, 4) + '-' + digits.substr(6, 4);
+    }
+    if (digits.length === 11) {
+      return '(' + digits.substr(0, 2) + ') ' + digits.substr(2, 5) + '-' + digits.substr(7, 4);
+    }
+    return String(value || '').trim();
+  }
+
+  function normalizePlateOrChassi(value) {
+    return lettersNumbersOnly(value).toUpperCase();
   }
 
   function formatMoney(value) {
@@ -2468,15 +2495,16 @@
     [
       { id: 'txtCPFCNPJ', uppercase: false },
       { id: 'txtEdCPF', uppercase: false },
-      { id: 'txtChassiPlaca', uppercase: true },
-      { id: 'txtPlacaVU', uppercase: true },
-      { id: 'txtEdChassi', uppercase: true },
-      { id: 'txtEdPlacaUSADO', uppercase: true }
+      { id: 'txtChassiPlaca', uppercase: true, placeholder: 'Placa ou chassi' },
+      { id: 'txtPlacaVU', uppercase: true, placeholder: 'Placa do usado' },
+      { id: 'txtEdChassi', uppercase: true, placeholder: 'Placa ou chassi' },
+      { id: 'txtEdPlacaUSADO', uppercase: true, placeholder: 'Placa do usado' }
     ].forEach(function (config) {
       allBySuffix(config.id).forEach(function (field) {
         if (field.getAttribute('data-contract-identity') === 'true') return;
         field.setAttribute('data-contract-identity', 'true');
         field.setAttribute('autocomplete', 'off');
+        if (config.placeholder) field.setAttribute('placeholder', config.placeholder);
 
         var normalize = function () {
           var cleaned = cleanIdentityValue(field.value, config.uppercase);
