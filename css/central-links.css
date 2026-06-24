@@ -1,10 +1,13 @@
 :root {
   --page-bg: #f3f6fa;
   --surface: #ffffff;
+  --surface-muted: #f8fafc;
   --ink: #17202a;
   --muted: #697586;
   --border: #dbe2ea;
+  --border-soft: #edf1f6;
   --shadow: 0 18px 42px rgba(15, 23, 42, .10);
+  --soft-shadow: 0 10px 28px rgba(15, 23, 42, .07);
   --radius: 8px;
 }
 
@@ -21,7 +24,8 @@ body.central-links-page {
   margin: 0;
   color: var(--ink);
   background: linear-gradient(180deg, #fbfcfe 0%, var(--page-bg) 44%, #eef3f8 100%);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
 }
 
 .central-shell {
@@ -99,21 +103,31 @@ body.central-links-page {
 .central-main {
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 24px 0 36px;
+  padding: 26px 0 38px;
 }
 
 .central-hero {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 20px;
   align-items: center;
   min-height: 190px;
-  padding: 26px;
+  padding: 28px;
   border: 1px solid rgba(255, 255, 255, .22);
   border-radius: var(--radius);
   color: #fff;
   box-shadow: var(--shadow);
   overflow: hidden;
+}
+
+.central-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .52), transparent);
+  pointer-events: none;
 }
 
 .central-hero h1 {
@@ -174,11 +188,11 @@ body.central-links-page {
 
 .central-card-panel {
   margin-top: 18px;
-  padding: 18px;
+  padding: 20px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: 0 14px 34px rgba(15, 23, 42, .07);
+  box-shadow: var(--soft-shadow);
 }
 
 .central-section-title {
@@ -192,7 +206,7 @@ body.central-links-page {
 .central-section-title h2 {
   margin: 0;
   color: var(--ink);
-  font-size: 22px;
+  font-size: 21px;
   letter-spacing: 0;
 }
 
@@ -204,23 +218,36 @@ body.central-links-page {
 
 .central-link-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
 }
 
 .central-link-card {
+  position: relative;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 14px;
   align-items: center;
   min-height: 96px;
   padding: 16px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius);
   color: var(--ink);
   text-decoration: none;
-  background: #fff;
-  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+  background: linear-gradient(180deg, #fff 0%, #fbfcfe 100%);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, .03);
+  overflow: hidden;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+
+.central-link-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--brand-color);
+  opacity: 0;
+  transition: opacity .16s ease;
 }
 
 .central-link-card:hover,
@@ -229,8 +256,18 @@ body.central-links-page {
   text-decoration: none;
   transform: translateY(-2px);
   border-color: var(--brand-color);
-  box-shadow: 0 18px 34px rgba(15, 23, 42, .12);
+  background: #fff;
+  box-shadow: 0 18px 34px rgba(15, 23, 42, .11);
   outline: none;
+}
+
+.central-link-card:hover::before,
+.central-link-card:focus::before {
+  opacity: 1;
+}
+
+.central-link-card > span:last-child {
+  min-width: 0;
 }
 
 .central-link-icon {
@@ -241,6 +278,7 @@ body.central-links-page {
   border-radius: var(--radius);
   background: var(--brand-soft);
   overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .56);
 }
 
 .central-link-icon img {
@@ -269,6 +307,89 @@ body.central-links-page {
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
+}
+
+.central-utility-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 420px) auto;
+  gap: 12px;
+  align-items: center;
+  margin: -2px 0 16px;
+}
+
+.central-search-box {
+  position: relative;
+}
+
+.central-search-box input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 44px 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+  transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+.central-search-box input:focus {
+  border-color: var(--brand-color);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+  outline: none;
+}
+
+.central-search-box button {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.central-search-box button:hover,
+.central-search-box button:focus {
+  background: var(--brand-soft);
+  color: var(--ink);
+  outline: none;
+}
+
+.central-status-chip {
+  justify-self: end;
+  padding: 9px 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.central-empty-state {
+  display: none;
+  padding: 18px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.central-empty-state.is-visible {
+  display: block;
 }
 
 .central-footer {
@@ -530,16 +651,19 @@ body.central-links-page {
 .brand-fiat {
   --brand-color: #c83a3a;
   --brand-soft: rgba(200, 58, 58, .10);
+  --brand-strong: #8f252c;
 }
 
 .brand-jeep {
   --brand-color: #4f6f35;
   --brand-soft: rgba(79, 111, 53, .12);
+  --brand-strong: #2f4424;
 }
 
 .brand-byd {
   --brand-color: #2f6fbd;
   --brand-soft: rgba(47, 111, 189, .12);
+  --brand-strong: #1e4f8d;
 }
 
 .brand-fiat .central-topbar,
@@ -604,6 +728,19 @@ body.central-links-page {
     padding: 14px;
   }
 
+  .central-section-title {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .central-utility-row {
+    grid-template-columns: 1fr;
+  }
+
+  .central-status-chip {
+    justify-self: start;
+  }
+
   .central-maintenance-fields,
   .central-maintenance-item {
     grid-template-columns: 1fr;
@@ -621,5 +758,14 @@ body.central-links-page {
 
   .central-link-card {
     min-height: 86px;
+    padding: 14px;
+  }
+
+  .central-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .central-maintenance-password-row {
+    grid-template-columns: 1fr;
   }
 }
