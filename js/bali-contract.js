@@ -779,6 +779,61 @@
     });
   }
 
+  function sectionLabel(section) {
+    if (section === 'cliente') return 'Cliente';
+    if (section === 'veiculo') return 'Veículo';
+    if (section === 'pagamento') return 'Pagamento';
+    return 'Etapa';
+  }
+
+  function enhanceSectionNavigator() {
+    var sections = Array.prototype.slice.call(document.querySelectorAll('table.contract-form-section')).filter(isVisible);
+    var nav = document.getElementById('contractSectionNav');
+
+    if (sections.length < 2) {
+      if (nav) nav.classList.add('is-hidden');
+      return;
+    }
+
+    if (!nav) {
+      nav = document.createElement('div');
+      nav.id = 'contractSectionNav';
+      nav.className = 'contract-section-nav';
+    }
+
+    var signature = sections.map(function (section) {
+      return section.className;
+    }).join('|');
+
+    if (nav.getAttribute('data-section-signature') !== signature) {
+      nav.setAttribute('data-section-signature', signature);
+      nav.innerHTML = '<span>Ir para</span>';
+      sections.forEach(function (section, index) {
+        var match = /contract-section-([a-z]+)/.exec(section.className || '');
+        var name = match ? match[1] : '';
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = sectionLabel(name);
+        button.setAttribute('data-section-index', index);
+        button.addEventListener('click', function () {
+          var target = sections[parseInt(button.getAttribute('data-section-index'), 10)];
+          if (!target) return;
+          try {
+            target.scrollIntoView({ block: 'start', behavior: 'smooth' });
+          } catch (ignore) {
+            target.scrollIntoView(true);
+          }
+        });
+        nav.appendChild(button);
+      });
+    }
+
+    nav.classList.remove('is-hidden');
+    if (nav.parentNode !== sections[0].parentNode || nav.nextSibling !== sections[0]) {
+      sections[0].parentNode.insertBefore(nav, sections[0]);
+    }
+  }
+
   function prepareMoneyFields(forceZero) {
     moneyFields.forEach(function (id) {
       allBySuffix(id).forEach(function (field) {
@@ -1398,6 +1453,7 @@
     enhanceDateFilters();
     enhanceBiPeriodShortcuts();
     enhanceFormSections();
+    enhanceSectionNavigator();
     enhanceUnsavedWarning();
     enhanceDraftRecovery();
     enhanceLookupTables();
