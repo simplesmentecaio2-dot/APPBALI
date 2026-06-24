@@ -28,7 +28,7 @@
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="./assets/css/util.css">
     <link rel="stylesheet" type="text/css" href="./assets/css/main.css">
-    <link rel="stylesheet" type="text/css" href="../../css/bali-login.css?v=20260624-bg2">
+    <link rel="stylesheet" type="text/css" href="../../css/bali-login.css?v=20260624-bg3">
     <!--===============================================================================================-->
 </head>
 <body class="premium-login login-fiat">
@@ -37,7 +37,7 @@
 			<div class="wrap-login100 p-l-85 p-r-85 p-t-55 p-b-55">
 				<form class="login100-form validate-form flex-sb flex-w" runat="server">
 					<span class="login100-form-title p-b-32">
-                        <img src="../../img/logobali.png" class="img-fluid"/> <strong>|</strong> <span class="badge badge-dark">PÁTIO</span>
+                        <img src="../../img/logobali.png?v=20260624-logo" class="img-fluid"/> <strong>|</strong> <span class="badge badge-dark">PÁTIO</span>
 					</span>
 
 					<span class="txt1 p-b-11">

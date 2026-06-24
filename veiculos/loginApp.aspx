@@ -28,7 +28,7 @@
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="css/util.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
-    <link rel="stylesheet" type="text/css" href="../css/bali-login.css?v=20260624-bg2">
+    <link rel="stylesheet" type="text/css" href="../css/bali-login.css?v=20260624-bg3">
     <!--===============================================================================================-->
 </head>
 <body class="premium-login login-fiat">
@@ -37,7 +37,7 @@
         <div class="container-login100" style="background-image: url('images/background-2462430_1920.jpg');">
             <div class="wrap-login100 p-t-30 p-b-50">
                 <span class="login100-form-title p-b-41">
-                    <img src="../img/logobali.png" class="img-fluid" />
+                    <img src="../img/logobali.png?v=20260624-logo" class="img-fluid" />
                 </span>
                 <form class="login100-form validate-form p-b-33 p-t-5" runat="server">
 
