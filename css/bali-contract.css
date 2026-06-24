@@ -2324,6 +2324,112 @@ body.bali-contract-page *::after {
     -webkit-overflow-scrolling: touch;
   }
 
+  .bali-contract-page #tblConsultaProcesso.contract-lookup-table,
+  .bali-contract-page #tblConsultaProcesso2.contract-lookup-table,
+  .bali-contract-page table.contract-lookup-table,
+  .bali-contract-page table.contract-lookup-table thead,
+  .bali-contract-page table.contract-lookup-table tbody,
+  .bali-contract-page table.contract-lookup-table tr,
+  .bali-contract-page table.contract-lookup-table td {
+    display: block;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .bali-contract-page table.contract-lookup-table {
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  .bali-contract-page table.contract-lookup-table thead {
+    display: none;
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody {
+    display: grid;
+    gap: 10px;
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody tr {
+    overflow: hidden;
+    border: 1px solid #e6edf5;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, .05);
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody td {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 8px;
+    align-items: center;
+    min-height: 38px;
+    padding: 9px 10px !important;
+    border-top: 1px solid #eef3f8 !important;
+    white-space: normal !important;
+    word-break: break-word;
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody td:first-child {
+    border-top: 0 !important;
+    background: var(--contract-brand-soft) !important;
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody td::before {
+    color: var(--contract-muted);
+    font-size: 10px;
+    font-weight: 950;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    content: "Campo";
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody td:nth-child(1)::before {
+    content: "Contrato";
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody td:nth-child(2)::before {
+    content: "Cliente";
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody td:nth-child(3)::before {
+    content: "CPF/CNPJ";
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody td:nth-child(4)::before {
+    content: "RG";
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody td:nth-child(5)::before {
+    content: "Telefone 1";
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody td:nth-child(6)::before {
+    content: "Telefone 2";
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody td:nth-child(7)::before {
+    content: "Telefone 3";
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody td:nth-child(8)::before {
+    content: "E-mail";
+  }
+
+  .bali-contract-page table.contract-lookup-table tbody td:nth-child(9)::before {
+    content: "Vendedor";
+  }
+
+  .bali-contract-page table.contract-lookup-table .contract-id-action {
+    width: fit-content;
+    min-width: 112px;
+  }
+
+  .bali-contract-page .ajax__calendar,
+  .bali-contract-page .ajax__calendar_container {
+    max-width: calc(100vw - 28px) !important;
+  }
+
   .bali-contract-page .dataTables_wrapper .dataTables_filter {
     align-items: stretch;
     flex-direction: column;
@@ -2396,6 +2502,17 @@ body.bali-contract-page *::after {
 
   .bali-contract-page .contract-audit-tools small {
     white-space: normal;
+  }
+
+  .bali-contract-page .contract-edit-change-panel ul {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .bali-contract-page .contract-edit-change-panel li {
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 30px;
   }
 
   .bali-contract-page table.contract-date-filter tr {
