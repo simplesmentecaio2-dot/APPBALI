@@ -1447,7 +1447,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     }
     protected void btnGravar_Click(object sender, EventArgs e)
     {
-        if (!CalcularValoresContrato(true))
+        if (!CalcularValoresNovo(true))
         {
             RegistrarContratoOperacao("VALIDACAO_CALCULO_NOVO", "Falha ao calcular financiamento/saldo antes da gravação.");
             return;
@@ -1586,19 +1586,62 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private bool CalcularValoresContrato(bool exibirAlerta)
     {
+        bool novo = CalcularValoresNovo(exibirAlerta);
+        bool edicao = CalcularValoresEdicao(false);
+        return novo && edicao;
+    }
+
+    private bool CalcularValoresNovo(bool exibirAlerta)
+    {
 
 
         try
         {
-            NormalizarCamposMonetarios();
+            NormalizarCampoMoeda(txtValoVeiculo);
+            NormalizarCampoMoeda(txtEmplacamento);
+            NormalizarCampoMoeda(txtEntrada);
+            NormalizarCampoMoeda(txtCarroUsado);
+            NormalizarCampoMoeda(txtVlUtilzadoAvaliacao);
+            NormalizarCampoMoeda(txtQuitacao);
+            NormalizarCampoMoeda(txtSaldoAvaliacao);
+            NormalizarCampoMoeda(txtVlFinanciamento);
+            NormalizarCampoMoeda(txtVlParcelas);
 
             decimal financiamento = LerMoeda(txtValoVeiculo.Text) - LerMoeda(txtEntrada.Text) - LerMoeda(txtVlUtilzadoAvaliacao.Text);
             decimal saldoAvaliacao = LerMoeda(txtCarroUsado.Text) - LerMoeda(txtVlUtilzadoAvaliacao.Text) - LerMoeda(txtQuitacao.Text);
-            decimal financiamentoEdicao = LerMoeda(txtEdValorVeic.Text) - LerMoeda(txtEdEntrada.Text) - LerMoeda(txtEdVALORUSADOAVAILACAO.Text);
-            decimal saldoAvaliacaoEdicao = LerMoeda(txtEdValorUSADO.Text) - LerMoeda(txtEdVALORUSADOAVAILACAO.Text) - LerMoeda(txtEdQuitacao.Text);
 
             txtVlFinanciamento.Text = FormatarMoedaSistema(financiamento);
             txtSaldoAvaliacao.Text = FormatarMoedaSistema(saldoAvaliacao);
+            return true;
+        }
+        catch (Exception)
+        {
+            if (exibirAlerta)
+            {
+                ExibirAlerta("Não consegui calcular os valores. Use números no formato 150000,00 e evite letras nos campos de valor.");
+            }
+            return false;
+        }
+
+    }
+
+    private bool CalcularValoresEdicao(bool exibirAlerta)
+    {
+        try
+        {
+            NormalizarCampoMoeda(txtEdValorVeic);
+            NormalizarCampoMoeda(txtEdTAXAS);
+            NormalizarCampoMoeda(txtEdEntrada);
+            NormalizarCampoMoeda(txtEdValorUSADO);
+            NormalizarCampoMoeda(txtEdVALORUSADOAVAILACAO);
+            NormalizarCampoMoeda(txtEdQuitacao);
+            NormalizarCampoMoeda(txtEdSaldoAvaliacao);
+            NormalizarCampoMoeda(txtEdFinanciamento);
+            NormalizarCampoMoeda(txtEdValorParcela);
+
+            decimal financiamentoEdicao = LerMoeda(txtEdValorVeic.Text) - LerMoeda(txtEdEntrada.Text) - LerMoeda(txtEdVALORUSADOAVAILACAO.Text);
+            decimal saldoAvaliacaoEdicao = LerMoeda(txtEdValorUSADO.Text) - LerMoeda(txtEdVALORUSADOAVAILACAO.Text) - LerMoeda(txtEdQuitacao.Text);
+
             txtEdFinanciamento.Text = FormatarMoedaSistema(financiamentoEdicao);
             txtEdSaldoAvaliacao.Text = FormatarMoedaSistema(saldoAvaliacaoEdicao);
             return true;
@@ -1611,7 +1654,6 @@ public partial class veiculos_contrato : System.Web.UI.Page
             }
             return false;
         }
-
     }
 
     protected void txtCarroUsado_TextChanged(object sender, EventArgs e)
@@ -1656,7 +1698,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
         try
         {
-            if (!CalcularValoresContrato(true))
+            if (!CalcularValoresEdicao(true))
             {
                 RegistrarContratoOperacao("VALIDACAO_CALCULO_EDICAO", "Falha ao calcular financiamento/saldo antes da edição.");
                 return;
