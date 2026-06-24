@@ -323,9 +323,116 @@ public partial class veiculos_contrato : System.Web.UI.Page
         return (valor ?? "").Trim().Length == 0;
     }
 
+    private string SomenteDigitos(string valor)
+    {
+        StringBuilder digitos = new StringBuilder();
+        foreach (char caractere in (valor ?? ""))
+        {
+            if (Char.IsDigit(caractere))
+            {
+                digitos.Append(caractere);
+            }
+        }
+        return digitos.ToString();
+    }
+
+    private void NormalizarCep(TextBox campo)
+    {
+        if (campo == null) return;
+        string digitos = SomenteDigitos(campo.Text);
+        if (digitos.Length == 8)
+        {
+            campo.Text = digitos.Substring(0, 5) + "-" + digitos.Substring(5, 3);
+        }
+    }
+
+    private void NormalizarFormatosNovo()
+    {
+        txtUF.Text = (txtUF.Text ?? "").Trim().ToUpperInvariant();
+        txtEmail.Text = (txtEmail.Text ?? "").Trim().ToLowerInvariant();
+        NormalizarCep(txtCEP);
+    }
+
+    private void NormalizarFormatosEdicao()
+    {
+        txtEdUF.Text = (txtEdUF.Text ?? "").Trim().ToUpperInvariant();
+        txtEdEmail.Text = (txtEdEmail.Text ?? "").Trim().ToLowerInvariant();
+        NormalizarCep(txtEdCep);
+    }
+
+    private bool CpfCnpjValido(string valor)
+    {
+        string digitos = SomenteDigitos(valor);
+        return digitos.Length == 11 || digitos.Length == 14;
+    }
+
+    private bool CepValido(string valor)
+    {
+        return SomenteDigitos(valor).Length == 8;
+    }
+
+    private bool UfValida(string valor)
+    {
+        string uf = (valor ?? "").Trim().ToUpperInvariant();
+        return uf.Length == 2 && uf.All(Char.IsLetter);
+    }
+
+    private bool EmailValido(string valor)
+    {
+        string email = (valor ?? "").Trim();
+        int arroba = email.IndexOf("@");
+        int ultimoPonto = email.LastIndexOf(".");
+        return email.IndexOf(" ") < 0 && arroba > 0 && ultimoPonto > arroba + 1 && ultimoPonto < email.Length - 1;
+    }
+
+    private bool DataValida(string valor)
+    {
+        DateTime data;
+        return DateTime.TryParseExact((valor ?? "").Trim(), "dd/MM/yyyy", CulturaBrasil, DateTimeStyles.None, out data);
+    }
+
+    private bool TelefoneValido(string valor)
+    {
+        string digitos = SomenteDigitos(valor);
+        return digitos.Length >= 10 && digitos.Length <= 11;
+    }
+
+    private void ValidarFormatoOpcional(List<string> erros, string valor, Func<string, bool> validador, string mensagem)
+    {
+        if (!CampoVazio(valor) && !validador(valor))
+        {
+            erros.Add(mensagem);
+        }
+    }
+
+    private void ValidarFormatosNovo(List<string> erros)
+    {
+        ValidarFormatoOpcional(erros, txtCPFCNPJ.Text, CpfCnpjValido, "CPF/CNPJ deve ter 11 ou 14 números.");
+        ValidarFormatoOpcional(erros, txtCEP.Text, CepValido, "CEP deve ter 8 números. Exemplo: 01001-000.");
+        ValidarFormatoOpcional(erros, txtUF.Text, UfValida, "UF deve ter 2 letras. Exemplo: SP.");
+        ValidarFormatoOpcional(erros, txtEmail.Text, EmailValido, "Informe um e-mail válido. Exemplo: cliente@email.com.");
+        ValidarFormatoOpcional(erros, txtNascimento.Text, DataValida, "Data de nascimento deve estar no formato dd/mm/aaaa.");
+        ValidarFormatoOpcional(erros, txtTelREsidencial.Text, TelefoneValido, "Telefone residencial deve ter DDD + número.");
+        ValidarFormatoOpcional(erros, txtTelCom.Text, TelefoneValido, "Telefone comercial deve ter DDD + número.");
+        ValidarFormatoOpcional(erros, txtCelular.Text, TelefoneValido, "Celular deve ter DDD + número.");
+    }
+
+    private void ValidarFormatosEdicao(List<string> erros)
+    {
+        ValidarFormatoOpcional(erros, txtEdCPF.Text, CpfCnpjValido, "CPF/CNPJ deve ter 11 ou 14 números.");
+        ValidarFormatoOpcional(erros, txtEdCep.Text, CepValido, "CEP deve ter 8 números. Exemplo: 01001-000.");
+        ValidarFormatoOpcional(erros, txtEdUF.Text, UfValida, "UF deve ter 2 letras. Exemplo: SP.");
+        ValidarFormatoOpcional(erros, txtEdEmail.Text, EmailValido, "Informe um e-mail válido. Exemplo: cliente@email.com.");
+        ValidarFormatoOpcional(erros, txtEdNascimento.Text, DataValida, "Data de nascimento deve estar no formato dd/mm/aaaa.");
+        ValidarFormatoOpcional(erros, txtEdTelRes.Text, TelefoneValido, "Telefone residencial deve ter DDD + número.");
+        ValidarFormatoOpcional(erros, txtEdComercial.Text, TelefoneValido, "Telefone comercial deve ter DDD + número.");
+        ValidarFormatoOpcional(erros, txtEdCelular.Text, TelefoneValido, "Celular deve ter DDD + número.");
+    }
+
     private bool ValidarContratoNovo(string modalidadePagamento, string tipo, out string mensagem)
     {
         List<string> erros = new List<string>();
+        NormalizarFormatosNovo();
 
         if (CampoVazio(txtCliente.Text)) erros.Add("Informe o cliente.");
         if (CampoVazio(txtCPFCNPJ.Text)) erros.Add("Informe o CPF/CNPJ.");
@@ -335,6 +442,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         if (CampoVazio(tipo)) erros.Add("Selecione se o contrato é novo ou usado.");
         if (CampoVazio(ddlVendedor.Text)) erros.Add("Selecione o vendedor.");
         if (LerMoeda(txtValoVeiculo.Text) <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
+        ValidarFormatosNovo(erros);
 
         if (modalidadePagamento == "F")
         {
@@ -359,6 +467,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         List<string> erros = new List<string>();
         int contrato;
+        NormalizarFormatosEdicao();
 
         if (!Int32.TryParse((txtContrato.Text ?? "").Trim(), out contrato) || contrato <= 0) erros.Add("Informe um número de contrato válido para edição.");
         if (CampoVazio(txtEdCliente.Text)) erros.Add("Informe o cliente.");
@@ -369,6 +478,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         if (CampoVazio(modalidadePagamento)) erros.Add("Selecione a modalidade de pagamento.");
         if (CampoVazio(txtEdVendedor.Text)) erros.Add("Informe o vendedor.");
         if (LerMoeda(txtEdValorVeic.Text) <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
+        ValidarFormatosEdicao(erros);
 
         if (modalidadePagamento == "F")
         {
