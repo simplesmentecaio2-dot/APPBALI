@@ -230,6 +230,18 @@
       message: 'Data deve estar no formato dd/mm/aaaa.'
     },
     {
+      ids: ['txtNrParcelas', 'txtEdNumeroParcelas'],
+      placeholder: '1 a 120',
+      inputmode: 'numeric',
+      numericBlank: true,
+      maxLength: 3,
+      normalize: function (value) {
+        return digitsOnly(value).slice(0, 3);
+      },
+      validate: validInstallments,
+      message: 'Quantidade de parcelas deve ser um número entre 1 e 120.'
+    },
+    {
       ids: ['txtTelREsidencial', 'txtTelCom', 'txtCelular', 'txtEdTelRes', 'txtEdComercial', 'txtEdCelular'],
       placeholder: '(00) 00000-0000',
       inputmode: 'tel',
