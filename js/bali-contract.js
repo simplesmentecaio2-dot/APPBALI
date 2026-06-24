@@ -738,12 +738,28 @@
     var financeValue = parseMoney(financeField ? financeField.value : '');
     var balanceField = bySuffix(isEdit ? 'txtEdSaldoAvaliacao' : 'txtSaldoAvaliacao');
     var balanceValue = parseMoney(balanceField ? balanceField.value : '');
+    var entryField = bySuffix(isEdit ? 'txtEdEntrada' : 'txtEntrada');
+    var usedAppliedField = bySuffix(isEdit ? 'txtEdVALORUSADOAVAILACAO' : 'txtVlUtilzadoAvaliacao');
+    var usedValueField = bySuffix(isEdit ? 'txtEdValorUSADO' : 'txtCarroUsado');
+    var payoffField = bySuffix(isEdit ? 'txtEdQuitacao' : 'txtQuitacao');
+    var entryValue = parseMoney(entryField ? entryField.value : '');
+    var usedAppliedValue = parseMoney(usedAppliedField ? usedAppliedField.value : '');
+    var usedValue = parseMoney(usedValueField ? usedValueField.value : '');
+    var payoffValue = parseMoney(payoffField ? payoffField.value : '');
+
     if (showMessages) {
-      showFieldMessage(financeField, financeValue < 0 ? 'Valor calculado ficou negativo.' : '');
-      showFieldMessage(balanceField, balanceValue < 0 ? 'Valor calculado ficou negativo.' : '');
+      var financeMessage = financeValue < 0 ? 'Entrada + avaliação utilizada não podem superar o valor do veículo.' : '';
+      showFieldMessage(financeField, financeMessage);
+      showFieldMessage(entryField, financeMessage && entryValue > 0 ? financeMessage : '');
+      showFieldMessage(usedAppliedField, financeMessage && usedAppliedValue > 0 ? financeMessage : '');
+
+      var balanceMessage = balanceValue < 0 ? 'Quitação + valor utilizado não podem superar a avaliação do usado.' : '';
+      showFieldMessage(balanceField, balanceMessage);
+      showFieldMessage(payoffField, balanceMessage && payoffValue > 0 ? balanceMessage : '');
+      showFieldMessage(usedValueField, balanceMessage && usedValue > 0 ? balanceMessage : '');
     }
-    if (financeValue < 0) issues.push('Financiamento ficou negativo. Confira valor, entrada e avaliação utilizada.');
-    if (balanceValue < 0) issues.push('Saldo da avaliação ficou negativo. Confira avaliação, valor utilizado e quitação.');
+    if (financeValue < 0) issues.push('Financiamento ficou negativo: entrada + avaliação utilizada superam o valor do veículo.');
+    if (balanceValue < 0) issues.push('Saldo da avaliação ficou negativo: quitação + valor utilizado superam a avaliação do usado.');
 
     return issues;
   }

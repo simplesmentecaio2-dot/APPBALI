@@ -591,8 +591,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
             if (LerMoeda(txtVlParcelas.Text) <= 0) erros.Add("Valor da parcela deve ser maior que zero para financiamento.");
         }
 
-        if (LerMoeda(txtVlFinanciamento.Text) < 0) erros.Add("Financiamento ficou negativo. Confira valor do veículo, entrada e avaliação utilizada.");
-        if (LerMoeda(txtSaldoAvaliacao.Text) < 0) erros.Add("Saldo da avaliação ficou negativo. Confira avaliação, valor utilizado e quitação.");
+        if (LerMoeda(txtVlFinanciamento.Text) < 0) erros.Add("Financiamento ficou negativo: entrada + avaliação utilizada superam o valor do veículo.");
+        if (LerMoeda(txtSaldoAvaliacao.Text) < 0) erros.Add("Saldo da avaliação ficou negativo: quitação + valor utilizado superam a avaliação do usado.");
 
         if (erros.Count > 0)
         {
@@ -629,8 +629,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
             if (LerMoeda(txtEdValorParcela.Text) <= 0) erros.Add("Valor da parcela deve ser maior que zero para financiamento.");
         }
 
-        if (LerMoeda(txtEdFinanciamento.Text) < 0) erros.Add("Financiamento ficou negativo. Confira valor do veículo, entrada e avaliação utilizada.");
-        if (LerMoeda(txtEdSaldoAvaliacao.Text) < 0) erros.Add("Saldo da avaliação ficou negativo. Confira avaliação, valor utilizado e quitação.");
+        if (LerMoeda(txtEdFinanciamento.Text) < 0) erros.Add("Financiamento ficou negativo: entrada + avaliação utilizada superam o valor do veículo.");
+        if (LerMoeda(txtEdSaldoAvaliacao.Text) < 0) erros.Add("Saldo da avaliação ficou negativo: quitação + valor utilizado superam a avaliação do usado.");
 
         if (erros.Count > 0)
         {
