@@ -604,6 +604,13 @@ public partial class veiculos_contrato : System.Web.UI.Page
         return DateTime.TryParseExact((valor ?? "").Trim(), "dd/MM/yyyy", CulturaBrasil, DateTimeStyles.None, out data);
     }
 
+    private bool TentarLerDataBrasil(string valor, out DateTime data)
+    {
+        string texto = (valor ?? "").Trim();
+        return DateTime.TryParseExact(texto, "dd/MM/yyyy", CulturaBrasil, DateTimeStyles.None, out data)
+            || DateTime.TryParse(texto, CulturaBrasil, DateTimeStyles.None, out data);
+    }
+
     private bool TelefoneValido(string valor)
     {
         string digitos = SomenteDigitos(valor);
@@ -721,8 +728,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private bool ObterPeriodoConsulta(string inicioTexto, string fimTexto, out DateTime inicio, out DateTime fim)
     {
-        bool inicioOk = DateTime.TryParse(inicioTexto, CulturaBrasil, DateTimeStyles.None, out inicio);
-        bool fimOk = DateTime.TryParse(fimTexto, CulturaBrasil, DateTimeStyles.None, out fim);
+        bool inicioOk = TentarLerDataBrasil(inicioTexto, out inicio);
+        bool fimOk = TentarLerDataBrasil(fimTexto, out fim);
 
         if (!inicioOk || !fimOk)
         {
@@ -807,16 +814,15 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void ObterPeriodoBI(out DateTime inicio, out DateTime fim)
     {
-        CultureInfo cultura = CulturaBrasil;
         DateTime inicioPadrao = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
         DateTime fimPadrao = inicioPadrao.AddMonths(1).AddDays(-1);
 
-        if (!DateTime.TryParse(txtBiDtInicial.Text, cultura, DateTimeStyles.None, out inicio))
+        if (!TentarLerDataBrasil(txtBiDtInicial.Text, out inicio))
         {
             inicio = inicioPadrao;
         }
 
-        if (!DateTime.TryParse(txtBiDtFinal.Text, cultura, DateTimeStyles.None, out fim))
+        if (!TentarLerDataBrasil(txtBiDtFinal.Text, out fim))
         {
             fim = fimPadrao;
         }
