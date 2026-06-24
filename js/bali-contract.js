@@ -1470,7 +1470,9 @@
 
     var progress = nav.querySelector('.contract-section-progress span');
     if (progress && buttons.length) {
-      progress.style.width = Math.round((completed / buttons.length) * 100) + '%';
+      var percent = Math.round((completed / buttons.length) * 100);
+      progress.style.width = percent + '%';
+      if (progress.parentNode) progress.parentNode.setAttribute('aria-valuenow', String(percent));
     }
 
     var checklist = getWizardChecklist();
@@ -1771,7 +1773,12 @@
     if (nav) {
       Array.prototype.slice.call(nav.querySelectorAll('[data-section-index]')).forEach(function (button) {
         removeClass(button, 'is-active');
-        if (parseInt(button.getAttribute('data-section-index'), 10) === contractStepIndex) addClass(button, 'is-active');
+        if (parseInt(button.getAttribute('data-section-index'), 10) === contractStepIndex) {
+          addClass(button, 'is-active');
+          button.setAttribute('aria-current', 'step');
+        } else {
+          button.removeAttribute('aria-current');
+        }
       });
     }
 
@@ -1806,7 +1813,7 @@
 
     if (nav.getAttribute('data-section-signature') !== signature) {
       nav.setAttribute('data-section-signature', signature);
-      nav.innerHTML = '<div class="contract-section-nav-head"><span>Etapas do contrato</span><small>Acompanhe o preenchimento de cada bloco.</small><div class="contract-section-progress" aria-hidden="true"><span></span></div></div><div class="contract-section-nav-steps"></div>';
+      nav.innerHTML = '<div class="contract-section-nav-head"><span>Etapas do contrato</span><small>Acompanhe o preenchimento de cada bloco.</small><div class="contract-section-progress" role="progressbar" aria-label="Progresso do contrato" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div></div><div class="contract-section-nav-steps"></div>';
       var steps = nav.querySelector('.contract-section-nav-steps');
       sections.forEach(function (section, index) {
         var match = /contract-section-([a-z]+)/.exec(section.className || '');
