@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sistema de Ramais</title>
-    <link href="ramais.css?v=20260624" rel="stylesheet" />
+    <link href="ramais.css?v=20260624-ci-ramais2" rel="stylesheet" />
 </head>
 <body class="ramais-page">
     <form id="form1" runat="server">
@@ -42,6 +42,11 @@
                         <p>Consulta e manutenção dos contatos por loja, setor e colaborador.</p>
                     </div>
                     <div class="hero-actions">
+                        <div class="brand-strip" aria-label="Marcas atendidas">
+                            <span class="brand-chip fiat"><img src="../img/logobali.png" alt="Bali Fiat" /></span>
+                            <span class="brand-chip jeep"><img src="../img/logojeep.png" alt="Bali Jeep" /></span>
+                            <span class="brand-chip byd"><img src="../img/bydbranco.png" alt="Bali BYD" /></span>
+                        </div>
                         <a class="secondary-link" href="../Intranet/index.html">Voltar</a>
                         <a class="primary-link" href="#ramais">Novo ramal</a>
                     </div>
@@ -167,7 +172,7 @@
                                 <span class="eyebrow">Cadastro</span>
                                 <h2>Lojas</h2>
                             </div>
-                                    <asp:Button ID="btnNovaLoja" runat="server" Text="Nova loja" CssClass="secondary-button" OnClick="btnNovaLoja_Click" />
+                            <asp:Button ID="btnNovaLoja" runat="server" Text="Nova loja" CssClass="secondary-button" OnClick="btnNovaLoja_Click" />
                         </div>
 
                         <asp:HiddenField ID="hfLojaId" runat="server" />

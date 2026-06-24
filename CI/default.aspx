@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunicação Interna - CI</title>
-    <link href="ci.css?v=20260624" rel="stylesheet" />
+    <link href="ci.css?v=20260624-ci-ramais2" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -31,9 +31,16 @@
                     <div>
                         <span class="eyebrow">Documento interno</span>
                         <h1>Comunicação Interna</h1>
-                        <p>Cadastre, consulte e imprima CIs padronizadas por marca.</p>
+                        <p>Cadastre, consulte e imprima comunicações internas padronizadas por marca.</p>
                     </div>
-                    <a class="primary-link" href="#cadastro">Criar CI</a>
+                    <div class="hero-side">
+                        <div class="brand-strip" aria-label="Marcas atendidas">
+                            <span class="brand-chip fiat"><img src="../img/logobali.png" alt="Bali Fiat" /></span>
+                            <span class="brand-chip jeep"><img src="../img/logojeep.png" alt="Bali Jeep" /></span>
+                            <span class="brand-chip byd"><img src="../img/bydbranco.png" alt="Bali BYD" /></span>
+                        </div>
+                        <a class="primary-link" href="#cadastro">Criar CI</a>
+                    </div>
                 </header>
 
                 <asp:Panel ID="pnlMensagem" runat="server" CssClass="form-message" Visible="false">
@@ -93,7 +100,7 @@
                         <label>Senha para editar ou cancelar
                             <asp:TextBox ID="txtSenhaEdicao" runat="server" CssClass="text-field" TextMode="Password" autocomplete="current-password"></asp:TextBox>
                         </label>
-                        <small>Informe a senha para carregar uma CI em edição ou cancelar um documento. Após liberar a edição, o salvamento fica autorizado nessa sessão.</small>
+                        <small>Informe a senha para editar ou cancelar uma CI. Depois da liberação, você pode salvar a alteração nessa mesma sessão.</small>
                     </div>
 
                     <div class="table-wrap">

@@ -492,8 +492,14 @@ public partial class ramais_default : System.Web.UI.Page
         string mensagem = ex.Message;
         mensagem = mensagem.Replace("Ja ", "Já ");
         mensagem = mensagem.Replace("Nao ", "Não ");
+        mensagem = mensagem.Replace("nao ", "não ");
         mensagem = mensagem.Replace("possivel", "possível");
         mensagem = mensagem.Replace("numero", "número");
+        mensagem = mensagem.Replace("obrigatorios", "obrigatórios");
+        mensagem = mensagem.Replace("obrigatorio", "obrigatório");
+        mensagem = mensagem.Replace("alteracao", "alteração");
+        mensagem = mensagem.Replace("informacao", "informação");
+        mensagem = mensagem.Replace("exclusao", "exclusão");
         return mensagem;
     }
 }

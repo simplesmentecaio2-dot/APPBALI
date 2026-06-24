@@ -69,21 +69,24 @@ public partial class ci_print : System.Web.UI.Page
 
         if (marca.IndexOf("Fiat", StringComparison.OrdinalIgnoreCase) >= 0)
         {
-            imgLogo.ImageUrl = "../img/LogoFiat.png";
+            imgLogo.ImageUrl = "../img/logobali.png";
+            imgLogo.AlternateText = "Bali Fiat";
             imgLogo.Visible = true;
             return;
         }
 
         if (marca.IndexOf("Jeep", StringComparison.OrdinalIgnoreCase) >= 0)
         {
-            imgLogo.ImageUrl = "../Intranet/resources/imagens/jeeplogosite.png";
+            imgLogo.ImageUrl = "../img/logojeep.png";
+            imgLogo.AlternateText = "Bali Jeep";
             imgLogo.Visible = true;
             return;
         }
 
         if (marca.IndexOf("BYD", StringComparison.OrdinalIgnoreCase) >= 0)
         {
-            imgLogo.ImageUrl = "../Intranet/resources/imagens/BYD.png";
+            imgLogo.ImageUrl = "../img/bydbranco.png";
+            imgLogo.AlternateText = "Bali BYD";
             imgLogo.Visible = true;
             return;
         }

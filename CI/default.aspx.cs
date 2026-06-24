@@ -339,7 +339,17 @@ public partial class ci_default : System.Web.UI.Page
     private string FormatarErro(Exception ex)
     {
         string mensagem = ex.Message;
+        mensagem = mensagem.Replace("Ja ", "Já ");
+        mensagem = mensagem.Replace("Nao ", "Não ");
+        mensagem = mensagem.Replace("nao ", "não ");
+        mensagem = mensagem.Replace("possivel", "possível");
+        mensagem = mensagem.Replace("numero", "número");
         mensagem = mensagem.Replace("obrigatorios", "obrigatórios");
+        mensagem = mensagem.Replace("obrigatorio", "obrigatório");
+        mensagem = mensagem.Replace("alteracao", "alteração");
+        mensagem = mensagem.Replace("informacao", "informação");
+        mensagem = mensagem.Replace("comunicacao", "comunicação");
+        mensagem = mensagem.Replace("exclusao", "exclusão");
         return mensagem;
     }
 }

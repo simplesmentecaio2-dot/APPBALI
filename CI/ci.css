@@ -174,6 +174,52 @@ a {
   background: #e9eef6;
 }
 
+.hero-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.brand-strip {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.brand-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 86px;
+  height: 36px;
+  border-radius: 8px;
+  padding: 7px 12px;
+  background: #172033;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+
+.brand-chip img {
+  display: block;
+  max-width: 80px;
+  max-height: 20px;
+  object-fit: contain;
+}
+
+.brand-chip.fiat {
+  background: linear-gradient(135deg, #8f1f2c, #c9333a);
+}
+
+.brand-chip.jeep {
+  background: linear-gradient(135deg, #174c32, #287246);
+}
+
+.brand-chip.byd {
+  background: linear-gradient(135deg, #0d4f8f, #1969b3);
+}
+
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -402,6 +448,20 @@ label {
   object-fit: contain;
 }
 
+.print-logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 190px;
+  min-height: 74px;
+  border-radius: 10px;
+  padding: 12px 18px;
+  color: #fff;
+  background: var(--brand);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
 .print-title {
   text-align: right;
 }
@@ -530,9 +590,14 @@ label {
   .hero,
   .panel-header,
   .form-actions,
+  .hero-side,
   .sidebar {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .brand-strip {
+    justify-content: flex-start;
   }
 
   .summary-grid {
