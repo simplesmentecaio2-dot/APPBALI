@@ -1,6 +1,8 @@
 const SHORTCUTS_API = 'manutencao-links.ashx?AspxAutoDetectCookieSupport=1';
 const SESSION_KEY = 'centralBaliMaintenanceUnlocked';
 const MAINTENANCE_PASSWORD = '@bali2025';
+const DEFAULT_NOTICE_IMAGE = 'resources/imagens/AVISOIMPORTANTE2.jpg';
+const NOTICE_FILE_LIMIT = 8 * 1024 * 1024;
 const CURATED_ICONS = [
   { value: 'bi-grid-1x2-fill', label: 'Atalho geral' },
   { value: 'bi-car-front-fill', label: 'Veiculo / vendas' },
@@ -64,6 +66,15 @@ const maintenanceListSection = document.getElementById('maintenanceListSection')
 const maintenanceNewShortcut = document.getElementById('maintenanceNewShortcut');
 const maintenanceResetDefaults = document.getElementById('maintenanceResetDefaults');
 const maintenanceCancelEdit = document.getElementById('maintenanceCancelEdit');
+const noticeModal = document.getElementById('noticeModal');
+const noticeImage = document.getElementById('noticeImage');
+const noticePreviewImage = document.getElementById('noticePreviewImage');
+const noticeMaintenanceForm = document.getElementById('noticeMaintenanceForm');
+const noticeImageFile = document.getElementById('noticeImageFile');
+const noticeAutoOpen = document.getElementById('noticeAutoOpen');
+const noticeConfigSummary = document.getElementById('noticeConfigSummary');
+const noticeMaintenanceStatus = document.getElementById('noticeMaintenanceStatus');
+const noticeResetPreview = document.getElementById('noticeResetPreview');
 
 let activeSection = 'all';
 let sections = [];
@@ -71,6 +82,7 @@ let allSections = [];
 let cards = [];
 let defaultShortcuts = [];
 let shortcuts = [];
+let noticeConfig = { image: DEFAULT_NOTICE_IMAGE, autoOpen: false };
 
 function normalizeText(value) {
   return (value || '')
@@ -103,6 +115,51 @@ function createShortcutId() {
 
 function safeTrim(value) {
   return (value || '').toString().trim();
+}
+
+function sanitizeNoticeConfig(raw) {
+  const source = raw || {};
+  return {
+    image: safeTrim(source.image) || DEFAULT_NOTICE_IMAGE,
+    autoOpen: source.autoOpen === true || source.autoOpen === 'true'
+  };
+}
+
+function cacheBustUrl(url, shouldBust) {
+  if (!shouldBust) return url;
+  return `${url}${url.includes('?') ? '&' : '?'}v=${Date.now()}`;
+}
+
+function setNoticeStatus(message, type) {
+  if (!noticeMaintenanceStatus) return;
+  noticeMaintenanceStatus.textContent = message || '';
+  noticeMaintenanceStatus.classList.toggle('is-ok', type === 'ok');
+  noticeMaintenanceStatus.classList.toggle('is-error', type === 'error');
+}
+
+function updateNoticeSummary() {
+  if (!noticeConfigSummary) return;
+  noticeConfigSummary.textContent = noticeConfig.autoOpen
+    ? 'O aviso está configurado para abrir automaticamente ao acessar a Intranet.'
+    : 'O aviso aparece somente pelo botão lateral direito.';
+}
+
+function applyNoticeConfig(config, options = {}) {
+  noticeConfig = sanitizeNoticeConfig(config);
+  const imageUrl = cacheBustUrl(noticeConfig.image, Boolean(options.cacheBust));
+
+  if (noticeImage) noticeImage.src = imageUrl;
+  if (noticePreviewImage) noticePreviewImage.src = imageUrl;
+  if (noticeAutoOpen) noticeAutoOpen.checked = noticeConfig.autoOpen;
+
+  updateNoticeSummary();
+}
+
+function openNoticeAutomatically() {
+  if (!noticeConfig.autoOpen || !noticeModal || typeof bootstrap === 'undefined') return;
+  window.setTimeout(() => {
+    bootstrap.Modal.getOrCreateInstance(noticeModal).show();
+  }, 350);
 }
 
 function getShortcutSections() {
@@ -159,6 +216,9 @@ async function loadShortcuts() {
 
     const payload = await response.json();
     const source = Array.isArray(payload) ? payload : payload.shortcuts;
+    if (!Array.isArray(payload)) {
+      applyNoticeConfig(payload.notice);
+    }
 
     if (!Array.isArray(source) || !source.length) {
       return defaultShortcuts.map(cloneShortcut);
@@ -167,6 +227,48 @@ async function loadShortcuts() {
     return source.map(sanitizeShortcut).filter((shortcut) => shortcut.title && shortcut.section);
   } catch (error) {
     return defaultShortcuts.map(cloneShortcut);
+  }
+}
+
+async function saveNoticeConfig(event) {
+  event.preventDefault();
+  const file = noticeImageFile && noticeImageFile.files ? noticeImageFile.files[0] : null;
+
+  if (file && file.size > NOTICE_FILE_LIMIT) {
+    setNoticeStatus('Imagem muito grande. Use um arquivo de até 8 MB.', 'error');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('mode', 'notice');
+  formData.append('password', MAINTENANCE_PASSWORD);
+  formData.append('autoOpen', noticeAutoOpen && noticeAutoOpen.checked ? 'true' : 'false');
+  if (file) formData.append('noticeImageFile', file);
+
+  setNoticeStatus('Salvando aviso...', '');
+
+  try {
+    const response = await fetch(SHORTCUTS_API, {
+      method: 'POST',
+      credentials: 'same-origin',
+      body: formData
+    });
+
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok || payload.ok === false) {
+      throw new Error(payload.message || 'Falha ao salvar aviso.');
+    }
+
+    applyNoticeConfig(payload.notice || {
+      image: noticeConfig.image,
+      autoOpen: noticeAutoOpen && noticeAutoOpen.checked
+    }, { cacheBust: true });
+
+    if (noticeImageFile) noticeImageFile.value = '';
+    setNoticeStatus('Aviso salvo com sucesso.', 'ok');
+  } catch (error) {
+    setNoticeStatus(error.message || 'Não foi possível salvar o aviso.', 'error');
   }
 }
 
@@ -933,8 +1035,42 @@ function initializeMaintenance() {
     maintenanceResetDefaults.addEventListener('click', restoreDefaults);
   }
 
+  if (noticeMaintenanceForm) {
+    noticeMaintenanceForm.addEventListener('submit', saveNoticeConfig);
+  }
+
+  if (noticeImageFile) {
+    noticeImageFile.addEventListener('change', () => {
+      const file = noticeImageFile.files ? noticeImageFile.files[0] : null;
+      if (!file) {
+        if (noticePreviewImage) noticePreviewImage.src = noticeConfig.image;
+        setNoticeStatus('', '');
+        return;
+      }
+
+      if (file.size > NOTICE_FILE_LIMIT) {
+        setNoticeStatus('Imagem muito grande. Use um arquivo de até 8 MB.', 'error');
+        noticeImageFile.value = '';
+        if (noticePreviewImage) noticePreviewImage.src = noticeConfig.image;
+        return;
+      }
+
+      if (noticePreviewImage) noticePreviewImage.src = URL.createObjectURL(file);
+      setNoticeStatus('Prévia carregada. Clique em salvar aviso para gravar.', '');
+    });
+  }
+
+  if (noticeResetPreview) {
+    noticeResetPreview.addEventListener('click', () => {
+      if (noticeImageFile) noticeImageFile.value = '';
+      applyNoticeConfig(noticeConfig, { cacheBust: true });
+      setNoticeStatus('Configuração recarregada.', 'ok');
+    });
+  }
+
   renderMaintenanceIconGrid('');
   updateMaintenanceIconPreview();
+  applyNoticeConfig(noticeConfig);
 }
 
 if (searchInput) {
@@ -1003,6 +1139,7 @@ async function initializePage() {
 
   shortcuts = await loadShortcuts();
   renderShortcuts();
+  openNoticeAutomatically();
 }
 
 initializePage();

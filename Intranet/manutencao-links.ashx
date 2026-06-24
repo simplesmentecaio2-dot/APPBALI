@@ -10,6 +10,7 @@ using System.Web.Script.Serialization;
 public class IntranetManutencaoLinks : IHttpHandler
 {
     private const string SenhaManutencao = "@bali2025";
+    private const int TamanhoMaximoAviso = 8 * 1024 * 1024;
 
     public bool IsReusable
     {
@@ -20,43 +21,52 @@ public class IntranetManutencaoLinks : IHttpHandler
     {
         context.Response.ContentType = "application/json";
         context.Response.ContentEncoding = Encoding.UTF8;
+        context.Response.TrySkipIisCustomErrors = true;
 
         try
         {
             if (context.Request.HttpMethod.Equals("GET", StringComparison.OrdinalIgnoreCase))
             {
-                LerAtalhos(context);
+                LerManutencao(context);
                 return;
             }
 
             if (context.Request.HttpMethod.Equals("POST", StringComparison.OrdinalIgnoreCase))
             {
+                string modo = Limpar(context.Request.Form["mode"]);
+                if (modo.Equals("notice", StringComparison.OrdinalIgnoreCase))
+                {
+                    GravarAviso(context);
+                    return;
+                }
+
                 GravarAtalhos(context);
                 return;
             }
 
             context.Response.StatusCode = 405;
-            EscreverJson(context, new { ok = false, message = "Metodo nao permitido." });
+            EscreverJson(context, new { ok = false, message = "Método não permitido." });
         }
         catch (Exception ex)
         {
             context.Response.StatusCode = 500;
-            EscreverJson(context, new { ok = false, message = "Erro ao processar manutencao.", detail = ex.Message });
+            EscreverJson(context, new { ok = false, message = "Erro ao processar manutenção.", detail = ex.Message });
         }
     }
 
-    private void LerAtalhos(HttpContext context)
+    private void LerManutencao(HttpContext context)
     {
-        string arquivo = CaminhoArquivo(context);
-
-        if (!File.Exists(arquivo))
+        bool existe;
+        string atualizadoEm;
+        List<Atalho> atalhos = CarregarAtalhos(context, out existe, out atualizadoEm);
+        EscreverJson(context, new
         {
-            EscreverJson(context, new { ok = true, exists = false, shortcuts = new List<Atalho>() });
-            return;
-        }
-
-        string json = File.ReadAllText(arquivo, Encoding.UTF8);
-        context.Response.Write(json);
+            ok = true,
+            exists = existe,
+            shortcuts = atalhos,
+            updatedAt = atualizadoEm,
+            notice = CarregarAviso(context)
+        });
     }
 
     private void GravarAtalhos(HttpContext context)
@@ -75,7 +85,7 @@ public class IntranetManutencaoLinks : IHttpHandler
         if (pedido == null || !SenhaManutencao.Equals(pedido.password))
         {
             context.Response.StatusCode = 403;
-            EscreverJson(context, new { ok = false, message = "Senha invalida." });
+            EscreverJson(context, new { ok = false, message = "Senha inválida." });
             return;
         }
 
@@ -116,22 +126,202 @@ public class IntranetManutencaoLinks : IHttpHandler
             });
         }
 
-        string pasta = context.Server.MapPath("~/intranet/resources/data");
-        if (!Directory.Exists(pasta))
-        {
-            Directory.CreateDirectory(pasta);
-        }
+        GarantirPastaDados(context);
 
-        string arquivo = CaminhoArquivo(context);
-        string json = serializer.Serialize(new { ok = true, exists = true, shortcuts = atalhosLimpos, updatedAt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") });
+        AvisoConfig aviso = CarregarAviso(context);
+        string arquivo = CaminhoArquivoAtalhos(context);
+        string json = serializer.Serialize(new { ok = true, exists = true, shortcuts = atalhosLimpos, updatedAt = DataAtual(), notice = aviso });
         File.WriteAllText(arquivo, json, Encoding.UTF8);
 
         EscreverJson(context, new { ok = true, count = atalhosLimpos.Count });
     }
 
-    private string CaminhoArquivo(HttpContext context)
+    private void GravarAviso(HttpContext context)
+    {
+        string senha = context.Request.Form["password"];
+        if (!SenhaManutencao.Equals(senha))
+        {
+            context.Response.StatusCode = 403;
+            EscreverJson(context, new { ok = false, message = "Senha inválida." });
+            return;
+        }
+
+        AvisoConfig aviso = CarregarAviso(context);
+        aviso.autoOpen = ValorBooleano(context.Request.Form["autoOpen"]);
+
+        HttpPostedFile arquivoEnviado = context.Request.Files["noticeImageFile"];
+        if (arquivoEnviado != null && arquivoEnviado.ContentLength > 0)
+        {
+            if (arquivoEnviado.ContentLength > TamanhoMaximoAviso)
+            {
+                context.Response.StatusCode = 400;
+                EscreverJson(context, new { ok = false, message = "Imagem muito grande. Use um arquivo de até 8 MB." });
+                return;
+            }
+
+            string extensao = Path.GetExtension(arquivoEnviado.FileName).ToLowerInvariant();
+            if (!ExtensaoPermitida(extensao))
+            {
+                context.Response.StatusCode = 400;
+                EscreverJson(context, new { ok = false, message = "Formato de imagem não permitido." });
+                return;
+            }
+
+            string pastaImagens = context.Server.MapPath("~/intranet/resources/imagens");
+            if (!Directory.Exists(pastaImagens))
+            {
+                Directory.CreateDirectory(pastaImagens);
+            }
+
+            string nomeArquivo = "aviso-intranet" + extensao;
+            string destino = Path.Combine(pastaImagens, nomeArquivo);
+            arquivoEnviado.SaveAs(destino);
+            aviso.image = "resources/imagens/" + nomeArquivo;
+        }
+
+        aviso.updatedAt = DataAtual();
+        SalvarAviso(context, aviso);
+        EscreverJson(context, new { ok = true, notice = aviso });
+    }
+
+    private List<Atalho> CarregarAtalhos(HttpContext context, out bool existe, out string atualizadoEm)
+    {
+        existe = false;
+        atualizadoEm = String.Empty;
+        string arquivo = CaminhoArquivoAtalhos(context);
+
+        if (!File.Exists(arquivo))
+        {
+            return new List<Atalho>();
+        }
+
+        existe = true;
+        string json = File.ReadAllText(arquivo, Encoding.UTF8);
+        if (Limpar(json).Length == 0)
+        {
+            return new List<Atalho>();
+        }
+
+        JavaScriptSerializer serializer = new JavaScriptSerializer();
+        serializer.MaxJsonLength = int.MaxValue;
+
+        try
+        {
+            EnvelopeAtalhos envelope = serializer.Deserialize<EnvelopeAtalhos>(json);
+            if (envelope != null && envelope.shortcuts != null)
+            {
+                atualizadoEm = Limpar(envelope.updatedAt);
+                return envelope.shortcuts;
+            }
+        }
+        catch
+        {
+        }
+
+        try
+        {
+            List<Atalho> lista = serializer.Deserialize<List<Atalho>>(json);
+            if (lista != null)
+            {
+                return lista;
+            }
+        }
+        catch
+        {
+        }
+
+        return new List<Atalho>();
+    }
+
+    private AvisoConfig CarregarAviso(HttpContext context)
+    {
+        string arquivo = CaminhoArquivoAviso(context);
+        AvisoConfig padrao = AvisoPadrao();
+
+        if (!File.Exists(arquivo))
+        {
+            return padrao;
+        }
+
+        string json = File.ReadAllText(arquivo, Encoding.UTF8);
+        if (Limpar(json).Length == 0)
+        {
+            return padrao;
+        }
+
+        JavaScriptSerializer serializer = new JavaScriptSerializer();
+        serializer.MaxJsonLength = int.MaxValue;
+
+        try
+        {
+            AvisoConfig aviso = serializer.Deserialize<AvisoConfig>(json);
+            if (aviso == null)
+            {
+                return padrao;
+            }
+
+            aviso.image = Limpar(aviso.image).Length == 0 ? padrao.image : Limpar(aviso.image);
+            return aviso;
+        }
+        catch
+        {
+            return padrao;
+        }
+    }
+
+    private void SalvarAviso(HttpContext context, AvisoConfig aviso)
+    {
+        GarantirPastaDados(context);
+
+        JavaScriptSerializer serializer = new JavaScriptSerializer();
+        serializer.MaxJsonLength = int.MaxValue;
+        string json = serializer.Serialize(aviso);
+        File.WriteAllText(CaminhoArquivoAviso(context), json, Encoding.UTF8);
+    }
+
+    private AvisoConfig AvisoPadrao()
+    {
+        return new AvisoConfig
+        {
+            image = "resources/imagens/AVISOIMPORTANTE2.jpg",
+            autoOpen = false,
+            updatedAt = String.Empty
+        };
+    }
+
+    private void GarantirPastaDados(HttpContext context)
+    {
+        string pasta = context.Server.MapPath("~/intranet/resources/data");
+        if (!Directory.Exists(pasta))
+        {
+            Directory.CreateDirectory(pasta);
+        }
+    }
+
+    private string CaminhoArquivoAtalhos(HttpContext context)
     {
         return context.Server.MapPath("~/intranet/resources/data/shortcuts.json");
+    }
+
+    private string CaminhoArquivoAviso(HttpContext context)
+    {
+        return context.Server.MapPath("~/intranet/resources/data/notice.json");
+    }
+
+    private string DataAtual()
+    {
+        return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+    }
+
+    private bool ValorBooleano(string valor)
+    {
+        string limpo = Limpar(valor).ToLowerInvariant();
+        return limpo == "true" || limpo == "1" || limpo == "on" || limpo == "sim";
+    }
+
+    private bool ExtensaoPermitida(string extensao)
+    {
+        return extensao == ".jpg" || extensao == ".jpeg" || extensao == ".png" || extensao == ".gif" || extensao == ".webp";
     }
 
     private bool SecaoValida(string secao)
@@ -177,6 +367,15 @@ public class IntranetManutencaoLinks : IHttpHandler
         public List<Atalho> shortcuts { get; set; }
     }
 
+    public class EnvelopeAtalhos
+    {
+        public bool ok { get; set; }
+        public bool exists { get; set; }
+        public List<Atalho> shortcuts { get; set; }
+        public string updatedAt { get; set; }
+        public AvisoConfig notice { get; set; }
+    }
+
     public class Atalho
     {
         public string id { get; set; }
@@ -186,5 +385,12 @@ public class IntranetManutencaoLinks : IHttpHandler
         public string url { get; set; }
         public string image { get; set; }
         public string icon { get; set; }
+    }
+
+    public class AvisoConfig
+    {
+        public string image { get; set; }
+        public bool autoOpen { get; set; }
+        public string updatedAt { get; set; }
     }
 }

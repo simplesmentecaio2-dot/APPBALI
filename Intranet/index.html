@@ -9,7 +9,7 @@
   <link rel="icon" href="resources/imagens/favicon.ico">
   <link rel="stylesheet" href="resources/css/bootstrap.min.css">
   <link rel="stylesheet" href="../css/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="resources/css/index.css?v=20260623-reorder-maintenance">
+  <link rel="stylesheet" href="resources/css/index.css?v=20260624-notice-maintenance">
 </head>
 <body>
   <div class="app-shell">
@@ -1324,6 +1324,36 @@
                     </div>
                   </div>
 
+                  <div class="maintenance-notice-card">
+                    <div class="maintenance-list-head">
+                      <div>
+                        <h3>Aviso da Intranet</h3>
+                        <p id="noticeConfigSummary">Carregando configura&ccedil;&atilde;o do aviso...</p>
+                        <p class="maintenance-order-help">Troque a imagem exibida no bot&atilde;o lateral e defina se o aviso deve abrir automaticamente.</p>
+                      </div>
+                    </div>
+                    <form id="noticeMaintenanceForm" class="maintenance-notice-form" autocomplete="off">
+                      <div class="notice-preview-frame">
+                        <img id="noticePreviewImage" src="resources/imagens/AVISOIMPORTANTE2.jpg" alt="Pr&eacute;via do aviso">
+                      </div>
+                      <div class="notice-fields">
+                        <div class="form-field">
+                          <label for="noticeImageFile">Nova imagem do aviso</label>
+                          <input id="noticeImageFile" name="noticeImageFile" type="file" accept=".jpg,.jpeg,.png,.gif,.webp,image/jpeg,image/png,image/gif,image/webp">
+                        </div>
+                        <label class="maintenance-toggle">
+                          <input id="noticeAutoOpen" type="checkbox">
+                          <span>Abrir automaticamente ao acessar a Intranet</span>
+                        </label>
+                        <div class="maintenance-form-actions">
+                          <button type="submit"><i class="bi bi-check2-circle"></i> Salvar aviso</button>
+                          <button type="button" id="noticeResetPreview" class="secondary"><i class="bi bi-arrow-counterclockwise"></i> Recarregar</button>
+                        </div>
+                        <p id="noticeMaintenanceStatus" class="maintenance-status" aria-live="polite"></p>
+                      </div>
+                    </form>
+                  </div>
+
                   <div class="maintenance-list-card">
                     <div class="maintenance-list-head">
                       <div>
@@ -1367,7 +1397,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
         </div>
         <div class="modal-body">
-          <img class="img-fluid rounded-4" src="resources/imagens/AVISOIMPORTANTE2.jpg" alt="Aviso importante">
+          <img id="noticeImage" class="img-fluid rounded-4" src="resources/imagens/AVISOIMPORTANTE2.jpg" alt="Aviso importante">
         </div>
       </div>
     </div>
@@ -1375,6 +1405,6 @@
 
   <script src="resources/js/bootstrap.bundle.min.js" defer></script>
   <script src="../js/bootstrap-icons-list.js?v=20260623-reorder-maintenance" defer></script>
-  <script src="resources/js/index.js?v=20260623-reorder-maintenance" defer></script>
+  <script src="resources/js/index.js?v=20260624-notice-maintenance" defer></script>
 </body>
 </html>
