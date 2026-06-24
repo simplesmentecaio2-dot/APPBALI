@@ -180,9 +180,17 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private string MensagemErroProcedure(string obs, string codigo)
     {
-        string retorno = String.IsNullOrEmpty(obs) ? "sem retorno" : obs;
-        string contrato = String.IsNullOrEmpty(codigo) ? "sem código" : codigo;
-        return "Não foi possível gravar o contrato. Retorno do banco: " + retorno + " (" + contrato + "). Confira campos obrigatórios, valores e vendedor.";
+        string retorno = ResumirRetornoBanco(obs);
+        string contrato = String.IsNullOrEmpty(codigo) ? "sem código" : LimparLog(codigo);
+        return "Não foi possível gravar o contrato. O banco retornou: " + retorno + " (" + contrato + "). Confira campos obrigatórios, valores, vendedor e tente novamente.";
+    }
+
+    private string ResumirRetornoBanco(string retorno)
+    {
+        string texto = LimparLog(retorno);
+        if (String.IsNullOrEmpty(texto)) return "sem retorno";
+        if (texto.Length > 180) return texto.Substring(0, 180) + "...";
+        return texto;
     }
 
     private string CacheVersaoContrato(string area)
