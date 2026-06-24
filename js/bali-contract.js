@@ -571,10 +571,30 @@
     host.setAttribute('data-contract-period-bound', 'true');
 
     Array.prototype.slice.call(host.querySelectorAll('[data-period]')).forEach(function (button) {
+      button.setAttribute('aria-pressed', 'false');
       button.addEventListener('click', function () {
-        setPeriodFields(startField, endField, button.getAttribute('data-period'));
+        var type = button.getAttribute('data-period');
+        setPeriodFields(startField, endField, type);
+        updatePeriodShortcutState(host, type);
         showPeriodMessage(host, '');
       });
+    });
+
+    [startField, endField].forEach(function (field) {
+      if (!field || field.getAttribute('data-contract-period-manual') === 'true') return;
+      field.setAttribute('data-contract-period-manual', 'true');
+      field.addEventListener('input', function () { updatePeriodShortcutState(host, ''); });
+      field.addEventListener('change', function () { updatePeriodShortcutState(host, ''); });
+    });
+  }
+
+  function updatePeriodShortcutState(host, activeType) {
+    if (!host || !host.querySelectorAll) return;
+    Array.prototype.slice.call(host.querySelectorAll('[data-period]')).forEach(function (button) {
+      var active = activeType && button.getAttribute('data-period') === activeType;
+      if (active) addClass(button, 'is-active');
+      else removeClass(button, 'is-active');
+      button.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
   }
 

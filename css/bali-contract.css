@@ -2062,6 +2062,12 @@ body.bali-contract-page *::after {
   color: #263241;
 }
 
+.bali-contract-page .contract-period-chip.is-active {
+  border-color: var(--contract-brand-ring);
+  background: var(--contract-brand-soft);
+  color: var(--contract-brand-strong);
+}
+
 .bali-contract-page .contract-period-warning {
   display: none;
   flex-basis: 100%;
