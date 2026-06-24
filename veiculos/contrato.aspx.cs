@@ -1516,6 +1516,14 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void select_Tab_ConsultaPeriodo(string paginaImpressao, string tipo, DateTime dtInicio, DateTime dtFim, out string tabelaHtml)
     {
+        string cacheKey = "contrato-consulta:" + MarcaContrato + ":" + tipo + ":" + dtInicio.ToString("yyyyMMdd") + ":" + dtFim.ToString("yyyyMMdd");
+        string tabelaCache = HttpRuntime.Cache[cacheKey] as string;
+        if (!String.IsNullOrEmpty(tabelaCache))
+        {
+            tabelaHtml = tabelaCache;
+            return;
+        }
+
         string tableId = tipo == "VN" ? "tblConsultaProcesso" : "tblConsultaProcesso2";
         StringBuilder html = new StringBuilder();
         html.Append("<table cellpadding='0' cellspacing='0' border='0' id='")
@@ -1595,6 +1603,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
         html.Append("</tbody></table>");
         tabelaHtml = html.ToString();
+        HttpRuntime.Cache.Insert(cacheKey, tabelaHtml, null, DateTime.Now.AddSeconds(45), System.Web.Caching.Cache.NoSlidingExpiration);
     }
 
 
