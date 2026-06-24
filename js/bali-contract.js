@@ -69,6 +69,50 @@
     { id: 'txtEdVendedor', label: 'Vendedor' }
   ];
 
+  var editTrackedFields = [
+    { id: 'txtEdCliente', label: 'Cliente' },
+    { id: 'txtEdEndereco', label: 'Endereço' },
+    { id: 'txtEdCep', label: 'CEP' },
+    { id: 'txtEdBairro', label: 'Bairro' },
+    { id: 'txtEdCidade', label: 'Cidade' },
+    { id: 'txtEdUF', label: 'UF' },
+    { id: 'txtEdCPF', label: 'CPF/CNPJ' },
+    { id: 'txtEdRG', label: 'RG/I.E.' },
+    { id: 'txtEdNascimento', label: 'Data de nascimento' },
+    { id: 'txtEdTelRes', label: 'Telefone residencial' },
+    { id: 'txtEdComercial', label: 'Telefone comercial' },
+    { id: 'txtEdCelular', label: 'Celular' },
+    { id: 'txtEdEmail', label: 'E-mail' },
+    { id: 'txtEdMarca', label: 'Marca' },
+    { id: 'txtEdModelo', label: 'Modelo' },
+    { id: 'txtEdCorExt', label: 'Cor externa' },
+    { id: 'txtEdChassi', label: 'Chassi/placa' },
+    { id: 'txtEdAnomodelo', label: 'Ano/modelo' },
+    { id: 'txtEdOpcionais', label: 'Opcionais' },
+    { id: 'txtEdFinanceira', label: 'Financeira' },
+    { id: 'txtEdValorVeic', label: 'Valor do veículo' },
+    { id: 'txtEdTAXAS', label: 'Taxas' },
+    { id: 'txtEdEntrada', label: 'Entrada' },
+    { id: 'txtEdFormasPagamento', label: 'Formas de pagamento' },
+    { id: 'txtEdValorUSADO', label: 'Avaliação usado' },
+    { id: 'txtEdModMarcaUSADO', label: 'Modelo/marca usado' },
+    { id: 'txtEdAnoMOdUSADO', label: 'Ano/modelo usado' },
+    { id: 'txtEdPlacaUSADO', label: 'Placa usado' },
+    { id: 'txtEdVALORUSADOAVAILACAO', label: 'Valor utilizado avaliação' },
+    { id: 'txtEdQuitacao', label: 'Quitação' },
+    { id: 'txtEdSaldoAvaliacao', label: 'Saldo avaliação' },
+    { id: 'txtEdFinanciamento', label: 'Financiamento' },
+    { id: 'txtEdNumeroParcelas', label: 'Nº parcelas' },
+    { id: 'txtEdValorParcela', label: 'Valor parcela' },
+    { id: 'txtEdPlanoFinanciamento', label: 'Plano financiamento' },
+    { id: 'txtEdCortesias', label: 'Cortesias' },
+    { id: 'txtEdObs', label: 'Observações' },
+    { id: 'txtEdPrevisao', label: 'Previsão' },
+    { id: 'txtEdVendedor', label: 'Vendedor' },
+    { id: 'rbtnEdAVISTA', label: 'Pagamento à vista', checked: true },
+    { id: 'rbtnEdAprazo', label: 'Pagamento financiamento', checked: true }
+  ];
+
   var sectionRequirements = {
     novo: {
       cliente: ['txtCliente', 'txtCPFCNPJ'],
@@ -1614,6 +1658,142 @@
     return field.value;
   }
 
+  function readComparableField(field) {
+    if (!field) return '';
+    var type = String(field.type || '').toLowerCase();
+    if (type === 'checkbox' || type === 'radio') return field.checked ? '1' : '0';
+    return String(field.value || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function getEditTrackedField(item) {
+    var field = bySuffix(item.id);
+    return field && isRelevantContractField(field) ? field : null;
+  }
+
+  function hasLoadedEditContract() {
+    if (String(valueOf('txtContrato') || '').trim().length > 0) return true;
+    return editTrackedFields.some(function (item) {
+      var field = getEditTrackedField(item);
+      return field && readComparableField(field).length > 0;
+    });
+  }
+
+  function ensureEditChangePanel() {
+    var host = getQualityHost(true);
+    if (!host) return null;
+
+    var panel = document.getElementById('contractEditChangePanel');
+    if (!panel) {
+      panel = document.createElement('div');
+      panel.id = 'contractEditChangePanel';
+      panel.className = 'contract-edit-change-panel is-hidden';
+      panel.setAttribute('role', 'status');
+      panel.innerHTML = '<div><span>Alterações da edição</span><strong>Nenhuma alteração detectada</strong><small>Após carregar o contrato, os campos modificados aparecem aqui antes de gravar.</small></div><ul></ul>';
+    }
+
+    if (panel.parentNode !== host) {
+      var checklist = host.querySelector ? host.querySelector('.contract-checklist') : null;
+      if (checklist) host.insertBefore(panel, checklist);
+      else host.appendChild(panel);
+    }
+
+    return panel;
+  }
+
+  function markEditBaseline(force) {
+    var contractId = String(valueOf('txtContrato') || '').trim();
+    editTrackedFields.forEach(function (item) {
+      var field = getEditTrackedField(item);
+      if (!field) return;
+      var previousId = field.getAttribute('data-contract-edit-id') || '';
+      if (force || previousId !== contractId || !field.hasAttribute('data-contract-edit-initial')) {
+        field.setAttribute('data-contract-edit-id', contractId);
+        field.setAttribute('data-contract-edit-initial', readComparableField(field));
+      }
+    });
+  }
+
+  function collectEditChanges() {
+    var changes = [];
+    editTrackedFields.forEach(function (item) {
+      var field = getEditTrackedField(item);
+      if (!field) return;
+
+      var initial = field.getAttribute('data-contract-edit-initial');
+      if (initial === null) {
+        field.setAttribute('data-contract-edit-initial', readComparableField(field));
+        initial = field.getAttribute('data-contract-edit-initial') || '';
+      }
+
+      var current = readComparableField(field);
+      var changed = initial !== current;
+      if (changed) {
+        addClass(field, 'contract-edited-field');
+        changes.push(item.label);
+      } else {
+        removeClass(field, 'contract-edited-field');
+      }
+    });
+
+    return changes;
+  }
+
+  function updateEditChangePanel() {
+    if (currentContractMode() !== 'edicao') return;
+
+    var panel = ensureEditChangePanel();
+    if (!panel) return;
+
+    if (!hasLoadedEditContract()) {
+      panel.classList.add('is-hidden');
+      return;
+    }
+
+    var changes = collectEditChanges();
+    var title = panel.querySelector('strong');
+    var text = panel.querySelector('small');
+    var list = panel.querySelector('ul');
+
+    panel.classList.remove('is-hidden', 'has-changes');
+    if (changes.length > 0) {
+      addClass(panel, 'has-changes');
+      title.textContent = changes.length + ' campo(s) alterado(s)';
+      text.textContent = 'Confira as alterações abaixo e marque o checklist antes de salvar.';
+    } else {
+      title.textContent = 'Nenhuma alteração detectada';
+      text.textContent = 'Altere os campos necessários; o resumo será atualizado automaticamente.';
+    }
+
+    if (list) {
+      list.innerHTML = '';
+      changes.slice(0, 12).forEach(function (label) {
+        var item = document.createElement('li');
+        item.textContent = label;
+        list.appendChild(item);
+      });
+      if (changes.length > 12) {
+        var extra = document.createElement('li');
+        extra.textContent = 'Mais ' + (changes.length - 12) + ' campo(s) alterado(s)';
+        list.appendChild(extra);
+      }
+    }
+  }
+
+  function enhanceEditChangeTracking() {
+    if (currentContractMode() !== 'edicao') return;
+    markEditBaseline(false);
+    updateEditChangePanel();
+
+    editTrackedFields.forEach(function (item) {
+      var field = getEditTrackedField(item);
+      if (!field || field.getAttribute('data-contract-edit-watch') === 'true') return;
+      field.setAttribute('data-contract-edit-watch', 'true');
+      field.addEventListener('input', updateEditChangePanel);
+      field.addEventListener('change', updateEditChangePanel);
+      field.addEventListener('click', updateEditChangePanel);
+    });
+  }
+
   function writeDraftField(field, value) {
     var type = String(field.type || '').toLowerCase();
     if (type === 'checkbox' || type === 'radio') {
@@ -1722,6 +1902,7 @@
     updateDirtyNotice();
     hideDraftPanel();
     updateQualityPanel();
+    updateEditChangePanel();
   }
 
   function enhanceDraftRecovery() {
@@ -1763,6 +1944,7 @@
     updateDirtyNotice();
     hideSubmitSummary();
     scheduleDraftSave();
+    updateEditChangePanel();
   }
 
   function enhanceUnsavedWarning() {
@@ -2175,6 +2357,7 @@
     enhanceAuditTools();
     enhanceFormSections();
     enhanceSectionNavigator();
+    enhanceEditChangeTracking();
     enhanceUnsavedWarning();
     enhanceDraftRecovery();
     enhanceLookupTables();

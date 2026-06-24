@@ -1248,6 +1248,78 @@ body.bali-contract-page *::after {
   font-weight: 800;
 }
 
+.bali-contract-page .contract-edit-change-panel {
+  display: grid;
+  grid-template-columns: minmax(180px, .35fr) minmax(0, 1fr);
+  gap: 12px;
+  width: min(100%, 30cm);
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(37, 99, 235, .20);
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+  background: #f8fbff;
+  box-shadow: 0 10px 24px rgba(30, 64, 175, .07);
+}
+
+.bali-contract-page .contract-edit-change-panel.is-hidden {
+  display: none;
+}
+
+.bali-contract-page .contract-edit-change-panel span {
+  color: var(--contract-muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.bali-contract-page .contract-edit-change-panel strong {
+  display: block;
+  margin-top: 3px;
+  color: #1e3a8a;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.bali-contract-page .contract-edit-change-panel small {
+  color: #31558f;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.bali-contract-page .contract-edit-change-panel ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bali-contract-page .contract-edit-change-panel li {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border: 1px solid rgba(37, 99, 235, .18);
+  border-radius: 999px;
+  background: #fff;
+  color: #1e40af;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.bali-contract-page .contract-edit-change-panel:not(.has-changes) ul {
+  display: none;
+}
+
+.bali-contract-page .contract-edited-field {
+  border-color: #2563eb !important;
+  background: #eff6ff !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+}
+
 .bali-contract-page .contract-draft-panel {
   display: flex;
   align-items: center;
@@ -2089,6 +2161,10 @@ body.bali-contract-page *::after {
   }
 
   .bali-contract-page .contract-quality-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .bali-contract-page .contract-edit-change-panel {
     grid-template-columns: 1fr;
   }
 

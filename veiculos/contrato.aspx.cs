@@ -242,18 +242,42 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         Dictionary<string, string> campos = new Dictionary<string, string>();
         campos["Cliente"] = txtEdCliente.Text;
+        campos["Endereco"] = txtEdEndereco.Text;
+        campos["CEP"] = txtEdCep.Text;
+        campos["Bairro"] = txtEdBairro.Text;
+        campos["Cidade"] = txtEdCidade.Text;
+        campos["UF"] = txtEdUF.Text;
         campos["CPF/CNPJ"] = txtEdCPF.Text;
+        campos["RG/IE"] = txtEdRG.Text;
+        campos["Data nascimento"] = txtEdNascimento.Text;
+        campos["Telefone residencial"] = txtEdTelRes.Text;
+        campos["Telefone comercial"] = txtEdComercial.Text;
+        campos["Celular"] = txtEdCelular.Text;
+        campos["Email"] = txtEdEmail.Text;
         campos["Marca"] = txtEdMarca.Text;
         campos["Modelo"] = txtEdModelo.Text;
+        campos["Cor externa"] = txtEdCorExt.Text;
         campos["Chassi/Placa"] = txtEdChassi.Text;
+        campos["Ano/modelo"] = txtEdAnomodelo.Text;
+        campos["Opcionais"] = txtEdOpcionais.Text;
+        campos["Financeira"] = txtEdFinanceira.Text;
         campos["Valor veículo"] = txtEdValorVeic.Text;
+        campos["Taxas"] = txtEdTAXAS.Text;
         campos["Entrada"] = txtEdEntrada.Text;
+        campos["Formas pagamento"] = txtEdFormasPagamento.Text;
         campos["Avaliação usada"] = txtEdValorUSADO.Text;
+        campos["Modelo/marca usado"] = txtEdModMarcaUSADO.Text;
+        campos["Ano/modelo usado"] = txtEdAnoMOdUSADO.Text;
+        campos["Placa usado"] = txtEdPlacaUSADO.Text;
         campos["Valor utilizado avaliação"] = txtEdVALORUSADOAVAILACAO.Text;
         campos["Quitação"] = txtEdQuitacao.Text;
+        campos["Saldo avaliação"] = txtEdSaldoAvaliacao.Text;
         campos["Financiamento"] = txtEdFinanciamento.Text;
         campos["Nº parcelas"] = txtEdNumeroParcelas.Text;
         campos["Valor parcela"] = txtEdValorParcela.Text;
+        campos["Plano financiamento"] = txtEdPlanoFinanciamento.Text;
+        campos["Cortesias"] = txtEdCortesias.Text;
+        campos["Observações"] = txtEdObs.Text;
         campos["Vendedor"] = txtEdVendedor.Text;
         campos["Previsão"] = txtEdPrevisao.Text;
         campos["Modalidade"] = rbtnEdAVISTA.Checked ? "A vista" : (rbtnEdAprazo.Checked ? "Financiamento" : "");
@@ -302,13 +326,13 @@ public partial class veiculos_contrato : System.Web.UI.Page
             string valorAtual = LimparLog(campo.Value);
             if (!String.Equals(valorAnterior, valorAtual, StringComparison.Ordinal))
             {
-                mudancas.Add(campo.Key + ": '" + valorAnterior + "' -> '" + valorAtual + "'");
+                mudancas.Add(campo.Key + " de [" + valorAnterior + "] para [" + valorAtual + "]");
             }
         }
 
         if (mudancas.Count > 0)
         {
-            RegistrarContratoOperacao("EDICAO_ALTERACOES", "Contrato=" + contrato + "; " + String.Join(" | ", mudancas.Take(40).ToArray()));
+            RegistrarContratoOperacao("EDICAO_ALTERACOES", "Contrato=" + contrato + "; Campos alterados=" + mudancas.Count + "; " + String.Join(" | ", mudancas.Take(60).ToArray()));
         }
         else
         {
