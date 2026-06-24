@@ -270,6 +270,10 @@ body.central-links-page {
   min-width: 0;
 }
 
+.central-link-card[hidden] {
+  display: none;
+}
+
 .central-link-icon {
   display: grid;
   place-items: center;
@@ -362,6 +366,10 @@ body.central-links-page {
   background: var(--brand-soft);
   color: var(--ink);
   outline: none;
+}
+
+.central-search-box button[hidden] {
+  display: none;
 }
 
 .central-status-chip {

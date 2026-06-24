@@ -25,7 +25,9 @@
     defaults: [],
     editingId: '',
     unlocked: false,
-    selectedIcon: 'default'
+    selectedIcon: 'default',
+    filter: '',
+    filterFrame: 0
   };
 
   var elements = {};
@@ -127,6 +129,105 @@
 
   function getBrandName() {
     return document.body.getAttribute('data-brand-name') || 'Central';
+  }
+
+  function createShortcutTools() {
+    var cardPanel = document.querySelector('.central-card-panel');
+    var grid = document.querySelector('.central-link-grid');
+    if (!cardPanel || !grid || document.querySelector('[data-central-tools]')) {
+      return;
+    }
+
+    var tools = document.createElement('div');
+    tools.className = 'central-utility-row';
+    tools.setAttribute('data-central-tools', 'true');
+    tools.innerHTML =
+      '<div class="central-search-box">' +
+        '<input type="search" data-shortcut-search aria-label="Buscar atalhos" placeholder="Buscar atalho, &aacute;rea ou link" />' +
+        '<button type="button" data-clear-shortcut-search aria-label="Limpar busca" hidden>&times;</button>' +
+      '</div>' +
+      '<span class="central-status-chip" data-shortcut-status>Carregando atalhos...</span>';
+
+    cardPanel.insertBefore(tools, grid);
+
+    var empty = document.createElement('div');
+    empty.className = 'central-empty-state';
+    empty.setAttribute('data-shortcut-empty', 'true');
+    empty.textContent = 'Nenhum atalho encontrado para este filtro.';
+    cardPanel.insertBefore(empty, grid.nextSibling);
+  }
+
+  function updateHeroSummary(total) {
+    var summary = document.querySelector('.central-summary-item');
+    if (!summary) {
+      return;
+    }
+
+    var value = summary.querySelector('strong');
+    var label = summary.querySelector('span');
+    if (value) {
+      value.textContent = total;
+    }
+    if (label) {
+      label.textContent = total === 1 ? 'atalho' : 'atalhos';
+    }
+  }
+
+  function updateShortcutStatus(total, visible) {
+    if (!elements.status) {
+      return;
+    }
+
+    if (state.filter) {
+      elements.status.textContent = visible + ' de ' + total + ' atalhos';
+      return;
+    }
+
+    elements.status.textContent = total + (total === 1 ? ' atalho dispon\u00edvel' : ' atalhos dispon\u00edveis');
+  }
+
+  function applyShortcutFilter() {
+    var grid = document.querySelector('.central-link-grid');
+    if (!grid) {
+      return;
+    }
+
+    var cards = grid.querySelectorAll('.central-link-card');
+    var total = cards.length;
+    var visible = 0;
+
+    state.filter = normalize(elements.search ? elements.search.value : '');
+
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
+      var text = normalize(card.textContent + ' ' + (card.getAttribute('href') || ''));
+      var shouldShow = !state.filter || text.indexOf(state.filter) >= 0;
+      card.hidden = !shouldShow;
+      if (shouldShow) {
+        visible++;
+      }
+    }
+
+    if (elements.clearSearch) {
+      elements.clearSearch.hidden = !state.filter;
+    }
+    if (elements.emptyState) {
+      elements.emptyState.classList.toggle('is-visible', !!state.filter && visible === 0);
+    }
+
+    updateHeroSummary(total);
+    updateShortcutStatus(total, visible);
+  }
+
+  function scheduleShortcutFilter() {
+    if (state.filterFrame) {
+      window.cancelAnimationFrame(state.filterFrame);
+    }
+
+    state.filterFrame = window.requestAnimationFrame(function () {
+      state.filterFrame = 0;
+      applyShortcutFilter();
+    });
   }
 
   async function loadShortcuts() {
@@ -260,6 +361,10 @@
     elements.iconPicker = document.querySelector('[data-icon-picker]');
     elements.list = document.querySelector('[data-maintenance-list]');
     elements.feedback = document.querySelector('[data-maintenance-feedback]');
+    elements.search = document.querySelector('[data-shortcut-search]');
+    elements.clearSearch = document.querySelector('[data-clear-shortcut-search]');
+    elements.status = document.querySelector('[data-shortcut-status]');
+    elements.emptyState = document.querySelector('[data-shortcut-empty]');
   }
 
   function setFeedback(message, isError) {
@@ -344,6 +449,8 @@
     if (typeof window.centralLinksApplyIcons === 'function') {
       window.centralLinksApplyIcons();
     }
+
+    applyShortcutFilter();
   }
 
   function renderIconPicker() {
@@ -541,11 +648,37 @@
       if (event.key === 'Enter' && event.target === elements.password) {
         event.preventDefault();
         unlockMaintenance();
+        return;
+      }
+
+      if (event.key === '/' && elements.search && !/input|textarea|select/i.test(event.target.tagName)) {
+        event.preventDefault();
+        elements.search.focus();
+        return;
+      }
+
+      if (event.key === 'Escape' && elements.search && document.activeElement === elements.search && elements.search.value) {
+        elements.search.value = '';
+        scheduleShortcutFilter();
       }
     });
 
     if (elements.form) {
       elements.form.addEventListener('submit', handleSubmit);
+    }
+
+    if (elements.search) {
+      elements.search.addEventListener('input', scheduleShortcutFilter);
+    }
+
+    if (elements.clearSearch) {
+      elements.clearSearch.addEventListener('click', function () {
+        if (elements.search) {
+          elements.search.value = '';
+          elements.search.focus();
+        }
+        scheduleShortcutFilter();
+      });
     }
 
     var newButton = document.querySelector('[data-new-shortcut]');
@@ -562,6 +695,7 @@
   async function initialize() {
     state.defaults = extractDefaults();
     state.shortcuts = state.defaults.map(cloneShortcut);
+    createShortcutTools();
     createMaintenancePanel();
     cacheElements();
     bindEvents();
