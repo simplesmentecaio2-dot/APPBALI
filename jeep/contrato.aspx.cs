@@ -546,8 +546,25 @@ public partial class veiculos_contrato : System.Web.UI.Page
         campo.Text = SomenteLetrasNumeros(campo.Text).ToUpperInvariant();
     }
 
+    private void NormalizarTexto(TextBox campo)
+    {
+        if (campo == null) return;
+        campo.Text = System.Text.RegularExpressions.Regex.Replace((campo.Text ?? "").Trim(), @"\s+", " ");
+    }
+
     private void NormalizarFormatosNovo()
     {
+        NormalizarTexto(txtCliente);
+        NormalizarTexto(txtEndereco);
+        NormalizarTexto(txtBairro);
+        NormalizarTexto(txtCidade);
+        NormalizarTexto(txtMarca);
+        NormalizarTexto(txtModelo);
+        NormalizarTexto(txtCorExterna);
+        NormalizarTexto(txtFinanceira);
+        NormalizarTexto(txtFormasPagamento);
+        NormalizarTexto(txtModMarca);
+        NormalizarTexto(txtAnoModelo);
         txtUF.Text = (txtUF.Text ?? "").Trim().ToUpperInvariant();
         txtEmail.Text = (txtEmail.Text ?? "").Trim().ToLowerInvariant();
         NormalizarCpfCnpj(txtCPFCNPJ);
@@ -561,6 +578,18 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void NormalizarFormatosEdicao()
     {
+        NormalizarTexto(txtEdCliente);
+        NormalizarTexto(txtEdEndereco);
+        NormalizarTexto(txtEdBairro);
+        NormalizarTexto(txtEdCidade);
+        NormalizarTexto(txtEdMarca);
+        NormalizarTexto(txtEdModelo);
+        NormalizarTexto(txtEdCorExt);
+        NormalizarTexto(txtEdFinanceira);
+        NormalizarTexto(txtEdFormasPagamento);
+        NormalizarTexto(txtEdModMarcaUSADO);
+        NormalizarTexto(txtEdAnoMOdUSADO);
+        NormalizarTexto(txtEdVendedor);
         txtEdUF.Text = (txtEdUF.Text ?? "").Trim().ToUpperInvariant();
         txtEdEmail.Text = (txtEdEmail.Text ?? "").Trim().ToLowerInvariant();
         NormalizarCpfCnpj(txtEdCPF);
