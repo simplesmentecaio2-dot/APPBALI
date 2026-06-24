@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Project/PHP/PHPProject.php to edit this template
+-->
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Pedido de vendas - BYD</title>
+        <link rel=stylesheet href="css/estilo.css" type="text/css">
+        <link rel=stylesheet href="/function.js" type="text/css">
+        
+       <style type="text/css">
+            body{
+                border-radius: 3px;
+                background-color: white;
+                font-family: arial;
+            }
+            h1{               
+                margin-top: 0px;
+                text-align: center; 
+                border:1px solid black; 
+                background-color: black; 
+                color:white;   
+                text-transform: uppercase;
+                font-size: 18pt;
+            }
+            aside{
+                font-size:10pt;
+            }
+        </style>
+        
+    </head>
+    <body>
+        <header> 
+            <div id="box1"></div> 
+            <div id="box2">BYD DO BRASIL LTDA <div>CNPJ: 17.140.820/007-77</div> </div>
+            <div id="box3">
+                <form action="">
+                    <div id="c1">Cidade<br><input type="text" style="width:225px; height: 30px;"  ></div>
+                    <div id="c2">Data<br><input type="date" id="start" style="height: 30px; width:130px;" /></div>
+                </form>
+            </div>
+            <div id="box4">Rod .Gov. Mario Covas, 882 - BLOCO 2 SALA 35 - PADRE MATHIAS  <div>PREDIO DAS MARCAS  CEP: 29.157-100  Cariaca - ES</div></div>
+            <div id="box5">PEDIDO DE VENDAS DIRETAS - ATRIBUIÇÃO CONCESSIONÁRIO</div>
+        </header>
+        <nav><h1>DADOS DO CLIENTE</h1>
+            <form id="form2">
+                Razão Social: <input type="text" style="width:645px;" >
+                Tel: <input type="text" style="width:205px;">
+                End: <input type="text" style="width:416px;">
+                Nro.: <input type="text">
+                Complemento: <input type="text" style="width:205px;">
+                Bairro: <input type="text" style="width:355px;">
+                Cidade: <input type="text" style="width:258px;">
+                CEP: <input type="text" style="width:205px;"><!-- comment -->
+                CPF/CNPJ: <input type="text" style="width:217px;">
+                IE: <input type="text">
+                Email: <input type="text" style="width:426px;">
+                Tipo Cliente: <input type="radio" style="margin-right:15px;">
+                CPF <input type="radio" style="margin-left:15px;"> CNPJ    
+                Categoria: <input type="text" style="width:380px; "  >
+                UF: <select style="width:250px; height: 20px;">
+                        <option value="">Selecione</option>
+                        <option value="AC">Acre</option>
+                        <option value="AL">Alagoas</option>
+                        <option value="AP">Amapá</option>
+                        <option value="AM">Amazonas</option>
+                        <option value="BA">Bahia</option>
+                        <option value="CE">Ceará</option>
+                        <option value="DF">Distrito Federal</option>
+                        <option value="ES">Espirito Santo</option>
+                        <option value="GO">Goiás</option>
+                        <option value="MA">Maranhão</option>
+                        <option value="MS">Mato Grosso do Sul</option>
+                        <option value="MT">Mato Grosso</option>
+                        <option value="MG">Minas Gerais</option>
+                        <option value="PA">Pará</option>
+                        <option value="PB">Paraíba</option>
+                        <option value="PR">Paraná</option>
+                        <option value="PE">Pernambuco</option>
+                        <option value="PI">Piauí</option>
+                        <option value="RJ">Rio de Janeiro</option>
+                        <option value="RN">Rio Grande do Norte</option>
+                        <option value="RS">Rio Grande do Sul</option>
+                        <option value="RO">Rondônia</option>
+                        <option value="RR">Roraima</option>
+                        <option value="SC">Santa Catarina</option>
+                        <option value="SP">São Paulo</option>
+                        <option value="SE">Sergipe</option>
+                        <option value="TO">Tocantins</option>
+                    </select>
+                
+            </form>
+        </nav>
+        <nav id="nav1"><h1>Dados do concessionário intermediador da venda e local de entrega</h1>
+            <form id="form3">
+                DVenda <input type="text" style="width:32%;"><!-- comment -->
+                Local Entrega <input type="radio" value="off">
+                D Venda <input type="radio">
+                Outro D <input type="text" style="width:13%;"><!-- comment -->
+                <input type="radio"> PDIF
+                <input type="radio"> Blindagem<br><!-- comment -->
+                Endereço de Entrega: <input type="text" style="width:83%;">
+            </form>
+        </nav>
+        <nav>   
+            <h1>Dados do pedido</h1>
+            
+            
+            <div id="qtd" style=" margin-top:-20px;text-align:center;">QTDE<input style="width:65%; margin-top:5px;"></div>    
+                        <div id="mod" style="text-align:center; margin-top:-20px; ">MODELOS<input style="width:85%; margin-top:5px;" ></div>    
+                        <div id="cor" style="text-align:center; margin-top:-20px;">COR EXT/INT<input style="margin-top:5px;"></div>    
+                        <div id="preco" style="text-align:center; margin-top:-20px; ">PREÇO PÚBLICO<input style="margin-top:5px; text-align: right;" value=" R$"></div>       
+                 <table id="nav2" border="5" style="float:right;  height:55px; ">
+                    <tr style="text-align:center; font-size:10pt;">
+                        <td>DESC.POLÍTICA<input type="text" value=" %" style="text-align:right; width:50%;"></td>
+                        <td>DESC.ADICIONAL<input type="text" value=" %" style="text-align:right; width:50%"></td>
+                        <td>REPASSE DEALER<input type="text" value=" %" style="text-align:right; width:50%"></td>
+                        <td>DESCONTO TOTAL<input type="text" value=" %" style="text-align:right; width:50%"></td>
+                        <td>VLR UNITÁRIO<input type="text" placeholder="0,00$" value=" R$" style="text-align:right;"></td>
+                        <td>VLR TOTAL<input type="text" placeholder="0,00$" value=" R$" style="text-align:right;"></td>
+                    </tr>
+                    
+                </table> 
+                      
+        </nav>
+        <nav id="nav3" style="margin-top:-18px;">
+            <h1>Descrição das forma de pagamento
+                <form><input type="text" style=" width:99.4%; height:50px; margin-left:-1px;"></form>
+            </h1>
+        </nav>
+        <nav id="nav4"><h1>Observações concessionário intermediador da venda
+                <form>
+                    <input type="text" style="width:99.4%; height:50px; margin-left:-1px;">
+                </form></h1>
+        </nav>
+                <h1 style="margin-top:30px;">CONDIÇÕES GERAIS</h1><aside>I. Pagamento (de acordo com a opção escolhida no quadro “Forma de Pagamento” acima):
+                    
+        (i) Transferência bancária: a) Categoria A a : O cliente deverá providenciar a transferência de 10% (dez por cento) do Valor Total (“Adiantamento ”) na seguinte conta bancária de titularidade
+        da BYD do Brasil Ltda . (CNPJ : 17.140 .820/0007 -77), , Agência : 3644 , C/C: , em até 48 (quarenta e oito) horas da assinatura deste Pedido de
+        Compras (“ PO”) e o valor remanescente em até 10 (dez ) dias corridos do faturamento ; b) Categorias a : O cliente deverá providenciar a transferência do Valor Total na seguinte conta
+        bancária de titularidade da BYD do Brasil Ltda. (CNPJ: 17.140.820/0007-77): , Agência : 3644, C/C: , em até 10 (dez) dias corridos da emissão
+        da nota fiscal. Eventual pagamento em conta ou de forma diversa não será reconhecido pela BYD.
+        
+        (ii) Financiamento / Consórcio: A autorização da instituição financeira / administradora do consórcio deve ser encaminhada, junto com o pedido e documentos de check-list (anexo I), em até 03
+        (três) dias da assinatura deste pedido para o seguinte e-mail:vendas.auto@byd.com. É obrigatório que a autorização da instituição financeira / administradora do consórcio esteja vigente no
+        momento da nacionalização e do faturamento . Caso a vigência do documento esteja expirada , incumbe ao Cliente efetuar a renovação às suas expensas . Em nenhuma hipótese a BYD irá
+        faturar Veículo(s) cuja respectiva autorização da instituição financeira / administradora do consórcio esteja vencida.
+
+        II. Preço:
+        (i) Caso haja alteração da tributação, entre a assinatura do PO e a emissão da nota fiscal, o Preço será reajustado de acordo com a nova legislação.
+        (ii) O Cliente declara ter ciência que o Preço do(s) Veículo(s) mencionado (s) nesse Pedido é baseado na Política de Preços vigente na data do faturamento , de forma que pode haver
+        variação entre o Valor na data do pedido e do faturamento, sendo que eventual diferença no Preço, será suportada pelo Cliente, que desde já declara sua concordância
+        III. Faturamento (de acordo com a categoria do Cliente):
+        (i) Categoria A à : 1) Veículo(s) já nacionalizado(s): Será realizado em até 05 (cinco) dias úteis da compensação da Entrada na conta indicada pela BYD; 2) Veículo(s) que
+        dependa (m) de importação: Em até 05 (cinco) dias úteis da nacionalização, desde que a Entrada tenha sido creditada na conta indicada pela BYD.
+        (ii) Categorias à 1) Veículo(s) já nacionalizado(s): Será realizado em até 03 (três) dias úteis do recebimento do pedido, desde que o(s) Veículo(s) esteja(m) disponível(is); e
+        2) Veículo (s) que dependa(m) de importação: Em até 03 (três) dias úteis da nacionalização.
+        (iii) Em caso de financiamento bancário, o faturamento será de acordo com a política da instituição financeira.
+        IV. Atraso no pagamento:
+        Caso a transferência bancária não seja realizada nos termos e no prazo acima acordado , o boleto não seja quitado na data de vencimento nele indicada , ou a autorização da instituição
+        financeira / administradora do consórcio não seja enviada dentro do prazo estipulado , uma multa no valor de 10% (dez por cento) do Valor Total da Compra será aplicada em desfavor do
+        Cliente . Neste caso : (i) Categoria A à : A Entrada será retido pela BYD , nos termos do Artigo 368 do Código Civil ; (ii) Categorias à : A multa deverá ser paga à BYD dentro de 03 (três )
+        dias da comunicação da BYD nesse sentido.
+        V. Entrega: O(s) Veículo(s) será(ão) entregue(s) ao Cliente na forma descritas no quadro “Entrega” acima, desde que Valor Total tenha sido creditado na conta indicada pela BYD, exceto
+        caso a BYD informe o Concessionário sobre condição diversa, de forma prévia e por escrito.
+        VI. Garantia: O Cliente declara que usará o(s) Veículo(s) de acordo com os respectivos manuais, sob pena e perda da garantia de fábrica.
+        VII. BIN:
+        (i) Pagamento via transferência bancária: Será liberada após a compensação do Valor Total na conta indicada pela BYD, exceto caso a BYD informe o Concessionário sobre condição
+        diversa, de forma prévia, expressa e por escrito;
+        (ii) Pagamento via financiamento / consórcio: Será liberada após o faturamento.
+        VIII. Proteção de Dados : O Cliente declara seu consentimento livre e inequívoco quanto ao processamento e tratamento de seus dados pessoais para uma finalidade específica , relacionada à
+        compra e venda do(s) Veículo(s), de acordo com a Lei nº 13.709/2018 (LGPD), e apresenta a sua concordância expressamente com as Diretrizes de Processamento de Dados da BYD.
+        IX. Declarações Concessionária: A Concessionária acima indicada atesta que: (i) As informações apresentadas neste PO são verdadeiras e foram apresentadas pelo Cliente; (ii) o Valor do(s)
+        Veículo(s) está de acordo com a Tabela de Vendas Diretas vigente; (iii) Verificou a disponibilidade do(s) Veículo(s) previamente ; (iv) Reservou (s) Veículo(s) junto à BYD antes de emitir este
+        PO; (v) informou ao Cliente o prazo estimado para entrega ; (vi) Apresenta junto a este Pedido de Compra os documentos informados no check -list, de acordo com a modalidade de venda; (vii)
+        Tem ciência de que Venda Direta é uma modalidade comercial, sendo que toda negociação feita com o Cliente se dá sem ingerência da BYD, sendo sua inteira responsabilidade a negociação
+        e o preenchimento deste PO.
+        </aside>
+        <footer><h1>assinaturas</h1>
+        
+            <div id="ass-c">Cliente</div>
+            <div id="ass-g">Gerente de Vendas</div>
+            <div id="form-c">Nome e CPF Consultor de Vendas
+                <input>
+                <input>
+            </div>
+        
+        </footer>   
+        
+    </body>
+
+</html>
+
+
+
+
+
+

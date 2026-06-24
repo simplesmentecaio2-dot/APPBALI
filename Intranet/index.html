@@ -1,0 +1,1380 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#202327">
+  <meta name="description" content="Central interna do Grupo Bali com atalhos para sistemas, bancos, suporte e ferramentas de tecnologia.">
+  <title>Central Bali | Links e Aplicativos</title>
+  <link rel="icon" href="resources/imagens/favicon.ico">
+  <link rel="stylesheet" href="resources/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="resources/css/index.css?v=20260623-reorder-maintenance">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid px-3 px-lg-4">
+          <a class="navbar-brand" href="#top" aria-label="Central Bali">
+            <span class="brand-mark"><i class="bi bi-grid-3x3-gap-fill"></i></span>
+            <span><strong>Central</strong> Bali</span>
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Abrir menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="mainMenu">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+              <li class="nav-item"><a class="nav-link" href="#bali">Bali</a></li>
+              <li class="nav-item"><a class="nav-link" href="#jeep">Jeep</a></li>
+              <li class="nav-item"><a class="nav-link" href="#byd">BYD</a></li>
+              <li class="nav-item"><a class="nav-link" href="#bancos">Bancos</a></li>
+              <li class="nav-item"><a class="nav-link" href="#tecnologia">Tecnologia</a></li>
+              <li class="nav-item"><a class="nav-link" href="../ramais/default.aspx">Ramais</a></li>
+              <li class="nav-item"><a class="nav-link" href="#manutencao">Manuten&ccedil;&atilde;o</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero-section">
+        <div class="container-fluid px-3 px-lg-4">
+          <div class="hero-card">
+            <div class="hero-copy">
+              <span class="eyebrow"><i class="bi bi-stars"></i> Tecnologia · Grupo Bali</span>
+              <h1>Central de links e aplicativos</h1>
+              <p>Acesso rápido aos principais sistemas do Grupo Bali, organizado por unidade, área e tipo de operação.</p>
+              <div class="hero-actions">
+                <a href="#atalhos" class="btn btn-light btn-lg"><i class="bi bi-lightning-charge-fill"></i> Ver atalhos</a>
+                <button type="button" class="btn btn-outline-light btn-lg" id="focusSearch"><i class="bi bi-search"></i> Buscar sistema</button>
+              </div>
+            </div>
+            <div class="hero-panel" aria-label="Resumo da central">
+              <div class="logo-stack">
+                <img src="resources/imagens/icobalibranco.png" alt="Bali" loading="lazy">
+                <img src="resources/imagens/icojeepbranco.png" alt="Jeep" loading="lazy">
+                <img src="resources/imagens/bydbranco.png" alt="BYD" loading="lazy">
+              </div>
+              <div class="metric-grid">
+                <div><strong>107</strong><span>atalhos</span></div>
+                <div><strong>5</strong><span>categorias</span></div>
+                <div><strong>24h</strong><span>central interna</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="toolbar-section" id="atalhos">
+        <div class="container-fluid px-3 px-lg-4">
+          <div class="toolbar-card">
+            <div class="search-box">
+              <i class="bi bi-search"></i>
+              <input id="shortcutSearch" type="search" autocomplete="off" placeholder="Buscar por sistema, área ou palavra-chave..." aria-label="Buscar atalhos">
+              <button type="button" id="clearSearch" class="is-hidden" aria-label="Limpar busca"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="quick-filters" aria-label="Categorias">
+              <button type="button" class="category-chip active" data-filter-section="all"><i class="bi bi-ui-checks-grid"></i>Todos<span>107</span></button>
+              <a href="#bali" class="category-chip" data-filter-section="bali"><i class="bi bi-building"></i>Bali Fiat<span>36</span></a>
+              <a href="#jeep" class="category-chip" data-filter-section="jeep"><i class="bi bi-truck-front"></i>Bali Jeep<span>21</span></a>
+              <a href="#byd" class="category-chip" data-filter-section="byd"><i class="bi bi-lightning-charge"></i>Bali BYD<span>12</span></a>
+              <a href="#bancos" class="category-chip" data-filter-section="bancos"><i class="bi bi-bank"></i>Bancos<span>7</span></a>
+              <a href="#tecnologia" class="category-chip" data-filter-section="tecnologia"><i class="bi bi-cpu"></i>Tecnologia<span>31</span></a>
+              <a href="../ramais/default.aspx" class="category-chip"><i class="bi bi-telephone-forward"></i>Ramais<span><i class="bi bi-arrow-right-short"></i></span></a>
+              <a href="#manutencao" class="category-chip maintenance-chip"><i class="bi bi-tools"></i>Manuten&ccedil;&atilde;o<span><i class="bi bi-lock-fill"></i></span></a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <div class="container-fluid px-3 px-lg-4">
+          <div id="emptyState" class="empty-state d-none" aria-live="polite">
+            <i class="bi bi-search-heart"></i>
+            <h2>Nenhum atalho encontrado</h2>
+            <p>Tente buscar por outro nome ou limpar os filtros.</p>
+          </div>
+          <section class="shortcut-section" id="bali" data-section-block="bali">
+  <div class="section-heading">
+    <div class="section-logo"><img src="resources/imagens/icobalibranco.png" alt="Bali Fiat" loading="lazy"></div>
+    <div>
+      <p>Central de vendas, pós-vendas e operação</p>
+      <h2>Bali Fiat</h2>
+    </div>
+    <span class="section-count">36 atalhos</span>
+  </div>
+  <div class="shortcut-grid"><article class="shortcut-card" data-section="bali" data-title="prospecção app" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/faturamento.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>PROSPECÇÃO APP</h3>
+  </div>
+  <a class="shortcut-link" href="http://prospeccao.grupobali.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir PROSPECÇÃO APP">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="app/vendas" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/veiculo.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>APP/VENDAS</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.6/veiculos/Default.aspx" target="_blank" rel="noopener noreferrer" aria-label="Abrir APP/VENDAS">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="app via nuvem" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/vianuvem.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>APP VIA NUVEM</h3>
+  </div>
+  <a class="shortcut-link" href="https://app.vianuvem.com.br/auto/home" target="_blank" rel="noopener noreferrer" aria-label="Abrir APP VIA NUVEM">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="dealernet workflow" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/WF.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>DEALERNET WORKFLOW</h3>
+  </div>
+  <a class="shortcut-link" href="https://dealer.grupobali.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir DEALERNET WORKFLOW">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="documentos grupobali" data-badge="e-mail">
+  <div class="shortcut-icon"><img src="resources/imagens/cartaodigital.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">E-mail</span>
+    <h3>DOCUMENTOS GRUPOBALI</h3>
+  </div>
+  <a class="shortcut-link" href="https://skybox.emailemnuvem.com.br/index.php/s/wkSj4R37XGms6Pn" target="_blank" rel="noopener noreferrer" aria-label="Abrir DOCUMENTOS GRUPOBALI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="academia dealernet" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/academiadealernet.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>ACADEMIA DEALERNET</h3>
+  </div>
+  <a class="shortcut-link" href="http://academia.dealernet.com.br/login/" target="_blank" rel="noopener noreferrer" aria-label="Abrir ACADEMIA DEALERNET">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="patio bali" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/intranet.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>PATIO BALI</h3>
+  </div>
+  <a class="shortcut-link" href="http://app.bali.com.br/veiculos/patio/" target="_blank" rel="noopener noreferrer" aria-label="Abrir PATIO BALI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="zenvia conversion" data-badge="comunicação">
+  <div class="shortcut-icon"><img src="resources/imagens/conversion.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Comunicação</span>
+    <h3>ZENVIA CONVERSION</h3>
+  </div>
+  <a class="shortcut-link" href="https://web.zenvia.com/zenvia-conversion/login" target="_blank" rel="noopener noreferrer" aria-label="Abrir ZENVIA CONVERSION">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="e-mail bali" data-badge="e-mail">
+  <div class="shortcut-icon"><img src="resources/imagens/roundcube-icone.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">E-mail</span>
+    <h3>E-MAIL BALI</h3>
+  </div>
+  <a class="shortcut-link" href="https://webmail.bali.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir E-MAIL BALI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="suporte anydesk" data-badge="suporte">
+  <div class="shortcut-icon"><img src="resources/imagens/anydesk.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>SUPORTE ANYDESK</h3>
+  </div>
+  <a class="shortcut-link" href="https://get.anydesk.com/Kx0QiEjS/AnyDesk_Custom_Client.exe" target="_blank" rel="noopener noreferrer" aria-label="Abrir SUPORTE ANYDESK">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="site da bali" data-badge="comunicação">
+  <div class="shortcut-icon"><img src="resources/imagens/bali2.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Comunicação</span>
+    <h3>SITE DA BALI</h3>
+  </div>
+  <a class="shortcut-link" href="http://bali.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir SITE DA BALI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="fotos bali" data-badge="documentos">
+  <div class="shortcut-icon"><img src="resources/imagens/fotografia.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Documentos</span>
+    <h3>FOTOS BALI</h3>
+  </div>
+  <a class="shortcut-link" href="https://1drv.ms/f/s!Au_7Tz7SkzOmguI_ZyMQP2_Gac_ykw?e=iA7VQn" target="_blank" rel="noopener noreferrer" aria-label="Abrir FOTOS BALI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="linkentry" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/linkeentry.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>LINKENTRY</h3>
+  </div>
+  <a class="shortcut-link" href="https://linkentry-ames.fiat.com/pages/home/" target="_blank" rel="noopener noreferrer" aria-label="Abrir LINKENTRY">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="b2b fiat" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/b2b.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>B2B FIAT</h3>
+  </div>
+  <a class="shortcut-link" href="http://www.portalfiat.com.br/portalb2b/cms/portalb2b/login?logout=true&amp;timeout=true" target="_blank" rel="noopener noreferrer" aria-label="Abrir B2B FIAT">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="chamados impressora" data-badge="suporte">
+  <div class="shortcut-icon"><img src="resources/imagens/impressora.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>CHAMADOS IMPRESSORA</h3>
+  </div>
+  <a class="shortcut-link" href="https://forms.gle/6Mkv6mRgTuSgLNAy5" target="_blank" rel="noopener noreferrer" aria-label="Abrir CHAMADOS IMPRESSORA">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="status zenvia" data-badge="comunicação">
+  <div class="shortcut-icon"><img src="resources/imagens/zenvia.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Comunicação</span>
+    <h3>STATUS ZENVIA</h3>
+  </div>
+  <a class="shortcut-link" href="https://status.zenvia.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir STATUS ZENVIA">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="witech" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/witech.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>wiTECH</h3>
+  </div>
+  <a class="shortcut-link" href="https://app.l.fcawitech.com/wt2/auth/login.html#/vehicle/action-items/topology" target="_blank" rel="noopener noreferrer" aria-label="Abrir wiTECH">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="adset" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/adset.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>ADSET</h3>
+  </div>
+  <a class="shortcut-link" href="https://www.adset.com.br/integrador" target="_blank" rel="noopener noreferrer" aria-label="Abrir ADSET">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="cadastro de funcionário" data-badge="suporte">
+  <div class="shortcut-icon"><img src="resources/imagens/funcionario.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>CADASTRO DE FUNCIONÁRIO</h3>
+  </div>
+  <a class="shortcut-link" href="https://forms.gle/XYqm15JLK7PpjZiKA" target="_blank" rel="noopener noreferrer" aria-label="Abrir CADASTRO DE FUNCIONÁRIO">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="reparador fiat" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/reparadorfiat.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>REPARADOR FIAT</h3>
+  </div>
+  <a class="shortcut-link" href="https://reparador.fiat.com.br/pecas-genuinas.html" target="_blank" rel="noopener noreferrer" aria-label="Abrir REPARADOR FIAT">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="tempário" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/mopar.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>TEMPÁRIO</h3>
+  </div>
+  <a class="shortcut-link" href="https://eper-ltm.parts.fiat.com/login" target="_blank" rel="noopener noreferrer" aria-label="Abrir TEMPÁRIO">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="controlstock" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/controlstock.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>CONTROLSTOCK</h3>
+  </div>
+  <a class="shortcut-link" href="https://www.stok-e.com/ControleAcesso/" target="_blank" rel="noopener noreferrer" aria-label="Abrir CONTROLSTOCK">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="whatsapp web" data-badge="comunicação">
+  <div class="shortcut-icon"><img src="resources/imagens/whatsapp.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Comunicação</span>
+    <h3>WHATSAPP WEB</h3>
+  </div>
+  <a class="shortcut-link" href="https://web.whatsapp.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir WHATSAPP WEB">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="consulta nfe" data-badge="documentos">
+  <div class="shortcut-icon"><img src="resources/imagens/nfe.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Documentos</span>
+    <h3>CONSULTA NFE</h3>
+  </div>
+  <a class="shortcut-link" href="http://www.nfe.fazenda.gov.br/portal/principal.aspx" target="_blank" rel="noopener noreferrer" aria-label="Abrir CONSULTA NFE">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="bi-fiat" data-badge="bi / monitoramento">
+  <div class="shortcut-icon"><img src="resources/imagens/bi.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">BI / Monitoramento</span>
+    <h3>BI-FIAT</h3>
+  </div>
+  <a class="shortcut-link" href="http://app.bali.com.br/veiculos/estoquevn.aspx" target="_blank" rel="noopener noreferrer" aria-label="Abrir BI-FIAT">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="zenvia atraction" data-badge="comunicação">
+  <div class="shortcut-icon"><img src="resources/imagens/attraction.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Comunicação</span>
+    <h3>ZENVIA ATRACTION</h3>
+  </div>
+  <a class="shortcut-link" href="https://app.zenvia.com/welcome" target="_blank" rel="noopener noreferrer" aria-label="Abrir ZENVIA ATRACTION">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="treinamentos stellantis" data-badge="financeiro">
+  <div class="shortcut-icon"><img src="resources/imagens/wcd.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Financeiro</span>
+    <h3>TREINAMENTOS STELLANTIS</h3>
+  </div>
+  <a class="shortcut-link" href="https://psa.csod.com/login/render.aspx?id=stellantistraining" target="_blank" rel="noopener noreferrer" aria-label="Abrir TREINAMENTOS STELLANTIS">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="gerador de senha" data-badge="suporte">
+  <div class="shortcut-icon"><i class="bi bi-grid-1x2-fill fallback-icon"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>GERADOR de SENHA</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.6/gerador-senha" target="_blank" rel="noopener noreferrer" aria-label="Abrir GERADOR de SENHA">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="gerador de assinatura" data-badge="suporte">
+  <div class="shortcut-icon"><i class="bi bi-grid-1x2-fill fallback-icon"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>GERADOR de ASSINATURA</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.6/gerador-assinatura" target="_blank" rel="noopener noreferrer" aria-label="Abrir GERADOR de ASSINATURA">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="site da fiat" data-badge="comunicação">
+  <div class="shortcut-icon"><img src="resources/imagens/FIAT.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Comunicação</span>
+    <h3>SITE DA FIAT</h3>
+  </div>
+  <a class="shortcut-link" href="https://www.fiat.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir SITE DA FIAT">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="chat site bali" data-badge="comunicação">
+  <div class="shortcut-icon"><img src="resources/imagens/logo_tawkto.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Comunicação</span>
+    <h3>CHAT SITE BALI</h3>
+  </div>
+  <a class="shortcut-link" href="https://dashboard.tawk.to/" target="_blank" rel="noopener noreferrer" aria-label="Abrir CHAT SITE BALI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="easytracking" data-badge="financeiro">
+  <div class="shortcut-icon"><img src="resources/imagens/easy.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Financeiro</span>
+    <h3>EASYTRACKING</h3>
+  </div>
+  <a class="shortcut-link" href="https://easytracking.stellantis.com.br/login" target="_blank" rel="noopener noreferrer" aria-label="Abrir EASYTRACKING">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="informações lojas" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/CNPJ.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>INFORMAÇÕES LOJAS</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.6/veiculos/infLOJAS.aspx" target="_blank" rel="noopener noreferrer" aria-label="Abrir INFORMAÇÕES LOJAS">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="vendas de sábado" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/vendassabado.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>VENDAS DE SÁBADO</h3>
+  </div>
+  <a class="shortcut-link" href="https://129.13.144.6/admfinanceiro/Comissao/Vendasdodia.aspx" target="_blank" rel="noopener noreferrer" aria-label="Abrir VENDAS DE SÁBADO">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="contas gerenciais" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/vendassabado.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>CONTAS GERENCIAIS</h3>
+  </div>
+  <a class="shortcut-link" href="http://app.bali.com.br/jeep/ContaGerencial.aspx" target="_blank" rel="noopener noreferrer" aria-label="Abrir CONTAS GERENCIAIS">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bali" data-title="planilha seminovos" data-badge="documentos">
+  <div class="shortcut-icon"><img src="resources/imagens/planilha.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Documentos</span>
+    <h3>PLANILHA SEMINOVOS</h3>
+  </div>
+  <a class="shortcut-link" href="https://docs.google.com/spreadsheets/d/1MgMhhDAg6t1PraCg5rJh84kYRYPosgT_-Xr2qdTTBKk/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" aria-label="Abrir PLANILHA SEMINOVOS">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article></div>
+</section>
+<section class="shortcut-section" id="jeep" data-section-block="jeep">
+  <div class="section-heading">
+    <div class="section-logo"><img src="resources/imagens/icojeepbranco.png" alt="Bali Jeep" loading="lazy"></div>
+    <div>
+      <p>Atalhos comerciais e técnicos Jeep</p>
+      <h2>Bali Jeep</h2>
+    </div>
+    <span class="section-count">21 atalhos</span>
+  </div>
+  <div class="shortcut-grid"><article class="shortcut-card" data-section="jeep" data-title="app/vendas" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/veiculo.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>APP/VENDAS</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.6/jeep/principal.aspx" target="_blank" rel="noopener noreferrer" aria-label="Abrir APP/VENDAS">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="e-mail bali" data-badge="e-mail">
+  <div class="shortcut-icon"><img src="resources/imagens/roundcube-icone.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">E-mail</span>
+    <h3>E-MAIL BALI</h3>
+  </div>
+  <a class="shortcut-link" href="http://webmail.bali.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir E-MAIL BALI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="prospecção" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/jeep_logo.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>PROSPECÇÃO</h3>
+  </div>
+  <a class="shortcut-link" href="http://prospeccao.grupobali.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir PROSPECÇÃO">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="zenvia conversion" data-badge="comunicação">
+  <div class="shortcut-icon"><img src="resources/imagens/conversion.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Comunicação</span>
+    <h3>ZENVIA CONVERSION</h3>
+  </div>
+  <a class="shortcut-link" href="https://web.zenvia.com/zenvia-conversion/login" target="_blank" rel="noopener noreferrer" aria-label="Abrir ZENVIA CONVERSION">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="site bali jeep" data-badge="comunicação">
+  <div class="shortcut-icon"><img src="resources/imagens/icologojeep.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Comunicação</span>
+    <h3>SITE BALI JEEP</h3>
+  </div>
+  <a class="shortcut-link" href="https://balijeep.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir SITE BALI JEEP">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="documentos grupo bali" data-badge="e-mail">
+  <div class="shortcut-icon"><img src="resources/imagens/cartaodigital.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">E-mail</span>
+    <h3>DOCUMENTOS GRUPO BALI</h3>
+  </div>
+  <a class="shortcut-link" href="https://skybox.emailemnuvem.com.br/index.php/s/wkSj4R37XGms6Pn" target="_blank" rel="noopener noreferrer" aria-label="Abrir DOCUMENTOS GRUPO BALI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="b2b" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/b2b.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>B2B</h3>
+  </div>
+  <a class="shortcut-link" href="http://www.portalfiat.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir B2B">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="dealernet workflow" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/WF.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>DEALERNET WORKFLOW</h3>
+  </div>
+  <a class="shortcut-link" href="https://dealer.grupobali.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir DEALERNET WORKFLOW">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="site jeep" data-badge="comunicação">
+  <div class="shortcut-icon"><img src="resources/imagens/jeeplogosite.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Comunicação</span>
+    <h3>SITE JEEP</h3>
+  </div>
+  <a class="shortcut-link" href="https://www.jeep.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir SITE JEEP">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="gerador de senha" data-badge="suporte">
+  <div class="shortcut-icon"><i class="bi bi-grid-1x2-fill fallback-icon"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>GERADOR de SENHA</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.6/gerador-senha" target="_blank" rel="noopener noreferrer" aria-label="Abrir GERADOR de SENHA">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="gerador de assinatura" data-badge="suporte">
+  <div class="shortcut-icon"><i class="bi bi-grid-1x2-fill fallback-icon"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>GERADOR de ASSINATURA</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.6/gerador-assinatura" target="_blank" rel="noopener noreferrer" aria-label="Abrir GERADOR de ASSINATURA">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="suporte anydesk" data-badge="suporte">
+  <div class="shortcut-icon"><img src="resources/imagens/anydesk.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>SUPORTE ANYDESK</h3>
+  </div>
+  <a class="shortcut-link" href="https://get.anydesk.com/Kx0QiEjS/AnyDesk_Custom_Client.exe" target="_blank" rel="noopener noreferrer" aria-label="Abrir SUPORTE ANYDESK">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="patio jeep" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/patio_jeep.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>PATIO JEEP</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.6/veiculos/patiojeep/login.aspx" target="_blank" rel="noopener noreferrer" aria-label="Abrir PATIO JEEP">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="witechedi" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/witech.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>WITECHEDI</h3>
+  </div>
+  <a class="shortcut-link" href="https://examaftersales.fiat.com/witexedi/Default.aspx?bypass=true&amp;ticket=" target="_blank" rel="noopener noreferrer" aria-label="Abrir WITECHEDI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="base de conhecimento" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/witech.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>BASE DE CONHECIMENTO</h3>
+  </div>
+  <a class="shortcut-link" href="https://kb.l.fcawitech.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir BASE DE CONHECIMENTO">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="witech 2" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/witech.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>wiTECH 2</h3>
+  </div>
+  <a class="shortcut-link" href="https://app.l.fcawitech.com/wt2/auth/login.html#/vehicle/action-items/topology" target="_blank" rel="noopener noreferrer" aria-label="Abrir wiTECH 2">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="vianuvem" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/vianuvem.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>VIANUVEM</h3>
+  </div>
+  <a class="shortcut-link" href="https://app.vianuvem.com.br/auto/home" target="_blank" rel="noopener noreferrer" aria-label="Abrir VIANUVEM">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="cadastro de funcionário" data-badge="suporte">
+  <div class="shortcut-icon"><img src="resources/imagens/funcionario.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>CADASTRO DE FUNCIONÁRIO</h3>
+  </div>
+  <a class="shortcut-link" href="https://forms.gle/XYqm15JLK7PpjZiKA" target="_blank" rel="noopener noreferrer" aria-label="Abrir CADASTRO DE FUNCIONÁRIO">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="bi-jeep" data-badge="bi / monitoramento">
+  <div class="shortcut-icon"><img src="resources/imagens/bi.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">BI / Monitoramento</span>
+    <h3>BI-JEEP</h3>
+  </div>
+  <a class="shortcut-link" href="https://app.bali.com.br/jeep/bi.aspx" target="_blank" rel="noopener noreferrer" aria-label="Abrir BI-JEEP">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="treinamentos stellantis" data-badge="financeiro">
+  <div class="shortcut-icon"><img src="resources/imagens/wcd.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Financeiro</span>
+    <h3>TREINAMENTOS STELLANTIS</h3>
+  </div>
+  <a class="shortcut-link" href="https://psa.csod.com/login/render.aspx?id=stellantistraining" target="_blank" rel="noopener noreferrer" aria-label="Abrir TREINAMENTOS STELLANTIS">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="jeep" data-title="informações lojas" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/CNPJ.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>INFORMAÇÕES LOJAS</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.6/veiculos/infLOJAS.aspx" target="_blank" rel="noopener noreferrer" aria-label="Abrir INFORMAÇÕES LOJAS">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article></div>
+</section>
+<section class="shortcut-section" id="byd" data-section-block="byd">
+  <div class="section-heading">
+    <div class="section-logo"><img src="resources/imagens/bydbranco.png" alt="Bali BYD" loading="lazy"></div>
+    <div>
+      <p>Operação BYD, CRM, documentos e suporte</p>
+      <h2>Bali BYD</h2>
+    </div>
+    <span class="section-count">12 atalhos</span>
+  </div>
+  <div class="shortcut-grid"><article class="shortcut-card" data-section="byd" data-title="app/vendas" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/veiculo.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>APP/VENDAS</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.6/byd/principal.aspx" target="_blank" rel="noopener noreferrer" aria-label="Abrir APP/VENDAS">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="byd" data-title="app via nuvem" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/vianuvem.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>APP VIA NUVEM</h3>
+  </div>
+  <a class="shortcut-link" href="https://app.vianuvem.com.br/login.php" target="_blank" rel="noopener noreferrer" aria-label="Abrir APP VIA NUVEM">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="byd" data-title="dealernet workflow" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/WF.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>DEALERNET WORKFLOW</h3>
+  </div>
+  <a class="shortcut-link" href="https://dealer.grupobali.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir DEALERNET WORKFLOW">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="byd" data-title="e-mail bali" data-badge="e-mail">
+  <div class="shortcut-icon"><img src="resources/imagens/roundcube-icone.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">E-mail</span>
+    <h3>E-MAIL BALI</h3>
+  </div>
+  <a class="shortcut-link" href="https://webmail.bali.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir E-MAIL BALI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="byd" data-title="suporte anydesk" data-badge="suporte">
+  <div class="shortcut-icon"><img src="resources/imagens/anydesk.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>SUPORTE ANYDESK</h3>
+  </div>
+  <a class="shortcut-link" href="https://get.anydesk.com/Kx0QiEjS/AnyDesk_Custom_Client.exe" target="_blank" rel="noopener noreferrer" aria-label="Abrir SUPORTE ANYDESK">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="byd" data-title="cadastro de funcionário" data-badge="suporte">
+  <div class="shortcut-icon"><img src="resources/imagens/funcionario.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>CADASTRO DE FUNCIONÁRIO</h3>
+  </div>
+  <a class="shortcut-link" href="https://forms.gle/XYqm15JLK7PpjZiKA" target="_blank" rel="noopener noreferrer" aria-label="Abrir CADASTRO DE FUNCIONÁRIO">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="byd" data-title="portal dealer byd (crm)" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/DealerPortalBYD.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>PORTAL DEALER BYD (CRM)</h3>
+  </div>
+  <a class="shortcut-link" href="https://uscrm.byd.com/login" target="_blank" rel="noopener noreferrer" aria-label="Abrir PORTAL DEALER BYD (CRM)">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="byd" data-title="zenvia conversion" data-badge="comunicação">
+  <div class="shortcut-icon"><img src="resources/imagens/conversion.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Comunicação</span>
+    <h3>ZENVIA CONVERSION</h3>
+  </div>
+  <a class="shortcut-link" href="https://web.zenvia.com/zenvia-conversion/login" target="_blank" rel="noopener noreferrer" aria-label="Abrir ZENVIA CONVERSION">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="byd" data-title="site byd" data-badge="comunicação">
+  <div class="shortcut-icon"><img src="resources/imagens/BYD.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Comunicação</span>
+    <h3>SITE BYD</h3>
+  </div>
+  <a class="shortcut-link" href="https://www.BYD.COM.BR" target="_blank" rel="noopener noreferrer" aria-label="Abrir SITE BYD">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="byd" data-title="site bali byd" data-badge="comunicação">
+  <div class="shortcut-icon"><img src="resources/imagens/BYD.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Comunicação</span>
+    <h3>SITE BALI BYD</h3>
+  </div>
+  <a class="shortcut-link" href="https://www.baliBYD.COM.BR" target="_blank" rel="noopener noreferrer" aria-label="Abrir SITE BALI BYD">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="byd" data-title="informações lojas" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/CNPJ.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>INFORMAÇÕES LOJAS</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.6/veiculos/infLOJAS.aspx" target="_blank" rel="noopener noreferrer" aria-label="Abrir INFORMAÇÕES LOJAS">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="byd" data-title="documentos grupo bali" data-badge="e-mail">
+  <div class="shortcut-icon"><img src="resources/imagens/cartaodigital.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">E-mail</span>
+    <h3>DOCUMENTOS GRUPO BALI</h3>
+  </div>
+  <a class="shortcut-link" href="https://skybox.emailemnuvem.com.br/index.php/s/wkSj4R37XGms6Pn" target="_blank" rel="noopener noreferrer" aria-label="Abrir DOCUMENTOS GRUPO BALI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article></div>
+</section>
+<section class="shortcut-section" id="bancos" data-section-block="bancos">
+  <div class="section-heading">
+    <div class="section-logo"><img src="resources/imagens/bancofiat.png" alt="Bancos" loading="lazy"></div>
+    <div>
+      <p>Financeiras e módulos de segurança</p>
+      <h2>Bancos</h2>
+    </div>
+    <span class="section-count">7 atalhos</span>
+  </div>
+  <div class="shortcut-grid"><article class="shortcut-card" data-section="bancos" data-title="módulos seg." data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/warsaw.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>MÓDULOS SEG.</h3>
+  </div>
+  <a class="shortcut-link" href="https://www.dieboldnixdorf.com.br/warsaw" target="_blank" rel="noopener noreferrer" aria-label="Abrir MÓDULOS SEG.">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bancos" data-title="banco itau" data-badge="financeiro">
+  <div class="shortcut-icon"><img src="resources/imagens/itau.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Financeiro</span>
+    <h3>BANCO ITAU</h3>
+  </div>
+  <a class="shortcut-link" href="https://www.credlineitau.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir BANCO ITAU">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bancos" data-title="bv" data-badge="financeiro">
+  <div class="shortcut-icon"><img src="resources/imagens/bv.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Financeiro</span>
+    <h3>BV</h3>
+  </div>
+  <a class="shortcut-link" href="https://parceiro.bv.com.br/spa-ppar-base-login/#/login" target="_blank" rel="noopener noreferrer" aria-label="Abrir BV">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bancos" data-title="santander" data-badge="financeiro">
+  <div class="shortcut-icon"><img src="resources/imagens/santander.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Financeiro</span>
+    <h3>SANTANDER</h3>
+  </div>
+  <a class="shortcut-link" href="https://negocios.aceservices.accenture.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir SANTANDER">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bancos" data-title="bradesco" data-badge="financeiro">
+  <div class="shortcut-icon"><img src="resources/imagens/BRADESCO.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Financeiro</span>
+    <h3>BRADESCO</h3>
+  </div>
+  <a class="shortcut-link" href="https://financiamentos.bradesco/" target="_blank" rel="noopener noreferrer" aria-label="Abrir BRADESCO">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bancos" data-title="stellantis" data-badge="financeiro">
+  <div class="shortcut-icon"><img src="resources/imagens/STELLANTIS.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Financeiro</span>
+    <h3>STELLANTIS</h3>
+  </div>
+  <a class="shortcut-link" href="https://br-idbancopsa.mpsa.com/Web_Autofacil/Login/Inicial" target="_blank" rel="noopener noreferrer" aria-label="Abrir STELLANTIS">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="bancos" data-title="fandi" data-badge="financeiro">
+  <div class="shortcut-icon"><img src="resources/imagens/fandi.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Financeiro</span>
+    <h3>FANDI</h3>
+  </div>
+  <a class="shortcut-link" href="http://app9.fandi.com.br" target="_blank" rel="noopener noreferrer" aria-label="Abrir FANDI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article></div>
+</section>
+<section class="shortcut-section" id="tecnologia" data-section-block="tecnologia">
+  <div class="section-heading">
+    <div class="section-logo"><img src="resources/imagens/bi.png" alt="Tecnologia" loading="lazy"></div>
+    <div>
+      <p>Infraestrutura, monitoramento e suporte</p>
+      <h2>Tecnologia</h2>
+    </div>
+    <span class="section-count">31 atalhos</span>
+  </div>
+  <div class="shortcut-grid"><article class="shortcut-card" data-section="tecnologia" data-title="reset senha linkentry" data-badge="suporte">
+  <div class="shortcut-icon"><img src="resources/imagens/MYPEOPLE.PNG" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>RESET SENHA LINKENTRY</h3>
+  </div>
+  <a class="shortcut-link" href="https://mypeople.fiat.com" target="_blank" rel="noopener noreferrer" aria-label="Abrir RESET SENHA LINKENTRY">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="storage bali" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/storage.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>STORAGE BALI</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.145.2:8000" target="_blank" rel="noopener noreferrer" aria-label="Abrir STORAGE BALI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="zabbix" data-badge="bi / monitoramento">
+  <div class="shortcut-icon"><img src="resources/imagens/zabbix-1.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">BI / Monitoramento</span>
+    <h3>ZABBIX</h3>
+  </div>
+  <a class="shortcut-link" href="http://zabbix.bali.com.br/zabbix/" target="_blank" rel="noopener noreferrer" aria-label="Abrir ZABBIX">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="nagios" data-badge="bi / monitoramento">
+  <div class="shortcut-icon"><img src="resources/imagens/nagios_logo%20(1).png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">BI / Monitoramento</span>
+    <h3>NAGIOS</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.190/nagios/" target="_blank" rel="noopener noreferrer" aria-label="Abrir NAGIOS">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="aws - amazon" data-badge="operação">
+  <div class="shortcut-icon"><img src="resources/imagens/aws.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Operação</span>
+    <h3>AWS - AMAZON</h3>
+  </div>
+  <a class="shortcut-link" href="https://signin.aws.amazon.com/signin?redirect_uri=https%3A%2F%2Fconsole.aws.amazon.com%2Fconsole%2Fhome%3Fnc2%3Dh_ct%26src%3Dheader-signin%26state%3DhashArgs%2523%26isauthcode%3Dtrue&amp;client_id=arn%3Aaws%3Aiam%3A%3A015428540659%3Auser%2Fhomepage&amp;forceMobileApp=0" target="_blank" rel="noopener noreferrer" aria-label="Abrir AWS - AMAZON">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="grafana" data-badge="bi / monitoramento">
+  <div class="shortcut-icon"><img src="resources/imagens/grafana.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">BI / Monitoramento</span>
+    <h3>GRAFANA</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.146.87:3000/" target="_blank" rel="noopener noreferrer" aria-label="Abrir GRAFANA">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="sábados" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/plantao.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>SÁBADOS</h3>
+  </div>
+  <a class="shortcut-link disabled" href="#" aria-label="Abrir SÁBADOS">
+    <span>Indisponível</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="phpmyadmin" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/PhpMyAdmin_logo.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>PHPMyAdmin</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.151.135/phpmyadmin" target="_blank" rel="noopener noreferrer" aria-label="Abrir PHPMyAdmin">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="firewall" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/linux-firewall-iptables.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>FIREWALL</h3>
+  </div>
+  <a class="shortcut-link" href="https://129.13.144.190:10000/" target="_blank" rel="noopener noreferrer" aria-label="Abrir FIREWALL">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="chamados fiatnet" data-badge="suporte">
+  <div class="shortcut-icon"><img src="resources/imagens/dealernet_webdesk.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>CHAMADOS FIATNET</h3>
+  </div>
+  <a class="shortcut-link" href="https://dealernet.atlassian.net/servicedesk/customer/portal/3/user/login?destination=portal%2F3" target="_blank" rel="noopener noreferrer" aria-label="Abrir CHAMADOS FIATNET">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="base conhecimento fiatnet" data-badge="financeiro">
+  <div class="shortcut-icon"><img src="resources/imagens/dealernet.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Financeiro</span>
+    <h3>BASE CONHECIMENTO FIATNET</h3>
+  </div>
+  <a class="shortcut-link" href="https://wiki.dealernet.com.br/index.php/Banco_de_conhecimento_-_FAQ" target="_blank" rel="noopener noreferrer" aria-label="Abrir BASE CONHECIMENTO FIATNET">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="chamados vianuvem" data-badge="suporte">
+  <div class="shortcut-icon"><img src="resources/imagens/dealernet_webdesk.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>CHAMADOS VIANUVEM</h3>
+  </div>
+  <a class="shortcut-link" href="https://vianuvem.atlassian.net/servicedesk/customer/portals" target="_blank" rel="noopener noreferrer" aria-label="Abrir CHAMADOS VIANUVEM">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="admin email" data-badge="e-mail">
+  <div class="shortcut-icon"><img src="resources/imagens/iRedAdmin.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">E-mail</span>
+    <h3>ADMIN EMAIL</h3>
+  </div>
+  <a class="shortcut-link" href="https://129.13.144.203/iredadmin" target="_blank" rel="noopener noreferrer" aria-label="Abrir ADMIN EMAIL">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="ftp balisia" data-badge="bi / monitoramento">
+  <div class="shortcut-icon"><img src="resources/imagens/ftp_bali.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">BI / Monitoramento</span>
+    <h3>FTP BALISIA</h3>
+  </div>
+  <a class="shortcut-link" href="http://zabbix.bali.com.br/ftp" target="_blank" rel="noopener noreferrer" aria-label="Abrir FTP BALISIA">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="ntop" data-badge="bi / monitoramento">
+  <div class="shortcut-icon"><img src="resources/imagens/ntop-logo2.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">BI / Monitoramento</span>
+    <h3>NTOP</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.190:3000/lua/login.lua?referer=129.13.144.190%3A3000%2F" target="_blank" rel="noopener noreferrer" aria-label="Abrir NTOP">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="unifi ubiquiti" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/UniFi.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>Unifi Ubiquiti</h3>
+  </div>
+  <a class="shortcut-link" href="https://192.168.90.56:8443/" target="_blank" rel="noopener noreferrer" aria-label="Abrir Unifi Ubiquiti">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="wisefi intelbras" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/wiseFi.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>WiseFi Intelbras</h3>
+  </div>
+  <a class="shortcut-link" href="http://192.168.90.56:8000/" target="_blank" rel="noopener noreferrer" aria-label="Abrir WiseFi Intelbras">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="cacti" data-badge="bi / monitoramento">
+  <div class="shortcut-icon"><img src="resources/imagens/cacti.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">BI / Monitoramento</span>
+    <h3>CACTI</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.144.190/cacti/" target="_blank" rel="noopener noreferrer" aria-label="Abrir CACTI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="myusers" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/myusers.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>MyUSERS</h3>
+  </div>
+  <a class="shortcut-link" href="https://myusers.fiat.com" target="_blank" rel="noopener noreferrer" aria-label="Abrir MyUSERS">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="chamado fiatnet antigo" data-badge="suporte">
+  <div class="shortcut-icon"><img src="resources/imagens/dealernet-wd.gif" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Suporte</span>
+    <h3>CHAMADO FIATNET ANTIGO</h3>
+  </div>
+  <a class="shortcut-link" href="https://webdesk.dealernet.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Abrir CHAMADO FIATNET ANTIGO">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="grupo email" data-badge="e-mail">
+  <div class="shortcut-icon"><img src="resources/imagens/gnu_mailman.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">E-mail</span>
+    <h3>GRUPO EMAIL</h3>
+  </div>
+  <a class="shortcut-link" href="http://lists.bali.com.br/mailman/admindb/grupobali" target="_blank" rel="noopener noreferrer" aria-label="Abrir GRUPO EMAIL">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="adset bali" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/logo-adset.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>ADSET BALI</h3>
+  </div>
+  <a class="shortcut-link" href="http://integradoradset.bali.com.br/Login.aspx" target="_blank" rel="noopener noreferrer" aria-label="Abrir ADSET BALI">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="proxy" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/squid-logo-png.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>PROXY</h3>
+  </div>
+  <a class="shortcut-link" href="https://129.13.144.190:10000/" target="_blank" rel="noopener noreferrer" aria-label="Abrir PROXY">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="snep asterix" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/snep-voip.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>SNEP ASTERIX</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.146.251/snep" target="_blank" rel="noopener noreferrer" aria-label="Abrir SNEP ASTERIX">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="ftp voip" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/Asterisk_Logo.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>FTP VOIP</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.146.251/ftp" target="_blank" rel="noopener noreferrer" aria-label="Abrir FTP VOIP">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="easy call aero" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/digitro2.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>EASY CALL AERO</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.149.10/install/" target="_blank" rel="noopener noreferrer" aria-label="Abrir EASY CALL AERO">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="easy call saan" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/digitro2.jpg" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>EASY CALL SAAN</h3>
+  </div>
+  <a class="shortcut-link" href="http://129.13.146.10/install/" target="_blank" rel="noopener noreferrer" aria-label="Abrir EASY CALL SAAN">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="bali sia link" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/grafana.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>BALI SIA LINK</h3>
+  </div>
+  <a class="shortcut-link" href="https://snapshot.raintank.io/dashboard/snapshot/K70KGreXbZlTpnETYYTWwenqgJu90lvb?orgId=2&amp;from=1566909112093&amp;to=1566910912094" target="_blank" rel="noopener noreferrer" aria-label="Abrir BALI SIA LINK">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="pfsense fw" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/PfSense_logo.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>PFSENSE FW</h3>
+  </div>
+  <a class="shortcut-link" href="https://129.13.144.3/" target="_blank" rel="noopener noreferrer" aria-label="Abrir PFSENSE FW">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="inventario pc&#x27;s" data-badge="atalho">
+  <div class="shortcut-icon"><img src="resources/imagens/inventario-de-estoque.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">Atalho</span>
+    <h3>INVENTARIO PC&#x27;s</h3>
+  </div>
+  <a class="shortcut-link" href="http://sistema.bali.com.br/listarHosts.xhtml" target="_blank" rel="noopener noreferrer" aria-label="Abrir INVENTARIO PC&#x27;s">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article>
+<article class="shortcut-card" data-section="tecnologia" data-title="bi-tecnologia" data-badge="bi / monitoramento">
+  <div class="shortcut-icon"><img src="resources/imagens/powerbi.png" alt="" loading="lazy" onerror="this.classList.add('d-none');this.nextElementSibling.classList.remove('d-none')"><i class="bi bi-grid-1x2-fill fallback-icon d-none"></i></div>
+  <div class="shortcut-content">
+    <span class="shortcut-badge">BI / Monitoramento</span>
+    <h3>BI-TECNOLOGIA</h3>
+  </div>
+  <a class="shortcut-link" href="https://app.powerbi.com/signin#code=0.ASUAlH2WmqvG3k-ZUmhCWsc-9g8BHIdhXrFPg6yYYQp-kRAlAJo.AgABAAIAAADnfolhJpSnRYB1SVj-Hgd8AgDs_wUA9P-LmbqMgLW-nPMq6nEuoO63our-HceBtOEvdpFH0oLJNvag28xBmIgZtDvMs5JC5FlWHA17aG96q-DOIjSo6anIZ0tWkfjnsKrIkiYo20dSG9E2Qz5j5aYmpjXkBYbz9QbnCktGZsCYXAgyJGZtYC0k292Zvb3UDRVoZ3unHFcTjMhHz49rKN5HDG4L5eaMlnTIoKb02IvH9mVY4lQ_601Mu9yNJcpWlyRxypOEyqlwNvx6Z8l53nFeR45e7GgmZf9-49mmif4KQTzbbzQovHS6HGQKXT4t5ziBow77rdj9XFBEgnd3m3By1oxbnnvuUzeo4YUCMMMAlOtz4Ish0q50YuiF9zkrpUMS8m2m-VJvBLkRffUjWjzLm31JzL_79aFKb1vCDZyusTGSBFfe_QKTTPrMgp3jQatAFhaYJHT0ragLwcK3EJD61GODXCz6b-ak7jRko7z8BN4v6zXuJkzjSu5ZTbc8ub7LbGiL1YzZOZ3ujST3VfjCdbDIhG0xc_XW-8TDagyiMm1TMjJr2vuDqdslDj1-U8bXvlEIfhMA2yVQ-mLvUzjG-NKI1lRUD0hONed5jR-ZXIficFzZTO9EKepTRBfYjetJ_ytzklryXqVxLzWBBOI7TSV8vi5RXnqMPvEYoenYCM8UfLQalYlIi22BMsJCZA-BfeL1fYJz6CixQbTKgT_PAAsnTpO6YUDsbPnCdgm62vYB2c3vV_g535vJpu3BMFi5ITw5u3kz7hxLjq6TgVbPnVBB1IqQrLgjd1I_jkBi-2MbMThnWi5_frElPEkhpIvVGGiXlzJPix3abzalWtV3ctzctOuKGK00y6-siMHRkVHNkpN5hK3tTepLtczlWJEwI1ENc93MdvRb7TI1K74&amp;client_info=eyJ1aWQiOiJiMmY2MmQxNi1mY2I0LTQ5ODAtYjRkNC01ZmQzZDIyMGEzOGMiLCJ1dGlkIjoiOWE5NjdkOTQtYzZhYi00ZmRlLTk5NTItNjg0MjVhYzczZWY2In0&amp;state=eyJpZCI6ImJhZWM1ZGY3LTgzYWEtNDQ5ZC05MzA4LTFhOTZhMGQzZTAxNiIsIm1ldGEiOnsiaW50ZXJhY3Rpb25UeXBlIjoicmVkaXJlY3QifX0%3d%7c1708713196768.4%3b1708713196771.7%3b1708713196584.5&amp;session_state=b84f7a45-161b-4dd9-a3ad-db66fe875df3&amp;correlation_id=7d392504-786f-4201-9f24-68c7d80ef0c4" target="_blank" rel="noopener noreferrer" aria-label="Abrir BI-TECNOLOGIA">
+    <span>Acessar</span><i class="bi bi-box-arrow-up-right"></i>
+  </a>
+</article></div>
+</section>
+          <section class="shortcut-section maintenance-section" id="manutencao" data-maintenance-section>
+            <div class="section-heading">
+              <div class="section-logo"><i class="bi bi-tools"></i></div>
+              <div>
+                <p>Editar, incluir e remover atalhos da central</p>
+                <h2>Manuten&ccedil;&atilde;o</h2>
+              </div>
+              <span class="section-count">Protegido</span>
+            </div>
+            <div class="shortcut-grid maintenance-grid">
+              <div class="maintenance-panel">
+                <div class="maintenance-lock" id="maintenanceLock">
+                  <div>
+                    <p class="maintenance-kicker">Acesso protegido</p>
+                    <h3>Informe a senha de manuten&ccedil;&atilde;o</h3>
+                    <p>Use este painel para alterar nomes, links, categorias e imagens dos atalhos.</p>
+                  </div>
+                  <form id="maintenanceLoginForm" class="maintenance-login-form" autocomplete="off">
+                    <label for="maintenancePassword">Senha</label>
+                    <div class="maintenance-password-row">
+                      <input id="maintenancePassword" type="password" placeholder="Digite a senha" aria-label="Senha da manuten&ccedil;&atilde;o">
+                      <button type="submit"><i class="bi bi-unlock-fill"></i> Entrar</button>
+                    </div>
+                    <div id="maintenanceLoginError" class="maintenance-error d-none" role="alert">Senha incorreta.</div>
+                  </form>
+                </div>
+
+                <div class="maintenance-workspace d-none" id="maintenanceWorkspace">
+                  <div class="maintenance-toolbar">
+                    <div>
+                      <p class="maintenance-kicker">Painel liberado</p>
+                      <h3>Gerenciar atalhos</h3>
+                      <p>As altera&ccedil;&otilde;es e a ordem dos atalhos ficam salvas no servidor, em arquivo JSON, sem uso de banco de dados.</p>
+                    </div>
+                    <div class="maintenance-toolbar-actions">
+                      <button type="button" id="maintenanceNewShortcut"><i class="bi bi-plus-lg"></i> Novo</button>
+                      <button type="button" id="maintenanceResetDefaults" class="secondary"><i class="bi bi-arrow-counterclockwise"></i> Restaurar padr&atilde;o</button>
+                    </div>
+                  </div>
+
+                  <form id="maintenanceForm" class="maintenance-form" autocomplete="off">
+                    <input type="hidden" id="maintenanceShortcutId">
+                    <div class="form-field">
+                      <label for="maintenanceTitle">Nome do atalho</label>
+                      <input id="maintenanceTitle" type="text" required>
+                    </div>
+                    <div class="form-field">
+                      <label for="maintenanceUrl">Link</label>
+                      <input id="maintenanceUrl" type="text" required placeholder="https://">
+                    </div>
+                    <div class="form-field">
+                      <label for="maintenanceSection">Categoria</label>
+                      <select id="maintenanceSection" required>
+                        <option value="bali">Bali Fiat</option>
+                        <option value="jeep">Bali Jeep</option>
+                        <option value="byd">Bali BYD</option>
+                        <option value="bancos">Bancos</option>
+                        <option value="tecnologia">Tecnologia</option>
+                      </select>
+                    </div>
+                    <div class="form-field">
+                      <label for="maintenanceBadge">Etiqueta</label>
+                      <input id="maintenanceBadge" type="text" placeholder="Opera&ccedil;&atilde;o, Suporte, Financeiro...">
+                    </div>
+                    <div class="form-field">
+                      <label for="maintenanceImage">Imagem do &iacute;cone</label>
+                      <input id="maintenanceImage" type="text" placeholder="resources/imagens/exemplo.png">
+                    </div>
+                    <div class="form-field">
+                      <label for="maintenanceIcon">Biblioteca de &iacute;cones</label>
+                      <input id="maintenanceIcon" type="hidden" value="bi-grid-1x2-fill">
+                      <button type="button" id="maintenanceIconPickerOpen" class="maintenance-icon-open">
+                        <i class="bi bi-grid-1x2-fill"></i><span>Escolher &iacute;cone</span>
+                      </button>
+                    </div>
+                    <div class="form-field full">
+                      <label>Pr&eacute;via do &iacute;cone</label>
+                      <div id="maintenanceIconPreview" class="maintenance-icon-preview">
+                        <i class="bi bi-grid-1x2-fill"></i><span>Atalho geral</span>
+                      </div>
+                    </div>
+                    <div class="maintenance-form-actions full">
+                      <button type="submit"><i class="bi bi-check2-circle"></i> Salvar atalho</button>
+                      <button type="button" id="maintenanceCancelEdit" class="secondary"><i class="bi bi-x-lg"></i> Cancelar</button>
+                    </div>
+                  </form>
+
+                  <div id="maintenanceIconPicker" class="maintenance-icon-picker d-none" aria-hidden="true">
+                    <div class="maintenance-icon-picker-backdrop" data-maintenance-icon-close></div>
+                    <div class="maintenance-icon-picker-dialog" role="dialog" aria-modal="true" aria-label="Escolher &iacute;cone">
+                      <div class="maintenance-icon-picker-head">
+                        <div>
+                          <p class="maintenance-kicker">Biblioteca local</p>
+                          <h3>Escolher &iacute;cone</h3>
+                          <p id="maintenanceIconCount">Carregando &iacute;cones...</p>
+                        </div>
+                        <button type="button" class="maintenance-icon-picker-close" data-maintenance-icon-close aria-label="Fechar">
+                          <i class="bi bi-x-lg"></i>
+                        </button>
+                      </div>
+                      <div class="maintenance-icon-picker-search">
+                        <i class="bi bi-search"></i>
+                        <input id="maintenanceIconSearch" type="search" autocomplete="off" placeholder="Buscar por contrato, telefone, carro, banco...">
+                      </div>
+                      <div id="maintenanceIconGrid" class="maintenance-icon-grid"></div>
+                    </div>
+                  </div>
+
+                  <div class="maintenance-list-card">
+                    <div class="maintenance-list-head">
+                      <div>
+                        <h3>Atalhos cadastrados</h3>
+                        <p id="maintenanceListSummary">Carregando atalhos...</p>
+                        <p class="maintenance-order-help">Use as setas para reordenar os atalhos dentro de cada grupo grande.</p>
+                      </div>
+                      <div class="maintenance-list-controls">
+                        <select id="maintenanceListSection" aria-label="Filtrar categoria">
+                          <option value="all">Todas as categorias</option>
+                          <option value="bali">Bali Fiat</option>
+                          <option value="jeep">Bali Jeep</option>
+                          <option value="byd">Bali BYD</option>
+                          <option value="bancos">Bancos</option>
+                          <option value="tecnologia">Tecnologia</option>
+                        </select>
+                        <input id="maintenanceSearch" type="search" placeholder="Buscar atalho">
+                      </div>
+                    </div>
+                    <div id="maintenanceList" class="maintenance-list" aria-live="polite"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <button class="support-fab" type="button" data-bs-toggle="modal" data-bs-target="#noticeModal" aria-label="Abrir aviso importante">
+    <i class="bi bi-megaphone-fill"></i>
+    <span>Aviso</span>
+  </button>
+
+  <div class="modal fade" id="noticeModal" tabindex="-1" aria-labelledby="noticeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content notice-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="noticeModalLabel"><i class="bi bi-info-circle-fill"></i> Aviso importante</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <img class="img-fluid rounded-4" src="resources/imagens/AVISOIMPORTANTE2.jpg" alt="Aviso importante">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="resources/js/bootstrap.bundle.min.js" defer></script>
+  <script src="../js/bootstrap-icons-list.js?v=20260623-reorder-maintenance" defer></script>
+  <script src="resources/js/index.js?v=20260623-reorder-maintenance" defer></script>
+</body>
+</html>

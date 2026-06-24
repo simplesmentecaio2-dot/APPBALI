@@ -1,0 +1,515 @@
+﻿html, body { 
+    margin:0 auto;
+    padding:0;
+    /*background-color:#F2F2F2;*/
+    background-image:url('../img/BG.png');
+    background-repeat:repeat-x;
+    height:100%;
+}
+
+#topo {
+    width:100%;
+    height:50px;
+    background-image:url('../img/topoBg.png');
+    
+    
+}
+
+#linha-branca {
+    width:100%;
+    
+    height:1px;
+    background-color:white;
+   
+    
+}
+
+#menu-topo {
+    width:100%;
+    height:5px;
+    background-image:url('../img/topoMenu.png');
+   
+    
+}
+
+#conteudo-default {
+}
+
+.btn-default {
+    height: 125px;
+    width: 200px;
+    cursor:pointer;
+    margin-bottom:30px;
+}
+
+#contBtn {
+    margin-top:40px;
+    text-align:center;
+}
+
+#table-menu {
+    width:100%;
+    height:50px;
+}
+
+#table-menu-logo {
+    text-align:left;
+    width:50%;
+}
+
+#table-menu-usuario {
+    text-align:right;
+    width:50%;
+    color:white;
+    padding-top:17px;
+
+}
+
+.linha-branca-menu {
+    width:100%;
+    height:1px;
+    background-color:white;
+}
+
+.btn-Menu-left {
+    
+    background-image:url('../img/menu.png');
+    height:30px;
+}
+
+.idUser {
+    font-family:Calibri; font-size:14px;
+}
+
+#menu {
+    width:100%;
+    height:25px;
+    background-color:#f6f6f6;
+    -webkit-box-shadow: 0 8px 8px -6px black;
+	-moz-box-shadow:    0 8px 8px -6px black;
+	box-shadow:         0 8px 8px -6px black;
+    z-index:30;
+    position:relative;
+    margin-bottom:10px;
+    line-height:25px;
+    font-size:16px;
+    font-family:Calibri;
+       
+}
+
+.menu-top {
+    height:25px;
+    padding-left:16px;
+    font-size:16px;
+    font-family:Calibri;
+    line-height:25px;
+    cursor:pointer;
+    width:80px;
+    float:left;
+}
+
+.menu-top-itens {
+    height:25px;
+    padding-left:16px;
+    font-size:16px;
+    font-family:Calibri;
+    line-height:25px;
+    cursor:pointer;
+    width:100px;
+    float:left;
+}
+
+#menu-left {
+    width:150px;
+    height: 100%;
+    background-color:#cacaca;
+    float:left;
+    -webkit-box-shadow: 0 8px 8px 3px black;
+	-moz-box-shadow:    0 8px 8px 3px black;
+	box-shadow:         0 0px 8px 3px black;
+    margin-right:10px;
+    margin-top:-10px;
+    display:none;
+    position:absolute;
+    top:93px;
+    left:0px;
+    z-index:29;
+    
+    
+}
+
+#Cont{
+    background-color:transparent;
+    text-align:center;
+    height:100%;
+    width:100%;
+}
+
+.item-menu-select {
+    color:#171717;
+    /*color:#ededed;*/
+    padding-left:16px;
+    font-size:16px;
+    font-family:Calibri;
+    background-color:#f2f1f1;
+    /*background-image:url('../img/topoMenu.png');*/
+    margin-bottom:10px;
+    cursor:default;
+    height:30px;
+    line-height:30px;
+}
+.item-menu {
+    color:#171717;
+    /*color:#ededed;*/
+    padding-left:16px;
+    font-size:16px;
+    font-family:Calibri;
+    /*background-color:#262626;*/
+    /*background-image:url('../img/topoMenu.png');*/
+    margin-bottom:10px;
+    cursor:pointer;
+    height:30px;
+    line-height:30px;
+}
+
+.item-menu:hover {
+    color:#171717;
+    /*color:#ededed;*/
+    padding-left:16px;
+    font-size:16px;
+    font-family:Calibri;
+    background-color:#f2f1f1;
+    /*background-image:url('../img/topoMenu.png');*/
+    margin-bottom:10px;
+    cursor:pointer;
+    height:30px;
+    line-height:30px;
+}
+
+#completa-menu-left {
+    /*height:100%;
+    background-color:#262626;*/
+     /*background-image:url('../img/topoMenu.png');*/
+}
+
+#item-menu-top {
+    color:#ededed;
+    
+    height:40px;
+    padding-left:16px;
+    font-size:25px;
+    font-weight:bold;
+    font-family:Calibri;
+    /*background-color:#262626;*/
+    /*background-image:url('../img/topoMenu.png');*/
+    /*margin-bottom:1px;*/
+    vertical-align:middle;
+    
+}
+
+#cheques-chart-pie {
+    /*float:left;*/
+    border-width:1px;
+    border-color:black;
+    border-style:solid;
+    width:100%;
+    height:300px;
+    /*margin-left:13px;
+    margin-top:13px;*/
+}
+
+#cheque-chart-departamento {
+    /*float:left;*/
+    border-width:1px;
+    border-color:black;
+    border-style:solid;
+    width:100%;
+    height:300px;
+    /*margin-right:13px;*/
+    /*margin-top:13px;*/
+    
+}
+
+#chequeDevPorMes {
+   
+    border-width:1px;
+    border-color:black;
+    border-style:solid;
+    width:100%;
+    height:300px;
+    /*margin-left:13px;
+    /*margin-right:13px;
+    margin-top:18px;*/
+}
+
+.linkHome {
+    text-decoration:none;
+    color:white;
+    border:none;
+    font-family:Arial;
+    font-weight:bold;
+}
+
+#logo {
+    text-decoration:none;
+    color:white;
+    border:none;
+    font-family:Arial;
+    font-weight:bold;
+}
+
+.links {
+    text-decoration:none;
+    color:#171717;
+    border:none;
+    
+}
+
+
+.table-menu {
+    color:#171717;
+    font-size:16px;
+    font-family:Calibri;
+    cursor:pointer;
+}
+
+#tabela-cheques-dev {
+    
+    margin:0 auto; padding:0;
+    width:100%;
+    /*margin*/
+    font-family:Calibri;
+    font-size:14px;
+    border-width:1px;
+    border-color:black;
+    border-style:solid;
+}
+
+#cheques-clientes {
+    
+    margin:0 auto; padding:0;
+    width:100%;
+    
+    font-family:Calibri;
+    font-size:18px;
+    font-weight:bold;
+    border-width:1px;
+    border-color:black;
+    border-style:solid;
+    
+
+}
+
+/*CONFIGURAR TABPANEL ATRAVÉS DE UMA CLASSE   */
+
+.tabPanelConsultar .ajax__tab_header 
+{
+font-size:13px;
+font-weight:bold;
+font-family:sans-serif;
+text-align:left;
+/*background:url(img/headerinativo.png) repeat-x;*/ /* Imagem de fundo do HEADER  */
+text-decoration:none;
+} 
+.tabPanelConsultar .ajax__tab_active .ajax__tab_outer,
+.tabPanelConsultar .ajax__tab_header .ajax__tab_outer,
+.tabPanelConsultar .ajax__tab_hover .ajax__tab_outer
+{
+ 
+color:Black;
+/*height:32px;*/ /*tamanho do header para imagem de fundo*/
+text-align:left;
+text-decoration:none;
+/* no-repeat left top;*/
+} 
+.tabPanelConsultar .ajax__tab_active .ajax__tab_inner,
+.tabPanelConsultar .ajax__tab_header .ajax__tab_inner,
+.tabPanelConsultar .ajax__tab_hover .ajax__tab_inner
+{
+
+height:20px;
+text-decoration:none;
+/*margin-left:16px; /* offset the width of the left image */
+/*background:url(img/hoververmelho.png) no-repeat right top;*/
+} 
+.tabPanelConsultar .ajax__tab_active .ajax__tab_tab
+{
+ 
+/*background:url(img/headerativo.png);*/
+/*background-color:White;*/ /* fundo do HEAD ATIVADO*/
+color:Black;
+text-decoration:none;
+
+}
+.tabPanelConsultar .ajax__tab_hover .ajax__tab_tab
+{
+
+color:Black;    
+text-decoration:none;
+/*background-color:White;  Fundo no hover */
+}
+.tabPanelConsultar .ajax__tab_header .ajax__tab_tab
+{
+width:100px;
+height:30px;
+line-height:30px;
+border-width:1px;  /*bordar branca do tab*/
+/*border-color:White;
+border-style:solid;*/
+color:black; /*Cor da Fonte do header */
+text-decoration:none;
+border-radius:8px;
+margin-right:3px;
+background-color:#f6f6f6;
+/*background:url(../img/menu.png);*/
+
+}
+
+.tabPanelConsultar .ajax__tab_hover .ajax__tab_tab, 
+.tabPanelConsultar .ajax__tab_active .ajax__tab_tab 
+{
+    
+background:url(../img/topoBg.png);
+background-color:white;
+color:white;
+text-decoration:none;
+border-radius:8px;
+
+
+} 
+.tabPanelConsultar .ajax__tab_body 
+{
+font-family:verdana,tahoma,helvetica;
+font-size:10pt;
+background-color:white;
+text-decoration:none;
+border-width:1px;
+border-color:silver;
+border-style:solid;
+border-radius:5px;
+padding:10px;
+
+}
+
+
+/*Tela de inclusão de audiencia*/
+
+#incluir-audiencia {
+    width:100%;
+    height:100%;
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:1000;
+    background-color:rgba(0, 0, 0, 0.75);
+    /*visibility:hidden;*/
+
+}
+
+.hiddenDefault {
+    visibility:hidden;
+}
+
+#incluir-resumo-audiencia {
+    
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:14px;
+    left:0px;
+    z-index:1000;
+    background-color:rgba(0, 0, 0, 0.75);
+    visibility:hidden;
+
+}
+
+#div-incluir-resumo-audiencia {
+    width:500px;
+    height:350px;
+    background-color:white;
+    border-radius:5px;
+    left:50%;
+    top:20%;
+    position:fixed;
+    margin-left:-250px;
+    padding:10px;
+}
+
+#box-table-login {
+    
+    border:1px solid gray;  
+    -webkit-box-shadow: 0 8px 8px -6px black;
+	-moz-box-shadow:    0 8px 8px -6px black;
+	box-shadow:         0 8px 8px -6px black;
+    border-bottom-left-radius:5px;
+    border-bottom-right-radius:5px;
+    background-color:white;
+}
+
+.pointer {
+cursor:pointer;
+}
+
+.textbox {
+    border-radius:3px;
+    border:1px, solid, gray;
+    
+}
+
+.txt-Despachante {
+    
+    border:1px solid silver;
+    border-radius:4px;
+    background-image:url('../img/fundtable.png');
+    color:#171717;
+    padding:3px;
+}
+
+/*Padrões ############################################*/
+.btns {
+background-color:#585758;
+border:2px solid #585758;
+color:white;
+border-radius:3px;
+cursor:pointer;
+}
+
+.txts {
+    border:1px solid silver;
+    border-radius:4px;
+    background-image:url('../img/fundtable.png');
+    color:#171717;
+    padding:3px;
+}
+
+.btns {
+background-color:#585758;
+border:2px solid #585758;
+color:white;
+border-radius:3px;
+cursor:pointer;
+}
+
+#busca {
+
+    position: fixed;
+    width:100%;
+    height:100%;
+    top:0;
+    left:0;
+    background-color:rgba(0, 0, 0, 0.85);
+    z-index:1000;
+    display:none;
+}
+
+#contBusca-despachanteVN {
+    width:100%;
+    background-color:pink;
+    
+}
+
+#gif-aguarde {
+    top:0; left:0; display:none;
+position:fixed; z-index:1000; background-color:rgba(0, 0, 0, 0.85); width:100%; height:100%;
+
+}

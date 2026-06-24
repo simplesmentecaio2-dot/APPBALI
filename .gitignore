@@ -35,6 +35,14 @@ BKP*/
 * - Copia/
 Nova pasta/
 Bibliotecas e exemplos/
-Intranet/
 
-# Intranet ficara fora do primeiro versionamento
+# Intranet: versionar paginas e recursos, manter instaladores/copias pesadas fora
+Intranet/**/*.exe
+Intranet/**/*.msi
+Intranet/**/*.cab
+Intranet/**/*.pbd
+Intranet/**/*.tar.gz
+Intranet/Install/
+Intranet/Limbo/
+Intranet/cert-installer*/
+Intranet/crm 3/
