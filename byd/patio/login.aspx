@@ -28,9 +28,10 @@
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="./assets/css/util.css">
     <link rel="stylesheet" type="text/css" href="./assets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="../../css/bali-login.css">
     <!--===============================================================================================-->
 </head>
-<body>
+<body class="premium-login login-byd">
     <div class="limiter">
 		<div class="container-login100 bg-dark">
 			<div class="wrap-login100 p-l-85 p-r-85 p-t-55 p-b-55">
@@ -40,17 +41,17 @@
 					</span>
 
 					<span class="txt1 p-b-11">
-						Username
+						Usu&aacute;rio
 					</span>
-					<div class="wrap-input100 validate-input m-b-36" data-validate = "Username is required">
+					<div class="wrap-input100 validate-input m-b-36" data-validate = "Informe o usu&aacute;rio">
                         <input id="txtUsuario" runat="server" class="input100" type="text" name="username" placeholder="Usuário">
 						<span class="focus-input100"></span>
 					</div>
 					
 					<span class="txt1 p-b-11">
-						Password
+						Senha
 					</span>
-					<div class="wrap-input100 validate-input m-b-12" data-validate = "Password is required">
+					<div class="wrap-input100 validate-input m-b-12" data-validate = "Informe a senha">
 						<span class="btn-show-pass">
 							<i class="fa fa-eye"></i>
 						</span>

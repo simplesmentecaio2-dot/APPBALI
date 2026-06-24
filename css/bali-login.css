@@ -1,0 +1,266 @@
+:root {
+  --login-ink: #17202a;
+  --login-muted: #667085;
+  --login-surface: rgba(255, 255, 255, .94);
+  --login-border: rgba(255, 255, 255, .35);
+  --login-shadow: 0 28px 80px rgba(15, 23, 42, .28);
+  --login-radius: 8px;
+}
+
+html,
+body.premium-login {
+  min-height: 100%;
+}
+
+body.premium-login {
+  margin: 0;
+  color: var(--login-ink);
+  background: #111827;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body.premium-login.login-fiat {
+  --login-brand: #c83a3a;
+  --login-brand-dark: #321114;
+  --login-brand-mid: #79373b;
+  --login-brand-soft: rgba(200, 58, 58, .14);
+}
+
+body.premium-login.login-jeep {
+  --login-brand: #5e7f42;
+  --login-brand-dark: #111912;
+  --login-brand-mid: #435b33;
+  --login-brand-soft: rgba(94, 127, 66, .16);
+}
+
+body.premium-login.login-byd {
+  --login-brand: #2f6fbd;
+  --login-brand-dark: #0b1728;
+  --login-brand-mid: #255b95;
+  --login-brand-soft: rgba(47, 111, 189, .16);
+}
+
+body.premium-login.login-neutral {
+  --login-brand: #374151;
+  --login-brand-dark: #111827;
+  --login-brand-mid: #334155;
+  --login-brand-soft: rgba(55, 65, 81, .16);
+}
+
+.premium-login .limiter {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.premium-login .container-login100,
+.premium-login .container-login100[style],
+.premium-login .container-login100.bg-dark {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 100vh;
+  padding: 32px min(7vw, 86px);
+  background:
+    linear-gradient(90deg, rgba(10, 16, 28, .62) 0%, rgba(10, 16, 28, .48) 45%, rgba(10, 16, 28, .20) 100%),
+    linear-gradient(135deg, var(--login-brand-dark) 0%, var(--login-brand-mid) 54%, #101827 100%),
+    url('../img/papeldeparede.jpg') center center / cover no-repeat !important;
+  overflow: hidden;
+  position: relative;
+}
+
+.premium-login .container-login100::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .10), transparent 34%),
+    radial-gradient(circle at 20% 24%, rgba(255, 255, 255, .14), transparent 30%);
+  pointer-events: none;
+}
+
+.premium-login .container-login100::after {
+  content: "Grupo Bali";
+  position: absolute;
+  left: min(7vw, 86px);
+  bottom: 36px;
+  color: rgba(255, 255, 255, .72);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.premium-login .wrap-login100 {
+  position: relative;
+  z-index: 1;
+  width: min(440px, 100%);
+  padding: 26px !important;
+  border: 1px solid var(--login-border);
+  border-radius: var(--login-radius);
+  background: var(--login-surface);
+  box-shadow: var(--login-shadow);
+  backdrop-filter: blur(18px);
+}
+
+.premium-login .login100-form {
+  width: 100%;
+  padding: 0 !important;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.premium-login .login100-form::before {
+  content: "Acesso seguro";
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  margin-bottom: 16px;
+  padding: 0 10px;
+  border-radius: var(--login-radius);
+  background: var(--login-brand-soft);
+  color: var(--login-brand);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.premium-login .login100-form-title {
+  display: grid;
+  place-items: center;
+  padding: 0 0 18px !important;
+  color: var(--login-ink);
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.premium-login .login100-form-title img {
+  max-width: 185px;
+  max-height: 68px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(15, 23, 42, .10));
+}
+
+.premium-login.login-byd .login100-form-title img,
+.premium-login.login-jeep .login100-form-title img {
+  max-height: 58px;
+}
+
+.premium-login .badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  margin-left: 6px;
+  padding: 0 9px;
+  border-radius: var(--login-radius);
+  background: var(--login-brand) !important;
+  color: #fff;
+  font-size: 12px;
+}
+
+.premium-login .txt1 {
+  display: block;
+  padding-bottom: 8px !important;
+  color: var(--login-ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.premium-login .wrap-input100 {
+  position: relative;
+  width: 100%;
+  margin-bottom: 12px !important;
+  border: 1px solid #d9e1ea;
+  border-radius: var(--login-radius);
+  background: #fff;
+  overflow: hidden;
+}
+
+.premium-login .input100 {
+  display: block;
+  width: 100%;
+  min-height: 54px;
+  border: 0;
+  padding: 0 16px;
+  color: var(--login-ink);
+  background: transparent;
+  font-size: 15px;
+  font-weight: 700;
+  outline: none;
+}
+
+.premium-login .input100::placeholder {
+  color: #8a95a5;
+}
+
+.premium-login .wrap-input100:focus-within {
+  border-color: var(--login-brand);
+  box-shadow: 0 0 0 3px var(--login-brand-soft);
+}
+
+.premium-login .focus-input100,
+.premium-login .btn-show-pass {
+  display: none !important;
+}
+
+.premium-login .container-login100-form-btn {
+  display: block;
+  width: 100%;
+  margin-top: 18px !important;
+}
+
+.premium-login .login100-form-btn,
+.premium-login input.login100-form-btn {
+  width: 100%;
+  min-height: 52px;
+  border: 0;
+  border-radius: var(--login-radius);
+  background: var(--login-brand);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 14px 28px var(--login-brand-soft);
+  transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+
+.premium-login .login100-form-btn:hover,
+.premium-login .login100-form-btn:focus {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+  box-shadow: 0 18px 34px var(--login-brand-soft);
+  outline: none;
+}
+
+.premium-login .fixed-bottom {
+  position: static !important;
+  margin-top: 18px;
+  background: transparent !important;
+}
+
+.premium-login .fixed-bottom .container {
+  color: var(--login-muted) !important;
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .premium-login .container-login100,
+  .premium-login .container-login100[style],
+  .premium-login .container-login100.bg-dark {
+    justify-content: center;
+    padding: 22px;
+  }
+
+  .premium-login .container-login100::after {
+    display: none;
+  }
+
+  .premium-login .wrap-login100 {
+    padding: 22px !important;
+  }
+}

@@ -28,9 +28,10 @@
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="css/util.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="../css/bali-login.css">
     <!--===============================================================================================-->
 </head>
-<body>
+<body class="premium-login login-fiat">
 
     <div class="limiter">
         <div class="container-login100" style="background-image: url('images/background-24R62430_1920.jpg');">

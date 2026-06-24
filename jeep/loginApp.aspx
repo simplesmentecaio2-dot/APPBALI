@@ -28,9 +28,10 @@
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="css/util.css" />
     <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <link rel="stylesheet" type="text/css" href="../css/bali-login.css" />
     <!--===============================================================================================-->
 </head>
-<body>
+<body class="premium-login login-jeep">
 
     <div class="limiter">
         <div class="container-login100">
