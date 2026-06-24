@@ -353,7 +353,7 @@
                         </td>
                         <td colspan="8">
                             <asp:TextBox ID="txtPrevisao" CssClass="form-contrato" Font-Bold="True" Width="30px" runat="server" Enabled="False"></asp:TextBox>
-                            DIAS UTEIS A PARTIR DA CONFIRMAÇÃO DO PEDIDO.
+                            DIAS ÚTEIS A PARTIR DA CONFIRMAÇÃO DO PEDIDO.
                         </td>
                     </tr>
                     <tr>
@@ -751,7 +751,7 @@
                         </td>
                         <td colspan="8">
                             <asp:TextBox ID="txtPrevisao2" CssClass="form-contrato" Width="30px" runat="server"></asp:TextBox>
-                            DIAS UTEIS A PARTIR DA CONFIRMAÇÃO DO PEDIDO.
+                            DIAS ÚTEIS A PARTIR DA CONFIRMAÇÃO DO PEDIDO.
                         </td>
                     </tr>
                     <tr>
@@ -1149,7 +1149,7 @@
                         </td>
                         <td colspan="8">
                             <asp:TextBox ID="txtPrevisao3" CssClass="form-contrato" Width="30px" runat="server" Enabled="False"></asp:TextBox>
-                            DIAS UTEIS A PARTIR DA CONFIRMAÇÃO DO PEDIDO.
+                            DIAS ÚTEIS A PARTIR DA CONFIRMAÇÃO DO PEDIDO.
                         </td>
                     </tr>
                     <tr>

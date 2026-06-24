@@ -429,7 +429,7 @@
                                                 </td>
                                                 <td colspan="8">
                                                     <asp:TextBox ID="txtPrevisao" CssClass="form-contrato" Width="30px" runat="server"></asp:TextBox>
-                                                    DIAS UTEIS A PARTIR DA CONFIRMAÇÃO DO PEDIDO.
+                                                    DIAS ÚTEIS A PARTIR DA CONFIRMAÇÃO DO PEDIDO.
                                                 </td>
                                             </tr>
                                             <tr>
@@ -598,7 +598,7 @@
                                                     <asp:RadioButton ID="RadioButton6" Text="SIM" runat="server" /><asp:RadioButton ID="RadioButton7" Text="NÃO" runat="server" />
 
                                                 </td>
-                                                <td>PROCURACÃO:</td>
+                                                <td>PROCURAÇÃO:</td>
                                                 <td><asp:RadioButton ID="RadioButton11" Text="SIM" runat="server" /><asp:RadioButton ID="RadioButton12" Text="NÃO" runat="server" /></td>
                                                 
                                             </tr>
