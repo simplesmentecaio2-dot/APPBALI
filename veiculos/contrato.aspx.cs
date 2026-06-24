@@ -802,7 +802,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void ObterPeriodoBI(out DateTime inicio, out DateTime fim)
     {
-        CultureInfo cultura = new CultureInfo("pt-BR");
+        CultureInfo cultura = CulturaBrasil;
         DateTime inicioPadrao = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
         DateTime fimPadrao = inicioPadrao.AddMonths(1).AddDays(-1);
 
@@ -899,7 +899,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             .Select(x => x.Key + " (" + x.Count() + ")")
             .FirstOrDefault() ?? "-";
 
-        StringBuilder html = new StringBuilder();
+        StringBuilder html = new StringBuilder(12288);
         html.Append("<div class='contract-bi-period'>Período analisado: ");
         html.Append(HttpUtility.HtmlEncode(inicio.ToString("dd/MM/yyyy")));
         html.Append(" a ");
@@ -911,9 +911,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
         html.Append(BiCard("Novos", totalVN.ToString(), "Contratos VN"));
         html.Append(BiCard("Usados", totalVU.ToString(), "Contratos VU"));
         html.Append(BiCard("Venda direta", totalVD.ToString(), "Contratos VD"));
-        html.Append(BiCard("Valor total", valorTotal.ToString("C0", new CultureInfo("pt-BR")), "Soma dos veículos"));
-        html.Append(BiCard("Ticket médio", ticketMedio.ToString("C0", new CultureInfo("pt-BR")), "Valor médio por contrato"));
-        html.Append(BiCard("Média/dia", mediaDiaria.ToString("N1", new CultureInfo("pt-BR")), "Contratos por dia"));
+        html.Append(BiCard("Valor total", valorTotal.ToString("C0", CulturaBrasil), "Soma dos veículos"));
+        html.Append(BiCard("Ticket médio", ticketMedio.ToString("C0", CulturaBrasil), "Valor médio por contrato"));
+        html.Append(BiCard("Média/dia", mediaDiaria.ToString("N1", CulturaBrasil), "Contratos por dia"));
         html.Append(BiCard("Top vendedor", topVendedor, "Maior volume no período"));
         html.Append("</div>");
 
@@ -1066,7 +1066,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             html.Append("<div class='contract-bi-bar'><div class='contract-bi-bar-head'><span>");
             html.Append(HttpUtility.HtmlEncode(item.Key));
             html.Append("</span><strong>");
-            html.Append(item.Value.ToString("C0", new CultureInfo("pt-BR")));
+            html.Append(item.Value.ToString("C0", CulturaBrasil));
             html.Append("</strong></div><div class='contract-bi-track'><span style='width:");
             html.Append(porcentagem);
             html.Append("%'></span></div></div>");
@@ -1079,7 +1079,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     private string MontarGraficoDias(SortedDictionary<DateTime, int> dados)
     {
         int max = dados.Count == 0 ? 0 : dados.Max(x => x.Value);
-        StringBuilder html = new StringBuilder();
+        StringBuilder html = new StringBuilder(4096);
         html.Append("<div class='contract-bi-days'>");
 
         foreach (KeyValuePair<DateTime, int> item in dados)
@@ -1124,7 +1124,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         catch
         {
             decimal convertido;
-            if (decimal.TryParse(valor.ToString(), NumberStyles.Any, new CultureInfo("pt-BR"), out convertido)) return convertido;
+            if (decimal.TryParse(valor.ToString(), NumberStyles.Any, CulturaBrasil, out convertido)) return convertido;
             if (decimal.TryParse(valor.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out convertido)) return convertido;
             return 0;
         }
