@@ -120,7 +120,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     this.literalLojaAgendamento.Text = odr["local_agend"].ToString();
 
 
-                    //DIV LOCALIZAÇÂO
+                    //DIV LOCALIZAÇÃO
                     if(!(odr["localizacao"] == null))
                     {
                         this.literaLocalizacao.Text = odr["localizacao"].ToString();
@@ -137,7 +137,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     }
                     else
                     {
-                        this.literaLocalizacao.Text = "SEM LOCALIZAçÂO";
+                        this.literaLocalizacao.Text = "SEM LOCALIZAÇÃO";
                         this.statusLocalizacaoConcluido.Visible = false;
                         this.statusLocalizacaoPendante.Visible = true;
                     }
@@ -165,7 +165,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     }
 
 
-                    //DIV REQUISIÇÃO DE ACESSORIOS
+                    //DIV REQUISIÇÃO DE ACESSÓRIOS
                     if(!(odr["requisicoes"] == null))
                     {
                         mostrarDivRequisicoes();
@@ -176,7 +176,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                         mostrarDivSemRequisicoes();
                     }
 
-                    //DIV INSTALAÇÃO DE ACESSORIO
+                    //DIV INSTALAÇÃO DE ACESSÓRIO
 
 
                     //DIV SERVICOS DE TERCEIROS
