@@ -67,6 +67,41 @@
     { id: 'txtEdVendedor', label: 'Vendedor' }
   ];
 
+  var sectionRequirements = {
+    novo: {
+      cliente: ['txtCliente', 'txtCPFCNPJ'],
+      veiculo: ['txtMarca', 'txtModelo', 'txtChassiPlaca'],
+      pagamento: ['txtValoVeiculo', 'ddlVendedor']
+    },
+    edicao: {
+      cliente: ['txtEdCliente', 'txtEdCPF'],
+      veiculo: ['txtEdMarca', 'txtEdModelo', 'txtEdChassi'],
+      pagamento: ['txtEdValorVeic', 'txtEdVendedor']
+    }
+  };
+
+  var paymentRules = {
+    novo: {
+      cash: 'rBtnModPagVista',
+      finance: 'rBtnModPagFinanciamento',
+      financeValue: 'txtVlFinanciamento',
+      parcels: 'txtNrParcelas',
+      parcelValue: 'txtVlParcelas'
+    },
+    edicao: {
+      cash: 'rbtnEdAVISTA',
+      finance: 'rbtnEdAprazo',
+      financeValue: 'txtEdFinanciamento',
+      parcels: 'txtEdNumeroParcelas',
+      parcelValue: 'txtEdValorParcela'
+    }
+  };
+
+  var checklistRequirements = {
+    novo: ['chkConfereDocumento', 'chkConfereValores', 'chkConferePagamento'],
+    edicao: ['chkConfereEdicao']
+  };
+
   var formatRules = [
     {
       ids: ['txtCPFCNPJ', 'txtEdCPF'],
@@ -226,6 +261,11 @@
       var dots = (text.match(/\./g) || []).length;
       if (dots > 1) {
         text = text.replace(/\./g, '');
+      } else if (dots === 1) {
+        var parts = text.split('.');
+        if (parts[1] && parts[1].length > 2) {
+          text = parts[0] + parts[1];
+        }
       }
     }
 
@@ -258,6 +298,19 @@
     var current = String(field.value || '').trim();
     if (!current && !forceZero) return;
     field.value = formatMoney(parseMoney(current));
+  }
+
+  function sanitizeMoneyTyping(value) {
+    var text = String(value || '').replace(/R\$/g, '').replace(/[^\d,.-]/g, '');
+    var negative = text.charAt(0) === '-';
+    text = text.replace(/-/g, '');
+
+    var comma = text.indexOf(',');
+    if (comma >= 0) {
+      text = text.substr(0, comma + 1) + text.substr(comma + 1).replace(/,/g, '');
+    }
+
+    return (negative ? '-' : '') + text;
   }
 
   function padDatePart(value) {
@@ -663,14 +716,26 @@
     return panel;
   }
 
+  function contractHasAnyValue(isEdit) {
+    var ids = isEdit
+      ? ['txtEdCliente', 'txtEdCPF', 'txtEdMarca', 'txtEdModelo', 'txtEdChassi', 'txtEdValorVeic']
+      : ['txtCliente', 'txtCPFCNPJ', 'txtMarca', 'txtModelo', 'txtChassiPlaca', 'txtValoVeiculo'];
+
+    return ids.some(function (id) {
+      var field = bySuffix(id);
+      return field && isVisible(field) && String(field.value || '').trim().length > 0;
+    });
+  }
+
   function updateQualityPanel() {
     var isEdit = !!(bySuffix('txtEdCliente') && isVisible(bySuffix('txtEdCliente')));
     var isNew = !!(bySuffix('txtCliente') && isVisible(bySuffix('txtCliente')));
     var panel = ensureQualityPanel(isEdit);
     if (!panel) return;
 
-    if (!isEdit && !isNew) {
+    if ((!isEdit && !isNew) || !contractHasAnyValue(isEdit)) {
       panel.classList.add('is-hidden');
+      updateSectionProgress();
       return;
     }
 
@@ -681,8 +746,9 @@
 
     panel.classList.remove('is-hidden', 'is-good', 'is-attention', 'is-risk');
     if (issues.length === 0) {
-      panel.classList.add('is-hidden');
-      return;
+      panel.classList.add('is-good');
+      status.textContent = 'Completo';
+      text.textContent = 'Campos principais conferidos. Revise o checklist final antes de gravar.';
     } else if (issues.length <= 2) {
       panel.classList.add('is-attention');
       status.textContent = 'Atenção';
@@ -701,6 +767,8 @@
         list.appendChild(item);
       });
     }
+
+    updateSectionProgress();
   }
 
   function enhanceDateFilters() {
@@ -870,10 +938,95 @@
     });
   }
 
+  function currentContractMode() {
+    var editField = bySuffix('txtEdCliente');
+    return editField && isVisible(editField) ? 'edicao' : 'novo';
+  }
+
+  function hasFieldValue(id) {
+    var field = bySuffix(id);
+    if (!field || !isVisible(field)) return false;
+    if (field.tagName === 'SELECT') {
+      var value = String(field.value || '').trim();
+      var text = field.options && field.selectedIndex >= 0 ? String(field.options[field.selectedIndex].text || '').trim() : '';
+      return value.length > 0 && value !== '0' && text !== '' && text !== 'Selecione';
+    }
+    return String(field.value || '').trim().length > 0;
+  }
+
+  function hasPositiveMoney(id) {
+    var field = bySuffix(id);
+    return field && isVisible(field) && parseMoney(field.value) > 0;
+  }
+
+  function requiredFieldComplete(id) {
+    if (id === 'txtValoVeiculo' || id === 'txtEdValorVeic' || id === 'txtVlParcelas' || id === 'txtEdValorParcela') {
+      return hasPositiveMoney(id);
+    }
+    return hasFieldValue(id);
+  }
+
+  function fieldsComplete(ids) {
+    return ids.every(function (id) {
+      return requiredFieldComplete(id);
+    });
+  }
+
+  function paymentComplete(mode) {
+    var rules = paymentRules[mode];
+    if (!fieldsComplete(sectionRequirements[mode].pagamento)) return false;
+
+    var cash = bySuffix(rules.cash);
+    var finance = bySuffix(rules.finance);
+    var hasMode = !!((cash && cash.checked) || (finance && finance.checked));
+    if (!hasMode) return false;
+
+    var financeValue = parseMoney(valueOf(rules.financeValue));
+    if ((finance && finance.checked) || financeValue > 0) {
+      if (!hasFieldValue(rules.parcels) || !hasPositiveMoney(rules.parcelValue)) return false;
+    }
+
+    return financeValue >= 0;
+  }
+
+  function checklistComplete(mode) {
+    return checklistRequirements[mode].every(function (id) {
+      var field = bySuffix(id);
+      return !field || !isVisible(field) || field.checked;
+    });
+  }
+
+  function stageComplete(stage, mode) {
+    if (stage === 'cliente' || stage === 'veiculo') {
+      return fieldsComplete(sectionRequirements[mode][stage]);
+    }
+    if (stage === 'pagamento') return paymentComplete(mode);
+    if (stage === 'checklist') return checklistComplete(mode);
+    return false;
+  }
+
+  function updateSectionProgress() {
+    var nav = document.getElementById('contractSectionNav');
+    if (!nav) return;
+
+    var mode = currentContractMode();
+    Array.prototype.slice.call(nav.querySelectorAll('[data-section-name]')).forEach(function (button) {
+      var name = button.getAttribute('data-section-name');
+      var complete = stageComplete(name, mode);
+      removeClass(button, 'is-complete');
+      removeClass(button, 'is-pending');
+      addClass(button, complete ? 'is-complete' : 'is-pending');
+
+      var status = button.querySelector('small');
+      if (status) status.textContent = complete ? 'Conferido' : 'Pendente';
+    });
+  }
+
   function sectionLabel(section) {
     if (section === 'cliente') return 'Cliente';
     if (section === 'veiculo') return 'Veículo';
     if (section === 'pagamento') return 'Pagamento';
+    if (section === 'checklist') return 'Checklist';
     return 'Etapa';
   }
 
@@ -892,19 +1045,22 @@
       nav.className = 'contract-section-nav';
     }
 
+    var checklist = Array.prototype.slice.call(document.querySelectorAll('.contract-checklist')).filter(isVisible)[0] || null;
     var signature = sections.map(function (section) {
       return section.className;
-    }).join('|');
+    }).join('|') + '|' + (checklist ? checklist.className : '');
 
     if (nav.getAttribute('data-section-signature') !== signature) {
       nav.setAttribute('data-section-signature', signature);
-      nav.innerHTML = '<span>Ir para</span>';
+      nav.innerHTML = '<div class="contract-section-nav-head"><span>Etapas do contrato</span><small>Acompanhe o preenchimento de cada bloco.</small></div><div class="contract-section-nav-steps"></div>';
+      var steps = nav.querySelector('.contract-section-nav-steps');
       sections.forEach(function (section, index) {
         var match = /contract-section-([a-z]+)/.exec(section.className || '');
         var name = match ? match[1] : '';
         var button = document.createElement('button');
         button.type = 'button';
-        button.textContent = sectionLabel(name);
+        button.innerHTML = '<strong>' + sectionLabel(name) + '</strong><small>Pendente</small>';
+        button.setAttribute('data-section-name', name);
         button.setAttribute('data-section-index', index);
         button.addEventListener('click', function () {
           var target = sections[parseInt(button.getAttribute('data-section-index'), 10)];
@@ -915,14 +1071,30 @@
             target.scrollIntoView(true);
           }
         });
-        nav.appendChild(button);
+        steps.appendChild(button);
       });
+
+      if (checklist) {
+        var checklistButton = document.createElement('button');
+        checklistButton.type = 'button';
+        checklistButton.innerHTML = '<strong>' + sectionLabel('checklist') + '</strong><small>Pendente</small>';
+        checklistButton.setAttribute('data-section-name', 'checklist');
+        checklistButton.addEventListener('click', function () {
+          try {
+            checklist.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          } catch (ignore) {
+            checklist.scrollIntoView(true);
+          }
+        });
+        steps.appendChild(checklistButton);
+      }
     }
 
     nav.classList.remove('is-hidden');
     if (nav.parentNode !== sections[0].parentNode || nav.nextSibling !== sections[0]) {
       sections[0].parentNode.insertBefore(nav, sections[0]);
     }
+    updateSectionProgress();
   }
 
   function prepareMoneyFields(forceZero) {
@@ -1328,6 +1500,7 @@
         field.setAttribute('data-contract-enhanced', 'true');
         field.setAttribute('inputmode', 'decimal');
         field.setAttribute('autocomplete', 'off');
+        addClass(field, 'contract-money-field');
         removeLegacyPostbacks(field);
         field.addEventListener('blur', function () {
           normalizeMoneyField(field, false);
@@ -1335,6 +1508,8 @@
           calculateContracts();
         });
         field.addEventListener('input', function () {
+          var sanitized = sanitizeMoneyTyping(field.value);
+          if (field.value !== sanitized) field.value = sanitized;
           showFieldMessage(field, '');
           window.clearTimeout(field._contractTimer);
           field._contractTimer = window.setTimeout(calculateContracts, 120);
@@ -1363,6 +1538,15 @@
           showFieldMessage(field, '');
           updateQualityPanel();
         });
+      });
+    });
+
+    ['rBtnModPagVista', 'rBtnModPagFinanciamento', 'rbtnEdAVISTA', 'rbtnEdAprazo'].forEach(function (id) {
+      allBySuffix(id).forEach(function (field) {
+        if (field.getAttribute('data-contract-pay-watch') === 'true') return;
+        field.setAttribute('data-contract-pay-watch', 'true');
+        field.addEventListener('change', updateQualityPanel);
+        field.addEventListener('click', updateQualityPanel);
       });
     });
   }
@@ -1556,6 +1740,7 @@
       field.addEventListener('change', function () {
         toggle();
         removeClass(closestClass(field, 'contract-checklist'), 'is-warning');
+        updateSectionProgress();
         var checklist = closestTag(field, 'div');
         var warning = checklist && checklist.parentNode ? checklist.parentNode.querySelector('.contract-checklist-warning') : null;
         if (warning) {
