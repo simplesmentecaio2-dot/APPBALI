@@ -1894,6 +1894,7 @@
       var cell = row.cells[0];
       var url = contractUrlForCell(cell, table);
       if (!url) return;
+      var id = getContractIdFromCell(cell);
 
       addClass(cell, 'contract-id-cell');
       cell.setAttribute('title', 'Abrir contrato para impressão');
@@ -1901,17 +1902,50 @@
       var link = cell.querySelector ? cell.querySelector('a[href]') : null;
       if (link) {
         addClass(link, 'contract-id-action');
+        if (link.getAttribute('data-contract-action-label') !== 'true') {
+          link.setAttribute('data-contract-action-label', 'true');
+          link.setAttribute('title', 'Abrir contrato para impress\u00e3o');
+          link.innerHTML = '<span>#' + escapeHtml(id) + '</span><small>Imprimir</small>';
+        }
       } else {
-        cell.setAttribute('role', 'button');
-        cell.setAttribute('tabindex', '0');
-        cell.setAttribute('data-contract-url', url);
+        if (!cell.querySelector || !cell.querySelector('.contract-id-action')) {
+          cell.innerHTML = '<button type="button" class="contract-id-action" data-contract-url="' + escapeHtml(url) + '"><span>#' + escapeHtml(id) + '</span><small>Imprimir</small></button>';
+        }
       }
     });
   }
 
   function openLookupCell(cell, table) {
-    var url = contractUrlForCell(cell, table);
+    var action = cell && cell.querySelector ? cell.querySelector('[data-contract-url]') : null;
+    var url = action ? action.getAttribute('data-contract-url') : contractUrlForCell(cell, table);
     if (url) window.location.href = url;
+  }
+
+  function countLookupRows(table) {
+    if (!table || !table.tBodies || !table.tBodies.length) return 0;
+    return Array.prototype.slice.call(table.tBodies[0].rows).filter(function (row) {
+      if (!row.cells || !row.cells.length) return false;
+      if ((row.className || '').match(/dataTables_empty/)) return false;
+      if ((row.cells[0].className || '').match(/dataTables_empty/)) return false;
+      if (normalizeText(row.cells[0].textContent).indexOf('NENHUM CONTRATO') >= 0) return false;
+      return true;
+    }).length;
+  }
+
+  function enhanceLookupSummary(table) {
+    var wrapper = closestClass(table, 'dataTables_wrapper') || table.parentNode;
+    if (!wrapper) return;
+
+    var summary = wrapper.querySelector ? wrapper.querySelector('.contract-lookup-summary') : null;
+    if (!summary) {
+      summary = document.createElement('div');
+      summary.className = 'contract-lookup-summary';
+      wrapper.insertBefore(summary, wrapper.firstChild);
+    }
+
+    var label = /tblConsultaProcesso2$/i.test(table.id || '') ? 'Consulta Usado' : 'Consulta Novo';
+    var count = countLookupRows(table);
+    summary.innerHTML = '<div><span>' + label + '</span><strong>' + count + ' contrato(s)</strong></div><small>Use o filtro para localizar cliente, CPF ou vendedor. Clique em Imprimir para abrir o contrato.</small>';
   }
 
   function triggerLookupSearch(input) {
@@ -1958,12 +1992,22 @@
     Array.prototype.slice.call(document.querySelectorAll('#tblConsultaProcesso, #tblConsultaProcesso2, table.display, table.dataTable')).forEach(function (table) {
       if (!table || table.getAttribute('data-contract-lookup') === 'true') {
         prepareLookupIdCells(table);
+        enhanceLookupSummary(table);
         return;
       }
 
       table.setAttribute('data-contract-lookup', 'true');
+      table.setAttribute('aria-label', 'Listagem de contratos');
       addClass(table, 'contract-lookup-table');
       prepareLookupIdCells(table);
+      enhanceLookupSummary(table);
+
+      table.addEventListener('click', function (event) {
+        var action = closestClass(event.target, 'contract-id-action');
+        if (!action || !action.getAttribute('data-contract-url')) return;
+        event.preventDefault();
+        window.location.href = action.getAttribute('data-contract-url');
+      });
 
       table.addEventListener('dblclick', function (event) {
         var cell = closestTag(event.target, 'td');

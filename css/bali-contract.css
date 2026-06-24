@@ -657,6 +657,44 @@ body.bali-contract-page *::after {
   box-shadow: 0 10px 26px rgba(15, 23, 42, .05);
 }
 
+.bali-contract-page .contract-lookup-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--contract-brand-ring);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.bali-contract-page .contract-lookup-summary div {
+  display: grid;
+  gap: 2px;
+}
+
+.bali-contract-page .contract-lookup-summary span {
+  color: var(--contract-brand-strong);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.bali-contract-page .contract-lookup-summary strong {
+  color: var(--contract-ink);
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.bali-contract-page .contract-lookup-summary small {
+  max-width: 520px;
+  color: var(--contract-muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: right;
+}
+
 .bali-contract-page #tblConsultaProcesso,
 .bali-contract-page #tblConsultaProcesso2,
 .bali-contract-page table.contract-lookup-table,
@@ -739,16 +777,34 @@ body.bali-contract-page *::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  gap: 1px;
   min-width: 48px;
-  min-height: 24px;
-  padding: 0 8px;
+  min-height: 34px;
+  padding: 4px 10px;
   border: 1px solid var(--contract-brand-ring);
   border-radius: 999px;
   background: var(--contract-brand-soft);
   color: var(--contract-brand-strong) !important;
+  cursor: pointer;
+  font-family: Arial, Helvetica, sans-serif;
   text-decoration: none !important;
   font-size: 12px;
   font-weight: 900;
+  line-height: 1.05;
+}
+
+.bali-contract-page button.contract-id-action {
+  appearance: none;
+  box-shadow: none;
+}
+
+.bali-contract-page .contract-id-action small {
+  color: var(--contract-muted);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .02em;
+  text-transform: uppercase;
 }
 
 .bali-contract-page table.contract-lookup-table tbody td.contract-id-cell:focus {
@@ -2090,6 +2146,15 @@ body.bali-contract-page *::after {
     flex-direction: column;
     float: none !important;
     width: 100% !important;
+  }
+
+  .bali-contract-page .contract-lookup-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .bali-contract-page .contract-lookup-summary small {
+    text-align: left;
   }
 
   .bali-contract-page .dataTables_filter input,
