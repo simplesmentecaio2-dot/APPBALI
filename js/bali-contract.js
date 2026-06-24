@@ -2920,15 +2920,20 @@
   }
 
   function countLookupRows(table) {
-    if (!table || !table.tBodies || !table.tBodies.length) return 0;
+    return lookupRows(table, true).length;
+  }
+
+  function lookupRows(table, onlyVisible) {
+    if (!table || !table.tBodies || !table.tBodies.length) return [];
     return Array.prototype.slice.call(table.tBodies[0].rows).filter(function (row) {
       if (!row.cells || !row.cells.length) return false;
+      if (onlyVisible && row.style.display === 'none') return false;
       if ((row.className || '').match(/dataTables_empty/)) return false;
       if ((row.className || '').match(/contract-empty-row/)) return false;
       if ((row.cells[0].className || '').match(/dataTables_empty/)) return false;
       if (normalizeText(row.cells[0].textContent).indexOf('NENHUM CONTRATO') >= 0) return false;
       return true;
-    }).length;
+    });
   }
 
   function exportLookupCsv(table, label) {
@@ -2948,8 +2953,7 @@
       return String(cell.textContent || '').replace(/\s+/g, ' ').trim();
     };
     var lines = [headers.map(escapeCsv).join(';')];
-    Array.prototype.slice.call(table.tBodies[0].rows).forEach(function (row) {
-      if (!row.cells || !row.cells.length || row.style.display === 'none' || (row.className || '').match(/contract-empty-row|dataTables_empty/)) return;
+    lookupRows(table, true).forEach(function (row) {
       lines.push(Array.prototype.slice.call(row.cells).map(function (cell, index) { return escapeCsv(cellText(cell, index)); }).join(';'));
     });
 
@@ -2967,6 +2971,14 @@
       URL.revokeObjectURL(link.href);
     }, 1000);
     return lines.length - 1;
+  }
+
+  function lookupVisibleIds(table) {
+    return lookupRows(table, true).map(function (row) {
+      return getContractIdFromCell(row.cells[0]);
+    }).filter(function (id) {
+      return !!id;
+    });
   }
 
   function enhanceLookupSummary(table) {
@@ -2989,12 +3001,26 @@
       : 'Nenhum contrato apareceu neste filtro. Revise as datas ou tente um período maior.';
     var signature = label + ':' + count + ':' + text;
     if (summary.getAttribute('data-contract-summary') === signature) return;
-    summary.innerHTML = '<div><span>' + label + '</span><strong>' + count + ' contrato(s)</strong></div><small>' + text + '</small><button type="button" class="contract-lookup-export">CSV</button>';
+    summary.innerHTML = '<div><span>' + label + '</span><strong>' + count + ' contrato(s) visível(is)</strong></div><small>' + text + '</small><div class="contract-lookup-actions"><button type="button" class="contract-lookup-action contract-lookup-copy">Copiar IDs</button><button type="button" class="contract-lookup-action contract-lookup-export">CSV</button></div>';
     summary.setAttribute('data-contract-summary', signature);
-    var button = summary.querySelector('.contract-lookup-export');
-    button.addEventListener('click', function () {
+    var exportButton = summary.querySelector('.contract-lookup-export');
+    var copyButton = summary.querySelector('.contract-lookup-copy');
+    var info = summary.querySelector('small');
+
+    copyButton.addEventListener('click', function () {
+      var ids = lookupVisibleIds(table);
+      if (!ids.length) {
+        if (info) info.textContent = 'Nenhum ID visível para copiar.';
+        return;
+      }
+
+      copyText(ids.join('\n'), function (ok) {
+        if (info) info.textContent = ok ? ids.length + ' ID(s) copiado(s).' : 'Não foi possível copiar os IDs automaticamente.';
+      });
+    });
+
+    exportButton.addEventListener('click', function () {
       var total = exportLookupCsv(table, label);
-      var info = summary.querySelector('small');
       if (info) info.textContent = total ? total + ' contrato(s) exportado(s).' : 'Nenhum contrato visível para exportar.';
     });
   }
@@ -3063,6 +3089,9 @@
     var refresh = function () {
       window.setTimeout(function () {
         enhanceLookupPagination();
+        Array.prototype.slice.call(wrapper.querySelectorAll('table.contract-lookup-table')).forEach(function (table) {
+          enhanceLookupSummary(table);
+        });
       }, 80);
     };
     wrapper.addEventListener('click', refresh);

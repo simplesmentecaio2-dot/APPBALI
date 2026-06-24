@@ -760,9 +760,9 @@ body.bali-contract-page *::after {
 }
 
 .bali-contract-page .contract-lookup-summary {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(160px, .8fr) minmax(220px, 1.4fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
   padding: 10px 12px;
@@ -771,7 +771,14 @@ body.bali-contract-page *::after {
   background: #fff;
 }
 
-.bali-contract-page .contract-lookup-summary .contract-lookup-export {
+.bali-contract-page .contract-lookup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.bali-contract-page .contract-lookup-summary .contract-lookup-action {
   width: auto;
   min-height: 32px;
   margin: 0;
@@ -783,6 +790,11 @@ body.bali-contract-page *::after {
   box-shadow: none;
   font-size: 11px;
   font-weight: 950;
+}
+
+.bali-contract-page .contract-lookup-summary .contract-lookup-action:hover {
+  border-color: var(--contract-brand) !important;
+  background: #fff !important;
 }
 
 .bali-contract-page .contract-lookup-summary div {
@@ -804,11 +816,10 @@ body.bali-contract-page *::after {
 }
 
 .bali-contract-page .contract-lookup-summary small {
-  max-width: 520px;
   color: var(--contract-muted);
   font-size: 12px;
   font-weight: 800;
-  text-align: right;
+  text-align: left;
 }
 
 .bali-contract-page .contract-query-empty {
@@ -2761,6 +2772,15 @@ body.bali-contract-page *::after {
     width: 100%;
     padding: 10px;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .bali-contract-page .contract-lookup-summary {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .bali-contract-page .contract-lookup-actions {
+    justify-content: flex-start;
   }
 
   .bali-contract-page #tblConsultaProcesso.contract-lookup-table,
