@@ -1122,6 +1122,8 @@
       items.forEach(function (item) {
         var action = item.querySelector('strong');
         action = action ? String(action.textContent || '').trim() : '';
+        item.setAttribute('data-audit-action', action);
+        item.setAttribute('data-audit-search', normalizeText(item.textContent));
         if (action && actions.indexOf(action) < 0) actions.push(action);
       });
       actions.sort();
@@ -1157,11 +1159,10 @@
         var visible = 0;
 
         items.forEach(function (item) {
-          var itemAction = item.querySelector('strong');
-          itemAction = itemAction ? String(itemAction.textContent || '').trim() : '';
+          var itemAction = item.getAttribute('data-audit-action') || '';
           var matchAction = !actionValue || itemAction === actionValue;
           var matchQuick = matchPreset(itemAction);
-          var matchText = !text || normalizeText(item.textContent).indexOf(text) >= 0;
+          var matchText = !text || String(item.getAttribute('data-audit-search') || '').indexOf(text) >= 0;
           item.style.display = matchAction && matchQuick && matchText ? '' : 'none';
           if (matchAction && matchQuick && matchText) visible++;
         });
@@ -2382,6 +2383,8 @@
 
   function prepareLookupIdCells(table) {
     if (!table || !table.tBodies || !table.tBodies.length) return;
+    var signature = table.tBodies[0].rows.length + ':' + normalizeText(table.tBodies[0].textContent).slice(0, 80);
+    if (table.getAttribute('data-contract-id-ready') === signature) return;
 
     Array.prototype.slice.call(table.tBodies[0].rows).forEach(function (row) {
       if (!row.cells || !row.cells.length) return;
@@ -2407,6 +2410,7 @@
         }
       }
     });
+    table.setAttribute('data-contract-id-ready', signature);
   }
 
   function openLookupCell(cell, table) {
@@ -2445,7 +2449,10 @@
     var text = count > 0
       ? 'Use o filtro para localizar cliente, CPF ou vendedor. Clique em Imprimir para abrir o contrato.'
       : 'Nenhum contrato apareceu neste filtro. Revise as datas ou tente um período maior.';
+    var signature = label + ':' + count + ':' + text;
+    if (summary.getAttribute('data-contract-summary') === signature) return;
     summary.innerHTML = '<div><span>' + label + '</span><strong>' + count + ' contrato(s)</strong></div><small>' + text + '</small>';
+    summary.setAttribute('data-contract-summary', signature);
   }
 
   function triggerLookupSearch(input) {
