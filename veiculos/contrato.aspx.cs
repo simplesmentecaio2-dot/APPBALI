@@ -87,6 +87,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
         {
             string pasta = Server.MapPath("~/App_Data");
             Directory.CreateDirectory(pasta);
+            string caminhoLog = Path.Combine(pasta, "contrato-operacoes.log");
+            RotacionarLogContrato(caminhoLog);
             string contexto = "";
             try
             {
@@ -102,7 +104,24 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 + "\t" + LimparLog(acao)
                 + "\t" + LimparLog(contexto + detalhe);
 
-            File.AppendAllText(Path.Combine(pasta, "contrato-operacoes.log"), linha + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(caminhoLog, linha + Environment.NewLine, Encoding.UTF8);
+        }
+        catch
+        {
+        }
+    }
+
+    private void RotacionarLogContrato(string caminhoLog)
+    {
+        try
+        {
+            if (!File.Exists(caminhoLog)) return;
+            FileInfo arquivo = new FileInfo(caminhoLog);
+            if (arquivo.Length <= 5 * 1024 * 1024) return;
+
+            string pasta = Path.GetDirectoryName(caminhoLog);
+            string destino = Path.Combine(pasta, "contrato-operacoes-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".log");
+            File.Move(caminhoLog, destino);
         }
         catch
         {
