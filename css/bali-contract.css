@@ -1635,6 +1635,12 @@ body.bali-contract-page *::after {
   gap: 16px;
 }
 
+.bali-contract-page .contract-audit-meta {
+  color: var(--contract-muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
 .bali-contract-page .contract-audit-filter {
   display: grid;
   grid-template-columns: minmax(240px, 1fr) auto;

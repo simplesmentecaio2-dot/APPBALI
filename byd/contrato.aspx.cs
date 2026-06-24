@@ -1199,6 +1199,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
         int edicoes = recentes.Count(x => x.Acao.StartsWith("EDICAO"));
 
         StringBuilder html = new StringBuilder(8192);
+        html.Append("<div class='contract-audit-meta'>Registros dos últimos 30 dias · Atualizado às ")
+            .Append(HttpUtility.HtmlEncode(DateTime.Now.ToString("HH:mm", CulturaBrasil)))
+            .Append("</div>");
         html.Append("<div class='contract-audit-cards'>");
         html.Append(AuditCard("Ocorrências", recentes.Count.ToString(), "Últimos registros analisados"));
         html.Append(AuditCard("Atenção", atencoes.ToString(), "Validações, erros e duplicidades"));
