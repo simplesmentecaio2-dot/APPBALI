@@ -923,6 +923,8 @@
 
           if (button && rows && rows.length > 1) {
             var targetCell = rows[1].cells.length >= 3 ? rows[1].cells[2] : rows[1].insertCell(-1);
+            addClass(targetCell, 'contract-date-filter-action-cell');
+            if (targetCell.style) targetCell.style.background = 'transparent';
             if (button.parentNode !== targetCell) targetCell.appendChild(button);
           }
 
@@ -930,6 +932,8 @@
             var shortcutRow = table.insertRow(2);
             shortcutRow.className = 'contract-date-shortcut-row';
             var shortcutCell = shortcutRow.insertCell(0);
+            addClass(shortcutCell, 'contract-date-filter-shortcuts-cell');
+            if (shortcutCell.style) shortcutCell.style.background = 'transparent';
             shortcutCell.colSpan = 3;
             shortcutCell.innerHTML = '<div class="contract-period-shortcuts">' + periodShortcutHtml() + '</div>';
           }

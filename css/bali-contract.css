@@ -1712,14 +1712,14 @@ body.bali-contract-page *::after {
 
 .bali-contract-page .contract-date-filter-shell {
   display: grid;
-  gap: 12px;
-  width: min(100%, 700px);
-  margin: 0 0 18px;
-  padding: 14px;
+  gap: 14px;
+  width: min(100%, 760px);
+  margin: 18px auto 22px;
+  padding: 16px;
   border: 1px solid #e6edf5;
   border-radius: 8px;
   background: #fff !important;
-  box-shadow: 0 10px 22px rgba(15, 23, 42, .045);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, .055);
 }
 
 .bali-contract-page .ajax__tab_body table.contract-date-filter-frame,
@@ -1738,10 +1738,10 @@ body.bali-contract-page *::after {
 
 .bali-contract-page .contract-date-filter-head {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding-bottom: 10px;
+  padding-bottom: 12px;
   border-bottom: 1px solid #edf2f7;
   background: #fff !important;
 }
@@ -1781,14 +1781,15 @@ body.bali-contract-page *::after {
 
 .bali-contract-page table.contract-date-filter tbody {
   display: grid;
-  gap: 6px;
+  gap: 8px;
 }
 
 .bali-contract-page table.contract-date-filter tr {
   display: grid;
-  grid-template-columns: repeat(2, minmax(140px, 160px)) auto;
+  grid-template-columns: minmax(160px, 1fr) minmax(160px, 1fr) minmax(150px, auto);
   gap: 10px;
   align-items: end;
+  background: transparent !important;
 }
 
 .bali-contract-page .ajax__tab_body table.contract-date-filter td,
@@ -1803,6 +1804,15 @@ body.bali-contract-page *::after {
   letter-spacing: 0;
   text-align: left !important;
   text-transform: uppercase;
+}
+
+.bali-contract-page .ajax__tab_body table.contract-date-filter tr,
+.bali-contract-page .ajax__tab_body table.contract-date-filter tbody,
+.bali-contract-page .ajax__tab_body table.contract-date-filter td,
+.bali-contract-page .ajax__tab_body table.contract-date-filter .contract-date-filter-action-cell,
+.bali-contract-page .ajax__tab_body table.contract-date-filter .contract-date-filter-shortcuts-cell {
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .bali-contract-page .ajax__tab_body table.contract-date-filter:not(.display):not(.dataTable) tr:first-child td,
@@ -1821,9 +1831,18 @@ body.bali-contract-page *::after {
 }
 
 .bali-contract-page table.contract-date-filter .btns {
-  min-width: 126px;
+  width: auto !important;
+  min-width: 150px;
+  max-width: 100%;
   margin: 0;
-  box-shadow: 0 8px 18px var(--contract-brand-ring);
+  border: 1px solid #263241 !important;
+  background: #263241 !important;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, .12);
+}
+
+.bali-contract-page table.contract-date-filter .btns:hover {
+  background: #17202a !important;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, .16);
 }
 
 .bali-contract-page table.contract-date-filter tr.contract-date-shortcut-row {
@@ -1839,8 +1858,12 @@ body.bali-contract-page *::after {
   flex-wrap: wrap;
   gap: 6px;
   align-items: center;
-  width: min(100%, 520px);
+  width: 100%;
   margin-top: 2px;
+  padding: 8px;
+  border: 1px solid #e6edf5;
+  border-radius: 8px;
+  background: #f8fafc !important;
 }
 
 .bali-contract-page .contract-bi-shortcuts {
@@ -1853,10 +1876,10 @@ body.bali-contract-page *::after {
 .bali-contract-page .contract-period-chip {
   min-height: 28px;
   padding: 0 10px;
-  border: 1px solid var(--contract-line);
+  border: 1px solid #dbe5ef;
   border-radius: 999px;
   background: #fff;
-  color: var(--contract-muted);
+  color: #526071;
   cursor: pointer;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 11px;
@@ -1866,9 +1889,9 @@ body.bali-contract-page *::after {
 }
 
 .bali-contract-page .contract-period-chip:hover {
-  border-color: var(--contract-brand);
-  background: var(--contract-brand-soft);
-  color: var(--contract-brand-strong);
+  border-color: #cbd5e1;
+  background: #eef2f7;
+  color: #263241;
 }
 
 .bali-contract-page .contract-period-warning {
