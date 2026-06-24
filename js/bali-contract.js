@@ -1872,6 +1872,7 @@
     if (!button) return;
     button.setAttribute('data-contract-submitting', 'true');
     button.setAttribute('aria-busy', 'true');
+    button.setAttribute('aria-disabled', 'true');
     if (!button.getAttribute('data-contract-label') && button.value) {
       button.setAttribute('data-contract-label', button.value);
       button.value = 'Gravando...';
@@ -1879,12 +1880,18 @@
     if ((' ' + button.className + ' ').indexOf(' is-submitting ') < 0) {
       button.className = (button.className ? button.className + ' ' : '') + 'is-submitting';
     }
+    window.clearTimeout(button._contractSubmittingTimer);
+    button._contractSubmittingTimer = window.setTimeout(function () {
+      resetSubmittingButtons();
+    }, 20000);
   }
 
   function resetSubmittingButtons() {
     Array.prototype.slice.call(document.querySelectorAll('[data-contract-submitting="true"]')).forEach(function (button) {
       button.removeAttribute('data-contract-submitting');
       button.removeAttribute('aria-busy');
+      button.removeAttribute('aria-disabled');
+      window.clearTimeout(button._contractSubmittingTimer);
       if (button.getAttribute('data-contract-label')) {
         button.value = button.getAttribute('data-contract-label');
         button.removeAttribute('data-contract-label');

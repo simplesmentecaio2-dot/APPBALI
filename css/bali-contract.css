@@ -670,6 +670,7 @@ body.bali-contract-page *::after {
   cursor: progress;
   filter: saturate(.85);
   opacity: .82;
+  pointer-events: none;
   transform: none;
 }
 
