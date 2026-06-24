@@ -323,6 +323,16 @@
     return String(value || '').replace(/\D/g, '');
   }
 
+  function lettersNumbersOnly(value) {
+    return String(value || '').replace(/[^0-9a-zA-Z]/g, '');
+  }
+
+  function validInstallments(value) {
+    var digits = digitsOnly(value);
+    var number = parseInt(digits, 10);
+    return digits.length > 0 && !isNaN(number) && number > 0 && number <= 120;
+  }
+
   function formatCep(value) {
     var digits = digitsOnly(value);
     if (digits.length !== 8) return String(value || '').trim();
@@ -604,6 +614,11 @@
 
     var vista = bySuffix(isEdit ? 'rbtnEdAVISTA' : 'rBtnModPagVista');
     var financiamento = bySuffix(isEdit ? 'rbtnEdAprazo' : 'rBtnModPagFinanciamento');
+    var chassi = bySuffix(isEdit ? 'txtEdChassi' : 'txtChassiPlaca');
+    if (chassi && isRelevantContractField(chassi) && String(chassi.value || '').trim().length > 0 && lettersNumbersOnly(chassi.value).length < 7) {
+      issues.push('Chassi/placa deve ter pelo menos 7 letras ou números.');
+      if (showMessages) showFieldMessage(chassi, 'Use placa ou chassi com pelo menos 7 caracteres.');
+    }
     if (vista && financiamento && !vista.checked && !financiamento.checked) {
       issues.push('Selecione a modalidade de pagamento.');
       if (showMessages) showFieldMessage(financiamento, 'Selecione à vista ou financiamento.');
@@ -614,9 +629,9 @@
     if ((financiamento && financiamento.checked) || parseMoney(valueOf(isEdit ? 'txtEdFinanciamento' : 'txtVlFinanciamento')) > 0) {
       var parcels = bySuffix(isEdit ? 'txtEdNumeroParcelas' : 'txtNrParcelas');
       var parcelValue = bySuffix(isEdit ? 'txtEdValorParcela' : 'txtVlParcelas');
-      if (parcels && isRelevantContractField(parcels) && String(parcels.value || '').trim().length === 0) {
-        issues.push('Informe a quantidade de parcelas do financiamento.');
-        if (showMessages) showFieldMessage(parcels, 'Informe a quantidade de parcelas.');
+      if (parcels && isRelevantContractField(parcels) && !validInstallments(parcels.value)) {
+        issues.push('Quantidade de parcelas deve ser um número entre 1 e 120.');
+        if (showMessages) showFieldMessage(parcels, 'Use um número entre 1 e 120.');
       } else {
         if (showMessages) showFieldMessage(parcels, '');
       }
@@ -1215,9 +1230,9 @@
 
     var financeValue = parseMoney(valueOf(rules.financeValue));
     if ((finance && finance.checked) || financeValue > 0) {
-      if (!hasFieldValue(rules.parcels)) {
-        issues.push('Informe a quantidade de parcelas do financiamento.');
-        if (showMessages) showFieldMessage(bySuffix(rules.parcels), 'Informe a quantidade de parcelas.');
+      if (!validInstallments(valueOf(rules.parcels))) {
+        issues.push('Quantidade de parcelas deve ser um número entre 1 e 120.');
+        if (showMessages) showFieldMessage(bySuffix(rules.parcels), 'Use um número entre 1 e 120.');
       }
       if (!hasPositiveMoney(rules.parcelValue)) {
         issues.push('Valor da parcela deve ser maior que zero.');

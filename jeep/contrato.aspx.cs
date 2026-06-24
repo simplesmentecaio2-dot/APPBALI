@@ -379,6 +379,31 @@ public partial class veiculos_contrato : System.Web.UI.Page
         return digitos.ToString();
     }
 
+    private string SomenteLetrasNumeros(string valor)
+    {
+        StringBuilder texto = new StringBuilder();
+        foreach (char caractere in (valor ?? ""))
+        {
+            if (Char.IsLetterOrDigit(caractere))
+            {
+                texto.Append(caractere);
+            }
+        }
+        return texto.ToString();
+    }
+
+    private bool ChassiPlacaValido(string valor)
+    {
+        return SomenteLetrasNumeros(valor).Length >= 7;
+    }
+
+    private bool NumeroParcelasValido(string valor)
+    {
+        int parcelas;
+        string digitos = SomenteDigitos(valor);
+        return Int32.TryParse(digitos, out parcelas) && parcelas > 0 && parcelas <= 120;
+    }
+
     private void NormalizarCep(TextBox campo)
     {
         if (campo == null) return;
@@ -482,6 +507,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         if (CampoVazio(txtMarca.Text)) erros.Add("Informe a marca.");
         if (CampoVazio(txtModelo.Text)) erros.Add("Informe o modelo.");
         if (CampoVazio(txtChassiPlaca.Text)) erros.Add("Informe chassi/placa.");
+        else if (!ChassiPlacaValido(txtChassiPlaca.Text)) erros.Add("Chassi/placa deve ter pelo menos 7 letras ou números.");
         if (CampoVazio(tipo)) erros.Add("Selecione se o contrato é novo ou usado.");
         if (CampoVazio(ddlVendedor.Text)) erros.Add("Selecione o vendedor.");
         if (LerMoeda(txtValoVeiculo.Text) <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
@@ -490,6 +516,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         if (modalidadePagamento == "F")
         {
             if (CampoVazio(txtNrParcelas.Text)) erros.Add("Informe a quantidade de parcelas do financiamento.");
+            else if (!NumeroParcelasValido(txtNrParcelas.Text)) erros.Add("Quantidade de parcelas deve ser um número entre 1 e 120.");
             if (LerMoeda(txtVlParcelas.Text) <= 0) erros.Add("Valor da parcela deve ser maior que zero para financiamento.");
         }
 
@@ -518,6 +545,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         if (CampoVazio(txtEdMarca.Text)) erros.Add("Informe a marca.");
         if (CampoVazio(txtEdModelo.Text)) erros.Add("Informe o modelo.");
         if (CampoVazio(txtEdChassi.Text)) erros.Add("Informe chassi/placa.");
+        else if (!ChassiPlacaValido(txtEdChassi.Text)) erros.Add("Chassi/placa deve ter pelo menos 7 letras ou números.");
         if (CampoVazio(modalidadePagamento)) erros.Add("Selecione a modalidade de pagamento.");
         if (CampoVazio(txtEdVendedor.Text)) erros.Add("Informe o vendedor.");
         if (LerMoeda(txtEdValorVeic.Text) <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
@@ -526,6 +554,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         if (modalidadePagamento == "F")
         {
             if (CampoVazio(txtEdNumeroParcelas.Text)) erros.Add("Informe a quantidade de parcelas do financiamento.");
+            else if (!NumeroParcelasValido(txtEdNumeroParcelas.Text)) erros.Add("Quantidade de parcelas deve ser um número entre 1 e 120.");
             if (LerMoeda(txtEdValorParcela.Text) <= 0) erros.Add("Valor da parcela deve ser maior que zero para financiamento.");
         }
 
