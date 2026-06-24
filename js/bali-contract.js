@@ -1747,13 +1747,17 @@
     buttons.forEach(function (button) {
       var name = button.getAttribute('data-section-name');
       var complete = stageComplete(name, mode);
+      var label = sectionLabel(name);
+      var statusText = complete ? 'Conferido' : 'Pendente';
       removeClass(button, 'is-complete');
       removeClass(button, 'is-pending');
       addClass(button, complete ? 'is-complete' : 'is-pending');
       if (complete) completed++;
 
       var status = button.querySelector('small');
-      if (status) status.textContent = complete ? 'Conferido' : 'Pendente';
+      if (status) status.textContent = statusText;
+      button.setAttribute('aria-label', label + ': ' + statusText);
+      button.setAttribute('title', label + ': ' + statusText);
     });
 
     var progress = nav.querySelector('.contract-section-progress span');
