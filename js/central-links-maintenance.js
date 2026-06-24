@@ -27,7 +27,8 @@
     unlocked: false,
     selectedIcon: 'default',
     filter: '',
-    filterFrame: 0
+    filterFrame: 0,
+    saving: false
   };
 
   var elements = {};
@@ -125,6 +126,43 @@
 
   function addQueryParam(url, key, value) {
     return url + (url.indexOf('?') >= 0 ? '&' : '?') + encodeURIComponent(key) + '=' + encodeURIComponent(value);
+  }
+
+  function normalizeUrl(value) {
+    return safeTrim(value).replace(/\s+/g, '');
+  }
+
+  function isSafeUrl(url) {
+    var value = normalizeUrl(url);
+    var lower = value.toLowerCase();
+
+    if (!value || /[<>"']/.test(value)) {
+      return false;
+    }
+
+    if (lower.indexOf('javascript:') === 0 || lower.indexOf('data:') === 0 || lower.indexOf('vbscript:') === 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  function hasDuplicateShortcut(shortcut) {
+    var url = normalizeUrl(shortcut.url).toLowerCase();
+    var title = normalize(shortcut.title);
+
+    for (var i = 0; i < state.shortcuts.length; i++) {
+      var item = state.shortcuts[i];
+      if (item.id === shortcut.id) {
+        continue;
+      }
+
+      if (normalizeUrl(item.url).toLowerCase() === url || normalize(item.title) === title) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   function getBrandName() {
@@ -263,6 +301,7 @@
   }
 
   async function saveShortcuts() {
+    setSaving(true);
     try {
       var response = await fetch(getApiUrl(), {
         method: 'POST',
@@ -285,8 +324,10 @@
       setFeedback('Atalhos salvos com sucesso.', false);
       return true;
     } catch (error) {
-      setFeedback('Nao foi possivel salvar os atalhos no servidor.', true);
+      setFeedback('N\u00e3o foi poss\u00edvel salvar os atalhos no servidor.', true);
       return false;
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -331,11 +372,11 @@
           '<div class="central-maintenance-fields">' +
             '<label>T&iacute;tulo<input type="text" data-field-title required /></label>' +
             '<label>Legenda<input type="text" data-field-caption required /></label>' +
-            '<label class="central-maintenance-url">Link<input type="url" data-field-url required /></label>' +
+            '<label class="central-maintenance-url">Link<input type="text" data-field-url required placeholder="contrato.aspx ou https://..." /></label>' +
           '</div>' +
           '<div class="central-icon-picker" data-icon-picker></div>' +
           '<div class="central-maintenance-actions">' +
-            '<button type="submit">Salvar atalho</button>' +
+            '<button type="submit" data-save-shortcut>Salvar atalho</button>' +
             '<button type="button" data-new-shortcut>Novo</button>' +
             '<button type="button" data-restore-defaults>Restaurar padr&atilde;o</button>' +
           '</div>' +
@@ -358,6 +399,7 @@
     elements.fieldTitle = document.querySelector('[data-field-title]');
     elements.fieldCaption = document.querySelector('[data-field-caption]');
     elements.fieldUrl = document.querySelector('[data-field-url]');
+    elements.saveButton = document.querySelector('[data-save-shortcut]');
     elements.iconPicker = document.querySelector('[data-icon-picker]');
     elements.list = document.querySelector('[data-maintenance-list]');
     elements.feedback = document.querySelector('[data-maintenance-feedback]');
@@ -375,6 +417,22 @@
     elements.feedback.textContent = message;
     elements.feedback.hidden = !message;
     elements.feedback.classList.toggle('is-error', !!isError);
+  }
+
+  function setSaving(isSaving) {
+    state.saving = !!isSaving;
+
+    if (elements.saveButton) {
+      elements.saveButton.disabled = state.saving;
+      elements.saveButton.textContent = state.saving ? 'Salvando...' : 'Salvar atalho';
+    }
+
+    var buttons = document.querySelectorAll('[data-maintenance-workspace] button');
+    for (var i = 0; i < buttons.length; i++) {
+      if (buttons[i] !== elements.saveButton) {
+        buttons[i].disabled = state.saving;
+      }
+    }
   }
 
   function openPanel() {
@@ -466,7 +524,7 @@
       button.type = 'button';
       button.className = 'central-icon-option';
       button.setAttribute('data-icon-key', icon);
-      button.setAttribute('aria-label', 'Selecionar ícone ' + icon);
+      button.setAttribute('aria-label', 'Selecionar \u00edcone ' + icon);
       button.innerHTML = '<img src="../img/central-icons/' + icon + '.svg" alt="" />';
       if (icon === state.selectedIcon) {
         button.classList.add('is-selected');
@@ -532,6 +590,10 @@
   }
 
   async function deleteShortcut(id) {
+    if (state.saving) {
+      return;
+    }
+
     if (!window.confirm('Excluir este atalho?')) {
       return;
     }
@@ -543,6 +605,10 @@
   }
 
   async function moveShortcut(id, direction) {
+    if (state.saving) {
+      return;
+    }
+
     var index = state.shortcuts.findIndex(function (item) { return item.id === id; });
     var target = index + direction;
     if (index < 0 || target < 0 || target >= state.shortcuts.length) {
@@ -559,17 +625,30 @@
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if (state.saving) {
+      return;
+    }
 
     var shortcut = {
       id: state.editingId || createId(),
       title: safeTrim(elements.fieldTitle ? elements.fieldTitle.value : ''),
       caption: safeTrim(elements.fieldCaption ? elements.fieldCaption.value : ''),
-      url: safeTrim(elements.fieldUrl ? elements.fieldUrl.value : ''),
+      url: normalizeUrl(elements.fieldUrl ? elements.fieldUrl.value : ''),
       icon: state.selectedIcon === 'default' ? '' : state.selectedIcon
     };
 
     if (!shortcut.title || !shortcut.caption || !shortcut.url) {
-      setFeedback('Preencha título, legenda e link.', true);
+      setFeedback('Preencha t\u00edtulo, legenda e link.', true);
+      return;
+    }
+
+    if (!isSafeUrl(shortcut.url)) {
+      setFeedback('Informe um link v\u00e1lido. Use caminhos internos como contrato.aspx ou links iniciados por http/https.', true);
+      return;
+    }
+
+    if (hasDuplicateShortcut(shortcut)) {
+      setFeedback('J\u00e1 existe um atalho com este t\u00edtulo ou link. Edite o atalho existente ou altere as informa\u00e7\u00f5es.', true);
       return;
     }
 
@@ -590,7 +669,11 @@
   }
 
   async function restoreDefaults() {
-    if (!window.confirm('Restaurar os atalhos padrao desta central?')) {
+    if (state.saving) {
+      return;
+    }
+
+    if (!window.confirm('Restaurar os atalhos padr\u00e3o desta central?')) {
       return;
     }
 

@@ -463,6 +463,15 @@ body.central-links-page {
   outline: none;
 }
 
+.central-maintenance-button:disabled,
+.central-maintenance-close:disabled,
+.central-maintenance-password-row button:disabled,
+.central-maintenance-actions button:disabled,
+.central-maintenance-item-actions button:disabled {
+  cursor: wait;
+  opacity: .62;
+}
+
 .central-maintenance-panel[hidden] {
   display: none;
 }
