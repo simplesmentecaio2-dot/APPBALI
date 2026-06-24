@@ -364,6 +364,30 @@ body.bali-contract-page *::after {
   margin-top: 10px !important;
 }
 
+.bali-contract-page .contract-form-section.is-step-hidden,
+.bali-contract-page .contract-checklist.is-step-hidden,
+.bali-contract-page .contract-quality-panel.is-step-hidden,
+.bali-contract-page .contract-submit-summary.is-step-hidden,
+.bali-contract-page input.is-step-hidden,
+.bali-contract-page .btns.is-step-hidden {
+  display: none !important;
+}
+
+.bali-contract-page .contract-form-section.is-step-active {
+  animation: contractStepFade .18s ease-out;
+}
+
+@keyframes contractStepFade {
+  from {
+    opacity: .55;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .bali-contract-page .contract-section-nav {
   position: sticky;
   top: 8px;
@@ -443,6 +467,16 @@ body.bali-contract-page *::after {
   background: #fbfdff;
 }
 
+.bali-contract-page .contract-section-nav button.is-active {
+  border-color: var(--contract-brand);
+  background: var(--contract-brand-soft);
+  color: var(--contract-brand-strong);
+}
+
+.bali-contract-page .contract-section-nav button.is-active small {
+  color: var(--contract-brand-strong);
+}
+
 .bali-contract-page .contract-section-nav button.is-complete {
   border-color: rgba(22, 138, 85, .34);
   background: #f0fdf4;
@@ -456,6 +490,52 @@ body.bali-contract-page *::after {
 .bali-contract-page .contract-section-nav button.is-pending {
   border-color: #dce4ee;
   background: #ffffff;
+}
+
+.bali-contract-page .contract-step-actions {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  width: min(100%, 30cm);
+  margin: 12px 0 16px;
+  padding: 10px;
+  border: 1px solid var(--contract-line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, .045);
+}
+
+.bali-contract-page .contract-step-actions button {
+  width: auto;
+  min-height: 36px;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid var(--contract-brand-ring);
+  border-radius: 8px;
+  background: var(--contract-brand);
+  color: #fff;
+  cursor: pointer;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.bali-contract-page .contract-step-actions button:first-child {
+  background: #fff;
+  color: var(--contract-brand-strong);
+}
+
+.bali-contract-page .contract-step-actions button:disabled {
+  cursor: default;
+  opacity: .46;
+}
+
+.bali-contract-page .contract-step-message {
+  display: none;
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 850;
 }
 
 .bali-contract-page .form-contrato,
@@ -1959,6 +2039,10 @@ body.bali-contract-page *::after {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .bali-contract-page .contract-step-actions {
+    grid-template-columns: repeat(2, auto) minmax(0, 1fr);
+  }
+
   .bali-contract-page .ajax__tab_body table.contract-date-filter {
     min-width: 0;
   }
@@ -1991,6 +2075,14 @@ body.bali-contract-page *::after {
 
   .bali-contract-page .contract-section-nav-steps {
     grid-template-columns: 1fr;
+  }
+
+  .bali-contract-page .contract-step-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .bali-contract-page .contract-step-actions button {
+    width: 100%;
   }
 
   .bali-contract-page .dataTables_wrapper .dataTables_filter {

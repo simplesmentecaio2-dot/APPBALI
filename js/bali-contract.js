@@ -5,6 +5,8 @@
   var contractAllowUnload = false;
   var draftTimer = null;
   var pageLoadedAt = new Date().getTime();
+  var contractStepIndex = 0;
+  var contractStepSignature = '';
   var moneyFields = [
     'txtValoVeiculo',
     'txtEmplacamento',
@@ -201,6 +203,49 @@
   function isVisible(field) {
     if (!field) return false;
     return !!(field.offsetWidth || field.offsetHeight || field.getClientRects().length);
+  }
+
+  function elementContains(parent, child) {
+    if (!parent || !child) return false;
+    if (parent.contains) return parent.contains(child);
+    while (child) {
+      if (child === parent) return true;
+      child = child.parentNode;
+    }
+    return false;
+  }
+
+  function getWizardHost() {
+    var current = document.querySelector('[data-contract-wizard-host="true"]');
+    if (current && isVisible(current)) return current;
+
+    Array.prototype.slice.call(document.querySelectorAll('[data-contract-wizard-host="true"]')).forEach(function (host) {
+      host.removeAttribute('data-contract-wizard-host');
+    });
+
+    var buttons = ['btnEditareGravar', 'btnGravar'];
+    for (var i = 0; i < buttons.length; i++) {
+      var button = bySuffix(buttons[i]);
+      if (button && button.parentNode && isVisible(button.parentNode)) {
+        button.parentNode.setAttribute('data-contract-wizard-host', 'true');
+        return button.parentNode;
+      }
+    }
+
+    var section = Array.prototype.slice.call(document.querySelectorAll('table.contract-form-section')).filter(isVisible)[0];
+    if (section && section.parentNode) {
+      section.parentNode.setAttribute('data-contract-wizard-host', 'true');
+      return section.parentNode;
+    }
+
+    return null;
+  }
+
+  function isRelevantContractField(field) {
+    if (!field) return false;
+    if (isVisible(field)) return true;
+    var host = getWizardHost();
+    return !!(host && elementContains(host, field));
   }
 
   function closestTag(element, tagName) {
@@ -519,7 +564,7 @@
     formatRules.forEach(function (rule) {
       rule.ids.forEach(function (id) {
         allBySuffix(id).forEach(function (field) {
-          if (!field || !isVisible(field)) return;
+          if (!field || !isRelevantContractField(field)) return;
 
           var value = String(field.value || '').trim();
           if (isFormatBlank(rule, value)) return;
@@ -545,7 +590,7 @@
     var issues = [];
     currentRequiredFields(isEdit).forEach(function (item) {
       var field = bySuffix(item.id);
-      if (!field || !isVisible(field)) return;
+      if (!field || !isRelevantContractField(field)) return;
 
       var value = String(field.value || '').trim();
       var invalid = item.money ? parseMoney(value) <= 0 : value.length === 0;
@@ -569,13 +614,13 @@
     if ((financiamento && financiamento.checked) || parseMoney(valueOf(isEdit ? 'txtEdFinanciamento' : 'txtVlFinanciamento')) > 0) {
       var parcels = bySuffix(isEdit ? 'txtEdNumeroParcelas' : 'txtNrParcelas');
       var parcelValue = bySuffix(isEdit ? 'txtEdValorParcela' : 'txtVlParcelas');
-      if (parcels && isVisible(parcels) && String(parcels.value || '').trim().length === 0) {
+      if (parcels && isRelevantContractField(parcels) && String(parcels.value || '').trim().length === 0) {
         issues.push('Informe a quantidade de parcelas do financiamento.');
         if (showMessages) showFieldMessage(parcels, 'Informe a quantidade de parcelas.');
       } else {
         if (showMessages) showFieldMessage(parcels, '');
       }
-      if (parcelValue && isVisible(parcelValue) && parseMoney(parcelValue.value) <= 0) {
+      if (parcelValue && isRelevantContractField(parcelValue) && parseMoney(parcelValue.value) <= 0) {
         issues.push('Valor da parcela deve ser maior que zero para financiamento.');
         if (showMessages) showFieldMessage(parcelValue, 'Use um valor maior que zero.');
       } else {
@@ -723,13 +768,13 @@
 
     return ids.some(function (id) {
       var field = bySuffix(id);
-      return field && isVisible(field) && String(field.value || '').trim().length > 0;
+      return field && isRelevantContractField(field) && String(field.value || '').trim().length > 0;
     });
   }
 
   function updateQualityPanel() {
-    var isEdit = !!(bySuffix('txtEdCliente') && isVisible(bySuffix('txtEdCliente')));
-    var isNew = !!(bySuffix('txtCliente') && isVisible(bySuffix('txtCliente')));
+    var isEdit = currentContractMode() === 'edicao';
+    var isNew = currentContractMode() === 'novo' && !!getWizardHost();
     var panel = ensureQualityPanel(isEdit);
     if (!panel) return;
 
@@ -939,13 +984,14 @@
   }
 
   function currentContractMode() {
-    var editField = bySuffix('txtEdCliente');
-    return editField && isVisible(editField) ? 'edicao' : 'novo';
+    var host = getWizardHost();
+    if (host && host.querySelector && host.querySelector('[id$="btnEditareGravar"]')) return 'edicao';
+    return 'novo';
   }
 
   function hasFieldValue(id) {
     var field = bySuffix(id);
-    if (!field || !isVisible(field)) return false;
+    if (!field || !isRelevantContractField(field)) return false;
     if (field.tagName === 'SELECT') {
       var value = String(field.value || '').trim();
       var text = field.options && field.selectedIndex >= 0 ? String(field.options[field.selectedIndex].text || '').trim() : '';
@@ -956,7 +1002,7 @@
 
   function hasPositiveMoney(id) {
     var field = bySuffix(id);
-    return field && isVisible(field) && parseMoney(field.value) > 0;
+    return field && isRelevantContractField(field) && parseMoney(field.value) > 0;
   }
 
   function requiredFieldComplete(id) {
@@ -992,7 +1038,7 @@
   function checklistComplete(mode) {
     return checklistRequirements[mode].every(function (id) {
       var field = bySuffix(id);
-      return !field || !isVisible(field) || field.checked;
+      return !field || !isRelevantContractField(field) || field.checked;
     });
   }
 
@@ -1022,6 +1068,239 @@
     });
   }
 
+  function getWizardSections() {
+    var host = getWizardHost();
+    if (!host || !host.querySelectorAll) return [];
+    return Array.prototype.slice.call(host.querySelectorAll('table.contract-form-section'));
+  }
+
+  function getWizardChecklist() {
+    var host = getWizardHost();
+    return host && host.querySelector ? host.querySelector('.contract-checklist') : null;
+  }
+
+  function getWizardSubmitButton() {
+    var host = getWizardHost();
+    if (!host || !host.querySelector) return null;
+    return host.querySelector('[id$="btnEditareGravar"], [id$="btnGravar"]');
+  }
+
+  function sectionStageName(section) {
+    var match = /contract-section-([a-z]+)/.exec(section.className || '');
+    return match ? match[1] : '';
+  }
+
+  function getStageNameByIndex(index) {
+    var sections = getWizardSections();
+    if (index < sections.length) {
+      return sectionStageName(sections[index]);
+    }
+    return 'checklist';
+  }
+
+  function wizardSignature(sections, checklist) {
+    var host = getWizardHost();
+    return (host ? String(host.id || host.getAttribute('data-contract-wizard-host') || '') : '')
+      + '|' + currentContractMode()
+      + '|' + sections.map(sectionStageName).join('|')
+      + '|' + (checklist ? 'checklist' : '');
+  }
+
+  function fieldLabelFor(id) {
+    var labels = {
+      txtCliente: 'Cliente',
+      txtCPFCNPJ: 'CPF/CNPJ',
+      txtMarca: 'Marca',
+      txtModelo: 'Modelo',
+      txtChassiPlaca: 'Chassi/placa',
+      txtValoVeiculo: 'Valor do ve\u00edculo',
+      ddlVendedor: 'Vendedor',
+      txtEdCliente: 'Cliente',
+      txtEdCPF: 'CPF/CNPJ',
+      txtEdMarca: 'Marca',
+      txtEdModelo: 'Modelo',
+      txtEdChassi: 'Chassi/placa',
+      txtEdValorVeic: 'Valor do ve\u00edculo',
+      txtEdVendedor: 'Vendedor',
+      txtNrParcelas: 'Quantidade de parcelas',
+      txtVlParcelas: 'Valor da parcela',
+      txtEdNumeroParcelas: 'Quantidade de parcelas',
+      txtEdValorParcela: 'Valor da parcela'
+    };
+    return labels[id] || id;
+  }
+
+  function validateRequiredIds(ids, showMessages) {
+    var issues = [];
+    ids.forEach(function (id) {
+      var field = bySuffix(id);
+      if (!field || !isRelevantContractField(field)) return;
+
+      var ok = requiredFieldComplete(id);
+      var message = ok ? '' : fieldLabelFor(id) + ' precisa ser preenchido corretamente.';
+      if (!ok) issues.push(message);
+      if (showMessages) showFieldMessage(field, message);
+    });
+    return issues;
+  }
+
+  function validatePaymentWizard(mode, showMessages) {
+    var issues = validateRequiredIds(sectionRequirements[mode].pagamento, showMessages);
+    var rules = paymentRules[mode];
+    var cash = bySuffix(rules.cash);
+    var finance = bySuffix(rules.finance);
+
+    if (cash && finance && !cash.checked && !finance.checked) {
+      issues.push('Selecione a modalidade de pagamento.');
+      if (showMessages) showFieldMessage(finance, 'Selecione \u00e0 vista ou financiamento.');
+    } else if (showMessages && finance) {
+      showFieldMessage(finance, '');
+    }
+
+    var financeValue = parseMoney(valueOf(rules.financeValue));
+    if ((finance && finance.checked) || financeValue > 0) {
+      if (!hasFieldValue(rules.parcels)) {
+        issues.push('Informe a quantidade de parcelas do financiamento.');
+        if (showMessages) showFieldMessage(bySuffix(rules.parcels), 'Informe a quantidade de parcelas.');
+      }
+      if (!hasPositiveMoney(rules.parcelValue)) {
+        issues.push('Valor da parcela deve ser maior que zero.');
+        if (showMessages) showFieldMessage(bySuffix(rules.parcelValue), 'Use um valor maior que zero.');
+      }
+    }
+
+    return issues;
+  }
+
+  function validateWizardStep(index, showMessages) {
+    var mode = currentContractMode();
+    var stage = getStageNameByIndex(index);
+    var issues = [];
+
+    if (stage === 'cliente' || stage === 'veiculo') {
+      issues = validateRequiredIds(sectionRequirements[mode][stage], showMessages);
+    } else if (stage === 'pagamento') {
+      issues = validatePaymentWizard(mode, showMessages);
+    } else if (stage === 'checklist') {
+      issues = collectIssues(mode === 'edicao', showMessages);
+      if (!checklistComplete(mode)) issues.push('Confirme o checklist final antes de gravar.');
+    }
+
+    return uniqueIssues(issues);
+  }
+
+  function showWizardMessage(message) {
+    var actions = document.getElementById('contractStepActions');
+    if (!actions) return;
+    var target = actions.querySelector('.contract-step-message');
+    if (!target) return;
+    target.textContent = message || '';
+    target.style.display = message ? 'block' : 'none';
+  }
+
+  function ensureWizardActions(host) {
+    var actions = document.getElementById('contractStepActions');
+    if (!actions) {
+      actions = document.createElement('div');
+      actions.id = 'contractStepActions';
+      actions.className = 'contract-step-actions';
+      actions.innerHTML = '<button type="button" data-step-action="prev">Voltar</button><button type="button" data-step-action="next">Pr\u00f3xima etapa</button><small class="contract-step-message"></small>';
+    }
+
+    if (actions.getAttribute('data-step-bound') !== 'true') {
+      actions.setAttribute('data-step-bound', 'true');
+      actions.querySelector('[data-step-action="prev"]').addEventListener('click', function () {
+        setWizardStep(contractStepIndex - 1, false);
+      });
+      actions.querySelector('[data-step-action="next"]').addEventListener('click', function () {
+        setWizardStep(contractStepIndex + 1, true);
+      });
+    }
+
+    if (host && actions.parentNode !== host) host.appendChild(actions);
+    return actions;
+  }
+
+  function setWizardStep(index, validateBeforeAdvance) {
+    var sections = getWizardSections();
+    var checklist = getWizardChecklist();
+    var maxIndex = sections.length + (checklist ? 1 : 0) - 1;
+    if (maxIndex < 0) return;
+
+    index = Math.max(0, Math.min(index, maxIndex));
+    if (validateBeforeAdvance && index > contractStepIndex) {
+      var currentIssues = validateWizardStep(contractStepIndex, true);
+      if (currentIssues.length) {
+        showWizardMessage(currentIssues[0]);
+        focusFirstInvalidField();
+        updateQualityPanel();
+        return;
+      }
+    }
+
+    contractStepIndex = index;
+    showWizardMessage('');
+    applyWizardStep();
+  }
+
+  function applyWizardStep() {
+    var host = getWizardHost();
+    if (!host) return;
+
+    var sections = getWizardSections();
+    var checklist = getWizardChecklist();
+    var submitButton = getWizardSubmitButton();
+    var maxIndex = sections.length + (checklist ? 1 : 0) - 1;
+    if (maxIndex < 0) return;
+    if (contractStepIndex > maxIndex) contractStepIndex = maxIndex;
+
+    var reviewActive = checklist && contractStepIndex === sections.length;
+    addClass(host, 'contract-wizard-host');
+    if (reviewActive) {
+      addClass(host, 'contract-wizard-review');
+    } else {
+      removeClass(host, 'contract-wizard-review');
+    }
+
+    sections.forEach(function (section, index) {
+      removeClass(section, 'is-step-active');
+      removeClass(section, 'is-step-hidden');
+      if (index === contractStepIndex && !reviewActive) {
+        addClass(section, 'is-step-active');
+      } else {
+        addClass(section, 'is-step-hidden');
+      }
+    });
+
+    [checklist, document.getElementById('contractQualityPanel'), document.getElementById('contractSubmitSummary'), submitButton].forEach(function (element) {
+      if (!element) return;
+      removeClass(element, 'is-step-hidden');
+      if (!reviewActive) addClass(element, 'is-step-hidden');
+    });
+
+    var target = reviewActive ? (checklist || submitButton) : sections[contractStepIndex];
+    var actions = ensureWizardActions(host);
+    if (target && target.parentNode === host && actions.parentNode === host) {
+      if (target.nextSibling !== actions) host.insertBefore(actions, target.nextSibling);
+    }
+
+    var prev = actions.querySelector('[data-step-action="prev"]');
+    var next = actions.querySelector('[data-step-action="next"]');
+    prev.disabled = contractStepIndex === 0;
+    next.style.display = reviewActive ? 'none' : '';
+    next.textContent = contractStepIndex === sections.length - 1 && checklist ? 'Ir para revis\u00e3o' : 'Pr\u00f3xima etapa';
+
+    var nav = document.getElementById('contractSectionNav');
+    if (nav) {
+      Array.prototype.slice.call(nav.querySelectorAll('[data-section-index]')).forEach(function (button) {
+        removeClass(button, 'is-active');
+        if (parseInt(button.getAttribute('data-section-index'), 10) === contractStepIndex) addClass(button, 'is-active');
+      });
+    }
+
+    updateSectionProgress();
+  }
+
   function sectionLabel(section) {
     if (section === 'cliente') return 'Cliente';
     if (section === 'veiculo') return 'Veículo';
@@ -1031,7 +1310,7 @@
   }
 
   function enhanceSectionNavigator() {
-    var sections = Array.prototype.slice.call(document.querySelectorAll('table.contract-form-section')).filter(isVisible);
+    var sections = getWizardSections();
     var nav = document.getElementById('contractSectionNav');
 
     if (sections.length < 2) {
@@ -1045,10 +1324,8 @@
       nav.className = 'contract-section-nav';
     }
 
-    var checklist = Array.prototype.slice.call(document.querySelectorAll('.contract-checklist')).filter(isVisible)[0] || null;
-    var signature = sections.map(function (section) {
-      return section.className;
-    }).join('|') + '|' + (checklist ? checklist.className : '');
+    var checklist = getWizardChecklist();
+    var signature = wizardSignature(sections, checklist);
 
     if (nav.getAttribute('data-section-signature') !== signature) {
       nav.setAttribute('data-section-signature', signature);
@@ -1063,13 +1340,7 @@
         button.setAttribute('data-section-name', name);
         button.setAttribute('data-section-index', index);
         button.addEventListener('click', function () {
-          var target = sections[parseInt(button.getAttribute('data-section-index'), 10)];
-          if (!target) return;
-          try {
-            target.scrollIntoView({ block: 'start', behavior: 'smooth' });
-          } catch (ignore) {
-            target.scrollIntoView(true);
-          }
+          setWizardStep(parseInt(button.getAttribute('data-section-index'), 10), true);
         });
         steps.appendChild(button);
       });
@@ -1079,12 +1350,9 @@
         checklistButton.type = 'button';
         checklistButton.innerHTML = '<strong>' + sectionLabel('checklist') + '</strong><small>Pendente</small>';
         checklistButton.setAttribute('data-section-name', 'checklist');
+        checklistButton.setAttribute('data-section-index', sections.length);
         checklistButton.addEventListener('click', function () {
-          try {
-            checklist.scrollIntoView({ block: 'center', behavior: 'smooth' });
-          } catch (ignore) {
-            checklist.scrollIntoView(true);
-          }
+          setWizardStep(sections.length, true);
         });
         steps.appendChild(checklistButton);
       }
@@ -1094,6 +1362,12 @@
     if (nav.parentNode !== sections[0].parentNode || nav.nextSibling !== sections[0]) {
       sections[0].parentNode.insertBefore(nav, sections[0]);
     }
+    var currentSignature = wizardSignature(sections, checklist);
+    if (contractStepSignature !== currentSignature) {
+      contractStepSignature = currentSignature;
+      contractStepIndex = 0;
+    }
+    applyWizardStep();
     updateSectionProgress();
   }
 
@@ -1249,8 +1523,7 @@
 
   function draftKey() {
     var path = String(window.location.pathname || '').toLowerCase();
-    var editVisible = !!(bySuffix('txtEdCliente') && isVisible(bySuffix('txtEdCliente')));
-    if (editVisible) {
+    if (currentContractMode() === 'edicao') {
       return 'bali-contract-draft:' + path + ':editar:' + (valueOf('txtContrato') || 'sem-id');
     }
     return 'bali-contract-draft:' + path + ':novo';
@@ -1393,7 +1666,7 @@
       return;
     }
 
-    var panel = ensureDraftPanel(!!(bySuffix('txtEdCliente') && isVisible(bySuffix('txtEdCliente'))));
+    var panel = ensureDraftPanel(currentContractMode() === 'edicao');
     if (!panel || panel.getAttribute('data-draft-bound') === 'true') {
       if (panel) panel.classList.remove('is-hidden');
       return;
