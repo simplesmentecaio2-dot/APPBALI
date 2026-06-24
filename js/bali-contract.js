@@ -1209,16 +1209,30 @@
     if (!nav) return;
 
     var mode = currentContractMode();
-    Array.prototype.slice.call(nav.querySelectorAll('[data-section-name]')).forEach(function (button) {
+    var completed = 0;
+    var buttons = Array.prototype.slice.call(nav.querySelectorAll('[data-section-name]'));
+    buttons.forEach(function (button) {
       var name = button.getAttribute('data-section-name');
       var complete = stageComplete(name, mode);
       removeClass(button, 'is-complete');
       removeClass(button, 'is-pending');
       addClass(button, complete ? 'is-complete' : 'is-pending');
+      if (complete) completed++;
 
       var status = button.querySelector('small');
       if (status) status.textContent = complete ? 'Conferido' : 'Pendente';
     });
+
+    var progress = nav.querySelector('.contract-section-progress span');
+    if (progress && buttons.length) {
+      progress.style.width = Math.round((completed / buttons.length) * 100) + '%';
+    }
+
+    var checklist = getWizardChecklist();
+    if (checklist) {
+      removeClass(checklist, 'is-complete');
+      if (checklistComplete(mode)) addClass(checklist, 'is-complete');
+    }
   }
 
   function getWizardSections() {
@@ -1501,14 +1515,14 @@
 
     if (nav.getAttribute('data-section-signature') !== signature) {
       nav.setAttribute('data-section-signature', signature);
-      nav.innerHTML = '<div class="contract-section-nav-head"><span>Etapas do contrato</span><small>Acompanhe o preenchimento de cada bloco.</small></div><div class="contract-section-nav-steps"></div>';
+      nav.innerHTML = '<div class="contract-section-nav-head"><span>Etapas do contrato</span><small>Acompanhe o preenchimento de cada bloco.</small><div class="contract-section-progress" aria-hidden="true"><span></span></div></div><div class="contract-section-nav-steps"></div>';
       var steps = nav.querySelector('.contract-section-nav-steps');
       sections.forEach(function (section, index) {
         var match = /contract-section-([a-z]+)/.exec(section.className || '');
         var name = match ? match[1] : '';
         var button = document.createElement('button');
         button.type = 'button';
-        button.innerHTML = '<strong>' + sectionLabel(name) + '</strong><small>Pendente</small>';
+        button.innerHTML = '<span class="contract-step-number">' + (index + 1) + '</span><span class="contract-step-copy"><strong>' + sectionLabel(name) + '</strong><small>Pendente</small></span>';
         button.setAttribute('data-section-name', name);
         button.setAttribute('data-section-index', index);
         button.addEventListener('click', function () {
@@ -1520,7 +1534,7 @@
       if (checklist) {
         var checklistButton = document.createElement('button');
         checklistButton.type = 'button';
-        checklistButton.innerHTML = '<strong>' + sectionLabel('checklist') + '</strong><small>Pendente</small>';
+        checklistButton.innerHTML = '<span class="contract-step-number">' + (sections.length + 1) + '</span><span class="contract-step-copy"><strong>' + sectionLabel('checklist') + '</strong><small>Pendente</small></span>';
         checklistButton.setAttribute('data-section-name', 'checklist');
         checklistButton.setAttribute('data-section-index', sections.length);
         checklistButton.addEventListener('click', function () {
