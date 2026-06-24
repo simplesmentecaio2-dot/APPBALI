@@ -86,11 +86,20 @@ public partial class veiculos_contrato : System.Web.UI.Page
         {
             string pasta = Server.MapPath("~/App_Data");
             Directory.CreateDirectory(pasta);
+            string contexto = "";
+            try
+            {
+                contexto = "Pagina=" + Request.AppRelativeCurrentExecutionFilePath + "; IP=" + Request.UserHostAddress + "; ";
+            }
+            catch
+            {
+            }
+
             string linha = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CulturaBrasil)
                 + "\t" + MarcaContrato
                 + "\t" + LimparLog(UsuarioAtual())
                 + "\t" + LimparLog(acao)
-                + "\t" + LimparLog(detalhe);
+                + "\t" + LimparLog(contexto + detalhe);
 
             File.AppendAllText(Path.Combine(pasta, "contrato-operacoes.log"), linha + Environment.NewLine, Encoding.UTF8);
         }
