@@ -1119,6 +1119,13 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
         html.Append("</div></section>");
 
+        html.Append("<section class='contract-audit-box'><h3>Usuários com mais registros</h3><div class='contract-audit-bars'>");
+        foreach (var grupo in recentes.GroupBy(x => String.IsNullOrEmpty(x.Usuario) ? "sem usuário" : x.Usuario).OrderByDescending(x => x.Count()).ThenBy(x => x.Key).Take(8))
+        {
+            html.Append("<div><span>").Append(HttpUtility.HtmlEncode(grupo.Key)).Append("</span><strong>").Append(grupo.Count()).Append("</strong></div>");
+        }
+        html.Append("</div></section>");
+
         html.Append("<section class='contract-audit-box'><h3>Últimos registros</h3><div class='contract-audit-list'>");
         foreach (ContratoLogItem item in logs.Take(10))
         {
