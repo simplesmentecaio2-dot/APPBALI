@@ -17,7 +17,7 @@
 
     <script src="../tables/js/jquery.dataTables.min.js"></script>
     <link href="../tables/estilo/table.css" rel="stylesheet" />
-    <link href="../css/bali-contract.css?v=20260624-contratos69" rel="stylesheet" />
+    <link href="../css/bali-contract.css?v=20260624-contratos70" rel="stylesheet" />
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -152,7 +152,7 @@
         }
     </script>
 
-    <script src="../js/bali-contract.js?v=20260624-contratos69"></script>
+    <script src="../js/bali-contract.js?v=20260624-contratos70"></script>
 </head>
 <body class="bali-contract-page contrato-jeep">
     <form id="form1" style="height: 100%;" runat="server">
@@ -708,7 +708,7 @@ WHERE        (ga.GrupoAcesso_Descricao = 'VENDEDOR DE VEICULOS NOVOS')"></asp:Sq
                         <div id="ag" style=" position:fixed;  z-index:1000; top:0; left:0; width:100%; height:100%; background-color:rgba(0, 0, 0, 0.75); display:none;">
             <div style="position:fixed; z-index:1001; top:50%; left:50%; width:300px; height:100px; margin-left:-150px; margin-top:-50px; background-color:white; border-radius:5px; text-align:center;">
                <img src="../img/aguarde.gif" style=" border-radius:5px;" /><br />
-                <span onclick="aguarde();" style="text-decoration:none; cursor:pointer; color:white; text-decoration:underline;">Cancelar...</span>
+                <span onclick="cancelarAguarde();" style="text-decoration:none; cursor:pointer; color:white; text-decoration:underline;">Cancelar...</span>
                 
             </div>
         </div>

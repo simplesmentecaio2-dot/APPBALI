@@ -1990,6 +1990,11 @@
       setLoadingVisible(true);
       return true;
     };
+    window.cancelarAguarde = function () {
+      setLoadingVisible(false);
+      resetProcessingButtons();
+      return false;
+    };
     setLoadingVisible(false);
   }
 
