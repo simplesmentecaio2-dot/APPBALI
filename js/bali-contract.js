@@ -2811,6 +2811,19 @@
     });
   }
 
+  function bindLookupWrapperRefresh(wrapper) {
+    if (!wrapper || wrapper.getAttribute('data-contract-wrapper-refresh') === 'true') return;
+    wrapper.setAttribute('data-contract-wrapper-refresh', 'true');
+    var refresh = function () {
+      window.setTimeout(function () {
+        enhanceLookupPagination();
+      }, 80);
+    };
+    wrapper.addEventListener('click', refresh);
+    wrapper.addEventListener('keyup', refresh);
+    wrapper.addEventListener('change', refresh);
+  }
+
   function enhanceLookupTables() {
     Array.prototype.slice.call(document.querySelectorAll('#tblConsultaProcesso, #tblConsultaProcesso2, table.display, table.dataTable')).forEach(function (table) {
       if (!table || table.getAttribute('data-contract-lookup') === 'true') {
@@ -2824,6 +2837,7 @@
       addClass(table, 'contract-lookup-table');
       prepareLookupIdCells(table);
       enhanceLookupSummary(table);
+      bindLookupWrapperRefresh(closestClass(table, 'dataTables_wrapper') || table.parentNode);
 
       table.addEventListener('click', function (event) {
         var action = closestClass(event.target, 'contract-id-action');
