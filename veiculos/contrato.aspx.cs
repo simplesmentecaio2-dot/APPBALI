@@ -137,7 +137,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         return "Tipo=" + tipo
             + "; Cliente=" + txtCliente.Text
-            + "; CPF/CNPJ=" + txtCPFCNPJ.Text
+            + "; CPF/CNPJ=" + MascararDocumentoLog(txtCPFCNPJ.Text)
             + "; Chassi/Placa=" + txtChassiPlaca.Text
             + "; Modelo=" + txtModelo.Text
             + "; Vendedor=" + ddlVendedor.Text
@@ -148,11 +148,19 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         return "Contrato=" + txtContrato.Text
             + "; Cliente=" + txtEdCliente.Text
-            + "; CPF/CNPJ=" + txtEdCPF.Text
+            + "; CPF/CNPJ=" + MascararDocumentoLog(txtEdCPF.Text)
             + "; Chassi/Placa=" + txtEdChassi.Text
             + "; Modelo=" + txtEdModelo.Text
             + "; Vendedor=" + txtEdVendedor.Text
             + "; Valor=" + txtEdValorVeic.Text;
+    }
+
+    private string MascararDocumentoLog(string valor)
+    {
+        string digitos = SomenteDigitos(valor);
+        if (digitos.Length == 0) return "";
+        if (digitos.Length <= 4) return "****";
+        return "****" + digitos.Substring(digitos.Length - 4);
     }
 
     private void RegistrarValidacaoContrato(string acao, string detalheContrato, string mensagem)
@@ -289,7 +297,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             }
             else
             {
-                RegistrarContratoOperacao("DUPLICIDADE_CONFIRMADA", "Contrato semelhante=" + contratoSemelhante + "; CPF/CNPJ=" + txtCPFCNPJ.Text + "; Chassi/Placa=" + txtChassiPlaca.Text + "; Tipo=" + tipo);
+                RegistrarContratoOperacao("DUPLICIDADE_CONFIRMADA", "Contrato semelhante=" + contratoSemelhante + "; CPF/CNPJ=" + MascararDocumentoLog(txtCPFCNPJ.Text) + "; Chassi/Placa=" + txtChassiPlaca.Text + "; Tipo=" + tipo);
             }
         }
 
@@ -312,7 +320,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         campos["Bairro"] = txtEdBairro.Text;
         campos["Cidade"] = txtEdCidade.Text;
         campos["UF"] = txtEdUF.Text;
-        campos["CPF/CNPJ"] = txtEdCPF.Text;
+        campos["CPF/CNPJ"] = MascararDocumentoLog(txtEdCPF.Text);
         campos["RG/IE"] = txtEdRG.Text;
         campos["Data nascimento"] = txtEdNascimento.Text;
         campos["Telefone residencial"] = txtEdTelRes.Text;
@@ -1503,7 +1511,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 }
                 else if (RetornoProcedureDuplicidade(obs, codigo))
                 {
-                    RegistrarContratoOperacao("DUPLICIDADE_BLOQUEADA_PROCEDURE", "Contrato semelhante=" + codigo + "; CPF/CNPJ=" + txtCPFCNPJ.Text + "; Chassi/Placa=" + txtChassiPlaca.Text + "; Tipo=" + tipo);
+                    RegistrarContratoOperacao("DUPLICIDADE_BLOQUEADA_PROCEDURE", "Contrato semelhante=" + codigo + "; CPF/CNPJ=" + MascararDocumentoLog(txtCPFCNPJ.Text) + "; Chassi/Placa=" + txtChassiPlaca.Text + "; Tipo=" + tipo);
                     ExibirAlerta(MensagemDuplicidadeProcedure(codigo));
                 }
                 else
