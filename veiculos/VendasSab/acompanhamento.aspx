@@ -310,7 +310,7 @@
                                                                 </div>
                                                                 <div class="card-footer text-muted">
                                                                     <div class="col-8">
-                                                                        <div id="Div5" runat="server" class="badge badge-success">concluido</div>
+                                                                        <div id="Div5" runat="server" class="badge badge-success">concluído</div>
                                                                     </div>
                                                                     <div class="col-4">
                                                                         <div class="btn btn-primary"><i class="fas fa-search"></i></div>
@@ -319,7 +319,7 @@
                                                             </div>
                                                             <div id="divLocalizacao" runat="server" class="card text-center col-lg-3 border border-alternate">
                                                                 <div class="card-header">
-                                                                    Localizaçao
+                                                                    Localização
                                                                 </div>
                                                                 <div class="card-body">
                                                                     <p class="card-text">Veículo está localizado no:</p>
@@ -328,7 +328,7 @@
                                                                 </div>
                                                                 <div class="card-footer text-muted">
                                                                     <div class="col-8">
-                                                                        <div id="statusLocalizacaoConcluido" runat="server" class="badge badge-success">concluido</div>
+                                                                        <div id="statusLocalizacaoConcluido" runat="server" class="badge badge-success">concluído</div>
                                                                         <div id="statusLocalizacaoPendante" runat="server" class="badge badge-warning">pendente</div>
                                                                     </div>
                                                                     <div class="col-4">
@@ -343,7 +343,7 @@
                                                                 <div class="card-body">
                                                                     <div id="divRevisaoIniciada" runat="server">
                                                                         <p class="card-text">
-                                                                            <i class="fas fa-calendar"></i>Inicio:
+                                                                            <i class="fas fa-calendar"></i>Início:
                                                                             <asp:Literal ID="literalRevisaoInicio" runat="server"></asp:Literal>
                                                                         </p>
                                                                         <p class="card-text">
@@ -357,7 +357,7 @@
                                                                 </div>
                                                                 <div class="card-footer text-muted">
                                                                     <div class="col-8">
-                                                                        <div id="statusRevisaoConcluido" runat="server" class="badge badge-success">concluido</div>
+                                                                        <div id="statusRevisaoConcluido" runat="server" class="badge badge-success">concluído</div>
                                                                         <div id="statusRevisaoEmAndamento" runat="server" class="badge badge-danger">em andamento</div>
                                                                         <div id="statusRevisaoPendente" runat="server" class="badge badge-warning">pendente</div>
                                                                     </div>
@@ -368,11 +368,11 @@
                                                             </div>
                                                             <div id="divRequisicaoAcessorio" runat="server" class="card text-center col-lg-3 border border-alternate">
                                                                 <div class="card-header">
-                                                                    Requisição de Acessorio
+                                                                    Requisição de Acessório
                                                                 </div>
                                                                 <div class="card-body">
                                                                     <div id="divAcessorioRequisitado" runat="server">
-                                                                        <p class="card-text">Acessorios requisitados:</p>
+                                                                        <p class="card-text">Acessórios requisitados:</p>
                                                                         <h5 class="card-title">
                                                                             <asp:Literal ID="literalAcessoriosRequisitados" runat="server"></asp:Literal></h5>
                                                                     </div>
@@ -382,7 +382,7 @@
                                                                 </div>
                                                                 <div class="card-footer text-muted">
                                                                     <div class="col-8">
-                                                                        <div id="statusRequisicaoAcessorioConcluido" runat="server" class="badge badge-success">concluido</div>
+                                                                        <div id="statusRequisicaoAcessorioConcluido" runat="server" class="badge badge-success">concluído</div>
                                                                         <div id="statusRequisicaoAcessorioPendente" runat="server" class="badge badge-warning">pendente</div>
                                                                     </div>
                                                                     <div class="col-4">
@@ -392,13 +392,13 @@
                                                             </div>
                                                             <div id="divInstalAcessorios" runat="server" class="card text-center col-lg-3 border border-alternate">
                                                                 <div class="card-header">
-                                                                    Instalação de acessorio
+                                                                    Instalação de acessório
                                                                 </div>
 
                                                                 <div id="divInstalAcessorioIniciado" runat="server">
                                                                     <p class="card-text">
 
-                                                                        <i class="fas fa-calendar"></i>Inicio:
+                                                                        <i class="fas fa-calendar"></i>Início:
                                                                                 <asp:Literal ID="literalInicioInstalAcessorio" runat="server"></asp:Literal>
                                                                     </p>
                                                                     <p class="card-text">
@@ -411,7 +411,7 @@
                                                                 </div>
                                                                 <div class="card-footer text-muted">
                                                                     <div class="col-8">
-                                                                        <div id="statusInstalAcessorioConcluido" runat="server" class="badge badge-success">concluido</div>
+                                                                        <div id="statusInstalAcessorioConcluido" runat="server" class="badge badge-success">concluído</div>
                                                                         <div id="statusInstalAcessorioEmAmdamento" runat="server" class="badge badge-danger">
                                                                             em andamento
                                                                         </div>
@@ -430,7 +430,7 @@
 
                                                                 <div id="divServicoTerceiroIniciado" runat="server">
                                                                     <p class="card-text">
-                                                                        <i class="fas fa-calendar"></i>Inicio:
+                                                                        <i class="fas fa-calendar"></i>Início:
                                                                                 <asp:Literal ID="literalServicoTerceiroInicio" runat="server"></asp:Literal>
                                                                     </p>
                                                                     <p class="card-text">
@@ -443,7 +443,7 @@
                                                                 </div>
                                                                 <div class="card-footer text-muted">
                                                                     <div class="col-8">
-                                                                        <div id="Div4" runat="server" class="badge badge-success">concluido</div>
+                                                                        <div id="Div4" runat="server" class="badge badge-success">concluído</div>
                                                                         <div id="Div6" runat="server" class="badge badge-danger">em andamento</div>
                                                                         <div id="Div7" runat="server" class="badge badge-warning">pendente    </div>
                                                                     </div>
@@ -469,7 +469,7 @@
                                                                 </div>
                                                                 <div class="card-footer text-muted">
                                                                     <div class="col-8">
-                                                                        <div id="statusEntregadorConcluido" runat="server" class="badge badge-success">concluido</div>
+                                                                        <div id="statusEntregadorConcluido" runat="server" class="badge badge-success">concluído</div>
                                                                         <div id="statusEntregadorPendente" runat="server" class="badge badge-warning">pendente</div>
                                                                     </div>
                                                                     <div class="col-4">
