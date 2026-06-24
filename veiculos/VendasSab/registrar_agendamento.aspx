@@ -146,7 +146,7 @@
 
                                     <a href="./transferir.aspx">
                                         <i class="metismenu-icon fas fa-exchange-alt"></i>
-                                        Tranferir
+                                        Transferir
                                     </a>
                                 </li>
                                 <li>

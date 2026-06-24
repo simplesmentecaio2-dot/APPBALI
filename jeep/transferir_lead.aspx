@@ -179,7 +179,7 @@
 
                                     <a href="./transferir.aspx" class="mm-active">
                                         <i class="metismenu-icon fas fa-exchange-alt"></i>
-                                        Tranferir
+                                        Transferir
                                     </a>
                                 </li>
                                  <li>
@@ -211,7 +211,7 @@
                                                 <i class="fas fa-exchange-alt icon-gradient bg-dark"></i>
                                             </div>
                                             <div>
-                                                <b>Tranferir</b>
+                                                <b>Transferir</b>
 
                                                 <div class="page-title-subheading">
                                                 </div>
