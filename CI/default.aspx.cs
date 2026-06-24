@@ -51,10 +51,15 @@ public partial class ci_default : System.Web.UI.Page
         try
         {
             int id = ObterIdAtual();
-            if (id > 0 && !SenhaInformada())
+            if (id > 0 && !EdicaoCIAutorizada(id))
             {
-                MostrarMensagem("Informe a senha correta para editar a CI.", true);
-                return;
+                if (!SenhaInformada())
+                {
+                    MostrarMensagem("Informe a senha correta para editar a CI.", true);
+                    return;
+                }
+
+                AutorizarEdicaoCI(id);
             }
 
             DateTime dataDocumento;
@@ -88,6 +93,7 @@ public partial class ci_default : System.Web.UI.Page
                 Param("@criado_por", SqlDbType.NVarChar, txtCriadoPor.Text.Trim(), 160));
 
             string codigo = salvo.Rows.Count > 0 ? salvo.Rows[0]["codigo_ci"].ToString() : "CI";
+            LimparAutorizacaoEdicaoCI(id);
             LimparFormulario();
             CarregarTudo();
             MostrarMensagem(codigo + " salva com sucesso.", false);
@@ -113,6 +119,7 @@ public partial class ci_default : System.Web.UI.Page
                     return;
                 }
 
+                AutorizarEdicaoCI(id);
                 CarregarCI(id);
                 MostrarMensagem("CI carregada para edição.", false);
             }
@@ -125,6 +132,7 @@ public partial class ci_default : System.Web.UI.Page
                 }
 
                 ExecutarSemRetorno("dbo.ci_comunicacao_cancelar", Param("@id_ci", SqlDbType.Int, id));
+                LimparAutorizacaoEdicaoCI(id);
                 LimparFormulario();
                 CarregarTudo();
                 MostrarMensagem("CI cancelada com sucesso.", false);
@@ -196,6 +204,7 @@ public partial class ci_default : System.Web.UI.Page
 
     private void LimparFormulario()
     {
+        LimparAutorizacaoEdicaoCI(ObterIdAtual());
         hfCiId.Value = "";
         ddlMarca.SelectedValue = "Bali Fiat";
         txtData.Text = DateTime.Today.ToString("yyyy-MM-dd");
@@ -232,7 +241,33 @@ public partial class ci_default : System.Web.UI.Page
 
     private bool SenhaInformada()
     {
-        return txtSenhaEdicao.Text == SenhaEdicao;
+        return String.Equals((txtSenhaEdicao.Text ?? "").Trim(), SenhaEdicao, StringComparison.Ordinal);
+    }
+
+    private string ChaveEdicaoCI(int id)
+    {
+        return "ci_edicao_autorizada_" + id.ToString();
+    }
+
+    private void AutorizarEdicaoCI(int id)
+    {
+        if (id > 0)
+        {
+            Session[ChaveEdicaoCI(id)] = true;
+        }
+    }
+
+    private bool EdicaoCIAutorizada(int id)
+    {
+        return id <= 0 || Session[ChaveEdicaoCI(id)] != null;
+    }
+
+    private void LimparAutorizacaoEdicaoCI(int id)
+    {
+        if (id > 0)
+        {
+            Session.Remove(ChaveEdicaoCI(id));
+        }
     }
 
     private bool ObterData(string valor, out DateTime data)

@@ -93,7 +93,7 @@
                         <label>Senha para editar ou cancelar
                             <asp:TextBox ID="txtSenhaEdicao" runat="server" CssClass="text-field" TextMode="Password" autocomplete="current-password"></asp:TextBox>
                         </label>
-                        <small>A edição e o cancelamento exigem a senha definida para CIs.</small>
+                        <small>Informe a senha para carregar uma CI em edição ou cancelar um documento. Após liberar a edição, o salvamento fica autorizado nessa sessão.</small>
                     </div>
 
                     <div class="table-wrap">
