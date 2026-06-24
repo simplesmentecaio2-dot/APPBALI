@@ -890,6 +890,18 @@
         if (table.getAttribute('data-contract-date-filter') !== 'true') {
           table.setAttribute('data-contract-date-filter', 'true');
           table.className = (table.className ? table.className + ' ' : '') + 'contract-date-filter';
+          var filterCell = table.parentNode;
+          var filterFrame = closestTag(filterCell, 'table');
+          addClass(filterCell, 'contract-date-filter-cell');
+          addClass(filterFrame, 'contract-date-filter-frame');
+          if (filterCell && filterCell.style) {
+            filterCell.style.background = 'transparent';
+            filterCell.style.borderColor = 'transparent';
+          }
+          if (filterFrame && filterFrame.style) {
+            filterFrame.style.background = 'transparent';
+            filterFrame.style.borderColor = 'transparent';
+          }
 
           if (!table.parentNode || !/(^|\s)contract-date-filter-shell(\s|$)/.test(table.parentNode.className || '')) {
             var shell = document.createElement('div');

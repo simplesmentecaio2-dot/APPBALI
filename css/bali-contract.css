@@ -1722,6 +1722,20 @@ body.bali-contract-page *::after {
   box-shadow: 0 10px 22px rgba(15, 23, 42, .045);
 }
 
+.bali-contract-page .ajax__tab_body table.contract-date-filter-frame,
+.bali-contract-page .ajax__tab_body table.contract-date-filter-frame tbody,
+.bali-contract-page .ajax__tab_body table.contract-date-filter-frame tr,
+.bali-contract-page .ajax__tab_body table.contract-date-filter-frame td.contract-date-filter-cell,
+.bali-contract-page .ajax__tab_body table.contract-date-filter-frame:not(.display):not(.dataTable) tr:first-child td.contract-date-filter-cell {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: inherit !important;
+  letter-spacing: 0 !important;
+  text-align: left !important;
+  text-transform: none !important;
+  box-shadow: none !important;
+}
+
 .bali-contract-page .contract-date-filter-head {
   display: flex;
   align-items: flex-end;
