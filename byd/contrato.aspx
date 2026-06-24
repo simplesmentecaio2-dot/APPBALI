@@ -17,7 +17,7 @@
 
     <script src="../tables/js/jquery.dataTables.min.js"></script>
     <link href="../tables/estilo/table.css" rel="stylesheet" />
-    <link href="../css/bali-contract.css?v=20260624-contratos79" rel="stylesheet" />
+    <link href="../css/bali-contract.css?v=20260624-contratos80" rel="stylesheet" />
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -152,7 +152,7 @@
         }
     </script>
 
-    <script src="../js/bali-contract.js?v=20260624-contratos79"></script>
+    <script src="../js/bali-contract.js?v=20260624-contratos80"></script>
 </head>
 <body class="bali-contract-page contrato-byd">
     <form id="form1" style="height: 100%;" runat="server">

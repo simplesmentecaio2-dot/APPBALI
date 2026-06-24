@@ -651,7 +651,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
     private bool UfValida(string valor)
     {
         string uf = (valor ?? "").Trim().ToUpperInvariant();
-        return uf.Length == 2 && uf.All(Char.IsLetter);
+        string[] siglas = new string[] { "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO" };
+        return siglas.Contains(uf);
     }
 
     private bool EmailValido(string valor)
@@ -665,7 +666,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
     private bool DataValida(string valor)
     {
         DateTime data;
-        return DateTime.TryParseExact((valor ?? "").Trim(), "dd/MM/yyyy", CulturaBrasil, DateTimeStyles.None, out data);
+        return DateTime.TryParseExact((valor ?? "").Trim(), "dd/MM/yyyy", CulturaBrasil, DateTimeStyles.None, out data)
+            && data.Date <= DateTime.Today
+            && data.Date >= DateTime.Today.AddYears(-120);
     }
 
     private bool TentarLerDataBrasil(string valor, out DateTime data)
@@ -678,7 +681,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     private bool TelefoneValido(string valor)
     {
         string digitos = SomenteDigitos(valor);
-        return digitos.Length >= 10 && digitos.Length <= 11;
+        return digitos.Length >= 10 && digitos.Length <= 11 && !DigitosRepetidos(digitos);
     }
 
     private void ValidarFormatoOpcional(List<string> erros, string valor, Func<string, bool> validador, string mensagem)
@@ -693,9 +696,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         ValidarFormatoOpcional(erros, txtCPFCNPJ.Text, CpfCnpjValido, "CPF/CNPJ deve ter 11 ou 14 números com dígitos válidos.");
         ValidarFormatoOpcional(erros, txtCEP.Text, CepValido, "CEP deve ter 8 números. Exemplo: 01001-000.");
-        ValidarFormatoOpcional(erros, txtUF.Text, UfValida, "UF deve ter 2 letras. Exemplo: SP.");
+        ValidarFormatoOpcional(erros, txtUF.Text, UfValida, "UF deve ser uma sigla brasileira válida. Exemplo: SP.");
         ValidarFormatoOpcional(erros, txtEmail.Text, EmailValido, "Informe um e-mail válido. Exemplo: cliente@email.com.");
-        ValidarFormatoOpcional(erros, txtNascimento.Text, DataValida, "Data de nascimento deve estar no formato dd/mm/aaaa.");
+        ValidarFormatoOpcional(erros, txtNascimento.Text, DataValida, "Data de nascimento deve estar no formato dd/mm/aaaa e não pode ser futura.");
         ValidarFormatoOpcional(erros, txtTelREsidencial.Text, TelefoneValido, "Telefone residencial deve ter DDD + número.");
         ValidarFormatoOpcional(erros, txtTelCom.Text, TelefoneValido, "Telefone comercial deve ter DDD + número.");
         ValidarFormatoOpcional(erros, txtCelular.Text, TelefoneValido, "Celular deve ter DDD + número.");
@@ -706,9 +709,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         ValidarFormatoOpcional(erros, txtEdCPF.Text, CpfCnpjValido, "CPF/CNPJ deve ter 11 ou 14 números com dígitos válidos.");
         ValidarFormatoOpcional(erros, txtEdCep.Text, CepValido, "CEP deve ter 8 números. Exemplo: 01001-000.");
-        ValidarFormatoOpcional(erros, txtEdUF.Text, UfValida, "UF deve ter 2 letras. Exemplo: SP.");
+        ValidarFormatoOpcional(erros, txtEdUF.Text, UfValida, "UF deve ser uma sigla brasileira válida. Exemplo: SP.");
         ValidarFormatoOpcional(erros, txtEdEmail.Text, EmailValido, "Informe um e-mail válido. Exemplo: cliente@email.com.");
-        ValidarFormatoOpcional(erros, txtEdNascimento.Text, DataValida, "Data de nascimento deve estar no formato dd/mm/aaaa.");
+        ValidarFormatoOpcional(erros, txtEdNascimento.Text, DataValida, "Data de nascimento deve estar no formato dd/mm/aaaa e não pode ser futura.");
         ValidarFormatoOpcional(erros, txtEdTelRes.Text, TelefoneValido, "Telefone residencial deve ter DDD + número.");
         ValidarFormatoOpcional(erros, txtEdComercial.Text, TelefoneValido, "Telefone comercial deve ter DDD + número.");
         ValidarFormatoOpcional(erros, txtEdCelular.Text, TelefoneValido, "Celular deve ter DDD + número.");

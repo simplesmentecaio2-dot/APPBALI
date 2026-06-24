@@ -202,9 +202,9 @@
         return String(value || '').trim().toUpperCase();
       },
       validate: function (value) {
-        return /^[A-Z]{2}$/.test(String(value || '').trim().toUpperCase());
+        return isValidBrazilUf(value);
       },
-      message: 'UF deve ter 2 letras. Exemplo: SP.'
+      message: 'UF deve ser uma sigla brasileira v\u00e1lida. Exemplo: SP.'
     },
     {
       ids: ['txtEmail', 'txtEdEmail'],
@@ -224,9 +224,9 @@
       inputmode: 'numeric',
       numericBlank: true,
       validate: function (value) {
-        return !!parseDate(value);
+        return isValidPastDate(value);
       },
-      message: 'Data deve estar no formato dd/mm/aaaa.'
+      message: 'Data deve estar no formato dd/mm/aaaa e n\u00e3o pode ser futura.'
     },
     {
       ids: ['txtNrParcelas', 'txtEdNumeroParcelas'],
@@ -249,7 +249,7 @@
       normalize: formatPhone,
       validate: function (value) {
         var digits = digitsOnly(value);
-        return digits.length >= 10 && digits.length <= 11;
+        return digits.length >= 10 && digits.length <= 11 && !repeatedDigits(digits);
       },
       message: 'Telefone deve ter DDD + n\u00famero. Exemplo: (11) 99999-9999.'
     }
@@ -421,6 +421,11 @@
     return !/^selecion(e|ar)$/i.test(text);
   }
 
+  function isValidBrazilUf(value) {
+    var uf = String(value || '').trim().toUpperCase();
+    return /^(AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$/.test(uf);
+  }
+
   function formatCep(value) {
     var digits = digitsOnly(value);
     if (digits.length !== 8) return String(value || '').trim();
@@ -537,6 +542,15 @@
 
     if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day) return null;
     return date;
+  }
+
+  function isValidPastDate(value) {
+    var date = parseDate(value);
+    if (!date) return false;
+    var today = new Date();
+    var min = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate());
+    today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    return date.getTime() <= today.getTime() && date.getTime() >= min.getTime();
   }
 
   function periodRange(type) {
