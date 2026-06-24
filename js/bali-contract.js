@@ -62,6 +62,75 @@
     { id: 'txtEdVendedor', label: 'Vendedor' }
   ];
 
+  var formatRules = [
+    {
+      ids: ['txtCPFCNPJ', 'txtEdCPF'],
+      placeholder: 'CPF ou CNPJ',
+      inputmode: 'numeric',
+      numericBlank: true,
+      validate: function (value) {
+        var digits = digitsOnly(value);
+        return digits.length === 11 || digits.length === 14;
+      },
+      message: 'CPF/CNPJ deve ter 11 ou 14 n\u00fameros.'
+    },
+    {
+      ids: ['txtCEP', 'txtEdCep'],
+      placeholder: '00000-000',
+      inputmode: 'numeric',
+      numericBlank: true,
+      normalize: formatCep,
+      validate: function (value) {
+        return digitsOnly(value).length === 8;
+      },
+      message: 'CEP deve ter 8 n\u00fameros. Exemplo: 01001-000.'
+    },
+    {
+      ids: ['txtUF', 'txtEdUF'],
+      placeholder: 'UF',
+      normalize: function (value) {
+        return String(value || '').trim().toUpperCase();
+      },
+      validate: function (value) {
+        return /^[A-Z]{2}$/.test(String(value || '').trim().toUpperCase());
+      },
+      message: 'UF deve ter 2 letras. Exemplo: SP.'
+    },
+    {
+      ids: ['txtEmail', 'txtEdEmail'],
+      placeholder: 'email@dominio.com',
+      inputmode: 'email',
+      normalize: function (value) {
+        return String(value || '').trim().toLowerCase();
+      },
+      validate: function (value) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
+      },
+      message: 'Informe um e-mail v\u00e1lido. Exemplo: cliente@email.com.'
+    },
+    {
+      ids: ['txtNascimento', 'txtEdNascimento'],
+      placeholder: 'dd/mm/aaaa',
+      inputmode: 'numeric',
+      numericBlank: true,
+      validate: function (value) {
+        return !!parseDate(value);
+      },
+      message: 'Data deve estar no formato dd/mm/aaaa.'
+    },
+    {
+      ids: ['txtTelREsidencial', 'txtTelCom', 'txtCelular', 'txtEdTelRes', 'txtEdComercial', 'txtEdCelular'],
+      placeholder: '(00) 00000-0000',
+      inputmode: 'tel',
+      numericBlank: true,
+      validate: function (value) {
+        var digits = digitsOnly(value);
+        return digits.length >= 10 && digits.length <= 11;
+      },
+      message: 'Telefone deve ter DDD + n\u00famero. Exemplo: (11) 99999-9999.'
+    }
+  ];
+
   function bySuffix(id) {
     return document.querySelector('[id$="' + id + '"]');
   }
@@ -135,6 +204,16 @@
     text = text.replace(/[^0-9.-]/g, '');
     var parsed = parseFloat(text);
     return isNaN(parsed) ? 0 : parsed;
+  }
+
+  function digitsOnly(value) {
+    return String(value || '').replace(/\D/g, '');
+  }
+
+  function formatCep(value) {
+    var digits = digitsOnly(value);
+    if (digits.length !== 8) return String(value || '').trim();
+    return digits.substr(0, 5) + '-' + digits.substr(5, 3);
   }
 
   function formatMoney(value) {
@@ -345,6 +424,42 @@
     return button && /btnEditareGravar$/i.test(button.id || '');
   }
 
+  function isFormatBlank(rule, value) {
+    if (rule.numericBlank) return digitsOnly(value).length === 0;
+    return String(value || '').trim().length === 0;
+  }
+
+  function pushUniqueIssue(issues, message) {
+    if (issues.indexOf(message) < 0) issues.push(message);
+  }
+
+  function collectFormatIssues(showMessages) {
+    var issues = [];
+    formatRules.forEach(function (rule) {
+      rule.ids.forEach(function (id) {
+        allBySuffix(id).forEach(function (field) {
+          if (!field || !isVisible(field)) return;
+
+          var value = String(field.value || '').trim();
+          if (isFormatBlank(rule, value)) return;
+
+          if (rule.normalize) {
+            value = rule.normalize(value);
+            field.value = value;
+          }
+
+          if (!rule.validate(value)) {
+            pushUniqueIssue(issues, rule.message);
+            if (showMessages) showFieldMessage(field, rule.message);
+          } else if (showMessages) {
+            showFieldMessage(field, '');
+          }
+        });
+      });
+    });
+    return issues;
+  }
+
   function collectIssues(isEdit, showMessages) {
     var issues = [];
     currentRequiredFields(isEdit).forEach(function (item) {
@@ -386,6 +501,8 @@
         if (showMessages) showFieldMessage(parcelValue, '');
       }
     }
+
+    issues = issues.concat(collectFormatIssues(showMessages));
 
     var financeValue = parseMoney(valueOf(isEdit ? 'txtEdFinanciamento' : 'txtVlFinanciamento'));
     var balanceValue = parseMoney(valueOf(isEdit ? 'txtEdSaldoAvaliacao' : 'txtSaldoAvaliacao'));
@@ -746,6 +863,33 @@
     });
   }
 
+  function enhanceFormatFields() {
+    formatRules.forEach(function (rule) {
+      rule.ids.forEach(function (id) {
+        allBySuffix(id).forEach(function (field) {
+          if (field.getAttribute('data-contract-format') === 'true') return;
+          field.setAttribute('data-contract-format', 'true');
+          if (rule.placeholder) field.setAttribute('placeholder', rule.placeholder);
+          if (rule.inputmode) field.setAttribute('inputmode', rule.inputmode);
+          field.setAttribute('autocomplete', rule.inputmode === 'email' ? 'email' : 'off');
+
+          field.addEventListener('blur', function () {
+            if (rule.normalize && !isFormatBlank(rule, field.value)) {
+              field.value = rule.normalize(field.value);
+            }
+            collectFormatIssues(true);
+            updateQualityPanel();
+          });
+
+          field.addEventListener('input', function () {
+            showFieldMessage(field, '');
+            updateQualityPanel();
+          });
+        });
+      });
+    });
+  }
+
   function inferPrintPage(table) {
     var className = ' ' + (document.body ? document.body.className : '') + ' ';
     var isUsedTable = /tblConsultaProcesso2$/i.test(table.id || '') || closestIdContains(table, 'TabPanel1');
@@ -902,6 +1046,7 @@
     resetSubmittingButtons();
     enhanceLoadingIndicator();
     enhanceFields();
+    enhanceFormatFields();
     enhanceChecklist();
     enhanceDateFilters();
     enhanceBiPeriodShortcuts();
