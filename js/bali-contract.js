@@ -1059,6 +1059,38 @@
     return lines.join('\n');
   }
 
+  function exportBiCsv(panel) {
+    var rows = [['Indicador', 'Valor', 'Descrição']];
+    Array.prototype.slice.call(panel.querySelectorAll('.contract-bi-cards article')).forEach(function (card) {
+      var label = card.querySelector('span');
+      var value = card.querySelector('strong');
+      var caption = card.querySelector('small');
+      rows.push([
+        label ? label.textContent.trim() : '',
+        value ? value.textContent.trim() : '',
+        caption ? caption.textContent.trim() : ''
+      ]);
+    });
+    if (rows.length === 1) return 0;
+
+    var escapeCsv = function (value) {
+      return '"' + String(value || '').replace(/"/g, '""') + '"';
+    };
+    var brand = document.body.className.indexOf('contrato-jeep') >= 0 ? 'jeep' : (document.body.className.indexOf('contrato-byd') >= 0 ? 'byd' : 'fiat');
+    var fileName = 'bi-contratos-' + brand + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+    var blob = new Blob(['\ufeff' + rows.map(function (row) { return row.map(escapeCsv).join(';'); }).join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.setTimeout(function () {
+      URL.revokeObjectURL(link.href);
+    }, 1000);
+    return rows.length - 1;
+  }
+
   function copyText(text, done) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(done, function () {
@@ -1092,10 +1124,11 @@
       panel.setAttribute('data-contract-bi-actions', 'true');
       var actions = document.createElement('div');
       actions.className = 'contract-bi-actions';
-      actions.innerHTML = '<button type="button">Copiar resumo</button><small></small>';
+      actions.innerHTML = '<button type="button" data-bi-copy="true">Copiar resumo</button><button type="button" data-bi-csv="true">CSV</button><small></small>';
       filter.appendChild(actions);
 
-      var button = actions.querySelector('button');
+      var button = actions.querySelector('[data-bi-copy]');
+      var csvButton = actions.querySelector('[data-bi-csv]');
       var status = actions.querySelector('small');
       button.addEventListener('click', function () {
         var text = collectBiSummary(panel);
@@ -1107,6 +1140,10 @@
             status.textContent = '';
           }, 1800);
         });
+      });
+      csvButton.addEventListener('click', function () {
+        var total = exportBiCsv(panel);
+        status.textContent = total ? total + ' indicador(es) exportado(s).' : 'Nenhum indicador disponível.';
       });
     });
   }
