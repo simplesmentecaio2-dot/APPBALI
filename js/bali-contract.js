@@ -633,6 +633,28 @@
     return '';
   }
 
+  function periodStatus(startField, endField) {
+    var startText = startField ? String(startField.value || '').trim() : '';
+    var endText = endField ? String(endField.value || '').trim() : '';
+    if (!startText && !endText) return { message: '', kind: '' };
+
+    var validation = validatePeriodFields(startField, endField);
+    if (validation) return { message: validation, kind: 'is-error' };
+
+    var start = parseDate(startText);
+    var end = parseDate(endText);
+    var days = Math.floor((end.getTime() - start.getTime()) / 86400000) + 1;
+    return {
+      message: 'Período selecionado: ' + days + ' dia(s), de ' + startText + ' até ' + endText + '.',
+      kind: 'is-info'
+    };
+  }
+
+  function updatePeriodStatus(host, startField, endField) {
+    var status = periodStatus(startField, endField);
+    showPeriodMessage(host, status.message, status.kind);
+  }
+
   function periodShortcutHtml() {
     return [
       { type: 'currentMonth', label: 'Este mês' },
@@ -655,16 +677,24 @@
         var type = button.getAttribute('data-period');
         setPeriodFields(startField, endField, type);
         updatePeriodShortcutState(host, type);
-        showPeriodMessage(host, '');
+        updatePeriodStatus(host, startField, endField);
       });
     });
 
     [startField, endField].forEach(function (field) {
       if (!field || field.getAttribute('data-contract-period-manual') === 'true') return;
       field.setAttribute('data-contract-period-manual', 'true');
-      field.addEventListener('input', function () { updatePeriodShortcutState(host, ''); });
-      field.addEventListener('change', function () { updatePeriodShortcutState(host, ''); });
+      field.addEventListener('input', function () {
+        updatePeriodShortcutState(host, '');
+        updatePeriodStatus(host, startField, endField);
+      });
+      field.addEventListener('change', function () {
+        updatePeriodShortcutState(host, '');
+        updatePeriodStatus(host, startField, endField);
+      });
     });
+
+    updatePeriodStatus(host, startField, endField);
   }
 
   function updatePeriodShortcutState(host, activeType) {
@@ -677,7 +707,7 @@
     });
   }
 
-  function showPeriodMessage(host, message) {
+  function showPeriodMessage(host, message, kind) {
     if (!host || !host.querySelector) return;
     var target = host.querySelector('.contract-period-shortcuts') || host;
     var warning = target.querySelector('.contract-period-warning');
@@ -689,6 +719,9 @@
 
     warning.textContent = message || '';
     warning.style.display = message ? 'block' : 'none';
+    removeClass(warning, 'is-info');
+    removeClass(warning, 'is-error');
+    if (kind) addClass(warning, kind);
   }
 
   function bindPeriodValidation(host, button, startField, endField) {
@@ -700,7 +733,7 @@
         [startField, endField].forEach(function (field) {
           if (field) field.classList.remove('contract-field-error');
         });
-        showPeriodMessage(host, '');
+        updatePeriodStatus(host, startField, endField);
         return true;
       }
 
@@ -709,7 +742,7 @@
       [startField, endField].forEach(function (field) {
         if (field) field.classList.add('contract-field-error');
       });
-      showPeriodMessage(host, message);
+      showPeriodMessage(host, message, 'is-error');
       if (startField && startField.focus) startField.focus();
       return false;
     }, true);
