@@ -92,6 +92,33 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
     }
 
+    private string DetalheContratoNovo(string tipo)
+    {
+        return "Tipo=" + tipo
+            + "; Cliente=" + txtCliente.Text
+            + "; CPF/CNPJ=" + txtCPFCNPJ.Text
+            + "; Chassi/Placa=" + txtChassiPlaca.Text
+            + "; Modelo=" + txtModelo.Text
+            + "; Vendedor=" + ddlVendedor.Text
+            + "; Valor=" + txtValoVeiculo.Text;
+    }
+
+    private string DetalheContratoEdicao()
+    {
+        return "Contrato=" + txtContrato.Text
+            + "; Cliente=" + txtEdCliente.Text
+            + "; CPF/CNPJ=" + txtEdCPF.Text
+            + "; Chassi/Placa=" + txtEdChassi.Text
+            + "; Modelo=" + txtEdModelo.Text
+            + "; Vendedor=" + txtEdVendedor.Text
+            + "; Valor=" + txtEdValorVeic.Text;
+    }
+
+    private void RegistrarValidacaoContrato(string acao, string detalheContrato, string mensagem)
+    {
+        RegistrarContratoOperacao(acao, detalheContrato + "; Pendencias=" + (mensagem ?? "").Replace("\n", " | "));
+    }
+
     private string NormalizarChave(string valor)
     {
         StringBuilder texto = new StringBuilder();
@@ -903,18 +930,21 @@ public partial class veiculos_contrato : System.Web.UI.Page
             {
                 if (!ValidarContratoNovo(modpag, tipo, out mensagemValidacao))
                 {
+                    RegistrarValidacaoContrato("VALIDACAO_NOVO", DetalheContratoNovo(tipo), mensagemValidacao);
                     ExibirAlerta(mensagemValidacao);
                     return;
                 }
             }
             catch (FormatException)
             {
+                RegistrarContratoOperacao("VALIDACAO_NOVO_VALOR", DetalheContratoNovo(tipo));
                 ExibirAlerta("Revise os campos de valor. Use apenas números no formato 150000,00.");
                 return;
             }
 
             if (!ValidarChecklistFinalNovo(tipo, out mensagemValidacao))
             {
+                RegistrarValidacaoContrato("CHECKLIST_NOVO", DetalheContratoNovo(tipo), mensagemValidacao);
                 ExibirAlerta(mensagemValidacao);
                 return;
             }
@@ -937,6 +967,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 );
                 if (obs.Equals("S"))
                 {
+                    RegistrarContratoOperacao("GRAVACAO_SUCESSO", DetalheContratoNovo(tipo) + "; Contrato=" + codigo);
                     if (tipo == "VN")
                     {
                         Response.Redirect("Print-ContratoVN.aspx?contrato=" + codigo);
@@ -970,6 +1001,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
         else
         {
+            RegistrarContratoOperacao("VALIDACAO_NOVO", DetalheContratoNovo("") + "; Pendencias=Modalidade de pagamento nao selecionada");
             ExibirAlerta("Selecione a modalidade de pagamento: à vista ou financiamento.");
 
         }
@@ -1074,18 +1106,21 @@ public partial class veiculos_contrato : System.Web.UI.Page
             {
                 if (!ValidarContratoEdicao(modpag, out mensagemValidacao))
                 {
+                    RegistrarValidacaoContrato("VALIDACAO_EDICAO", DetalheContratoEdicao(), mensagemValidacao);
                     ExibirAlerta(mensagemValidacao);
                     return;
                 }
             }
             catch (FormatException)
             {
+                RegistrarContratoOperacao("VALIDACAO_EDICAO_VALOR", DetalheContratoEdicao());
                 ExibirAlerta("Revise os campos de valor. Use apenas números no formato 150000,00.");
                 return;
             }
 
             if (!chkConfereEdicao.Checked)
             {
+                RegistrarContratoOperacao("CHECKLIST_EDICAO", DetalheContratoEdicao() + "; Pendencias=Confirme o checklist da edicao");
                 ExibirAlerta("Confirme o checklist da edição antes de gravar.");
                 return;
             }
@@ -1102,6 +1137,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 txtEdObs.Text, txtEdPrevisao.Text, txtEdVendedor.Text, txtEdVALORUSADOAVAILACAO.Text, txtEdQuitacao.Text, txtEdSaldoAvaliacao.Text);
 
             RegistrarHistoricoEdicao(txtContrato.Text);
+            RegistrarContratoOperacao("EDICAO_SUCESSO", DetalheContratoEdicao());
             GuardarSnapshotEdicao();
             chkConfereEdicao.Checked = false;
             ExibirAlerta("Contrato alterado com sucesso.");
