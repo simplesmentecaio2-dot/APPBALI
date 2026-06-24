@@ -2645,8 +2645,9 @@
   function enhanceLookupFilter(input) {
     if (input.getAttribute('data-contract-filter') !== 'true') {
       input.setAttribute('data-contract-filter', 'true');
-      input.setAttribute('placeholder', 'Cliente, CPF, vendedor...');
-      input.setAttribute('aria-label', 'Filtrar contratos');
+      input.setAttribute('placeholder', 'Cliente, CPF/CNPJ, e-mail ou vendedor...');
+      input.setAttribute('aria-label', 'Filtrar contratos por cliente, CPF, e-mail ou vendedor');
+      input.setAttribute('title', 'Digite parte do cliente, CPF/CNPJ, e-mail ou vendedor.');
       input.setAttribute('autocomplete', 'off');
     }
 
@@ -2664,6 +2665,23 @@
       input.focus();
     });
     filter.appendChild(button);
+  }
+
+  function enhanceLookupPagination() {
+    Array.prototype.slice.call(document.querySelectorAll('.dataTables_paginate a, .dataTables_paginate span, .fg-button')).forEach(function (button) {
+      if (button.getAttribute('data-contract-pagination') === 'true') return;
+      var text = normalizeText(button.textContent || button.getAttribute('title') || '');
+      var label = '';
+      if (text.indexOf('PRIMEIRO') >= 0 || text === 'FIRST') label = 'Primeira página';
+      else if (text.indexOf('ULTIMO') >= 0 || text === 'LAST') label = 'Última página';
+      else if (text.indexOf('ANTERIOR') >= 0 || text === 'PREVIOUS') label = 'Página anterior';
+      else if (text.indexOf('PROXIMO') >= 0 || text === 'NEXT') label = 'Próxima página';
+      else if (/^\d+$/.test(text)) label = 'Página ' + text;
+      if (!label) return;
+      button.setAttribute('data-contract-pagination', 'true');
+      button.setAttribute('aria-label', label);
+      button.setAttribute('title', label);
+    });
   }
 
   function enhanceLookupTables() {
@@ -2711,7 +2729,10 @@
       if (select.getAttribute('data-contract-page-size') === 'true') return;
       select.setAttribute('data-contract-page-size', 'true');
       select.setAttribute('aria-label', 'Quantidade de contratos por página');
+      select.setAttribute('title', 'Quantidade de contratos por página');
     });
+
+    enhanceLookupPagination();
   }
 
   function enhanceChecklist() {
