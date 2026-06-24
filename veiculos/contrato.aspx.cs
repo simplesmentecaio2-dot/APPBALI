@@ -153,6 +153,20 @@ public partial class veiculos_contrato : System.Web.UI.Page
         return "Não foi possível gravar o contrato. Retorno do banco: " + retorno + " (" + contrato + "). Confira campos obrigatórios, valores e vendedor.";
     }
 
+    private string CacheVersaoContrato(string area)
+    {
+        string chave = "contrato-cache-versao:" + MarcaContrato + ":" + area;
+        object versao = HttpRuntime.Cache[chave];
+        return versao == null ? "0" : versao.ToString();
+    }
+
+    private void InvalidarCachesContrato()
+    {
+        string versao = DateTime.Now.Ticks.ToString();
+        HttpRuntime.Cache.Insert("contrato-cache-versao:" + MarcaContrato + ":consulta", versao, null, DateTime.Now.AddHours(6), System.Web.Caching.Cache.NoSlidingExpiration);
+        HttpRuntime.Cache.Insert("contrato-cache-versao:" + MarcaContrato + ":bi", versao, null, DateTime.Now.AddHours(6), System.Web.Caching.Cache.NoSlidingExpiration);
+    }
+
     private string NormalizarChave(string valor)
     {
         StringBuilder texto = new StringBuilder();
@@ -784,7 +798,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private List<ContratoBIItem> BuscarContratosBI(DateTime inicio, DateTime fim)
     {
-        string cacheKey = "contrato-bi:" + MarcaContrato + ":" + inicio.ToString("yyyyMMdd") + ":" + fim.ToString("yyyyMMdd");
+        string cacheKey = "contrato-bi:" + MarcaContrato + ":" + CacheVersaoContrato("bi") + ":" + inicio.ToString("yyyyMMdd") + ":" + fim.ToString("yyyyMMdd");
         List<ContratoBIItem> contratosCache = HttpRuntime.Cache[cacheKey] as List<ContratoBIItem>;
         if (contratosCache != null) return contratosCache;
 
@@ -1320,6 +1334,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 );
                 if (String.Equals(obs, "S", StringComparison.OrdinalIgnoreCase))
                 {
+                    InvalidarCachesContrato();
                     RegistrarContratoOperacao("GRAVACAO_SUCESSO", DetalheContratoNovo(tipo) + "; Contrato=" + codigo);
                     if (tipo == "VN")
                     {
@@ -1490,6 +1505,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 txtEdObs.Text, txtEdPrevisao.Text, txtEdVendedor.Text, txtEdVALORUSADOAVAILACAO.Text, txtEdQuitacao.Text, txtEdSaldoAvaliacao.Text);
 
             RegistrarHistoricoEdicao(txtContrato.Text);
+            InvalidarCachesContrato();
             RegistrarContratoOperacao("EDICAO_SUCESSO", DetalheContratoEdicao());
             GuardarSnapshotEdicao();
             chkConfereEdicao.Checked = false;
@@ -1588,7 +1604,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void select_Tab_ConsultaPeriodo(string paginaImpressao, string tipo, DateTime dtInicio, DateTime dtFim, out string tabelaHtml)
     {
-        string cacheKey = "contrato-consulta:" + MarcaContrato + ":" + tipo + ":" + dtInicio.ToString("yyyyMMdd") + ":" + dtFim.ToString("yyyyMMdd");
+        string cacheKey = "contrato-consulta:" + MarcaContrato + ":" + CacheVersaoContrato("consulta") + ":" + tipo + ":" + dtInicio.ToString("yyyyMMdd") + ":" + dtFim.ToString("yyyyMMdd");
         string tabelaCache = HttpRuntime.Cache[cacheKey] as string;
         if (!String.IsNullOrEmpty(tabelaCache))
         {
