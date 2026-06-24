@@ -12,7 +12,7 @@ using System.Text;
 
 public partial class veiculos_contrato : System.Web.UI.Page
 {
-    private const string TabelaContratosBI = "dbo.veiculos_contrato_vendaBYD";
+    private const string TabelaContratosBI = "APP.dbo.veiculos_contrato_vendaBYD";
     private const string MarcaContrato = "BYD";
     private const int DiasMaximosBI = 370;
     private const int TimeoutConsultaSegundos = 60;

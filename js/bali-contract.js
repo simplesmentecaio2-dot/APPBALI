@@ -86,6 +86,15 @@
     return !!(field.offsetWidth || field.offsetHeight || field.getClientRects().length);
   }
 
+  function closestTag(element, tagName) {
+    tagName = String(tagName || '').toUpperCase();
+    while (element && element.nodeType === 1) {
+      if (element.tagName === tagName) return element;
+      element = element.parentNode;
+    }
+    return null;
+  }
+
   function parseMoney(value) {
     var text = String(value || '').replace(/R\$/g, '').replace(/\s/g, '').trim();
     if (!text) return 0;
@@ -273,6 +282,88 @@
     }
   }
 
+  function getQualityHost(isEdit) {
+    var button = bySuffix(isEdit ? 'btnEditareGravar' : 'btnGravar');
+    if (button && button.parentNode) return button.parentNode;
+    return bySuffix(isEdit ? 'txtEdCliente' : 'Panel1');
+  }
+
+  function placeQualityPanel(panel, isEdit) {
+    var host = getQualityHost(isEdit);
+    if (!host) return false;
+
+    var checklist = host.querySelector ? host.querySelector('.contract-checklist') : null;
+    if (checklist && panel.nextSibling !== checklist) {
+      host.insertBefore(panel, checklist);
+    } else if (!checklist && panel.parentNode !== host) {
+      host.appendChild(panel);
+    }
+
+    return true;
+  }
+
+  function ensureQualityPanel(isEdit) {
+    var existing = document.getElementById('contractQualityPanel');
+    if (existing) {
+      placeQualityPanel(existing, isEdit);
+      return existing;
+    }
+
+    var panel = document.createElement('div');
+    panel.id = 'contractQualityPanel';
+    panel.className = 'contract-quality-panel is-attention is-hidden';
+    panel.innerHTML =
+      '<div class="contract-quality-main">' +
+      '<span class="contract-quality-label">Qualidade do contrato</span>' +
+      '<strong id="contractQualityStatus">Atenção</strong>' +
+      '<small id="contractQualityText">Preencha os campos principais para reduzir erros antes de gravar.</small>' +
+      '</div>' +
+      '<ul id="contractQualityList"></ul>';
+
+    placeQualityPanel(panel, isEdit);
+    return panel;
+  }
+
+  function updateQualityPanel() {
+    var isEdit = !!(bySuffix('txtEdCliente') && isVisible(bySuffix('txtEdCliente')));
+    var isNew = !!(bySuffix('txtCliente') && isVisible(bySuffix('txtCliente')));
+    var panel = ensureQualityPanel(isEdit);
+    if (!panel) return;
+
+    if (!isEdit && !isNew) {
+      panel.classList.add('is-hidden');
+      return;
+    }
+
+    var issues = collectIssues(isEdit, false);
+    var status = document.getElementById('contractQualityStatus');
+    var text = document.getElementById('contractQualityText');
+    var list = document.getElementById('contractQualityList');
+
+    panel.classList.remove('is-hidden', 'is-good', 'is-attention', 'is-risk');
+    if (issues.length === 0) {
+      panel.classList.add('is-hidden');
+      return;
+    } else if (issues.length <= 2) {
+      panel.classList.add('is-attention');
+      status.textContent = 'Atenção';
+      text.textContent = 'Existem poucos pontos para conferir antes de gravar.';
+    } else {
+      panel.classList.add('is-risk');
+      status.textContent = 'Risco de erro';
+      text.textContent = 'Revise os campos sinalizados para evitar retorno do sistema.';
+    }
+
+    if (list) {
+      list.innerHTML = '';
+      issues.slice(0, 5).forEach(function (issue) {
+        var item = document.createElement('li');
+        item.textContent = issue;
+        list.appendChild(item);
+      });
+    }
+  }
+
   function ensureChecklistModal() {
     var existing = document.getElementById('contractChecklistModal');
     if (existing) return existing;
@@ -333,6 +424,33 @@
       closeChecklist();
       submitButton.click();
     }
+  }
+
+  function enhanceDateFilters() {
+    [
+      { start: 'txtDtInicialVN', button: 'Button1' },
+      { start: 'txtDtInicialVU', button: 'Button2' },
+      { start: 'txtDtInicialVD', button: 'Button3' }
+    ].forEach(function (filter) {
+      allBySuffix(filter.start).forEach(function (field) {
+        var table = closestTag(field, 'table');
+        if (!table || table.getAttribute('data-contract-date-filter') === 'true') return;
+
+        table.setAttribute('data-contract-date-filter', 'true');
+        table.className = (table.className ? table.className + ' ' : '') + 'contract-date-filter';
+
+        var rows = table.rows;
+        if (rows && rows.length > 1 && rows[0].cells.length < 3) {
+          rows[0].insertCell(-1).innerHTML = '&nbsp;';
+        }
+
+        var button = bySuffix(filter.button);
+        if (button && rows && rows.length > 1) {
+          var targetCell = rows[1].cells.length >= 3 ? rows[1].cells[2] : rows[1].insertCell(-1);
+          if (button.parentNode !== targetCell) targetCell.appendChild(button);
+        }
+      });
+    });
   }
 
   function prepareMoneyFields(forceZero) {
@@ -475,9 +593,11 @@
   function init() {
     if (!isContractPage()) return;
     enhanceFields();
+    enhanceDateFilters();
     bindSubmitButtons();
     ensureQualityPanel();
     prepareMoneyFields(false);
+    updateQualityPanel();
     bindAjaxEndRequest();
   }
 
