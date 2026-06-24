@@ -1381,7 +1381,7 @@ CLÁUSULA DE CONSENTIMENTO<br /><br />
 	
      <asp:Panel ID="guiadocomprador" runat="server" Width="100%" Height="100%" visible="false" >
              <span style="font-size: 17px;">
-                <div style="width: 19cm; text-align:center; border: 1px solid black; font-family: 'Times New Roman'; padding: 20px;  id="Div4">
+                <div style="width: 19cm; text-align:center; border: 1px solid black; font-family: 'Times New Roman'; padding: 20px;" id="Div4">
             <img src="../img/header-contratoBYD.png" style="width: 18cm;" />
             <br />
                     <span style="font-size: 17px;">
@@ -1411,7 +1411,7 @@ CLÁUSULA DE CONSENTIMENTO<br /><br />
 
    <asp:Panel ID="guiadocomprador2" runat="server" Width="100%" Height="100%" visible="false" >
              <span style="font-size: 17px;">
-                <div style="width: 19cm; text-align:center; border: 1px solid black; font-family: 'Times New Roman'; padding: 20px;  id="Div4">
+                <div style="width: 19cm; text-align:center; border: 1px solid black; font-family: 'Times New Roman'; padding: 20px;" id="Div6">
             <img src="../img/header-contratoBYD.png" style="width: 18cm;" />
             <br />
                     <span style="font-size: 17px;">

@@ -1496,7 +1496,7 @@
 
         <asp:Panel ID="guiadocomprador2" runat="server" Width="100%" Height="100%" Visible="false">
             <span style="font-size: 17px;">
-                <div style="width: 19cm; text-align: center; border: 1px solid black; font-family: 'Times New Roman'; padding: 20px;" id="Div4">
+                <div style="width: 19cm; text-align: center; border: 1px solid black; font-family: 'Times New Roman'; padding: 20px;" id="Div6">
                     <img src="../img/header-contrato.png" style="width: 18cm;" />
                     <br />
                     <span style="font-size: 17px;">
