@@ -10,6 +10,7 @@
   var wizardKeyboardBound = false;
   var qualityUpdateTimer = null;
   var editChangeTimer = null;
+  var draftMaxAgeMs = 72 * 60 * 60 * 1000;
   var moneyFields = [
     'txtValoVeiculo',
     'txtEmplacamento',
@@ -2198,10 +2199,23 @@
     if (!canUseStorage()) return null;
     try {
       var raw = window.localStorage.getItem(draftKey());
-      return raw ? JSON.parse(raw) : null;
+      var draft = raw ? JSON.parse(raw) : null;
+      if (draft && draft.savedAt && (new Date().getTime() - draft.savedAt > draftMaxAgeMs)) {
+        window.localStorage.removeItem(draftKey());
+        return null;
+      }
+      return draft;
     } catch (ignore) {
       return null;
     }
+  }
+
+  function draftAgeText(savedAt) {
+    var minutes = Math.max(1, Math.round((new Date().getTime() - savedAt) / 60000));
+    if (minutes < 60) return 'há ' + minutes + ' min';
+    var hours = Math.round(minutes / 60);
+    if (hours < 24) return 'há ' + hours + ' h';
+    return 'há ' + Math.round(hours / 24) + ' dia(s)';
   }
 
   function clearContractDraft() {
@@ -2232,7 +2246,7 @@
     panel.id = 'contractDraftPanel';
     panel.className = 'contract-draft-panel is-hidden';
     panel.innerHTML =
-      '<div><strong>Rascunho encontrado</strong><small>Existe um preenchimento salvo neste navegador.</small></div>' +
+      '<div><strong>Rascunho encontrado</strong><small data-draft-age="true">Existe um preenchimento salvo neste navegador.</small></div>' +
       '<div class="contract-draft-actions">' +
       '<button type="button" data-draft-action="restore">Recuperar</button>' +
       '<button type="button" data-draft-action="discard">Descartar</button>' +
@@ -2272,6 +2286,8 @@
     }
 
     var panel = ensureDraftPanel(currentContractMode() === 'edicao');
+    var age = panel && panel.querySelector ? panel.querySelector('[data-draft-age="true"]') : null;
+    if (age) age.textContent = 'Preenchimento salvo ' + draftAgeText(draft.savedAt) + ' neste navegador.';
     if (!panel || panel.getAttribute('data-draft-bound') === 'true') {
       if (panel) panel.classList.remove('is-hidden');
       return;
