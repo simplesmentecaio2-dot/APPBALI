@@ -2451,6 +2451,60 @@ body.bali-contract-page *::after {
   color: #13764b;
 }
 
+.bali-contract-page .contract-payment-consistency {
+  display: grid;
+  gap: 3px;
+  margin-top: 8px;
+  padding: 9px 10px;
+  border: 1px solid #e4eaf2;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--contract-muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.bali-contract-page .contract-payment-consistency strong {
+  color: var(--contract-ink);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.bali-contract-page .contract-payment-consistency span {
+  color: var(--contract-muted);
+  font-weight: 780;
+}
+
+.bali-contract-page .contract-payment-consistency.is-good {
+  border-color: rgba(22, 138, 85, .22);
+  background: #f7fef9;
+}
+
+.bali-contract-page .contract-payment-consistency.is-good strong,
+.bali-contract-page .contract-payment-consistency.is-good span {
+  color: #13764b;
+}
+
+.bali-contract-page .contract-payment-consistency.is-attention {
+  border-color: rgba(217, 119, 6, .26);
+  background: #fffbeb;
+}
+
+.bali-contract-page .contract-payment-consistency.is-attention strong,
+.bali-contract-page .contract-payment-consistency.is-attention span {
+  color: #8a5b00;
+}
+
+.bali-contract-page .contract-payment-consistency.is-risk {
+  border-color: rgba(200, 58, 58, .26);
+  background: #fff8f8;
+}
+
+.bali-contract-page .contract-payment-consistency.is-risk strong,
+.bali-contract-page .contract-payment-consistency.is-risk span {
+  color: #b42318;
+}
+
 .bali-contract-page .contract-field-attention {
   animation: contractFieldAttention 1.1s ease-out;
 }

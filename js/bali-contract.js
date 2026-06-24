@@ -754,6 +754,7 @@
       setValue(group.balance, formatMoney(balance));
     });
 
+    updatePaymentHint();
     scheduleQualityPanelUpdate();
   }
 
@@ -1749,16 +1750,51 @@
       cell.appendChild(hint);
     }
 
+    var consistency = cell.querySelector('.contract-payment-consistency');
+    if (!consistency) {
+      consistency = document.createElement('div');
+      consistency.className = 'contract-payment-consistency';
+      cell.appendChild(consistency);
+    }
+
     removeClass(hint, 'is-financed');
     removeClass(hint, 'is-cash');
+    removeClass(consistency, 'is-good');
+    removeClass(consistency, 'is-attention');
+    removeClass(consistency, 'is-risk');
+
+    var financeValue = parseMoney(valueOf(rules.financeValue));
+    var parcelCount = parseInt(digitsOnly(valueOf(rules.parcels)), 10) || 0;
+    var parcelValue = parseMoney(valueOf(rules.parcelValue));
+    var totalParcels = parcelCount * parcelValue;
+
     if (finance && finance.checked) {
       addClass(hint, 'is-financed');
       hint.textContent = 'Financiamento: confira financeira, quantidade de parcelas e valor da parcela.';
+      if (financeValue <= 0) {
+        addClass(consistency, 'is-risk');
+        consistency.innerHTML = '<strong>Financiamento zerado</strong><span>O pagamento está como financiamento, mas o valor financiado está em R$ 0,00. Revise entrada, avaliação utilizada e forma de pagamento.</span>';
+      } else if (parcelCount > 0 && parcelValue > 0) {
+        addClass(consistency, 'is-good');
+        consistency.innerHTML = '<strong>Resumo do financiamento</strong><span>Valor financiado: R$ ' + formatMoney(financeValue) + ' · Total das parcelas: R$ ' + formatMoney(totalParcels) + '. Confira se está igual à aprovação da financeira.</span>';
+      } else {
+        addClass(consistency, 'is-attention');
+        consistency.innerHTML = '<strong>Complete o financiamento</strong><span>Informe quantidade de parcelas e valor da parcela para evitar erro ao gravar.</span>';
+      }
     } else if (cash && cash.checked) {
       addClass(hint, 'is-cash');
       hint.textContent = 'À vista: confira entrada e formas de pagamento antes de gravar.';
+      if (financeValue > 0 || parcelCount > 0 || parcelValue > 0) {
+        addClass(consistency, 'is-attention');
+        consistency.innerHTML = '<strong>Dados de financiamento preenchidos</strong><span>O contrato está à vista, mas há valor financiado ou parcelas informadas. Confira se isso é intencional.</span>';
+      } else {
+        addClass(consistency, 'is-good');
+        consistency.innerHTML = '<strong>Resumo à vista</strong><span>Sem valor financiado informado. Confira entrada e formas de pagamento antes de gravar.</span>';
+      }
     } else {
+      addClass(consistency, 'is-risk');
       hint.textContent = 'Selecione à vista ou financiamento para continuar.';
+      consistency.innerHTML = '<strong>Forma de pagamento pendente</strong><span>Escolha à vista ou financiamento para liberar a revisão do contrato.</span>';
     }
   }
 
