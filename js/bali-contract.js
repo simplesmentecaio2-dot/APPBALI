@@ -2381,6 +2381,36 @@
     });
   }
 
+  function cleanIdentityValue(value, uppercase) {
+    var cleaned = String(value || '').replace(/\s+/g, ' ').trim();
+    return uppercase ? cleaned.toUpperCase() : cleaned;
+  }
+
+  function enhanceIdentityFields() {
+    [
+      { id: 'txtCPFCNPJ', uppercase: false },
+      { id: 'txtEdCPF', uppercase: false },
+      { id: 'txtChassiPlaca', uppercase: true },
+      { id: 'txtPlacaVU', uppercase: true },
+      { id: 'txtEdChassi', uppercase: true },
+      { id: 'txtEdPlacaUSADO', uppercase: true }
+    ].forEach(function (config) {
+      allBySuffix(config.id).forEach(function (field) {
+        if (field.getAttribute('data-contract-identity') === 'true') return;
+        field.setAttribute('data-contract-identity', 'true');
+        field.setAttribute('autocomplete', 'off');
+
+        var normalize = function () {
+          var cleaned = cleanIdentityValue(field.value, config.uppercase);
+          if (field.value !== cleaned) field.value = cleaned;
+        };
+
+        field.addEventListener('blur', normalize);
+        field.addEventListener('change', normalize);
+      });
+    });
+  }
+
   function bindSubmitButtons() {
     ['btnGravar', 'btnEditareGravar'].forEach(function (id) {
       allBySuffix(id).forEach(function (button) {
@@ -2409,6 +2439,7 @@
     enhanceLoadingIndicator();
     enhanceFields();
     enhanceFormatFields();
+    enhanceIdentityFields();
     enhanceChecklist();
     enhanceDateFilters();
     enhanceBiPeriodShortcuts();
