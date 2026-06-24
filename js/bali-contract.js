@@ -2464,6 +2464,37 @@
     }).length;
   }
 
+  function exportLookupCsv(table, label) {
+    if (!table || !table.tBodies || !table.tBodies.length) return 0;
+    var headers = table.tHead && table.tHead.rows.length
+      ? Array.prototype.slice.call(table.tHead.rows[0].cells).map(function (cell) { return String(cell.textContent || '').trim(); })
+      : ['ID', 'Cliente', 'CPF/CNPJ', 'RG', 'Telefone 1', 'Telefone 2', 'Telefone 3', 'E-mail', 'Vendedor'];
+
+    var escapeCsv = function (value) {
+      return '"' + String(value || '').replace(/\s+/g, ' ').trim().replace(/"/g, '""') + '"';
+    };
+    var lines = [headers.map(escapeCsv).join(';')];
+    Array.prototype.slice.call(table.tBodies[0].rows).forEach(function (row) {
+      if (!row.cells || !row.cells.length || row.style.display === 'none' || (row.className || '').match(/contract-empty-row|dataTables_empty/)) return;
+      lines.push(Array.prototype.slice.call(row.cells).map(function (cell) { return escapeCsv(cell.textContent); }).join(';'));
+    });
+
+    if (lines.length === 1) return 0;
+    var brand = document.body.className.indexOf('contrato-jeep') >= 0 ? 'jeep' : (document.body.className.indexOf('contrato-byd') >= 0 ? 'byd' : 'fiat');
+    var name = 'consulta-' + normalizeText(label).toLowerCase().replace(/\s+/g, '-') + '-' + brand + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+    var blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.setTimeout(function () {
+      URL.revokeObjectURL(link.href);
+    }, 1000);
+    return lines.length - 1;
+  }
+
   function enhanceLookupSummary(table) {
     var wrapper = closestClass(table, 'dataTables_wrapper') || table.parentNode;
     if (!wrapper) return;
@@ -2484,8 +2515,14 @@
       : 'Nenhum contrato apareceu neste filtro. Revise as datas ou tente um período maior.';
     var signature = label + ':' + count + ':' + text;
     if (summary.getAttribute('data-contract-summary') === signature) return;
-    summary.innerHTML = '<div><span>' + label + '</span><strong>' + count + ' contrato(s)</strong></div><small>' + text + '</small>';
+    summary.innerHTML = '<div><span>' + label + '</span><strong>' + count + ' contrato(s)</strong></div><small>' + text + '</small><button type="button" class="contract-lookup-export">CSV</button>';
     summary.setAttribute('data-contract-summary', signature);
+    var button = summary.querySelector('.contract-lookup-export');
+    button.addEventListener('click', function () {
+      var total = exportLookupCsv(table, label);
+      var info = summary.querySelector('small');
+      if (info) info.textContent = total ? total + ' contrato(s) exportado(s).' : 'Nenhum contrato visível para exportar.';
+    });
   }
 
   function triggerLookupSearch(input) {
