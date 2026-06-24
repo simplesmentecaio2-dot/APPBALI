@@ -12,6 +12,8 @@ using System.Text;
 public partial class veiculos_contrato : System.Web.UI.Page
 {
     private const string TabelaContratosBI = "dbo.veiculos_contrato_venda";
+    private const int DiasMaximosBI = 370;
+    private const int TimeoutConsultaSegundos = 60;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -238,15 +240,20 @@ public partial class veiculos_contrato : System.Web.UI.Page
         DateTime fim;
         ObterPeriodoBI(out inicio, out fim);
 
+        if ((fim.Date - inicio.Date).TotalDays > DiasMaximosBI)
+        {
+            biHtml = "<div class='contract-bi-empty'>Selecione um período de até 12 meses para manter o BI rápido e confiável.</div>";
+            return;
+        }
+
         try
         {
             List<ContratoBIItem> contratos = BuscarContratosBI(inicio, fim);
             biHtml = MontarHtmlBI(contratos, inicio, fim);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            biHtml = "<div class='contract-bi-empty'>Não foi possível carregar o BI agora. Detalhe: "
-                + HttpUtility.HtmlEncode(ex.Message) + "</div>";
+            biHtml = "<div class='contract-bi-empty'>Não foi possível carregar o BI agora. Tente novamente ou reduza o período pesquisado.</div>";
         }
     }
 
@@ -288,6 +295,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             using (SqlCommand oCmd = new SqlCommand())
             {
                 oCmd.Connection = vec.oCon;
+                oCmd.CommandTimeout = TimeoutConsultaSegundos;
                 oCmd.CommandText = @"select id,
                                             isnull(vendedor, '') vendedor,
                                             isnull(tipo, '') tipo,
