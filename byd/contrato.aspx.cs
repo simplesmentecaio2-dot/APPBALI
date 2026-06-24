@@ -1654,13 +1654,13 @@ public partial class veiculos_contrato : System.Web.UI.Page
                             <tr>
                                 <td style='text-align:center; font-size:12px;'>ID</td>
                                 <td style='text-align:center; font-size:12px;'>Cliente</td>
-                                <td style='text-align:center; font-size:12px;'>CPF</td>
+                                <td style='text-align:center; font-size:12px;'>CPF/CNPJ</td>
                                 <td style='text-align:center; font-size:12px;'>RG</td>
-                                <td style='text-align:center; font-size:12px;'>Telefone1</td>
-                                <td style='text-align:center; font-size:12px;'>Telefone2</td>
-                                <td style='text-align:center; font-size:12px;'>Telefone3</td>
-                                <td style='text-align:center; font-size:12px;'>email</td>
-                                <td style='text-align:center; font-size:12px;'>vendedor</td>
+                                <td style='text-align:center; font-size:12px;'>Telefone 1</td>
+                                <td style='text-align:center; font-size:12px;'>Telefone 2</td>
+                                <td style='text-align:center; font-size:12px;'>Telefone 3</td>
+                                <td style='text-align:center; font-size:12px;'>E-mail</td>
+                                <td style='text-align:center; font-size:12px;'>Vendedor</td>
                             </tr>
                         </thead><tbody>");
 
