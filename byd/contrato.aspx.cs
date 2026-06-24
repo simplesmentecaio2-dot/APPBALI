@@ -26,6 +26,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             lblUsuario.Text = Session["usuario"].ToString();
         }
 
+        InicializarPeriodoConsulta();
         InicializarPeriodoBI();
         if (!IsPostBack)
         {
@@ -39,6 +40,17 @@ public partial class veiculos_contrato : System.Web.UI.Page
     public string biHtml;
 
     private static readonly CultureInfo CulturaBrasil = new CultureInfo("pt-BR");
+
+    private void InicializarPeriodoConsulta()
+    {
+        DateTime inicio = DateTime.Today.AddDays(-2);
+        DateTime fim = DateTime.Today;
+
+        if (txtDtInicialVN.Text.Length == 0) txtDtInicialVN.Text = inicio.ToString("dd/MM/yyyy");
+        if (txtDtFinalVN.Text.Length == 0) txtDtFinalVN.Text = fim.ToString("dd/MM/yyyy");
+        if (txtDtInicialVU.Text.Length == 0) txtDtInicialVU.Text = inicio.ToString("dd/MM/yyyy");
+        if (txtDtFinalVU.Text.Length == 0) txtDtFinalVU.Text = fim.ToString("dd/MM/yyyy");
+    }
 
     private void ExibirAlerta(string mensagem)
     {
@@ -721,20 +733,129 @@ public partial class veiculos_contrato : System.Web.UI.Page
   }
   protected void Button2_Click(object sender, EventArgs e)
   {
-      Veiculos ovec = new Veiculos();
-      string tabelaR;
       string tabelaVUR;
-      //ovec.select_Tab_Consulta(out tabelaR);
-      ovec.select_Tab_ConsultaVUbyd(out tabelaVUR);
+      DateTime dtInicio;
+      DateTime dtFim;
 
-      //tabela = tabelaR;
+      if (!ObterPeriodoConsulta(txtDtInicialVU.Text, txtDtFinalVU.Text, out dtInicio, out dtFim))
+      {
+          ExibirAlerta("Informe uma data inicial e uma data final válidas para consultar contratos usados.");
+          return;
+      }
+
+      txtDtInicialVU.Text = dtInicio.ToString("dd/MM/yyyy");
+      txtDtFinalVU.Text = dtFim.ToString("dd/MM/yyyy");
+
+      select_Tab_ConsultaVUPeriodo("Print-ContratoVUBYD.aspx", dtInicio, dtFim, out tabelaVUR);
+
       tabelaVU = tabelaVUR;
+  }
+
+  private bool ObterPeriodoConsulta(string inicioTexto, string fimTexto, out DateTime inicio, out DateTime fim)
+  {
+      bool inicioOk = DateTime.TryParse(inicioTexto, CulturaBrasil, DateTimeStyles.None, out inicio);
+      bool fimOk = DateTime.TryParse(fimTexto, CulturaBrasil, DateTimeStyles.None, out fim);
+
+      if (!inicioOk || !fimOk)
+      {
+          return false;
+      }
+
+      if (fim < inicio)
+      {
+          DateTime troca = inicio;
+          inicio = fim;
+          fim = troca;
+      }
+
+      return true;
+  }
+
+  private string ConsultaCell(object valor)
+  {
+      return "<td style='text-align:center; font-size:12px;'>" + HttpUtility.HtmlEncode(Convert.ToString(valor)) + "</td>";
+  }
+
+  private void select_Tab_ConsultaVUPeriodo(string paginaImpressao, DateTime dtInicio, DateTime dtFim, out string tabelaHtml)
+  {
+      StringBuilder html = new StringBuilder();
+      html.Append(@"<table cellpadding='0' cellspacing='0' border='0' id='tblConsultaProcesso2' class='display' style='font-family:arial;'>
+                        <thead>
+                            <tr>
+                                <td style='text-align:center; font-size:12px;'>ID</td>
+                                <td style='text-align:center; font-size:12px;'>Cliente</td>
+                                <td style='text-align:center; font-size:12px;'>CPF</td>
+                                <td style='text-align:center; font-size:12px;'>RG</td>
+                                <td style='text-align:center; font-size:12px;'>Telefone1</td>
+                                <td style='text-align:center; font-size:12px;'>Telefone2</td>
+                                <td style='text-align:center; font-size:12px;'>Telefone3</td>
+                                <td style='text-align:center; font-size:12px;'>email</td>
+                                <td style='text-align:center; font-size:12px;'>vendedor</td>
+                            </tr>
+                        </thead><tbody>");
+
+      Veiculos vec = new Veiculos();
+      try
+      {
+          vec.Conexao();
+          using (SqlCommand oCmd = new SqlCommand())
+          {
+              oCmd.Connection = vec.oCon;
+              oCmd.CommandText = @"select id,
+                                          isnull(cliente, '') cliente,
+                                          isnull(cpfcnpj, '') cpfcnpj,
+                                          isnull(RGIE, '') RGIE,
+                                          isnull(tel_residencial, '') tel_residencial,
+                                          isnull(tel_comercial, '') tel_comercial,
+                                          isnull(tel_celular, '') tel_celular,
+                                          isnull(email, '') email,
+                                          isnull(vendedor, '') vendedor
+                                   from " + TabelaContratosBI + @"
+                                   where tipo = @tipo
+                                     and [data] >= @dtInicio
+                                     and [data] < dateadd(day, 1, @dtFim)
+                                   order by [data] desc, id desc";
+              oCmd.Parameters.Add("@tipo", SqlDbType.VarChar).Value = "VU";
+              oCmd.Parameters.Add("@dtInicio", SqlDbType.Date).Value = dtInicio;
+              oCmd.Parameters.Add("@dtFim", SqlDbType.Date).Value = dtFim;
+
+              using (SqlDataReader odr = oCmd.ExecuteReader())
+              {
+                  while (odr.Read())
+                  {
+                      string id = Convert.ToString(odr["id"]);
+                      html.Append("<tr>");
+                      html.Append("<td style='text-align:center; font-size:12px;'><a href='")
+                          .Append(HttpUtility.HtmlAttributeEncode(paginaImpressao))
+                          .Append("?contrato=")
+                          .Append(HttpUtility.UrlEncode(id))
+                          .Append("'>")
+                          .Append(HttpUtility.HtmlEncode(id))
+                          .Append("</a></td>");
+                      html.Append(ConsultaCell(odr["cliente"]));
+                      html.Append(ConsultaCell(odr["cpfcnpj"]));
+                      html.Append(ConsultaCell(odr["RGIE"]));
+                      html.Append(ConsultaCell(odr["tel_residencial"]));
+                      html.Append(ConsultaCell(odr["tel_comercial"]));
+                      html.Append(ConsultaCell(odr["tel_celular"]));
+                      html.Append(ConsultaCell(odr["email"]));
+                      html.Append(ConsultaCell(odr["vendedor"]));
+                      html.Append("</tr>");
+                  }
+              }
+          }
+      }
+      finally
+      {
+          vec.FecharConexao();
+      }
+
+      html.Append("</tbody></table>");
+      tabelaHtml = html.ToString();
   }
 
 
 
 }
-
-
 
 

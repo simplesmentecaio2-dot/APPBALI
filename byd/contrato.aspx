@@ -331,8 +331,27 @@ order by usuario_nome "></asp:SqlDataSource>
                                         <table style="width: 100%; padding: 13px;" align="center" onmouseover="esconderMenuLeftMouse()">
                                             <tr style="width: 100%;">
                                                 <td style="width: 100%;">
+                                                    <table style="width: 100%; max-width: 720px; margin-bottom: 16px;">
+                                                        <tr>
+                                                            <td>Data Inicial:</td>
+                                                            <td>Data Final:</td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <asp:TextBox ID="txtDtInicialVU" CssClass="txts" runat="server"></asp:TextBox>
+                                                                <asp:CalendarExtender Format="dd/MM/yyyy" ID="CalendarExtenderVU1" runat="server" Enabled="True" TargetControlID="txtDtInicialVU"></asp:CalendarExtender>
+                                                            </td>
+                                                            <td>
+                                                                <asp:TextBox ID="txtDtFinalVU" CssClass="txts" runat="server"></asp:TextBox>
+                                                                <asp:CalendarExtender Format="dd/MM/yyyy" ID="CalendarExtenderVU2" runat="server" Enabled="True" TargetControlID="txtDtFinalVU"></asp:CalendarExtender>
+                                                            </td>
+                                                            <td>
+                                                                <asp:Button ID="Button2" runat="server" Text="Processar VU" CssClass="btns" OnClick="Button2_Click" OnClientClick="aguarde();" />
+                                                            </td>
+                                                        </tr>
+                                                    </table>
                                                     <%=tabelaVU %>
-                                                    <asp:Button ID="Button2" runat="server" Text="Processar VU" CssClass="btns" OnClick="Button2_Click" OnClientClick="aguarde();" />
                                                 </td>
                                             </tr>
                                         </table>
