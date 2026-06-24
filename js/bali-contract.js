@@ -154,6 +154,8 @@
       placeholder: 'CPF ou CNPJ',
       inputmode: 'numeric',
       numericBlank: true,
+      maxLength: 18,
+      normalize: formatCpfCnpj,
       validate: function (value) {
         var digits = digitsOnly(value);
         return digits.length === 11 || digits.length === 14;
@@ -381,6 +383,17 @@
     var digits = digitsOnly(value);
     if (digits.length !== 8) return String(value || '').trim();
     return digits.substr(0, 5) + '-' + digits.substr(5, 3);
+  }
+
+  function formatCpfCnpj(value) {
+    var digits = digitsOnly(value);
+    if (digits.length === 11) {
+      return digits.substr(0, 3) + '.' + digits.substr(3, 3) + '.' + digits.substr(6, 3) + '-' + digits.substr(9, 2);
+    }
+    if (digits.length === 14) {
+      return digits.substr(0, 2) + '.' + digits.substr(2, 3) + '.' + digits.substr(5, 3) + '/' + digits.substr(8, 4) + '-' + digits.substr(12, 2);
+    }
+    return String(value || '').trim();
   }
 
   function formatMoney(value) {
@@ -2143,8 +2156,12 @@
         field.setAttribute('data-contract-enhanced', 'true');
         field.setAttribute('inputmode', 'decimal');
         field.setAttribute('autocomplete', 'off');
+        field.setAttribute('placeholder', '0,00');
         addClass(field, 'contract-money-field');
         removeLegacyPostbacks(field);
+        field.addEventListener('focus', function () {
+          if (field.select && parseMoney(field.value) === 0) field.select();
+        });
         field.addEventListener('blur', function () {
           normalizeMoneyField(field, false);
           showFieldMessage(field, '');
@@ -2202,6 +2219,7 @@
           field.setAttribute('data-contract-format', 'true');
           if (rule.placeholder) field.setAttribute('placeholder', rule.placeholder);
           if (rule.inputmode) field.setAttribute('inputmode', rule.inputmode);
+          if (rule.maxLength) field.setAttribute('maxlength', rule.maxLength);
           field.setAttribute('autocomplete', rule.inputmode === 'email' ? 'email' : 'off');
 
           field.addEventListener('blur', function () {
