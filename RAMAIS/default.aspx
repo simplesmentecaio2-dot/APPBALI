@@ -120,6 +120,7 @@
                     </div>
 
                     <asp:HiddenField ID="hfRamalId" runat="server" />
+                    <div id="ramalClientMessage" class="client-message" aria-live="polite"></div>
                     <div class="form-grid">
                         <label>Nome
                             <asp:TextBox ID="txtNome" runat="server" CssClass="text-field" MaxLength="160"></asp:TextBox>
@@ -137,7 +138,7 @@
                             <asp:CheckBox ID="chkRamalAtivo" runat="server" Checked="true" />
                             Ativo
                         </label>
-                        <asp:Button ID="btnSalvarRamal" runat="server" Text="Salvar ramal" CssClass="primary-button" OnClick="btnSalvarRamal_Click" />
+                        <asp:Button ID="btnSalvarRamal" runat="server" Text="Salvar ramal" CssClass="primary-button" OnClick="btnSalvarRamal_Click" OnClientClick="return validarRamalCliente();" />
                     </div>
 
                     <div class="table-wrap">
@@ -170,6 +171,7 @@
                         </div>
 
                         <asp:HiddenField ID="hfLojaId" runat="server" />
+                        <div id="lojaClientMessage" class="client-message" aria-live="polite"></div>
                         <div class="compact-form">
                             <label>Nome da loja
                                 <asp:TextBox ID="txtLojaNome" runat="server" CssClass="text-field" MaxLength="120"></asp:TextBox>
@@ -178,7 +180,7 @@
                                 <asp:CheckBox ID="chkLojaAtiva" runat="server" Checked="true" />
                                 Ativa
                             </label>
-                            <asp:Button ID="btnSalvarLoja" runat="server" Text="Salvar loja" CssClass="primary-button" OnClick="btnSalvarLoja_Click" />
+                            <asp:Button ID="btnSalvarLoja" runat="server" Text="Salvar loja" CssClass="primary-button" OnClick="btnSalvarLoja_Click" OnClientClick="return validarCampoObrigatorio('txtLojaNome', 'lojaClientMessage', 'Informe o nome da loja.');" />
                         </div>
 
                         <div class="table-wrap">
@@ -207,6 +209,7 @@
                         </div>
 
                         <asp:HiddenField ID="hfSetorId" runat="server" />
+                        <div id="setorClientMessage" class="client-message" aria-live="polite"></div>
                         <div class="compact-form">
                             <label>Nome do setor
                                 <asp:TextBox ID="txtSetorNome" runat="server" CssClass="text-field" MaxLength="120"></asp:TextBox>
@@ -215,7 +218,7 @@
                                 <asp:CheckBox ID="chkSetorAtivo" runat="server" Checked="true" />
                                 Ativo
                             </label>
-                            <asp:Button ID="btnSalvarSetor" runat="server" Text="Salvar setor" CssClass="primary-button" OnClick="btnSalvarSetor_Click" />
+                            <asp:Button ID="btnSalvarSetor" runat="server" Text="Salvar setor" CssClass="primary-button" OnClick="btnSalvarSetor_Click" OnClientClick="return validarCampoObrigatorio('txtSetorNome', 'setorClientMessage', 'Informe o nome do setor.');" />
                         </div>
 
                         <div class="table-wrap">
@@ -311,6 +314,86 @@
                         window.confirmarSenhaRamal();
                     }
                 });
+
+                function campo(id) {
+                    return document.getElementById(id);
+                }
+
+                function mostrarErroCliente(messageId, mensagem, elemento) {
+                    var aviso = document.getElementById(messageId);
+                    if (aviso) {
+                        aviso.textContent = mensagem;
+                        aviso.classList.add('is-visible');
+                    }
+
+                    if (elemento) {
+                        elemento.classList.add('field-error');
+                        elemento.focus();
+                    }
+                }
+
+                function limparErroCliente(messageId, ids) {
+                    var aviso = document.getElementById(messageId);
+                    if (aviso) {
+                        aviso.textContent = '';
+                        aviso.classList.remove('is-visible');
+                    }
+
+                    for (var i = 0; i < ids.length; i++) {
+                        var item = campo(ids[i]);
+                        if (item) item.classList.remove('field-error');
+                    }
+                }
+
+                window.validarCampoObrigatorio = function (id, messageId, mensagem) {
+                    var item = campo(id);
+                    limparErroCliente(messageId, [id]);
+
+                    if (!item || item.value.trim().length === 0) {
+                        mostrarErroCliente(messageId, mensagem, item);
+                        return false;
+                    }
+
+                    return true;
+                };
+
+                window.validarRamalCliente = function () {
+                    var ids = [
+                        '<%= txtNome.ClientID %>',
+                        '<%= txtRamal.ClientID %>',
+                        '<%= ddlRamalLoja.ClientID %>',
+                        '<%= ddlRamalSetor.ClientID %>'
+                    ];
+
+                    limparErroCliente('ramalClientMessage', ids);
+
+                    var nome = campo(ids[0]);
+                    var ramal = campo(ids[1]);
+                    var loja = campo(ids[2]);
+                    var setor = campo(ids[3]);
+
+                    if (!nome || nome.value.trim().length === 0) {
+                        mostrarErroCliente('ramalClientMessage', 'Informe o nome do colaborador.', nome);
+                        return false;
+                    }
+
+                    if (!ramal || ramal.value.trim().length === 0) {
+                        mostrarErroCliente('ramalClientMessage', 'Informe o número do ramal.', ramal);
+                        return false;
+                    }
+
+                    if (!loja || loja.value === '0') {
+                        mostrarErroCliente('ramalClientMessage', 'Selecione a loja do ramal.', loja);
+                        return false;
+                    }
+
+                    if (!setor || setor.value === '0') {
+                        mostrarErroCliente('ramalClientMessage', 'Selecione o setor do ramal.', setor);
+                        return false;
+                    }
+
+                    return true;
+                };
             })();
         </script>
     </form>

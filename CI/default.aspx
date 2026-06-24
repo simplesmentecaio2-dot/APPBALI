@@ -127,6 +127,7 @@
                     </div>
 
                     <asp:HiddenField ID="hfCiId" runat="server" />
+                    <div id="ciClientMessage" class="client-message" aria-live="polite"></div>
                     <div class="form-grid">
                         <label>Marca
                             <asp:DropDownList ID="ddlMarca" runat="server" CssClass="select-field">
@@ -185,12 +186,69 @@
                     </div>
 
                     <div class="form-actions">
-                        <asp:Button ID="btnSalvar" runat="server" Text="Salvar CI" CssClass="primary-button" OnClick="btnSalvar_Click" />
+                        <asp:Button ID="btnSalvar" runat="server" Text="Salvar CI" CssClass="primary-button" OnClick="btnSalvar_Click" OnClientClick="return validarCICliente();" />
                         <a class="secondary-link" href="#consulta">Voltar para consulta</a>
                     </div>
                 </section>
             </main>
         </div>
+        <script>
+            (function () {
+                var camposObrigatorios = [
+                    { id: '<%= txtData.ClientID %>', mensagem: 'Informe a data da CI.' },
+                    { id: '<%= txtOrigemArea.ClientID %>', mensagem: 'Informe a área de origem.' },
+                    { id: '<%= txtOrigemResponsavel.ClientID %>', mensagem: 'Informe o responsável pela origem.' },
+                    { id: '<%= txtDestinoArea.ClientID %>', mensagem: 'Informe a área de destino.' },
+                    { id: '<%= txtDestinatario.ClientID %>', mensagem: 'Informe o destinatário.' },
+                    { id: '<%= txtAssunto.ClientID %>', mensagem: 'Informe o assunto.' },
+                    { id: '<%= txtCorpo.ClientID %>', mensagem: 'Informe o texto da comunicação.' }
+                ];
+
+                function campo(id) {
+                    return document.getElementById(id);
+                }
+
+                function limparErros() {
+                    var aviso = document.getElementById('ciClientMessage');
+                    if (aviso) {
+                        aviso.textContent = '';
+                        aviso.classList.remove('is-visible');
+                    }
+
+                    for (var i = 0; i < camposObrigatorios.length; i++) {
+                        var item = campo(camposObrigatorios[i].id);
+                        if (item) item.classList.remove('field-error');
+                    }
+                }
+
+                function mostrarErro(mensagem, elemento) {
+                    var aviso = document.getElementById('ciClientMessage');
+                    if (aviso) {
+                        aviso.textContent = mensagem;
+                        aviso.classList.add('is-visible');
+                    }
+
+                    if (elemento) {
+                        elemento.classList.add('field-error');
+                        elemento.focus();
+                    }
+                }
+
+                window.validarCICliente = function () {
+                    limparErros();
+
+                    for (var i = 0; i < camposObrigatorios.length; i++) {
+                        var item = campo(camposObrigatorios[i].id);
+                        if (!item || item.value.trim().length === 0) {
+                            mostrarErro(camposObrigatorios[i].mensagem, item);
+                            return false;
+                        }
+                    }
+
+                    return true;
+                };
+            })();
+        </script>
     </form>
 </body>
 </html>
