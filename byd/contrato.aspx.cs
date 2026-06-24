@@ -77,7 +77,12 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private string LimparLog(string valor)
     {
-        return (valor ?? "").Replace("\r", " ").Replace("\n", " ").Replace("\t", " ").Trim();
+        string texto = (valor ?? "").Replace("\r", " ").Replace("\n", " ").Replace("\t", " ").Trim();
+        while (texto.Contains("  "))
+        {
+            texto = texto.Replace("  ", " ");
+        }
+        return texto.Length > 1200 ? texto.Substring(0, 1200) + "...(truncado)" : texto;
     }
 
     private void RegistrarContratoOperacao(string acao, string detalhe)
