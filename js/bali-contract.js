@@ -624,6 +624,12 @@
     var end = parseDate(endText);
     if (!start || !end) return 'Use datas no formato dd/mm/aaaa.';
     if (start.getTime() > end.getTime()) return 'A data inicial não pode ser maior que a data final.';
+    var today = new Date();
+    today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    if (end.getTime() > today.getTime()) return 'A data final não pode ser maior que hoje.';
+    if (Math.floor((end.getTime() - start.getTime()) / 86400000) > 370) {
+      return 'Selecione um período de até 12 meses para manter a consulta rápida.';
+    }
 
     return '';
   }
