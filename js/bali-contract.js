@@ -761,6 +761,79 @@
     bindPeriodValidation(controls, button, startField, endField);
   }
 
+  function collectBiSummary(panel) {
+    var lines = [];
+    var title = panel.querySelector('.contract-bi-filter h2');
+    var period = panel.querySelector('.contract-bi-period');
+    if (title) lines.push(title.textContent.trim());
+    if (period) lines.push(period.textContent.trim());
+
+    Array.prototype.slice.call(panel.querySelectorAll('.contract-bi-cards article')).forEach(function (card) {
+      var label = card.querySelector('span');
+      var value = card.querySelector('strong');
+      var caption = card.querySelector('small');
+      var line = [];
+      if (label) line.push(label.textContent.trim());
+      if (value) line.push(value.textContent.trim());
+      if (caption) line.push(caption.textContent.trim());
+      if (line.length) lines.push(line.join(': '));
+    });
+
+    return lines.join('\n');
+  }
+
+  function copyText(text, done) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () {
+        done(false);
+      });
+      return;
+    }
+
+    var area = document.createElement('textarea');
+    area.value = text;
+    area.style.position = 'fixed';
+    area.style.left = '-9999px';
+    document.body.appendChild(area);
+    area.select();
+    var ok = false;
+    try {
+      ok = document.execCommand('copy');
+    } catch (ignore) {
+      ok = false;
+    }
+    document.body.removeChild(area);
+    done(ok);
+  }
+
+  function enhanceBiActions() {
+    Array.prototype.slice.call(document.querySelectorAll('.contract-bi-panel')).forEach(function (panel) {
+      if (panel.getAttribute('data-contract-bi-actions') === 'true') return;
+      var filter = panel.querySelector('.contract-bi-filter');
+      if (!filter) return;
+
+      panel.setAttribute('data-contract-bi-actions', 'true');
+      var actions = document.createElement('div');
+      actions.className = 'contract-bi-actions';
+      actions.innerHTML = '<button type="button">Copiar resumo</button><small></small>';
+      filter.appendChild(actions);
+
+      var button = actions.querySelector('button');
+      var status = actions.querySelector('small');
+      button.addEventListener('click', function () {
+        var text = collectBiSummary(panel);
+        if (!text) return;
+        copyText(text, function (ok) {
+          status.textContent = ok === false ? 'Não foi possível copiar.' : 'Resumo copiado.';
+          window.clearTimeout(status._contractTimer);
+          status._contractTimer = window.setTimeout(function () {
+            status.textContent = '';
+          }, 1800);
+        });
+      });
+    });
+  }
+
   function enhanceFormSections() {
     Array.prototype.slice.call(document.querySelectorAll('.ajax__tab_body table')).forEach(function (table) {
       if (table.getAttribute('data-contract-section') === 'true') return;
@@ -1495,6 +1568,7 @@
     enhanceChecklist();
     enhanceDateFilters();
     enhanceBiPeriodShortcuts();
+    enhanceBiActions();
     enhanceFormSections();
     enhanceSectionNavigator();
     enhanceUnsavedWarning();
