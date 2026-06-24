@@ -2424,6 +2424,17 @@ body.bali-contract-page *::after {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .bali-contract-page *,
+  .bali-contract-page *::before,
+  .bali-contract-page *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+
 .bali-contract-page .contract-dirty-notice {
   position: fixed;
   right: 24px;
