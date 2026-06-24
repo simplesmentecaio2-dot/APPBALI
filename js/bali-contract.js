@@ -176,6 +176,15 @@
       message: 'Placa ou chassi deve ter pelo menos 7 letras/números.'
     },
     {
+      ids: ['txtPlacaVU', 'txtEdPlacaUSADO'],
+      placeholder: 'Placa do usado',
+      normalize: normalizePlateOrChassi,
+      validate: function (value) {
+        return lettersNumbersOnly(value).length >= 7;
+      },
+      message: 'Placa do usado deve ter pelo menos 7 letras/números quando preenchida.'
+    },
+    {
       ids: ['txtCEP', 'txtEdCep'],
       placeholder: '00000-000',
       inputmode: 'numeric',
@@ -392,6 +401,12 @@
     var digits = digitsOnly(value);
     var number = parseInt(digits, 10);
     return digits.length > 0 && !isNaN(number) && number > 0 && number <= 120;
+  }
+
+  function validSelectedText(value) {
+    var text = String(value || '').trim();
+    if (!text || text === '0' || text === '-1') return false;
+    return !/^selecion(e|ar)$/i.test(text);
   }
 
   function formatCep(value) {
@@ -1330,7 +1345,7 @@
     if (field.tagName === 'SELECT') {
       var value = String(field.value || '').trim();
       var text = field.options && field.selectedIndex >= 0 ? String(field.options[field.selectedIndex].text || '').trim() : '';
-      return value.length > 0 && value !== '0' && text !== '' && text !== 'Selecione';
+      return validSelectedText(value) && validSelectedText(text);
     }
     return String(field.value || '').trim().length > 0;
   }
@@ -1343,6 +1358,9 @@
   function requiredFieldComplete(id) {
     if (id === 'txtValoVeiculo' || id === 'txtEdValorVeic' || id === 'txtVlParcelas' || id === 'txtEdValorParcela') {
       return hasPositiveMoney(id);
+    }
+    if (id === 'ddlVendedor' || id === 'txtEdVendedor') {
+      return validSelectedText(valueOf(id));
     }
     return hasFieldValue(id);
   }
