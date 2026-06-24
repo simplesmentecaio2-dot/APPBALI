@@ -8,7 +8,7 @@
 <head runat="server">
     <title>Contrato de Venda - BYD</title>
     <link href="../css/estilo.css" rel="stylesheet" />
-    <link href="../css/bali-contract.css?v=20260624-bi" rel="stylesheet" />
+    <link href="../css/bali-contract.css?v=20260624-calendario" rel="stylesheet" />
     <script src="../js/jquery-1.10.2.js"></script>
     <script src="../js/js.js"></script>
     <script src="../js/jquery.maskMoney.js"></script>
@@ -264,12 +264,12 @@ order by usuario_nome "></asp:SqlDataSource>
                                                         <tr>
                                                             <td>
                                                                 <asp:TextBox ID="txtDtInicialVN" CssClass="txts" runat="server"></asp:TextBox>
-                                                                <asp:CalendarExtender ID="CalendarExtender1" runat="server" Enabled="True" TargetControlID="txtDtInicialVN">
+                                                                <asp:CalendarExtender Format="dd/MM/yyyy" ID="CalendarExtender1" runat="server" Enabled="True" TargetControlID="txtDtInicialVN">
                                                                 </asp:CalendarExtender>
                                                             </td>
                                                             <td>
                                                                 <asp:TextBox ID="txtDtFinalVN" CssClass="txts" runat="server"></asp:TextBox>
-                                                                <asp:CalendarExtender ID="CalendarExtender2" runat="server" Enabled="True" TargetControlID="txtDtFinalVN">
+                                                                <asp:CalendarExtender Format="dd/MM/yyyy" ID="CalendarExtender2" runat="server" Enabled="True" TargetControlID="txtDtFinalVN">
                                                                 </asp:CalendarExtender>
 
                                                                 <asp:Button ID="Button1" runat="server" Text="Processar VN" CssClass="btns" OnClick="Button1_Click" OnClientClick="aguarde();" />

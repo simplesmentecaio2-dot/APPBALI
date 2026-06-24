@@ -1,6 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="contrato.aspx.cs" Inherits="veiculos_contrato" %>
 
-<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head runat="server"><title>Contrato de Venda - Fiat</title><link href="../css/estilo.css" rel="stylesheet" /><link href="../css/bali-contract.css?v=20260624-bi" rel="stylesheet" /><script src="../js/jquery-1.10.2.js"></script><script src="../js/js.js"></script><script src="../js/jquery.maskMoney.js"></script><script src="../js/maskMin.js"></script><script src="../js/maskPhone.js"></script><script src="../tables/js/jquery.dataTables.min.js"></script><link href="../tables/estilo/jquery-ui-1.8.4.custom.css" rel="stylesheet" /><link href="../tables/estilo/table.css" rel="stylesheet" /><link href="../tables/estilo/table_jui.css" rel="stylesheet" /><script type="text/javascript">
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head runat="server"><title>Contrato de Venda - Fiat</title><link href="../css/estilo.css" rel="stylesheet" /><link href="../css/bali-contract.css?v=20260624-calendario" rel="stylesheet" /><script src="../js/jquery-1.10.2.js"></script><script src="../js/js.js"></script><script src="../js/jquery.maskMoney.js"></script><script src="../js/maskMin.js"></script><script src="../js/maskPhone.js"></script><script src="../tables/js/jquery.dataTables.min.js"></script><link href="../tables/estilo/jquery-ui-1.8.4.custom.css" rel="stylesheet" /><link href="../tables/estilo/table.css" rel="stylesheet" /><link href="../tables/estilo/table_jui.css" rel="stylesheet" /><script type="text/javascript">
         $(document).ready(function () {
             oTable = $('#tblConsultaProcesso').dataTable({ //example é o ID da tabela
                 "bPaginate": true,
@@ -234,12 +234,12 @@ WHERE        (ga.GrupoAcesso_Descricao = 'VENDEDOR DE VEICULOS NOVOS')"></asp:Sq
                                                         <tr>
                                                             <td>
                                                                 <asp:TextBox ID="txtDtInicialVN" CssClass="txts" runat="server"></asp:TextBox>
-                                                                <asp:CalendarExtender ID="CalendarExtender1" runat="server" Enabled="True" TargetControlID="txtDtInicialVN">
+                                                                <asp:CalendarExtender Format="dd/MM/yyyy" ID="CalendarExtender1" runat="server" Enabled="True" TargetControlID="txtDtInicialVN">
                                                                 </asp:CalendarExtender>
                                                             </td>
                                                             <td>
                                                                 <asp:TextBox ID="txtDtFinalVN" CssClass="txts" runat="server"></asp:TextBox>
-                                                                <asp:CalendarExtender ID="CalendarExtender2" runat="server" Enabled="True" TargetControlID="txtDtFinalVN">
+                                                                <asp:CalendarExtender Format="dd/MM/yyyy" ID="CalendarExtender2" runat="server" Enabled="True" TargetControlID="txtDtFinalVN">
                                                                 </asp:CalendarExtender>
 
                                                                 <asp:Button ID="Button1" runat="server" Text="Processar VN" CssClass="btns" OnClick="Button1_Click" OnClientClick="aguarde();" />
@@ -280,7 +280,7 @@ WHERE        (ga.GrupoAcesso_Descricao = 'VENDEDOR DE VEICULOS NOVOS')"></asp:Sq
                                                         <tr>
                                                             <td>
                                                                 <asp:TextBox ID="txtDtInicialVU" CssClass="txts" runat="server"></asp:TextBox>
-                                                                <asp:CalendarExtender ID="txtDtInicial_CalendarExtender" runat="server" Enabled="True" TargetControlID="txtDtInicialVU">
+                                                                <asp:CalendarExtender Format="dd/MM/yyyy" ID="txtDtInicial_CalendarExtender" runat="server" Enabled="True" TargetControlID="txtDtInicialVU">
 
                                                                 </asp:CalendarExtender>
 
@@ -289,7 +289,7 @@ WHERE        (ga.GrupoAcesso_Descricao = 'VENDEDOR DE VEICULOS NOVOS')"></asp:Sq
                                                             </td>
                                                             <td>
                                                                 <asp:TextBox ID="txtDtFinalVU" CssClass="txts" runat="server"></asp:TextBox>
-                                                                <asp:CalendarExtender ID="txtDtFinal_CalendarExtender" runat="server" Enabled="True" TargetControlID="txtDtFinalVU">
+                                                                <asp:CalendarExtender Format="dd/MM/yyyy" ID="txtDtFinal_CalendarExtender" runat="server" Enabled="True" TargetControlID="txtDtFinalVU">
 
                                                                 </asp:CalendarExtender>
 
@@ -332,7 +332,7 @@ WHERE        (ga.GrupoAcesso_Descricao = 'VENDEDOR DE VEICULOS NOVOS')"></asp:Sq
                                                         <tr>
                                                             <td>
                                                                 <asp:TextBox ID="txtDtInicialVD" CssClass="txts" runat="server"></asp:TextBox>
-                                                                <asp:CalendarExtender ID="CalendarExtender3" runat="server" Enabled="True" TargetControlID="txtDtInicialVD">
+                                                                <asp:CalendarExtender Format="dd/MM/yyyy" ID="CalendarExtender3" runat="server" Enabled="True" TargetControlID="txtDtInicialVD">
 
                                                                 </asp:CalendarExtender>
 
@@ -341,7 +341,7 @@ WHERE        (ga.GrupoAcesso_Descricao = 'VENDEDOR DE VEICULOS NOVOS')"></asp:Sq
                                                             </td>
                                                             <td>
                                                                 <asp:TextBox ID="txtDtFinalVD" CssClass="txts" runat="server"></asp:TextBox>
-                                                                <asp:CalendarExtender ID="CalendarExtender4" runat="server" Enabled="True" TargetControlID="txtDtFinalVD">
+                                                                <asp:CalendarExtender Format="dd/MM/yyyy" ID="CalendarExtender4" runat="server" Enabled="True" TargetControlID="txtDtFinalVD">
 
                                                                 </asp:CalendarExtender>
 
