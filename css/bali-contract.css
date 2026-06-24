@@ -702,6 +702,26 @@ body.bali-contract-page *::after {
   font-weight: 650;
 }
 
+.bali-contract-page .contract-filter-clear {
+  width: auto;
+  min-height: 34px;
+  margin: 0 0 0 6px;
+  padding: 0 12px;
+  border: 1px solid #d8e2ee;
+  border-radius: 7px;
+  background: #fff;
+  color: var(--contract-muted);
+  box-shadow: none;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.bali-contract-page .contract-filter-clear:hover {
+  border-color: var(--contract-brand-ring);
+  background: var(--contract-brand-soft);
+  color: var(--contract-brand-strong);
+}
+
 .bali-contract-page .dataTables_paginate,
 .bali-contract-page .dataTables_info,
 .bali-contract-page .dataTables_filter,
@@ -1630,6 +1650,20 @@ body.bali-contract-page *::after {
 
   .bali-contract-page .contract-section-nav button {
     flex: 1 1 120px;
+  }
+
+  .bali-contract-page .dataTables_wrapper .dataTables_filter {
+    align-items: stretch;
+    flex-direction: column;
+    float: none !important;
+    width: 100% !important;
+  }
+
+  .bali-contract-page .dataTables_filter input,
+  .bali-contract-page .contract-filter-clear {
+    width: 100% !important;
+    min-width: 0;
+    margin-left: 0;
   }
 
   .bali-contract-page .tabPanelConsultar .ajax__tab_header .ajax__tab_tab {

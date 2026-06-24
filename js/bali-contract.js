@@ -1355,6 +1355,46 @@
     if (url) window.location.href = url;
   }
 
+  function triggerLookupSearch(input) {
+    if (window.jQuery) {
+      window.jQuery(input).trigger('keyup');
+      return;
+    }
+
+    var event;
+    if (typeof Event === 'function') {
+      event = new Event('keyup', { bubbles: true });
+    } else {
+      event = document.createEvent('Event');
+      event.initEvent('keyup', true, true);
+    }
+    input.dispatchEvent(event);
+  }
+
+  function enhanceLookupFilter(input) {
+    if (input.getAttribute('data-contract-filter') !== 'true') {
+      input.setAttribute('data-contract-filter', 'true');
+      input.setAttribute('placeholder', 'Cliente, CPF, vendedor...');
+      input.setAttribute('aria-label', 'Filtrar contratos');
+      input.setAttribute('autocomplete', 'off');
+    }
+
+    var filter = closestClass(input, 'dataTables_filter');
+    if (!filter || filter.getAttribute('data-contract-filter-clear') === 'true') return;
+
+    filter.setAttribute('data-contract-filter-clear', 'true');
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'contract-filter-clear';
+    button.textContent = 'Limpar';
+    button.addEventListener('click', function () {
+      input.value = '';
+      triggerLookupSearch(input);
+      input.focus();
+    });
+    filter.appendChild(button);
+  }
+
   function enhanceLookupTables() {
     Array.prototype.slice.call(document.querySelectorAll('#tblConsultaProcesso, #tblConsultaProcesso2, table.display, table.dataTable')).forEach(function (table) {
       if (!table || table.getAttribute('data-contract-lookup') === 'true') {
@@ -1383,10 +1423,13 @@
     });
 
     Array.prototype.slice.call(document.querySelectorAll('.dataTables_filter input')).forEach(function (input) {
-      if (input.getAttribute('data-contract-filter') === 'true') return;
-      input.setAttribute('data-contract-filter', 'true');
-      input.setAttribute('placeholder', 'Cliente, CPF, vendedor...');
-      input.setAttribute('aria-label', 'Filtrar contratos');
+      enhanceLookupFilter(input);
+    });
+
+    Array.prototype.slice.call(document.querySelectorAll('.dataTables_length select')).forEach(function (select) {
+      if (select.getAttribute('data-contract-page-size') === 'true') return;
+      select.setAttribute('data-contract-page-size', 'true');
+      select.setAttribute('aria-label', 'Quantidade de contratos por página');
     });
   }
 
