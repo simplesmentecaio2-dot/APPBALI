@@ -646,6 +646,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private List<ContratoBIItem> BuscarContratosBI(DateTime inicio, DateTime fim)
     {
+        string cacheKey = "contrato-bi:" + MarcaContrato + ":" + inicio.ToString("yyyyMMdd") + ":" + fim.ToString("yyyyMMdd");
+        List<ContratoBIItem> contratosCache = HttpRuntime.Cache[cacheKey] as List<ContratoBIItem>;
+        if (contratosCache != null) return contratosCache;
+
         List<ContratoBIItem> contratos = new List<ContratoBIItem>();
         Veiculos vec = new Veiculos();
 
@@ -692,6 +696,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             vec.FecharConexao();
         }
 
+        HttpRuntime.Cache.Insert(cacheKey, contratos, null, DateTime.Now.AddMinutes(2), System.Web.Caching.Cache.NoSlidingExpiration);
         return contratos;
     }
 
