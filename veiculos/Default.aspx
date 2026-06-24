@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Central Fiat | Grupo Bali</title>
     <link href="../css/central-links.css" rel="stylesheet" />
+    <script src="../js/central-links-icons.js" defer="defer"></script>
 </head>
 <body class="central-links-page brand-fiat">
     <form id="form1" runat="server">

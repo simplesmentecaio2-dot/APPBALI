@@ -249,6 +249,11 @@ body.central-links-page {
   object-fit: contain;
 }
 
+.central-auto-icon-img {
+  width: 38px;
+  height: 38px;
+}
+
 .central-link-title {
   display: block;
   color: var(--ink);
