@@ -1,6 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="contrato.aspx.cs" Inherits="veiculos_contrato" %>
 
-<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head runat="server"><title>Contrato de Venda - Fiat</title><meta name="viewport" content="width=device-width, initial-scale=1" /><link href="../css/estilo.css" rel="stylesheet" /><script src="../js/jquery-1.10.2.js"></script><script src="../js/js.js"></script><script src="../js/jquery.maskMoney.js"></script><script src="../js/maskMin.js"></script><script src="../js/maskPhone.js"></script><script src="../tables/js/jquery.dataTables.min.js"></script><link href="../tables/estilo/table.css" rel="stylesheet" /><link href="../css/bali-contract.css?v=20260624-contratos68" rel="stylesheet" /><script type="text/javascript">
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head runat="server"><title>Contrato de Venda - Fiat</title><meta name="viewport" content="width=device-width, initial-scale=1" /><link href="../css/estilo.css" rel="stylesheet" /><script src="../js/jquery-1.10.2.js"></script><script src="../js/js.js"></script><script src="../js/jquery.maskMoney.js"></script><script src="../js/maskMin.js"></script><script src="../js/maskPhone.js"></script><script src="../tables/js/jquery.dataTables.min.js"></script><link href="../tables/estilo/table.css" rel="stylesheet" /><link href="../css/bali-contract.css?v=20260624-contratos69" rel="stylesheet" /><script type="text/javascript">
         $(document).ready(function () {
             oTable = $('#tblConsultaProcesso').dataTable({ //example é o ID da tabela
                 "bPaginate": true,
@@ -120,7 +120,7 @@
             }
             return !1
         }
-    </script><script src="../js/bali-contract.js?v=20260624-contratos68"></script></head><body class="bali-contract-page contrato-fiat"><form id="form1" style="height: 100%;" runat="server">
+    </script><script src="../js/bali-contract.js?v=20260624-contratos69"></script></head><body class="bali-contract-page contrato-fiat"><form id="form1" style="height: 100%;" runat="server">
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
         <div id="topo">
             <table id="table-menu">
@@ -736,7 +736,6 @@ WHERE        (ga.GrupoAcesso_Descricao = 'VENDEDOR DE VEICULOS NOVOS')"></asp:Sq
                         <div id="ag" style=" position:fixed;  z-index:1000; top:0; left:0; width:100%; height:100%; background-color:rgba(0, 0, 0, 0.75); display:none;">
             <div style="position:fixed; z-index:1001; top:50%; left:50%; width:300px; height:100px; margin-left:-150px; margin-top:-50px; background-color:white; border-radius:5px; text-align:center;">
                <img src="../img/aguarde.gif" style=" border-radius:5px;" /><br />
-                <span onclick="aguarde();" style="text-decoration:none; cursor:pointer; color:white; text-decoration:underline;">Cancelar...-radius:5px;" /><br />
                 <span onclick="aguarde();" style="text-decoration:none; cursor:pointer; color:white; text-decoration:underline;">Cancelar...</span>
                 
             </div>

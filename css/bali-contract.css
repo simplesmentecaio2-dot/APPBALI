@@ -697,6 +697,20 @@ body.bali-contract-page *::after {
   font-weight: 800;
 }
 
+.bali-contract-page #ag > div {
+  height: auto !important;
+  min-height: 112px;
+  padding: 18px;
+  color: var(--contract-ink);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, .24);
+}
+
+.bali-contract-page #ag span {
+  color: var(--contract-brand-strong) !important;
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .bali-contract-page #tblConsultaProcesso_wrapper,
 .bali-contract-page #tblConsultaProcesso2_wrapper,
 .bali-contract-page .dataTables_wrapper {
