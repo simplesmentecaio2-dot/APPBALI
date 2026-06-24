@@ -2760,8 +2760,13 @@
 
   function prepareLookupIdCells(table) {
     if (!table || !table.tBodies || !table.tBodies.length) return;
-    var signature = table.tBodies[0].rows.length + ':' + normalizeText(table.tBodies[0].textContent).slice(0, 80);
+    var rows = Array.prototype.slice.call(table.tBodies[0].rows);
+    var signature = rows.length + ':' + normalizeText(table.tBodies[0].textContent).slice(0, 80);
     if (table.getAttribute('data-contract-id-ready') === signature) return;
+    if (rows.length > 80) {
+      prepareLookupIdCellsInChunks(table, rows, signature);
+      return;
+    }
 
     Array.prototype.slice.call(table.tBodies[0].rows).forEach(function (row) {
       if (!row.cells || !row.cells.length) return;
@@ -2788,6 +2793,43 @@
       }
     });
     table.setAttribute('data-contract-id-ready', signature);
+  }
+
+  function prepareLookupIdCellsInChunks(table, rows, signature) {
+    if (table.getAttribute('data-contract-id-scheduled') === signature) return;
+    table.setAttribute('data-contract-id-scheduled', signature);
+    var index = 0;
+
+    var work = function () {
+      var limit = Math.min(index + 40, rows.length);
+      while (index < limit) {
+        var row = rows[index];
+        if (row.cells && row.cells.length) {
+          var cell = row.cells[0];
+          var url = contractUrlForCell(cell, table);
+          var id = getContractIdFromCell(cell);
+          if (url) {
+            addClass(cell, 'contract-id-cell');
+            cell.setAttribute('title', 'Abrir contrato para impressão');
+            if (!cell.querySelector || !cell.querySelector('.contract-id-action')) {
+              cell.innerHTML = '<button type="button" class="contract-id-action" data-contract-url="' + escapeHtml(url) + '"><span>#' + escapeHtml(id) + '</span><small>Imprimir</small></button>';
+            }
+          }
+        }
+        index++;
+      }
+
+      if (index < rows.length) {
+        window.setTimeout(work, 16);
+        return;
+      }
+
+      table.setAttribute('data-contract-id-ready', signature);
+      table.removeAttribute('data-contract-id-scheduled');
+      enhanceLookupSummary(table);
+    };
+
+    window.setTimeout(work, 0);
   }
 
   function openLookupCell(cell, table) {
