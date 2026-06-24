@@ -449,6 +449,41 @@ body.bali-contract-page *::after {
   transition: width .22s ease;
 }
 
+.bali-contract-page .contract-section-detail {
+  display: grid;
+  gap: 3px;
+  margin-top: 4px;
+  padding: 8px 10px;
+  border: 1px solid rgba(148, 163, 184, .22);
+  border-radius: 8px;
+  background: #f8fafc;
+  color: var(--contract-muted);
+  line-height: 1.25;
+}
+
+.bali-contract-page .contract-section-detail strong {
+  color: var(--contract-ink);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.bali-contract-page .contract-section-detail span {
+  color: var(--contract-muted);
+  font-size: 11px;
+  font-weight: 780;
+  overflow-wrap: anywhere;
+}
+
+.bali-contract-page .contract-section-detail.is-complete {
+  border-color: rgba(22, 138, 85, .28);
+  background: #f0fdf4;
+}
+
+.bali-contract-page .contract-section-detail.is-complete strong,
+.bali-contract-page .contract-section-detail.is-complete span {
+  color: #13764b;
+}
+
 .bali-contract-page .contract-section-nav-steps {
   display: grid;
   grid-template-columns: repeat(4, minmax(112px, 1fr));

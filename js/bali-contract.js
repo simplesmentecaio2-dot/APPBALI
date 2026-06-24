@@ -1544,6 +1544,27 @@
     return false;
   }
 
+  function stageLabelWithArticle(stage) {
+    if (stage === 'cliente') return 'dos dados do cliente';
+    if (stage === 'veiculo') return 'dos dados do veículo';
+    if (stage === 'pagamento') return 'do pagamento';
+    if (stage === 'checklist') return 'da revisão final';
+    return 'da etapa atual';
+  }
+
+  function firstPendingStage(buttons, mode) {
+    for (var i = 0; i < buttons.length; i++) {
+      var name = buttons[i].getAttribute('data-section-name');
+      if (!stageComplete(name, mode)) {
+        return {
+          name: name,
+          index: parseInt(buttons[i].getAttribute('data-section-index'), 10) || 0
+        };
+      }
+    }
+    return null;
+  }
+
   function updateSectionProgress() {
     var nav = document.getElementById('contractSectionNav');
     if (!nav) return;
@@ -1551,6 +1572,7 @@
     var mode = currentContractMode();
     var completed = 0;
     var buttons = Array.prototype.slice.call(nav.querySelectorAll('[data-section-name]'));
+    var total = buttons.length;
     buttons.forEach(function (button) {
       var name = button.getAttribute('data-section-name');
       var complete = stageComplete(name, mode);
@@ -1568,6 +1590,19 @@
       var percent = Math.round((completed / buttons.length) * 100);
       progress.style.width = percent + '%';
       if (progress.parentNode) progress.parentNode.setAttribute('aria-valuenow', String(percent));
+    }
+
+    var detail = nav.querySelector('.contract-section-detail');
+    if (detail && total) {
+      var pending = firstPendingStage(buttons, mode);
+      if (!pending) {
+        detail.innerHTML = '<strong>Contrato pronto para revisão.</strong><span>Todas as etapas principais estão conferidas.</span>';
+        addClass(detail, 'is-complete');
+      } else {
+        var issues = validateWizardStep(pending.index, false);
+        detail.innerHTML = '<strong>' + completed + ' de ' + total + ' etapas conferidas</strong><span>Próxima pendência ' + stageLabelWithArticle(pending.name) + ': ' + escapeHtml(issues[0] || 'revise os campos obrigatórios.') + '</span>';
+        removeClass(detail, 'is-complete');
+      }
     }
 
     var checklist = getWizardChecklist();
@@ -1786,12 +1821,16 @@
 
     index = Math.max(0, Math.min(index, maxIndex));
     if (validateBeforeAdvance && index > contractStepIndex) {
-      var currentIssues = validateWizardStep(contractStepIndex, true);
-      if (currentIssues.length) {
-        showWizardMessage(currentIssues[0]);
-        focusFirstInvalidField();
-        updateQualityPanel();
-        return;
+      for (var step = contractStepIndex; step < index; step++) {
+        var currentIssues = validateWizardStep(step, true);
+        if (currentIssues.length) {
+          contractStepIndex = step;
+          applyWizardStep();
+          showWizardMessage(currentIssues[0]);
+          focusFirstInvalidField();
+          updateQualityPanel();
+          return;
+        }
       }
     }
 
@@ -1910,7 +1949,7 @@
 
     if (nav.getAttribute('data-section-signature') !== signature) {
       nav.setAttribute('data-section-signature', signature);
-      nav.innerHTML = '<div class="contract-section-nav-head"><span>Etapas do contrato</span><small>Acompanhe o preenchimento de cada bloco.</small><div class="contract-section-progress" role="progressbar" aria-label="Progresso do contrato" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div></div><div class="contract-section-nav-steps"></div>';
+      nav.innerHTML = '<div class="contract-section-nav-head"><span>Etapas do contrato</span><small>Acompanhe o preenchimento de cada bloco.</small><div class="contract-section-progress" role="progressbar" aria-label="Progresso do contrato" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div><div class="contract-section-detail" aria-live="polite"></div></div><div class="contract-section-nav-steps"></div>';
       var steps = nav.querySelector('.contract-section-nav-steps');
       sections.forEach(function (section, index) {
         var match = /contract-section-([a-z]+)/.exec(section.className || '');
