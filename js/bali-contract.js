@@ -94,12 +94,28 @@
     return null;
   }
 
+  function closestIdContains(element, text) {
+    while (element && element.nodeType === 1) {
+      if ((element.id || '').indexOf(text) >= 0) return true;
+      element = element.parentNode;
+    }
+    return false;
+  }
+
   function normalizeText(text) {
     text = String(text || '').toUpperCase();
     if (text.normalize) {
       text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
     return text.replace(/\s+/g, ' ').trim();
+  }
+
+  function addClass(element, className) {
+    if (!element) return;
+    var current = ' ' + String(element.className || '') + ' ';
+    if (current.indexOf(' ' + className + ' ') < 0) {
+      element.className = (element.className ? element.className + ' ' : '') + className;
+    }
   }
 
   function parseMoney(value) {
@@ -716,6 +732,104 @@
     });
   }
 
+  function inferPrintPage(table) {
+    var className = ' ' + (document.body ? document.body.className : '') + ' ';
+    var isUsedTable = /tblConsultaProcesso2$/i.test(table.id || '') || closestIdContains(table, 'TabPanel1');
+    var isDirectSale = closestIdContains(table, 'TabPanel4');
+
+    if (className.indexOf(' contrato-jeep ') >= 0) {
+      return isUsedTable ? 'Print-ContratoVUJEEP.aspx' : 'Print-ContratoVNJEEP.aspx';
+    }
+
+    if (className.indexOf(' contrato-byd ') >= 0) {
+      return isUsedTable ? 'Print-ContratoVUBYD.aspx' : 'Print-ContratoVNBYD.aspx';
+    }
+
+    if (isDirectSale) return 'Print-ContratoVD.aspx';
+    if (isUsedTable) return 'Print-ContratoVU.aspx';
+    return 'Print-ContratoVN.aspx';
+  }
+
+  function getContractIdFromCell(cell) {
+    var text = normalizeText(cell ? cell.textContent : '').replace(/[^0-9]/g, '');
+    return text || '';
+  }
+
+  function contractUrlForCell(cell, table) {
+    if (!cell || !table) return '';
+
+    var link = cell.querySelector ? cell.querySelector('a[href]') : null;
+    if (link) return link.getAttribute('href') || '';
+
+    var id = getContractIdFromCell(cell);
+    if (!id) return '';
+
+    return inferPrintPage(table) + '?contrato=' + encodeURIComponent(id);
+  }
+
+  function prepareLookupIdCells(table) {
+    if (!table || !table.tBodies || !table.tBodies.length) return;
+
+    Array.prototype.slice.call(table.tBodies[0].rows).forEach(function (row) {
+      if (!row.cells || !row.cells.length) return;
+      var cell = row.cells[0];
+      var url = contractUrlForCell(cell, table);
+      if (!url) return;
+
+      addClass(cell, 'contract-id-cell');
+      cell.setAttribute('title', 'Abrir contrato para impressão');
+
+      var link = cell.querySelector ? cell.querySelector('a[href]') : null;
+      if (link) {
+        addClass(link, 'contract-id-action');
+      } else {
+        cell.setAttribute('role', 'button');
+        cell.setAttribute('tabindex', '0');
+        cell.setAttribute('data-contract-url', url);
+      }
+    });
+  }
+
+  function openLookupCell(cell, table) {
+    var url = contractUrlForCell(cell, table);
+    if (url) window.location.href = url;
+  }
+
+  function enhanceLookupTables() {
+    Array.prototype.slice.call(document.querySelectorAll('#tblConsultaProcesso, #tblConsultaProcesso2, table.display, table.dataTable')).forEach(function (table) {
+      if (!table || table.getAttribute('data-contract-lookup') === 'true') {
+        prepareLookupIdCells(table);
+        return;
+      }
+
+      table.setAttribute('data-contract-lookup', 'true');
+      addClass(table, 'contract-lookup-table');
+      prepareLookupIdCells(table);
+
+      table.addEventListener('dblclick', function (event) {
+        var cell = closestTag(event.target, 'td');
+        if (!cell || cell.cellIndex !== 0 || cell.querySelector('a[href]')) return;
+        openLookupCell(cell, table);
+      });
+
+      table.addEventListener('keydown', function (event) {
+        var cell = closestTag(event.target, 'td');
+        if (!cell || cell.cellIndex !== 0 || cell.querySelector('a[href]')) return;
+        if (event.key === 'Enter' || event.keyCode === 13) {
+          event.preventDefault();
+          openLookupCell(cell, table);
+        }
+      });
+    });
+
+    Array.prototype.slice.call(document.querySelectorAll('.dataTables_filter input')).forEach(function (input) {
+      if (input.getAttribute('data-contract-filter') === 'true') return;
+      input.setAttribute('data-contract-filter', 'true');
+      input.setAttribute('placeholder', 'Cliente, CPF, vendedor...');
+      input.setAttribute('aria-label', 'Filtrar contratos');
+    });
+  }
+
   function enhanceChecklist() {
     Array.prototype.slice.call(document.querySelectorAll('.contract-check input')).forEach(function (field) {
       if (field.getAttribute('data-contract-check-enhanced') === 'true') return;
@@ -777,6 +891,7 @@
     enhanceDateFilters();
     enhanceBiPeriodShortcuts();
     enhanceFormSections();
+    enhanceLookupTables();
     bindSubmitButtons();
     prepareMoneyFields(false);
     updateQualityPanel();

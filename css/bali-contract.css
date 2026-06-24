@@ -550,6 +550,38 @@ body.bali-contract-page *::after {
   color: var(--contract-brand-strong);
 }
 
+.bali-contract-page table.contract-lookup-table tbody td.contract-id-cell,
+.bali-contract-page table.display tbody td.contract-id-cell,
+.bali-contract-page table.dataTable tbody td.contract-id-cell {
+  color: var(--contract-brand-strong) !important;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.bali-contract-page .contract-id-action,
+.bali-contract-page table.contract-lookup-table tbody td.contract-id-cell a,
+.bali-contract-page table.display tbody td.contract-id-cell a,
+.bali-contract-page table.dataTable tbody td.contract-id-cell a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--contract-brand-ring);
+  border-radius: 999px;
+  background: var(--contract-brand-soft);
+  color: var(--contract-brand-strong) !important;
+  text-decoration: none !important;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.bali-contract-page table.contract-lookup-table tbody td.contract-id-cell:focus {
+  outline: 3px solid var(--contract-brand-ring);
+  outline-offset: -3px;
+}
+
 .bali-contract-page .dataTables_wrapper .fg-toolbar,
 .bali-contract-page .dataTables_wrapper .ui-widget-header,
 .bali-contract-page .dataTables_wrapper .ui-state-default,
@@ -611,6 +643,15 @@ body.bali-contract-page *::after {
   border-color: #d8e2ee !important;
   background: #fff !important;
   box-shadow: none !important;
+}
+
+.bali-contract-page .dataTables_filter input {
+  min-width: 220px;
+}
+
+.bali-contract-page .dataTables_filter input::placeholder {
+  color: #98a2b3;
+  font-weight: 650;
 }
 
 .bali-contract-page .dataTables_paginate,
