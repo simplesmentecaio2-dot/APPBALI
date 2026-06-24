@@ -9,7 +9,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head id="Head1" runat="server">
-    <title>TRANFERIR | Pátio</title>
+    <title>TRANSFERIR | Pátio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <!-- STYLE MARCIO       ////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
     <script src="../assets/jquery-1.9.1.min.js"></script>
@@ -18,6 +18,7 @@
     <script src="../assets/dataTables.bootstrap4.min.js"></script>
     <script src="../assets/dataTables.responsive.min.js"></script>
     <link href="./main.css" rel="stylesheet" />
+    <link href="../../css/bali-patio.css?v=20260624-1" rel="stylesheet" />
     <script src="../ChartJS.js"></script>
     <link href="../assets/all.min.css" rel="stylesheet" />
     <script type="text/javascript" src="../assets/toastr.min.js"></script>
@@ -25,7 +26,7 @@
 
 </head>
 
-<body>
+<body class="patio-modern-page patio-brand-byd">
     <form id="form1" runat="server">
         <asp:SqlDataSource ID="SqlDataSource2" runat="server" ConnectionString="<%$ ConnectionStrings:APPConnectionString %>" SelectCommand="veiculos_patio_lojas_ativas" SelectCommandType="StoredProcedure"></asp:SqlDataSource>
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
@@ -129,7 +130,7 @@
                                 <li>
                                     <a href="./">
                                         <i class="metismenu-icon fas fa-home"></i>
-                                        Inicio
+                                        Início
                                     </a>
                                 </li>
                                 <li class="app-sidebar__heading">Funções</li>
@@ -143,7 +144,7 @@
 
                                     <a href="./transferir.aspx" class="mm-active">
                                         <i class="metismenu-icon fas fa-exchange-alt"></i>
-                                        Tranferir
+                                        Transferir
                                     </a>
                                 </li>
                                 <li>
@@ -252,7 +253,7 @@
                                             </div>
                                             <div class="card-footer">
                                                 <div class="col-12">
-                                                    <asp:LinkButton ID="btnRegistrar" runat="server" CssClass="btn btn-lg btn-warning col-6 offset-3 fa-1x" OnClick="btnRegistrar_Click" ><b>TRANFERIR<i class="fa fa-exchange-alt ml-1"></i></b></asp:LinkButton>
+                                                    <asp:LinkButton ID="btnRegistrar" runat="server" CssClass="btn btn-lg btn-warning col-6 offset-3 fa-1x" OnClick="btnRegistrar_Click" ><b>TRANSFERIR<i class="fa fa-exchange-alt ml-1"></i></b></asp:LinkButton>
                                                 </div>
                                             </div>
                                         </div>

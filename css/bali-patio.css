@@ -2,6 +2,7 @@ body.patio-modern-page {
   --patio-brand: #5e7f42;
   --patio-brand-strong: #39572a;
   --patio-brand-soft: rgba(94, 127, 66, .13);
+  --patio-logo: url("../img/logojeep.png?v=20260624-logo");
   --patio-line: #dce4ee;
   --patio-ink: #15202b;
   --patio-muted: #667085;
@@ -9,9 +10,23 @@ body.patio-modern-page {
   overflow-x: hidden;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, .84), rgba(246, 248, 251, .96) 260px),
-    radial-gradient(circle at 0 0, rgba(94, 127, 66, .15), transparent 320px),
+    radial-gradient(circle at 0 0, var(--patio-brand-soft), transparent 320px),
     #f3f6fa;
   color: var(--patio-ink);
+}
+
+body.patio-modern-page.patio-brand-fiat {
+  --patio-brand: #c83a3a;
+  --patio-brand-strong: #8f2028;
+  --patio-brand-soft: rgba(200, 58, 58, .13);
+  --patio-logo: url("../img/logobali.png?v=20260624-logo");
+}
+
+body.patio-modern-page.patio-brand-byd {
+  --patio-brand: #2f6fbd;
+  --patio-brand-strong: #1f5594;
+  --patio-brand-soft: rgba(47, 111, 189, .13);
+  --patio-logo: url("../img/bydbranco.png");
 }
 
 .patio-modern-page *,
@@ -25,7 +40,7 @@ body.patio-modern-page {
 .patio-modern-page .scrollbar-sidebar,
 .patio-modern-page footer.bg-dark {
   background:
-    linear-gradient(135deg, rgba(94, 127, 66, .96), rgba(29, 45, 35, .98)) !important;
+    linear-gradient(135deg, var(--patio-brand), var(--patio-brand-strong)) !important;
   box-shadow: 0 14px 34px rgba(15, 23, 42, .18);
 }
 
@@ -37,7 +52,7 @@ body.patio-modern-page {
 .patio-modern-page .logo-src {
   width: 172px;
   height: 42px;
-  background: url("../../img/logojeep.png?v=20260624-logo") center/contain no-repeat;
+  background: var(--patio-logo) center/contain no-repeat;
 }
 
 .patio-modern-page .app-main {
@@ -62,7 +77,7 @@ body.patio-modern-page {
   min-height: 42px;
   margin: 4px 0;
   border-radius: 8px;
-  color: rgba(255, 255, 255, .78);
+  color: rgba(255, 255, 255, .8);
   font-size: 13px;
   font-weight: 800;
   line-height: 42px;
@@ -97,8 +112,8 @@ body.patio-modern-page {
   border: 1px solid rgba(255, 255, 255, .55);
   border-radius: 8px;
   background:
-    linear-gradient(135deg, rgba(94, 127, 66, .96), rgba(57, 87, 42, .94)) !important;
-  box-shadow: 0 20px 44px rgba(57, 87, 42, .24);
+    linear-gradient(135deg, var(--patio-brand), var(--patio-brand-strong)) !important;
+  box-shadow: 0 20px 44px var(--patio-brand-soft);
 }
 
 .patio-modern-page .page-title-icon {
@@ -174,7 +189,7 @@ body.patio-modern-page {
 .patio-modern-page .form-control:focus,
 .patio-modern-page select.form-control:focus {
   border-color: var(--patio-brand);
-  box-shadow: 0 0 0 3px rgba(94, 127, 66, .22);
+  box-shadow: 0 0 0 3px var(--patio-brand-soft);
 }
 
 .patio-modern-page .btn {

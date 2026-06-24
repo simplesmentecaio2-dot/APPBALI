@@ -18,7 +18,7 @@
     <script src="../assets/dataTables.bootstrap4.min.js"></script>
     <script src="../assets/dataTables.responsive.min.js"></script>
     <link href="./main.css" rel="stylesheet" />
-    <link href="./patio-modern.css?v=20260624-1" rel="stylesheet" />
+    <link href="../../css/bali-patio.css?v=20260624-1" rel="stylesheet" />
     <script src="../ChartJS.js"></script>
     <link href="../assets/all.min.css" rel="stylesheet" />
     <script type="text/javascript" src="../assets/toastr.min.js"></script>
@@ -26,7 +26,7 @@
 
 </head>
 
-<body class="patio-modern-page">
+<body class="patio-modern-page patio-brand-jeep">
     <form id="form1" runat="server">
         <asp:SqlDataSource ID="SqlDataSource2" runat="server" ConnectionString="<%$ ConnectionStrings:APPConnectionString %>" SelectCommand="veiculos_patio_lojas_ativas" SelectCommandType="StoredProcedure"></asp:SqlDataSource>
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>

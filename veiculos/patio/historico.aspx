@@ -18,6 +18,7 @@
     <script src="../assets/dataTables.bootstrap4.min.js"></script>
     <script src="../assets/dataTables.responsive.min.js"></script>
     <link href="./main.css" rel="stylesheet" />
+    <link href="../../css/bali-patio.css?v=20260624-1" rel="stylesheet" />
     <script src="../ChartJS.js"></script>
     <link href="../assets/all.min.css" rel="stylesheet" />
     <script type="text/javascript" src="../assets/toastr.min.js"></script>
@@ -25,7 +26,7 @@
 
 </head>
 
-<body>
+<body class="patio-modern-page patio-brand-fiat">
     <form id="form1" runat="server">
         <asp:SqlDataSource ID="SqlDataSource2" runat="server" ConnectionString="<%$ ConnectionStrings:APPConnectionString %>" SelectCommand="veiculos_patio_lojas_ativas" SelectCommandType="StoredProcedure"></asp:SqlDataSource>
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
@@ -129,7 +130,7 @@
                                 <li>
                                     <a href="./">
                                         <i class="metismenu-icon fas fa-home"></i>
-                                        Inicio
+                                        Início
                                     </a>
                                 </li>
                                 <li class="app-sidebar__heading">Funções</li>
@@ -143,7 +144,7 @@
 
                                     <a href="./transferir.aspx">
                                         <i class="metismenu-icon fas fa-exchange-alt"></i>
-                                        Tranferir
+                                        Transferir
                                     </a>
                                 </li>
                                 <li>
