@@ -1058,7 +1058,7 @@
 
       var tools = document.createElement('div');
       tools.className = 'contract-audit-tools';
-      tools.innerHTML = '<input type="text" placeholder="Filtrar por contrato, usu\u00e1rio ou texto" aria-label="Filtrar auditoria" /><select aria-label="Filtrar por ocorr\u00eancia"><option value="">Todas as ocorr\u00eancias</option></select><small></small>';
+      tools.innerHTML = '<input type="text" placeholder="Filtrar por contrato, usu\u00e1rio ou texto" aria-label="Filtrar auditoria" /><select aria-label="Filtrar por ocorr\u00eancia"><option value="">Todas as ocorr\u00eancias</option></select><button type="button">Copiar visíveis</button><small></small>';
 
       var select = tools.querySelector('select');
       actions.forEach(function (action) {
@@ -1070,6 +1070,7 @@
 
       var input = tools.querySelector('input');
       var status = tools.querySelector('small');
+      var copyButton = tools.querySelector('button');
       var applyFilter = function () {
         var text = normalizeText(input.value);
         var actionValue = select.value;
@@ -1089,6 +1090,27 @@
 
       input.addEventListener('input', applyFilter);
       select.addEventListener('change', applyFilter);
+      copyButton.addEventListener('click', function () {
+        var visibleItems = items.filter(function (item) {
+          return item.style.display !== 'none';
+        });
+        var text = visibleItems.map(function (item) {
+          return String(item.textContent || '').replace(/\s+/g, ' ').trim();
+        }).filter(Boolean).join('\n');
+
+        if (!text) {
+          status.textContent = 'Nenhum registro visível para copiar.';
+          return;
+        }
+
+        copyText(text, function (ok) {
+          status.textContent = ok === false ? 'Não foi possível copiar.' : visibleItems.length + ' registro(s) copiado(s).';
+          window.clearTimeout(status._contractTimer);
+          status._contractTimer = window.setTimeout(function () {
+            applyFilter();
+          }, 1800);
+        });
+      });
 
       var anchor = panel.querySelector('.contract-audit-cards') || panel.firstChild;
       panel.insertBefore(tools, anchor ? anchor.nextSibling : null);

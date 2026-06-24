@@ -1697,7 +1697,7 @@ body.bali-contract-page *::after {
 
 .bali-contract-page .contract-audit-tools {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(180px, 240px) auto;
+  grid-template-columns: minmax(220px, 1fr) minmax(180px, 240px) auto auto;
   gap: 8px;
   align-items: center;
   padding: 10px;
@@ -1713,6 +1713,17 @@ body.bali-contract-page *::after {
   min-height: 36px;
   border-color: #d8e2ee !important;
   background: #fbfdff !important;
+}
+
+.bali-contract-page .contract-audit-tools button {
+  width: auto;
+  min-height: 36px;
+  margin: 0;
+  padding: 0 14px;
+  border-radius: 999px;
+  box-shadow: none;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 .bali-contract-page .contract-audit-tools small {
