@@ -1,6 +1,5 @@
 (function () {
-  if (!document.body || !document.body.classList.contains('bali-contract-page')) return;
-
+  var ajaxHooked = false;
   var submitButton = null;
   var moneyFields = [
     'txtValoVeiculo',
@@ -437,21 +436,31 @@
     });
   }
 
+  function isContractPage() {
+    return document.body && (' ' + document.body.className + ' ').indexOf(' bali-contract-page ') >= 0;
+  }
+
+  function bindAjaxEndRequest() {
+    if (ajaxHooked) return;
+    if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
+      Sys.WebForms.PageRequestManager.getInstance().add_endRequest(init);
+      ajaxHooked = true;
+    }
+  }
+
   function init() {
+    if (!isContractPage()) return;
     enhanceFields();
     bindSubmitButtons();
     ensureQualityPanel();
     ensureChecklistModal();
     prepareMoneyFields(false);
+    bindAjaxEndRequest();
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
-  }
-
-  if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
-    Sys.WebForms.PageRequestManager.getInstance().add_endRequest(init);
   }
 })();
