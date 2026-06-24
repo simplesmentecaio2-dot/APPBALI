@@ -566,6 +566,8 @@
     var existing = host.querySelector('.contract-field-message');
     if (!message) {
       field.classList.remove('contract-field-error');
+      field.removeAttribute('aria-invalid');
+      field.removeAttribute('aria-describedby');
       if (existing) existing.parentNode.removeChild(existing);
       return;
     }
@@ -574,9 +576,12 @@
     if (!existing) {
       existing = document.createElement('div');
       existing.className = 'contract-field-message';
+      existing.id = 'contract-field-message-' + Math.random().toString(36).slice(2);
       host.appendChild(existing);
     }
     existing.textContent = message;
+    field.setAttribute('aria-invalid', 'true');
+    field.setAttribute('aria-describedby', existing.id);
   }
 
   function calculateContracts() {
@@ -795,6 +800,10 @@
     }
     window.setTimeout(function () {
       if (firstInvalid.focus) firstInvalid.focus();
+      firstInvalid.classList.add('contract-field-attention');
+      window.setTimeout(function () {
+        firstInvalid.classList.remove('contract-field-attention');
+      }, 1200);
     }, 220);
   }
 
@@ -812,6 +821,7 @@
       '<div class="contract-quality-main">' +
       '<span class="contract-quality-label">Qualidade do contrato</span>' +
       '<strong id="contractQualityStatus">Atenção</strong>' +
+      '<em id="contractQualityCount" class="contract-quality-count">Aguardando preenchimento</em>' +
       '<small id="contractQualityText">Preencha os campos principais para reduzir erros antes de gravar.</small>' +
       '</div>' +
       '<ul id="contractQualityList"></ul>';
@@ -845,6 +855,7 @@
 
     var issues = collectIssues(isEdit, false);
     var status = document.getElementById('contractQualityStatus');
+    var count = document.getElementById('contractQualityCount');
     var text = document.getElementById('contractQualityText');
     var list = document.getElementById('contractQualityList');
 
@@ -852,14 +863,17 @@
     if (issues.length === 0) {
       panel.classList.add('is-good');
       status.textContent = 'Completo';
+      if (count) count.textContent = '0 pendências';
       text.textContent = 'Campos principais conferidos. Revise o checklist final antes de gravar.';
     } else if (issues.length <= 2) {
       panel.classList.add('is-attention');
       status.textContent = 'Atenção';
+      if (count) count.textContent = issues.length + ' pendência(s)';
       text.textContent = 'Existem poucos pontos para conferir antes de gravar.';
     } else {
       panel.classList.add('is-risk');
       status.textContent = 'Risco de erro';
+      if (count) count.textContent = issues.length + ' pendência(s)';
       text.textContent = 'Revise os campos sinalizados para evitar retorno do sistema.';
     }
 
@@ -1297,6 +1311,19 @@
     return labels[id] || id;
   }
 
+  function requiredMessageFor(id) {
+    if (id === 'txtCliente' || id === 'txtEdCliente') return 'Informe o nome completo do cliente.';
+    if (id === 'txtCPFCNPJ' || id === 'txtEdCPF') return 'Informe CPF/CNPJ do cliente. Exemplo: 000.000.000-00.';
+    if (id === 'txtMarca' || id === 'txtEdMarca') return 'Informe a marca do veículo.';
+    if (id === 'txtModelo' || id === 'txtEdModelo') return 'Informe o modelo do veículo.';
+    if (id === 'txtChassiPlaca' || id === 'txtEdChassi') return 'Informe placa ou chassi com pelo menos 7 caracteres.';
+    if (id === 'txtValoVeiculo' || id === 'txtEdValorVeic') return 'Informe o valor do veículo maior que zero. Exemplo: 150000,00.';
+    if (id === 'ddlVendedor' || id === 'txtEdVendedor') return 'Selecione ou informe o vendedor responsável pelo contrato.';
+    if (id === 'txtNrParcelas' || id === 'txtEdNumeroParcelas') return 'Informe a quantidade de parcelas entre 1 e 120.';
+    if (id === 'txtVlParcelas' || id === 'txtEdValorParcela') return 'Informe o valor da parcela maior que zero. Exemplo: 2500,00.';
+    return fieldLabelFor(id) + ' precisa ser preenchido corretamente.';
+  }
+
   function validateRequiredIds(ids, showMessages) {
     var issues = [];
     ids.forEach(function (id) {
@@ -1304,7 +1331,7 @@
       if (!field || !isRelevantContractField(field)) return;
 
       var ok = requiredFieldComplete(id);
-      var message = ok ? '' : fieldLabelFor(id) + ' precisa ser preenchido corretamente.';
+      var message = ok ? '' : requiredMessageFor(id);
       if (!ok) issues.push(message);
       if (showMessages) showFieldMessage(field, message);
     });

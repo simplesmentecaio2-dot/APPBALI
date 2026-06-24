@@ -1225,6 +1225,17 @@ body.bali-contract-page *::after {
   font-weight: 900;
 }
 
+.bali-contract-page .contract-quality-count {
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #eef3f8;
+  color: var(--contract-muted);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
+}
+
 .bali-contract-page .contract-quality-panel small {
   color: var(--contract-muted);
   font-size: 12px;
@@ -1263,6 +1274,7 @@ body.bali-contract-page *::after {
 }
 
 .bali-contract-page .contract-quality-panel.is-good strong,
+.bali-contract-page .contract-quality-panel.is-good .contract-quality-count,
 .bali-contract-page .contract-quality-panel.is-good li {
   color: #168a55;
 }
@@ -1272,6 +1284,7 @@ body.bali-contract-page *::after {
 }
 
 .bali-contract-page .contract-quality-panel.is-attention strong,
+.bali-contract-page .contract-quality-panel.is-attention .contract-quality-count,
 .bali-contract-page .contract-quality-panel.is-attention li {
   color: #9a6500;
 }
@@ -1281,6 +1294,7 @@ body.bali-contract-page *::after {
 }
 
 .bali-contract-page .contract-quality-panel.is-risk strong,
+.bali-contract-page .contract-quality-panel.is-risk .contract-quality-count,
 .bali-contract-page .contract-quality-panel.is-risk li {
   color: #b42318;
 }
@@ -2268,6 +2282,20 @@ body.bali-contract-page *::after {
   font-size: 11px;
   font-weight: 850;
   text-transform: none;
+}
+
+.bali-contract-page .contract-field-attention {
+  animation: contractFieldAttention 1.1s ease-out;
+}
+
+@keyframes contractFieldAttention {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px rgba(200, 58, 58, .16) !important;
+  }
+  45% {
+    box-shadow: 0 0 0 6px rgba(200, 58, 58, .24) !important;
+  }
 }
 
 .bali-contract-page .contract-dirty-notice {
