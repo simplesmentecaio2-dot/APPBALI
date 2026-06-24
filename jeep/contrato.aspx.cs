@@ -903,6 +903,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
         html.Append(HttpUtility.HtmlEncode(inicio.ToString("dd/MM/yyyy")));
         html.Append(" a ");
         html.Append(HttpUtility.HtmlEncode(fim.ToString("dd/MM/yyyy")));
+        html.Append(" · Atualizado às ");
+        html.Append(HttpUtility.HtmlEncode(DateTime.Now.ToString("HH:mm", CulturaBrasil)));
         html.Append("</div>");
 
         html.Append("<div class='contract-bi-cards'>");
