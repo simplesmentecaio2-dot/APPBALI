@@ -2811,7 +2811,15 @@
           if (url) {
             addClass(cell, 'contract-id-cell');
             cell.setAttribute('title', 'Abrir contrato para impressão');
-            if (!cell.querySelector || !cell.querySelector('.contract-id-action')) {
+            var link = cell.querySelector ? cell.querySelector('a[href]') : null;
+            if (link) {
+              addClass(link, 'contract-id-action');
+              if (link.getAttribute('data-contract-action-label') !== 'true') {
+                link.setAttribute('data-contract-action-label', 'true');
+                link.setAttribute('title', 'Abrir contrato para impressão');
+                link.innerHTML = '<span>#' + escapeHtml(id) + '</span><small>Imprimir</small>';
+              }
+            } else if (!cell.querySelector || !cell.querySelector('.contract-id-action')) {
               cell.innerHTML = '<button type="button" class="contract-id-action" data-contract-url="' + escapeHtml(url) + '"><span>#' + escapeHtml(id) + '</span><small>Imprimir</small></button>';
             }
           }
