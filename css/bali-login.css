@@ -24,6 +24,7 @@ body.premium-login.login-fiat {
   --login-brand-dark: #321114;
   --login-brand-mid: #79373b;
   --login-brand-soft: rgba(200, 58, 58, .14);
+  --login-bg-image: url('../img/login-backgrounds/fiat-login-bg.jpg');
 }
 
 body.premium-login.login-jeep {
@@ -31,6 +32,7 @@ body.premium-login.login-jeep {
   --login-brand-dark: #111912;
   --login-brand-mid: #435b33;
   --login-brand-soft: rgba(94, 127, 66, .16);
+  --login-bg-image: url('../img/login-backgrounds/jeep-login-bg.jpg');
 }
 
 body.premium-login.login-byd {
@@ -38,6 +40,7 @@ body.premium-login.login-byd {
   --login-brand-dark: #0b1728;
   --login-brand-mid: #255b95;
   --login-brand-soft: rgba(47, 111, 189, .16);
+  --login-bg-image: url('../img/login-backgrounds/byd-login-bg.jpg');
 }
 
 body.premium-login.login-neutral {
@@ -63,7 +66,7 @@ body.premium-login.login-neutral {
   background:
     linear-gradient(90deg, rgba(10, 16, 28, .62) 0%, rgba(10, 16, 28, .48) 45%, rgba(10, 16, 28, .20) 100%),
     linear-gradient(135deg, var(--login-brand-dark) 0%, var(--login-brand-mid) 54%, #101827 100%),
-    url('../img/papeldeparede.jpg') center center / cover no-repeat !important;
+    var(--login-bg-image, url('../img/papeldeparede.jpg')) center center / cover no-repeat !important;
   overflow: hidden;
   position: relative;
 }
