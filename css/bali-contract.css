@@ -1716,7 +1716,7 @@ body.bali-contract-page *::after {
   width: min(100%, 700px);
   margin: 0 0 18px;
   padding: 14px;
-  border: 1px solid var(--contract-brand-ring);
+  border: 1px solid #e6edf5;
   border-radius: 8px;
   background: #fff !important;
   box-shadow: 0 10px 22px rgba(15, 23, 42, .045);
@@ -1729,6 +1729,7 @@ body.bali-contract-page *::after {
   gap: 14px;
   padding-bottom: 10px;
   border-bottom: 1px solid #edf2f7;
+  background: #fff !important;
 }
 
 .bali-contract-page .contract-date-filter-head div {
@@ -1737,7 +1738,7 @@ body.bali-contract-page *::after {
 }
 
 .bali-contract-page .contract-date-filter-head span {
-  color: var(--contract-brand-strong);
+  color: var(--contract-muted);
   font-size: 11px;
   font-weight: 900;
   text-transform: uppercase;
