@@ -705,9 +705,9 @@
 
   function enhanceDateFilters() {
     [
-      { start: 'txtDtInicialVN', end: 'txtDtFinalVN', button: 'Button1' },
-      { start: 'txtDtInicialVU', end: 'txtDtFinalVU', button: 'Button2' },
-      { start: 'txtDtInicialVD', end: 'txtDtFinalVD', button: 'Button3' }
+      { start: 'txtDtInicialVN', end: 'txtDtFinalVN', button: 'Button1', title: 'Contratos novos' },
+      { start: 'txtDtInicialVU', end: 'txtDtFinalVU', button: 'Button2', title: 'Contratos usados' },
+      { start: 'txtDtInicialVD', end: 'txtDtFinalVD', button: 'Button3', title: 'Venda direta' }
     ].forEach(function (filter) {
       allBySuffix(filter.start).forEach(function (field) {
         var table = closestTag(field, 'table');
@@ -718,6 +718,19 @@
         if (table.getAttribute('data-contract-date-filter') !== 'true') {
           table.setAttribute('data-contract-date-filter', 'true');
           table.className = (table.className ? table.className + ' ' : '') + 'contract-date-filter';
+
+          if (!table.parentNode || !/(^|\s)contract-date-filter-shell(\s|$)/.test(table.parentNode.className || '')) {
+            var shell = document.createElement('div');
+            shell.className = 'contract-date-filter-shell';
+
+            var header = document.createElement('div');
+            header.className = 'contract-date-filter-head';
+            header.innerHTML = '<div><span>Per&iacute;odo de consulta</span><strong>' + filter.title + '</strong></div><small>Escolha as datas e processe a listagem.</small>';
+
+            table.parentNode.insertBefore(shell, table);
+            shell.appendChild(header);
+            shell.appendChild(table);
+          }
 
           var rows = table.rows;
           if (rows && rows.length > 1 && rows[0].cells.length < 3) {
