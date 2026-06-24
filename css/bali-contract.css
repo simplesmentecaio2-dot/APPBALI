@@ -348,8 +348,8 @@ body.bali-contract-page *::after {
   padding: 10px 12px !important;
   border: 0 !important;
   border-bottom: 1px solid #e6edf5 !important;
-  background: #f8fafc !important;
-  color: var(--contract-brand-strong) !important;
+  background: linear-gradient(135deg, var(--contract-brand-strong), var(--contract-brand)) !important;
+  color: #fff !important;
   font-size: 11px !important;
   font-weight: 900;
   letter-spacing: .04em;

@@ -640,6 +640,20 @@
     });
   }
 
+  function setLoadingVisible(visible) {
+    var indicator = document.getElementById('ag');
+    if (!indicator) return;
+    indicator.style.display = visible ? 'inline-flex' : 'none';
+  }
+
+  function enhanceLoadingIndicator() {
+    window.aguarde = function () {
+      setLoadingVisible(true);
+      return true;
+    };
+    setLoadingVisible(false);
+  }
+
   function handleSubmit(event) {
     var button = event.currentTarget;
     if (button.getAttribute('data-contract-submitting') === 'true') {
@@ -886,6 +900,7 @@
   function init() {
     if (!isContractPage()) return;
     resetSubmittingButtons();
+    enhanceLoadingIndicator();
     enhanceFields();
     enhanceChecklist();
     enhanceDateFilters();
