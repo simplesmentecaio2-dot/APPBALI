@@ -1612,6 +1612,10 @@ body.bali-contract-page *::after {
   font-weight: 800;
 }
 
+.bali-contract-page .contract-bi-actions small.is-success {
+  color: #13764b;
+}
+
 .bali-contract-page .contract-audit-panel {
   display: grid;
   gap: 16px;

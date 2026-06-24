@@ -1169,6 +1169,18 @@
     done(ok);
   }
 
+  function showBiActionStatus(status, message, success) {
+    if (!status) return;
+    status.textContent = message || '';
+    if (success) addClass(status, 'is-success');
+    else removeClass(status, 'is-success');
+    window.clearTimeout(status._contractTimer);
+    status._contractTimer = window.setTimeout(function () {
+      status.textContent = '';
+      removeClass(status, 'is-success');
+    }, 2200);
+  }
+
   function enhanceBiActions() {
     Array.prototype.slice.call(document.querySelectorAll('.contract-bi-panel')).forEach(function (panel) {
       if (panel.getAttribute('data-contract-bi-actions') === 'true') return;
@@ -1184,20 +1196,20 @@
       var button = actions.querySelector('[data-bi-copy]');
       var csvButton = actions.querySelector('[data-bi-csv]');
       var status = actions.querySelector('small');
+      status.setAttribute('role', 'status');
+      button.setAttribute('title', 'Copiar resumo dos indicadores do BI');
+      csvButton.setAttribute('title', 'Exportar indicadores do BI em CSV');
       button.addEventListener('click', function () {
         var text = collectBiSummary(panel);
         if (!text) return;
+        showBiActionStatus(status, 'Copiando...', false);
         copyText(text, function (ok) {
-          status.textContent = ok === false ? 'Não foi possível copiar.' : 'Resumo copiado.';
-          window.clearTimeout(status._contractTimer);
-          status._contractTimer = window.setTimeout(function () {
-            status.textContent = '';
-          }, 1800);
+          showBiActionStatus(status, ok === false ? 'Não foi possível copiar.' : 'Resumo copiado.', ok !== false);
         });
       });
       csvButton.addEventListener('click', function () {
         var total = exportBiCsv(panel);
-        status.textContent = total ? total + ' indicador(es) exportado(s).' : 'Nenhum indicador disponível.';
+        showBiActionStatus(status, total ? total + ' indicador(es) exportado(s).' : 'Nenhum indicador disponível.', !!total);
       });
     });
   }
