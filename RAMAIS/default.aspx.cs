@@ -6,6 +6,8 @@ using System.Web.UI.WebControls;
 
 public partial class ramais_default : System.Web.UI.Page
 {
+    private const string SenhaManutencaoRamais = "@bali2025";
+
     private string ConnectionString
     {
         get { return ConfigurationManager.ConnectionStrings["APPWFConnectionString"].ConnectionString; }
@@ -13,12 +15,6 @@ public partial class ramais_default : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["ramais_auth"] == null)
-        {
-            Response.Redirect("login.aspx?returnUrl=" + Server.UrlEncode(Request.RawUrl));
-            return;
-        }
-
         if (!IsPostBack)
         {
             CarregarTudo();
@@ -27,8 +23,7 @@ public partial class ramais_default : System.Web.UI.Page
 
     protected void btnSair_Click(object sender, EventArgs e)
     {
-        Session.Remove("ramais_auth");
-        Response.Redirect("login.aspx");
+        Response.Redirect("../Intranet/index.html");
     }
 
     protected void btnFiltrar_Click(object sender, EventArgs e)
@@ -49,6 +44,13 @@ public partial class ramais_default : System.Web.UI.Page
     {
         try
         {
+            int idAtual = ObterIdNumerico(hfRamalId.Value);
+            if (idAtual > 0 && !EdicaoRamalAutorizada(idAtual))
+            {
+                MostrarMensagem("Para salvar alteração em ramal existente, clique em Editar e informe a senha de manutenção.", true);
+                return;
+            }
+
             if (txtNome.Text.Trim().Length == 0)
             {
                 MostrarMensagem("Informe o nome do colaborador.", true);
@@ -68,13 +70,14 @@ public partial class ramais_default : System.Web.UI.Page
             }
 
             ExecutarTabela("dbo.ramais_ramal_salvar",
-                Param("@id_ramal", SqlDbType.Int, ObterId(hfRamalId.Value)),
+                Param("@id_ramal", SqlDbType.Int, idAtual > 0 ? (object)idAtual : DBNull.Value),
                 Param("@nome", SqlDbType.NVarChar, txtNome.Text.Trim(), 160),
                 Param("@ramal", SqlDbType.NVarChar, txtRamal.Text.Trim(), 30),
                 Param("@id_loja", SqlDbType.Int, Convert.ToInt32(ddlRamalLoja.SelectedValue)),
                 Param("@id_setor", SqlDbType.Int, Convert.ToInt32(ddlRamalSetor.SelectedValue)),
                 Param("@ativo", SqlDbType.Bit, chkRamalAtivo.Checked));
 
+            LimparAutorizacaoEdicaoRamal(idAtual);
             LimparRamal();
             CarregarTudo();
             MostrarMensagem("Ramal salvo com sucesso.", false);
@@ -99,12 +102,18 @@ public partial class ramais_default : System.Web.UI.Page
         {
             if (e.CommandName == "EditarRamal")
             {
+                if (!SenhaManutencaoInformada()) return;
+
+                AutorizarEdicaoRamal(id);
                 CarregarRamal(id);
                 MostrarMensagem("Ramal carregado para edição.", false);
             }
             else if (e.CommandName == "ExcluirRamal")
             {
+                if (!SenhaManutencaoInformada()) return;
+
                 ExecutarSemRetorno("dbo.ramais_ramal_excluir", Param("@id_ramal", SqlDbType.Int, id));
+                LimparAutorizacaoEdicaoRamal(id);
                 LimparRamal();
                 CarregarTudo();
                 MostrarMensagem("Ramal inativado com sucesso.", false);
@@ -363,8 +372,51 @@ public partial class ramais_default : System.Web.UI.Page
         return DBNull.Value;
     }
 
+    private int ObterIdNumerico(string valor)
+    {
+        int id;
+        return Int32.TryParse(valor, out id) && id > 0 ? id : 0;
+    }
+
+    private bool SenhaManutencaoInformada()
+    {
+        bool autorizada = String.Equals((hfSenhaManutencao.Value ?? "").Trim(), SenhaManutencaoRamais, StringComparison.Ordinal);
+        hfSenhaManutencao.Value = "";
+
+        if (!autorizada)
+        {
+            MostrarMensagem("Senha incorreta. Para editar ou excluir ramais, informe a senha de manutenção.", true);
+        }
+
+        return autorizada;
+    }
+
+    private string ChaveEdicaoRamal(int id)
+    {
+        return "ramais_edicao_autorizada_" + id.ToString();
+    }
+
+    private void AutorizarEdicaoRamal(int id)
+    {
+        Session[ChaveEdicaoRamal(id)] = true;
+    }
+
+    private bool EdicaoRamalAutorizada(int id)
+    {
+        return id <= 0 || Session[ChaveEdicaoRamal(id)] != null;
+    }
+
+    private void LimparAutorizacaoEdicaoRamal(int id)
+    {
+        if (id > 0)
+        {
+            Session.Remove(ChaveEdicaoRamal(id));
+        }
+    }
+
     private void LimparRamal()
     {
+        LimparAutorizacaoEdicaoRamal(ObterIdNumerico(hfRamalId.Value));
         hfRamalId.Value = "";
         txtNome.Text = "";
         txtRamal.Text = "";

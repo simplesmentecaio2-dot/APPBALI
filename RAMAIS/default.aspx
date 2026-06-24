@@ -11,6 +11,7 @@
 <body class="ramais-page">
     <form id="form1" runat="server">
         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+        <asp:HiddenField ID="hfSenhaManutencao" runat="server" />
 
         <div class="app-shell">
             <aside class="sidebar">
@@ -30,7 +31,7 @@
                     <a href="../Intranet/index.html">Intranet</a>
                 </nav>
 
-                <asp:Button ID="btnSair" runat="server" Text="Sair" CssClass="secondary-button" OnClick="btnSair_Click" />
+                <asp:Button ID="btnSair" runat="server" Text="Voltar" CssClass="secondary-button" OnClick="btnSair_Click" />
             </aside>
 
             <main class="content">
@@ -101,7 +102,7 @@
                                 <asp:BoundField DataField="status" HeaderText="Status" />
                                 <asp:TemplateField HeaderText="Ação">
                                     <ItemTemplate>
-                                        <asp:LinkButton ID="lnkEditarConsulta" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>'>Editar</asp:LinkButton>
+                                        <asp:LinkButton ID="lnkEditarConsulta" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return solicitarSenhaRamal('editar');">Editar</asp:LinkButton>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
@@ -149,8 +150,8 @@
                                 <asp:BoundField DataField="status" HeaderText="Status" />
                                 <asp:TemplateField HeaderText="Ações">
                                     <ItemTemplate>
-                                        <asp:LinkButton ID="lnkEditarRamal" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>'>Editar</asp:LinkButton>
-                                        <asp:LinkButton ID="lnkExcluirRamal" runat="server" CssClass="table-action danger" CommandName="ExcluirRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return confirm('Deseja inativar este ramal?');">Excluir</asp:LinkButton>
+                                        <asp:LinkButton ID="lnkEditarRamal" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return solicitarSenhaRamal('editar');">Editar</asp:LinkButton>
+                                        <asp:LinkButton ID="lnkExcluirRamal" runat="server" CssClass="table-action danger" CommandName="ExcluirRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return confirmarExclusaoRamal();">Excluir</asp:LinkButton>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
@@ -235,6 +236,27 @@
                 </section>
             </main>
         </div>
+        <script>
+            (function () {
+                function preencherSenhaRamal(acao) {
+                    var senha = window.prompt('Informe a senha de manutenção para ' + acao + ' este ramal:');
+                    if (senha === null) return false;
+
+                    var campoSenha = document.getElementById('<%= hfSenhaManutencao.ClientID %>');
+                    if (campoSenha) campoSenha.value = senha;
+                    return true;
+                }
+
+                window.solicitarSenhaRamal = function (acao) {
+                    return preencherSenhaRamal(acao || 'alterar');
+                };
+
+                window.confirmarExclusaoRamal = function () {
+                    if (!window.confirm('Deseja inativar este ramal?')) return false;
+                    return preencherSenhaRamal('excluir');
+                };
+            })();
+        </script>
     </form>
 </body>
 </html>
