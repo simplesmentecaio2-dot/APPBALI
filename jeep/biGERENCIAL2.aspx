@@ -1,45 +1,36 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="ultimofeirao2018.aspx.cs" Inherits="veiculos_Recibo_desconto" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="ultimofeirao2018.aspx.cs" Inherits="veiculos_Recibo_desconto" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
 <!DOCTYPE html>
-<meta http-equiv="refresh" content="3600">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-  
-    <title>BI-GRUPOBALI</title>
+    <title>BI Gerencial | Jeep</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content="3600" />
     <link href="../css/estilo.css" rel="stylesheet" />
-    <script src="../../js/jquery-1.10.2.js"></script>
-    <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
-    <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
-    <script src="../../js/js.js"></script>
+    <link href="../css/bali-bi-frame.css?v=20260624-1" rel="stylesheet" />
 </head>
-<body>
-  <script>
-         function aguarde() {
-             document.getElementById('ag').style.visibility = 'visible';
-         }
-    </script>
-
-
-
-   
+<body class="bi-frame-page bi-brand-jeep">
     <form id="form1" runat="server">
-        <div align="center">
-            <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
+        <main class="bi-frame-shell">
+            <section class="bi-frame-header">
+                <div>
+                    <span class="bi-frame-kicker">Indicadores</span>
+                    <h1>BI Gerencial Jeep</h1>
+                    <p>Painel gerencial incorporado do Power BI, com atualização automática e visual responsivo.</p>
+                </div>
+                <div class="bi-frame-actions">
+                    <a class="bi-frame-action" href="principal.aspx">Voltar</a>
+                    <a class="bi-frame-action primary" href="https://app.powerbi.com/view?r=eyJrIjoiYzUzMWRhODgtMmVhNS00NWE5LThiYjAtNGFmOWZiNzI4MWQ2IiwidCI6IjlhOTY3ZDk0LWM2YWItNGZkZS05OTUyLTY4NDI1YWM3M2VmNiJ9" target="_blank" rel="noopener">Abrir BI</a>
+                </div>
+            </section>
 
-            <iframe title="BI GERENCIAL" width="1300" height="900" src="
-                https://app.powerbi.com/view?r=eyJrIjoiYzUzMWRhODgtMmVhNS00NWE5LThiYjAtNGFmOWZiNzI4MWQ2IiwidCI6IjlhOTY3ZDk0LWM2YWItNGZkZS05OTUyLTY4NDI1YWM3M2VmNiJ9" frameborder="0" allowFullScreen="true"></iframe>
-            
-          
-             </div>
-
+            <section class="bi-frame-card">
+                <iframe title="BI Gerencial Jeep" src="https://app.powerbi.com/view?r=eyJrIjoiYzUzMWRhODgtMmVhNS00NWE5LThiYjAtNGFmOWZiNzI4MWQ2IiwidCI6IjlhOTY3ZDk0LWM2YWItNGZkZS05OTUyLTY4NDI1YWM3M2VmNiJ9" allowfullscreen="true"></iframe>
+            </section>
+        </main>
     </form>
-
-    <div align="center">
-        </div>
 </body>
 </html>
-
-

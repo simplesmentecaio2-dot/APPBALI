@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="biGERENCIAL.aspx.cs" Inherits="veiculos_contrato" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="biGERENCIAL.aspx.cs" Inherits="veiculos_contrato" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
@@ -6,51 +6,33 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title></title>
+    <title>BI Gerencial | Jeep</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../css/estilo.css" rel="stylesheet" />
-    <script src="../js/jquery-1.10.2.js"></script>
-    <script src="../js/js.js"></script>
-    <script src="../js/jquery.maskMoney.js"></script>
-    <script src="../js/maskMin.js"></script>
-    <script src="../js/maskPhone.js"></script>
-
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js" type="text/javascript"></script>
-    <script src="http://code.highcharts.com/highcharts.js" type="text/javascript"></script>
-    <script src="http://code.highcharts.com/modules/exporting.js"></script>
-
-    <script src="../tables/js/jquery.dataTables.min.js"></script>
-    <link href="../tables/estilo/jquery-ui-1.8.4.custom.css" rel="stylesheet" />
-    <link href="../tables/estilo/table.css" rel="stylesheet" />
-    <link href="../tables/estilo/table_jui.css" rel="stylesheet" />
-
-
-
+    <link href="../css/bali-bi-frame.css?v=20260624-1" rel="stylesheet" />
 </head>
-<body>
-  <script>
-      function aguarde() {
-          document.getElementById('ag').style.visibility = 'visible';
-      }
-  </script>
-
-
-
-   
+<body class="bi-frame-page bi-brand-jeep">
     <form id="form1" runat="server">
-        <div align="center">
-            <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
-             <asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text="" visible="false"></asp:Label>
+        <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
+        <asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text="" Visible="false"></asp:Label>
 
-            <iframe title="JEEP" width="1300" height="900" src="https://app.powerbi.com/view?r=eyJrIjoiYzUzMWRhODgtMmVhNS00NWE5LThiYjAtNGFmOWZiNzI4MWQ2IiwidCI6IjlhOTY3ZDk0LWM2YWItNGZkZS05OTUyLTY4NDI1YWM3M2VmNiJ9" frameborder="0" allowFullScreen="true"></iframe>
-            
+        <main class="bi-frame-shell">
+            <section class="bi-frame-header">
+                <div>
+                    <span class="bi-frame-kicker">Indicadores</span>
+                    <h1>BI Gerencial Jeep</h1>
+                    <p>Painel gerencial incorporado do Power BI, com visual responsivo e carregamento leve.</p>
+                </div>
+                <div class="bi-frame-actions">
+                    <a class="bi-frame-action" href="principal.aspx">Voltar</a>
+                    <a class="bi-frame-action primary" href="https://app.powerbi.com/view?r=eyJrIjoiYzUzMWRhODgtMmVhNS00NWE5LThiYjAtNGFmOWZiNzI4MWQ2IiwidCI6IjlhOTY3ZDk0LWM2YWItNGZkZS05OTUyLTY4NDI1YWM3M2VmNiJ9" target="_blank" rel="noopener">Abrir BI</a>
+                </div>
+            </section>
 
-       
-          
-             </div>
-
+            <section class="bi-frame-card">
+                <iframe title="BI Gerencial Jeep" src="https://app.powerbi.com/view?r=eyJrIjoiYzUzMWRhODgtMmVhNS00NWE5LThiYjAtNGFmOWZiNzI4MWQ2IiwidCI6IjlhOTY3ZDk0LWM2YWItNGZkZS05OTUyLTY4NDI1YWM3M2VmNiJ9" allowfullscreen="true"></iframe>
+            </section>
+        </main>
     </form>
-
-    <div align="center">
-        </div>
 </body>
 </html>

@@ -1,44 +1,36 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="ultimofeirao2018.aspx.cs" Inherits="veiculos_Recibo_desconto" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="ultimofeirao2018.aspx.cs" Inherits="veiculos_Recibo_desconto" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
 <!DOCTYPE html>
-<meta http-equiv="refresh" content="3600">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-  
-    <title>BI-GRUPOBALI</title>
+    <title>BI Workflow | Jeep</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content="3600" />
     <link href="../css/estilo.css" rel="stylesheet" />
-    <script src="../../js/jquery-1.10.2.js"></script>
-    <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
-    <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
-    <script src="../../js/js.js"></script>
+    <link href="../css/bali-bi-frame.css?v=20260624-1" rel="stylesheet" />
 </head>
-<body>
-  <script>
-         function aguarde() {
-             document.getElementById('ag').style.visibility = 'visible';
-         }
-    </script>
-
-
-
-   
+<body class="bi-frame-page bi-brand-jeep">
     <form id="form1" runat="server">
-        <div align="center">
-            <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
+        <main class="bi-frame-shell">
+            <section class="bi-frame-header">
+                <div>
+                    <span class="bi-frame-kicker">Workflow</span>
+                    <h1>BI Workflow Jeep</h1>
+                    <p>Painel de workflow incorporado do Power BI, com atualização automática e layout responsivo.</p>
+                </div>
+                <div class="bi-frame-actions">
+                    <a class="bi-frame-action" href="principal.aspx">Voltar</a>
+                    <a class="bi-frame-action primary" href="https://app.powerbi.com/view?r=eyJrIjoiZDUwNjZmOTMtNTI5Yi00ZTdjLWJjYTktMGQ4NDI1NzQ2YmFmIiwidCI6IjlhOTY3ZDk0LWM2YWItNGZkZS05OTUyLTY4NDI1YWM3M2VmNiJ9" target="_blank" rel="noopener">Abrir BI</a>
+                </div>
+            </section>
 
-            <iframe title="JEEP" width="1300" height="900" src="https://app.powerbi.com/view?r=eyJrIjoiZDUwNjZmOTMtNTI5Yi00ZTdjLWJjYTktMGQ4NDI1NzQ2YmFmIiwidCI6IjlhOTY3ZDk0LWM2YWItNGZkZS05OTUyLTY4NDI1YWM3M2VmNiJ9" frameborder="0" allowFullScreen="true"></iframe>
-            
-          
-             </div>
-
+            <section class="bi-frame-card">
+                <iframe title="BI Workflow Jeep" src="https://app.powerbi.com/view?r=eyJrIjoiZDUwNjZmOTMtNTI5Yi00ZTdjLWJjYTktMGQ4NDI1NzQ2YmFmIiwidCI6IjlhOTY3ZDk0LWM2YWItNGZkZS05OTUyLTY4NDI1YWM3M2VmNiJ9" allowfullscreen="true"></iframe>
+            </section>
+        </main>
     </form>
-
-    <div align="center">
-        </div>
 </body>
 </html>
-
-
