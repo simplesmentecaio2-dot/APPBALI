@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Windows.Forms;
-using System.Drawing;
 
 public partial class veiculos_contrato : System.Web.UI.Page
 {
@@ -29,19 +24,20 @@ public partial class veiculos_contrato : System.Web.UI.Page
             //lblUsuario.Text = Session["usuario"].ToString();
             Sqlcontagerencial.DataBind();
             GridViewcontagerencial.DataBind();
+            PrepararCabecalhoTabela();
         //}
-
-
-
     }
+
+    private void PrepararCabecalhoTabela()
+    {
+        if (GridViewcontagerencial.HeaderRow != null)
+        {
+            GridViewcontagerencial.HeaderRow.TableSection = TableRowSection.TableHeader;
+        }
+    }
+
     public string tabela;
     public string tabelaVU;
-
-   
-      }
-
-
-
-    
+}
 
 

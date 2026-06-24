@@ -6,67 +6,42 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title></title>
+    <title>Conta Gerencial | Jeep</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../css/estilo.css" rel="stylesheet" />
-    <script src="../js/jquery-1.10.2.js"></script>
-    <script src="../js/js.js"></script>
-    <script src="../js/jquery.maskMoney.js"></script>
-    <script src="../js/maskMin.js"></script>
-    <script src="../js/maskPhone.js"></script>
-
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js" type="text/javascript"></script>
-    <script src="http://code.highcharts.com/highcharts.js" type="text/javascript"></script>
-    <script src="http://code.highcharts.com/modules/exporting.js"></script>
-
-    <script src="../tables/js/jquery.dataTables.min.js"></script>
-    <link href="../tables/estilo/jquery-ui-1.8.4.custom.css" rel="stylesheet" />
     <link href="../tables/estilo/table.css" rel="stylesheet" />
-    <link href="../tables/estilo/table_jui.css" rel="stylesheet" />
-
-
-
+    <link href="../css/bali-gerencial.css?v=20260624-1" rel="stylesheet" />
+    <script src="../js/jquery-1.10.2.js"></script>
+    <script src="../tables/js/jquery.dataTables.min.js"></script>
+    <script src="../js/bali-gerencial.js?v=20260624-1"></script>
 </head>
-<body>
-  <script>
-      function aguarde() {
-          document.getElementById('ag').style.visibility = 'visible';
-      }
-  </script>
-
-
-
-   
+<body class="gerencial-page">
     <form id="form1" runat="server">
-        <div align="center">
+        <main class="gerencial-shell">
             <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
-             <asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text="" visible="false"></asp:Label>
+            <asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text="" Visible="false"></asp:Label>
 
-            
+            <section class="gerencial-header">
+                <div>
+                    <span class="gerencial-kicker">Financeiro</span>
+                    <h1>Conta Gerencial Jeep</h1>
+                    <p>Consulta de fornecedores vinculados às contas gerenciais, com filtro rápido, ordenação por coluna e paginação.</p>
+                </div>
+                <a class="gerencial-back" href="principal.aspx">Voltar</a>
+            </section>
 
-       
-          
-             </div>
-
-    <div align="center">
-        </div>
-        <asp:GridView ID="GridViewcontagerencial" runat="server" AutoGenerateColumns="False" CellPadding="4" DataSourceID="Sqlcontagerencial" ForeColor="#333333" GridLines="None" align="center">
-            <AlternatingRowStyle BackColor="White" ForeColor="#284775" />
-            <Columns>
-                <asp:BoundField DataField="Fornecedor" HeaderText="Fornecedor" SortExpression="Fornecedor"></asp:BoundField>
-                <asp:BoundField DataField="ContaGerencial" HeaderText="ContaGerencial" SortExpression="ContaGerencial"></asp:BoundField>
-                <asp:BoundField DataField="Usuário" HeaderText="Usuário" SortExpression="Usuário"></asp:BoundField>
-            </Columns>
-            <EditRowStyle BackColor="#999999" />
-            <FooterStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
-            <HeaderStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
-            <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" />
-            <RowStyle BackColor="#F7F6F3" ForeColor="#333333" />
-            <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333" />
-            <sortedascendingcellstyle backcolor="#E9E7E2" />
-            <sortedascendingheaderstyle backcolor="#506C8C" />
-            <sorteddescendingcellstyle backcolor="#FFFDF8" />
-            <sorteddescendingheaderstyle backcolor="#6F8DAE" />
-        </asp:GridView>
+            <section class="gerencial-card">
+                <div class="gerencial-table-wrap">
+                    <asp:GridView ID="GridViewcontagerencial" runat="server" AutoGenerateColumns="False" CellPadding="0" DataSourceID="Sqlcontagerencial" GridLines="None" CssClass="gerencial-table">
+                        <Columns>
+                            <asp:BoundField DataField="Fornecedor" HeaderText="Fornecedor" SortExpression="Fornecedor"></asp:BoundField>
+                            <asp:BoundField DataField="ContaGerencial" HeaderText="Conta Gerencial" SortExpression="ContaGerencial"></asp:BoundField>
+                            <asp:BoundField DataField="Usuário" HeaderText="Usuário" SortExpression="Usuário"></asp:BoundField>
+                        </Columns>
+                    </asp:GridView>
+                </div>
+            </section>
+        </main>
         <asp:SqlDataSource ID="Sqlcontagerencial" runat="server" ConnectionString="<%$ ConnectionStrings:GrupoBali_DealernetWFConnectionString %>" SelectCommand="            select p.Pessoa_Nome Fornecedor,cg.ContaGerencial_Descricao ContaGerencial,u.Usuario_Nome Usuário from PessoaRegraUso pru
 
 inner join pessoa p on p.Pessoa_Codigo = pru.Pessoa_Codigo
