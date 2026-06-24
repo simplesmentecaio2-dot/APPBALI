@@ -1754,6 +1754,10 @@
     return changes;
   }
 
+  function isSensitiveEditChange(label) {
+    return /valor|entrada|avalia|quita|financiamento|parcela|pagamento|modalidade/i.test(String(label || ''));
+  }
+
   function updateEditChangePanel() {
     if (currentContractMode() !== 'edicao') return;
 
@@ -1770,11 +1774,16 @@
     var text = panel.querySelector('small');
     var list = panel.querySelector('ul');
 
-    panel.classList.remove('is-hidden', 'has-changes');
+    panel.classList.remove('is-hidden', 'has-changes', 'has-sensitive-changes');
     if (changes.length > 0) {
       addClass(panel, 'has-changes');
       title.textContent = changes.length + ' campo(s) alterado(s)';
-      text.textContent = 'Confira as alterações abaixo e marque o checklist antes de salvar.';
+      if (changes.some(isSensitiveEditChange)) {
+        addClass(panel, 'has-sensitive-changes');
+        text.textContent = 'Atenção: há alteração em valores ou forma de pagamento. Confira antes de salvar.';
+      } else {
+        text.textContent = 'Confira as alterações abaixo e marque o checklist antes de salvar.';
+      }
     } else {
       title.textContent = 'Nenhuma alteração detectada';
       text.textContent = 'Altere os campos necessários; o resumo será atualizado automaticamente.';
@@ -2008,6 +2017,16 @@
       event.preventDefault();
       updateQualityPanel();
       return false;
+    }
+
+    if (isEditSubmit(button) && hasLoadedEditContract()) {
+      var editChanges = collectEditChanges();
+      if (!editChanges.length) {
+        showSubmitSummary(button, ['Nenhuma alteração detectada. Altere pelo menos um campo antes de gravar a edição.']);
+        updateEditChangePanel();
+        event.preventDefault();
+        return false;
+      }
     }
 
     if (!validateInlineChecklist(button)) {

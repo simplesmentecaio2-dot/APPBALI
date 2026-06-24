@@ -1339,6 +1339,17 @@ body.bali-contract-page *::after {
   display: none;
 }
 
+.bali-contract-page .contract-edit-change-panel.has-sensitive-changes {
+  border-color: rgba(200, 132, 0, .28);
+  border-left-color: #c88400;
+  background: #fffbeb;
+}
+
+.bali-contract-page .contract-edit-change-panel.has-sensitive-changes strong,
+.bali-contract-page .contract-edit-change-panel.has-sensitive-changes li {
+  color: #9a6500;
+}
+
 .bali-contract-page .contract-edited-field {
   border-color: #2563eb !important;
   background: #eff6ff !important;
