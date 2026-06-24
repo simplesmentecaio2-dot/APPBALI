@@ -95,6 +95,14 @@
     return null;
   }
 
+  function normalizeText(text) {
+    text = String(text || '').toUpperCase();
+    if (text.normalize) {
+      text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+    return text.replace(/\s+/g, ' ').trim();
+  }
+
   function parseMoney(value) {
     var text = String(value || '').replace(/R\$/g, '').replace(/\s/g, '').trim();
     if (!text) return 0;
@@ -453,6 +461,24 @@
     });
   }
 
+  function enhanceFormSections() {
+    Array.prototype.slice.call(document.querySelectorAll('.ajax__tab_body table')).forEach(function (table) {
+      if (table.getAttribute('data-contract-section') === 'true') return;
+      if (table.className && /contract-date-filter|display|dataTable/.test(table.className)) return;
+      if (!table.rows || !table.rows.length || !table.rows[0].cells || !table.rows[0].cells.length) return;
+
+      var title = normalizeText(table.rows[0].cells[0].textContent);
+      var section = '';
+      if (title.indexOf('DADOS DO CLIENTE') >= 0) section = 'cliente';
+      if (title.indexOf('DADOS DO VEICULO') >= 0) section = 'veiculo';
+      if (title.indexOf('PRECO E FORMAS') >= 0 || title.indexOf('PREÇO E FORMAS') >= 0) section = 'pagamento';
+      if (!section) return;
+
+      table.setAttribute('data-contract-section', 'true');
+      table.className = (table.className ? table.className + ' ' : '') + 'contract-form-section contract-section-' + section;
+    });
+  }
+
   function prepareMoneyFields(forceZero) {
     moneyFields.forEach(function (id) {
       allBySuffix(id).forEach(function (field) {
@@ -594,8 +620,8 @@
     if (!isContractPage()) return;
     enhanceFields();
     enhanceDateFilters();
+    enhanceFormSections();
     bindSubmitButtons();
-    ensureQualityPanel();
     prepareMoneyFields(false);
     updateQualityPanel();
     bindAjaxEndRequest();

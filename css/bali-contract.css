@@ -326,6 +326,36 @@ body.bali-contract-page *::after {
   border-top-right-radius: 8px;
 }
 
+.bali-contract-page .ajax__tab_body table.contract-form-section {
+  width: min(100%, 30cm) !important;
+  margin: 0 0 14px !important;
+  border: 1px solid #e6edf5 !important;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, .05);
+}
+
+.bali-contract-page .ajax__tab_body table.contract-form-section tr:first-child td {
+  padding: 10px 12px !important;
+  border: 0 !important;
+  border-bottom: 1px solid #e6edf5 !important;
+  background: #f8fafc !important;
+  color: var(--contract-brand-strong) !important;
+  font-size: 11px !important;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-align: left !important;
+}
+
+.bali-contract-page .ajax__tab_body table.contract-form-section td {
+  border-color: #eef3f8;
+}
+
+.bali-contract-page .ajax__tab_body table.contract-form-section + table.contract-form-section {
+  margin-top: 10px !important;
+}
+
 .bali-contract-page .form-contrato,
 .bali-contract-page .txts,
 .bali-contract-page input[type="text"],
