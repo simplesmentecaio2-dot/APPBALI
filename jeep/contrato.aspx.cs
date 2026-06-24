@@ -4,8 +4,6 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Windows.Forms;
-using System.Drawing;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
@@ -18,7 +16,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
 
-        
+
         if (Session["usuario"] == null || Session["usuario"].ToString().Equals(""))
         {
             Response.Redirect("./loginAppcontrato.aspx");
@@ -39,6 +37,131 @@ public partial class veiculos_contrato : System.Web.UI.Page
     public string tabelaVU;
     public string tabelaVD;
     public string biHtml;
+
+    private static readonly CultureInfo CulturaBrasil = new CultureInfo("pt-BR");
+
+    private void ExibirAlerta(string mensagem)
+    {
+        string script = "alert('" + HttpUtility.JavaScriptStringEncode(mensagem) + "');";
+        ScriptManager.RegisterStartupScript(this, this.GetType(), Guid.NewGuid().ToString("N"), script, true);
+    }
+
+    private decimal LerMoeda(string valor)
+    {
+        string texto = (valor ?? "").Replace("R$", "").Trim().Replace(" ", "");
+        if (texto.Length == 0) return 0M;
+
+        decimal convertido;
+        int ultimoPonto = texto.LastIndexOf(".");
+        bool priorizarBrasil = texto.IndexOf(",") >= 0
+            || (ultimoPonto >= 0 && texto.IndexOf(".") == ultimoPonto && texto.Length - ultimoPonto - 1 == 3);
+
+        if (priorizarBrasil && decimal.TryParse(texto, NumberStyles.Number, CulturaBrasil, out convertido)) return convertido;
+        if (decimal.TryParse(texto, NumberStyles.Number, CultureInfo.InvariantCulture, out convertido)) return convertido;
+        if (decimal.TryParse(texto, NumberStyles.Number, CulturaBrasil, out convertido)) return convertido;
+
+        throw new FormatException("Valor inválido: " + valor);
+    }
+
+    private string FormatarMoedaSistema(decimal valor)
+    {
+        return valor.ToString("0.00", CultureInfo.CurrentCulture);
+    }
+
+    private void NormalizarCampoMoeda(TextBox campo)
+    {
+        if (campo != null)
+        {
+            campo.Text = FormatarMoedaSistema(LerMoeda(campo.Text));
+        }
+    }
+
+    private void NormalizarCamposMonetarios()
+    {
+        TextBox[] campos = new TextBox[]
+        {
+            txtValoVeiculo, txtEmplacamento, txtEntrada, txtCarroUsado, txtVlUtilzadoAvaliacao,
+            txtQuitacao, txtSaldoAvaliacao, txtVlFinanciamento, txtVlParcelas, txtEdValorVeic,
+            txtEdTAXAS, txtEdEntrada, txtEdValorUSADO, txtEdVALORUSADOAVAILACAO, txtEdQuitacao,
+            txtEdSaldoAvaliacao, txtEdFinanciamento, txtEdValorParcela
+        };
+
+        foreach (TextBox campo in campos)
+        {
+            NormalizarCampoMoeda(campo);
+        }
+    }
+
+    private bool CampoVazio(string valor)
+    {
+        return (valor ?? "").Trim().Length == 0;
+    }
+
+    private bool ValidarContratoNovo(string modalidadePagamento, string tipo, out string mensagem)
+    {
+        List<string> erros = new List<string>();
+
+        if (CampoVazio(txtCliente.Text)) erros.Add("Informe o cliente.");
+        if (CampoVazio(txtCPFCNPJ.Text)) erros.Add("Informe o CPF/CNPJ.");
+        if (CampoVazio(txtMarca.Text)) erros.Add("Informe a marca.");
+        if (CampoVazio(txtModelo.Text)) erros.Add("Informe o modelo.");
+        if (CampoVazio(txtChassiPlaca.Text)) erros.Add("Informe chassi/placa.");
+        if (CampoVazio(tipo)) erros.Add("Selecione se o contrato é novo ou usado.");
+        if (CampoVazio(ddlVendedor.Text)) erros.Add("Selecione o vendedor.");
+        if (LerMoeda(txtValoVeiculo.Text) <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
+
+        if (modalidadePagamento == "F")
+        {
+            if (CampoVazio(txtNrParcelas.Text)) erros.Add("Informe a quantidade de parcelas do financiamento.");
+            if (LerMoeda(txtVlParcelas.Text) <= 0) erros.Add("Valor da parcela deve ser maior que zero para financiamento.");
+        }
+
+        if (LerMoeda(txtVlFinanciamento.Text) < 0) erros.Add("Financiamento ficou negativo. Confira valor do veículo, entrada e avaliação utilizada.");
+        if (LerMoeda(txtSaldoAvaliacao.Text) < 0) erros.Add("Saldo da avaliação ficou negativo. Confira avaliação, valor utilizado e quitação.");
+
+        if (erros.Count > 0)
+        {
+            mensagem = "Revise o contrato antes de gravar:\n- " + String.Join("\n- ", erros.ToArray());
+            return false;
+        }
+
+        mensagem = "";
+        return true;
+    }
+
+    private bool ValidarContratoEdicao(string modalidadePagamento, out string mensagem)
+    {
+        List<string> erros = new List<string>();
+        int contrato;
+
+        if (!Int32.TryParse((txtContrato.Text ?? "").Trim(), out contrato) || contrato <= 0) erros.Add("Informe um número de contrato válido para edição.");
+        if (CampoVazio(txtEdCliente.Text)) erros.Add("Informe o cliente.");
+        if (CampoVazio(txtEdCPF.Text)) erros.Add("Informe o CPF/CNPJ.");
+        if (CampoVazio(txtEdMarca.Text)) erros.Add("Informe a marca.");
+        if (CampoVazio(txtEdModelo.Text)) erros.Add("Informe o modelo.");
+        if (CampoVazio(txtEdChassi.Text)) erros.Add("Informe chassi/placa.");
+        if (CampoVazio(modalidadePagamento)) erros.Add("Selecione a modalidade de pagamento.");
+        if (CampoVazio(txtEdVendedor.Text)) erros.Add("Informe o vendedor.");
+        if (LerMoeda(txtEdValorVeic.Text) <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
+
+        if (modalidadePagamento == "F")
+        {
+            if (CampoVazio(txtEdNumeroParcelas.Text)) erros.Add("Informe a quantidade de parcelas do financiamento.");
+            if (LerMoeda(txtEdValorParcela.Text) <= 0) erros.Add("Valor da parcela deve ser maior que zero para financiamento.");
+        }
+
+        if (LerMoeda(txtEdFinanciamento.Text) < 0) erros.Add("Financiamento ficou negativo. Confira valor do veículo, entrada e avaliação utilizada.");
+        if (LerMoeda(txtEdSaldoAvaliacao.Text) < 0) erros.Add("Saldo da avaliação ficou negativo. Confira avaliação, valor utilizado e quitação.");
+
+        if (erros.Count > 0)
+        {
+            mensagem = "Revise a edição antes de gravar:\n- " + String.Join("\n- ", erros.ToArray());
+            return false;
+        }
+
+        mensagem = "";
+        return true;
+    }
 
     protected void btnAtualizarBI_Click(object sender, EventArgs e)
     {
@@ -357,11 +480,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
         {
             lblEmpTrans.Text = "EMPLACAMENTO:";
             Panel1.Visible = true;
-            
+
         }
     }
 
-   
+
     protected void btnGravar_Click(object sender, EventArgs e)
     {
         calcula();
@@ -389,6 +512,20 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 tipo = "VU";
             }
 
+            string mensagemValidacao;
+            try
+            {
+                if (!ValidarContratoNovo(modpag, tipo, out mensagemValidacao))
+                {
+                    ExibirAlerta(mensagemValidacao);
+                    return;
+                }
+            }
+            catch (FormatException)
+            {
+                ExibirAlerta("Revise os campos de valor. Use apenas números no formato 150000,00.");
+                return;
+            }
 
 
             try
@@ -418,32 +555,30 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 }
                 else if (obs.Equals("N") && codigo != null)
                 {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Duplicidade! O contrato já existe. Código: " + codigo + "');", true);
+                    ExibirAlerta("Possível duplicidade: já existe um contrato com estes dados. Código: " + codigo + ". Confira antes de tentar gravar novamente.");
                 }
                 else
                 {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Preencha todos os campos corretamente!!¹');", true);
+                    ExibirAlerta("Não foi possível gravar o contrato. Confira os campos obrigatórios e os valores informados.");
 
                 }
             }
             catch (Exception ex)
             {
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
-                                                                   "alert('Preencha todos os campos corretamente!!³');", true);
+                ExibirAlerta("Não foi possível gravar o contrato. Revise valores como valor do veículo, entrada, avaliação, quitação e parcelas.");
             }
 
         }
         else
         {
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
-                                                                   "alert('Informe a modalidade de pagamento!');", true);
-        
+            ExibirAlerta("Selecione a modalidade de pagamento: à vista ou financiamento.");
+
         }
     }
     protected void ibtnDadosCliente_Click(object sender, ImageClickEventArgs e)
     {
-       try 
-                      
+       try
+
            {
            Veiculos oVeiculos = new Veiculos();
            string total; string total2;
@@ -453,9 +588,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
           }
          catch
         {
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
-                                                                   "alert('Informe os valores CORRETOS!!');", true);
-        
+            ExibirAlerta("Não foi possível calcular. Use valores no formato 150000,00 e confira entrada, avaliação utilizada e quitação.");
+
         }
     }
     protected void calcula()
@@ -464,43 +598,21 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
         try
         {
-            if (txtValoVeiculo.Text == "") { txtValoVeiculo.Text = "0"; }
-            if (txtEntrada.Text == "") { txtEntrada.Text = "0"; }
-            if (txtVlUtilzadoAvaliacao.Text == "") { txtVlUtilzadoAvaliacao.Text = "0"; }
-            if (txtQuitacao.Text == "") { txtQuitacao.Text = "0"; }
-            if (txtCarroUsado.Text == "") { txtCarroUsado.Text = "0"; }
-            if (txtEdValorVeic.Text == "") { txtEdValorVeic.Text = "0"; }
-            if (txtEdEntrada.Text == "") { txtEdEntrada.Text = "0"; }
-            if (txtEdVALORUSADOAVAILACAO.Text == "") { txtEdVALORUSADOAVAILACAO.Text = "0"; }
-            if (txtEdValorUSADO.Text == "") { txtEdValorUSADO.Text = "0"; }
-            if (txtEdQuitacao.Text == "") { txtEdQuitacao.Text = "0"; }
+            NormalizarCamposMonetarios();
 
+            decimal financiamento = LerMoeda(txtValoVeiculo.Text) - LerMoeda(txtEntrada.Text) - LerMoeda(txtVlUtilzadoAvaliacao.Text);
+            decimal saldoAvaliacao = LerMoeda(txtCarroUsado.Text) - LerMoeda(txtVlUtilzadoAvaliacao.Text) - LerMoeda(txtQuitacao.Text);
+            decimal financiamentoEdicao = LerMoeda(txtEdValorVeic.Text) - LerMoeda(txtEdEntrada.Text) - LerMoeda(txtEdVALORUSADOAVAILACAO.Text);
+            decimal saldoAvaliacaoEdicao = LerMoeda(txtEdValorUSADO.Text) - LerMoeda(txtEdVALORUSADOAVAILACAO.Text) - LerMoeda(txtEdQuitacao.Text);
 
-
-            txtVlFinanciamento.Text = (
-                Convert.ToDouble(txtValoVeiculo.Text.Replace("R$", "")) -
-                Convert.ToDouble(txtEntrada.Text.Replace("R$", "")) -
-                Convert.ToDouble(txtVlUtilzadoAvaliacao.Text.Replace("R$", ""))
-                ).ToString();
-            txtSaldoAvaliacao.Text = (
-                Convert.ToDouble(txtCarroUsado.Text.Replace("R$", "")) -
-                Convert.ToDouble(txtVlUtilzadoAvaliacao.Text) -
-                Convert.ToDouble(txtQuitacao.Text)).ToString();
-            txtEdFinanciamento.Text = (
-                Convert.ToDouble(txtEdValorVeic.Text.Replace("R$", "")) - 
-                Convert.ToDouble(txtEdEntrada.Text.Replace("R$", "")) - 
-                Convert.ToDouble(txtEdVALORUSADOAVAILACAO.Text.Replace("R$", ""))
-                ).ToString();
-            txtEdSaldoAvaliacao.Text = (
-                Convert.ToDouble(txtEdValorUSADO.Text.Replace("R$", "")) - 
-                Convert.ToDouble(txtEdVALORUSADOAVAILACAO.Text.Replace("R$", "")) - 
-                Convert.ToDouble(txtEdQuitacao.Text.Replace("R$", ""))
-                ).ToString();
+            txtVlFinanciamento.Text = FormatarMoedaSistema(financiamento);
+            txtSaldoAvaliacao.Text = FormatarMoedaSistema(saldoAvaliacao);
+            txtEdFinanciamento.Text = FormatarMoedaSistema(financiamentoEdicao);
+            txtEdSaldoAvaliacao.Text = FormatarMoedaSistema(saldoAvaliacaoEdicao);
         }
         catch (Exception)
         {
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
-                                                                  "alert('Informe os valores CORRETOS!!');", true);
+            ExibirAlerta("Não consegui calcular os valores. Use números no formato 150000,00 e evite letras nos campos de valor.");
         }
 
     }
@@ -532,9 +644,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
         txtEdCliente.Text = cliente; txtEdEndereco.Text = endereco; txtEdCep.Text = cep; txtEdBairro.Text = bairro; txtEdCidade.Text = cidade; txtEdUF.Text = UF; txtEdCPF.Text = cpfcnpj; txtEdRG.Text = RGIE; txtEdNascimento.Text = nascimento;
         txtEdTelRes.Text = tel_residencial; txtEdComercial.Text = tel_comercial; txtEdCelular.Text = tel_celular; txtEdEmail.Text = email; txtEdMarca.Text = marca; txtEdModelo.Text = modelo; txtEdCorExt.Text = cor_ext; txtEdChassi.Text = chassiplaca;
-        txtAnoModelo.Text = anomodelo; txtEdOpcionais.Text = opcinonais; txtEdFinanceira.Text = financeira; txtEdValorVeic.Text = valorveiculo; txtEdTAXAS.Text = emp_trans; txtEdEntrada.Text = entrada; txtEdFormasPagamento.Text = formaspagamento;
-        txtEdValorUSADO.Text = carrousado; txtEdAnoMOdUSADO.Text = modmarcavu; txtEdPlacaUSADO.Text = palcavu; txtEdFinanciamento.Text = financiamento; txtEdNumeroParcelas.Text = qtdeparcelas; txtEdValorParcela.Text = vlparcelas; txtEdPlanoFinanciamento.Text = planofinanciamento;
+        txtEdAnomodelo.Text = anomodelo; txtEdOpcionais.Text = opcinonais; txtEdFinanceira.Text = financeira; txtEdValorVeic.Text = valorveiculo; txtEdTAXAS.Text = emp_trans; txtEdEntrada.Text = entrada; txtEdFormasPagamento.Text = formaspagamento;
+        txtEdValorUSADO.Text = carrousado; txtEdModMarcaUSADO.Text = modmarcavu; txtEdPlacaUSADO.Text = palcavu; txtEdFinanciamento.Text = financiamento; txtEdNumeroParcelas.Text = qtdeparcelas; txtEdValorParcela.Text = vlparcelas; txtEdPlanoFinanciamento.Text = planofinanciamento;
         txtEdCortesias.Text = cortesias; txtEdObs.Text = obs; txtEdPrevisao.Text = previsaoentrega; txtEdVendedor.Text = vendedor; txtEdVALORUSADOAVAILACAO.Text = vlutilizadoavaliacao; txtEdQuitacao.Text = vlquitacao; txtEdSaldoAvaliacao.Text = vlsaldoavaliacao; txtEdAnoMOdUSADO.Text = anomodeloVU;
+        rbtnEdAVISTA.Checked = modalidade_pagamento == "A";
+        rbtnEdAprazo.Checked = modalidade_pagamento == "F";
 
     }
 
@@ -547,7 +661,30 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
       string modpag = "";
       string tipo = "";
-       
+      if (rbtnEdAVISTA.Checked)
+      {
+          modpag = "A";
+      }
+      if (rbtnEdAprazo.Checked)
+      {
+          modpag = "F";
+      }
+
+      string mensagemValidacao;
+      try
+      {
+          if (!ValidarContratoEdicao(modpag, out mensagemValidacao))
+          {
+              ExibirAlerta(mensagemValidacao);
+              return;
+          }
+      }
+      catch (FormatException)
+      {
+          ExibirAlerta("Revise os campos de valor. Use apenas números no formato 150000,00.");
+          return;
+      }
+
       Veiculos vec = new Veiculos();
            string contrato = vec.update_contrato_vendajeep(Convert.ToInt16(txtContrato.Text), txtEdCliente.Text, txtEdEndereco.Text, txtEdCep.Text, txtEdBairro.Text, txtEdCidade.Text,
                 txtEdUF.Text, txtEdCPF.Text, txtEdRG.Text, txtEdNascimento.Text, txtEdTelRes.Text,
@@ -558,19 +695,17 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 txtEdNumeroParcelas.Text, txtEdValorParcela.Text, txtEdPlanoFinanciamento.Text, txtEdCortesias.Text,
                 txtEdObs.Text, txtEdPrevisao.Text, txtEdVendedor.Text, txtEdVALORUSADOAVAILACAO.Text, txtEdQuitacao.Text, txtEdSaldoAvaliacao.Text);
 
-        ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
-                                                                  "alert('Contrato Alterado');", true);
-          
-		
-          
-        }  
-     
+        ExibirAlerta("Contrato alterado com sucesso.");
+
+
+
+        }
+
        catch (Exception)
         {
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
-                                                                  "alert('Informe os valores CORRETOS!!');", true);
-        }  
-     
+            ExibirAlerta("Não foi possível alterar o contrato. Revise valores, modalidade de pagamento, parcelas e vendedor.");
+        }
+
   }
 
   protected void Button1_Click(object sender, EventArgs e)
@@ -596,10 +731,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
       tabelaVU = tabelaVUR;
   }
 
-   
-    
+
+
 }
 
-    
+
 
 
