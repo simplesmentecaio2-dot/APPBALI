@@ -1167,7 +1167,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             int altura = max == 0 ? 0 : Convert.ToInt32(Math.Round((item.Value * 100.0) / max));
             if (item.Value > 0 && altura < 12) altura = 12;
             html.Append("<div class='contract-bi-day' title='");
-            html.Append(HttpUtility.HtmlEncode(item.Key.ToString("dd/MM/yyyy") + " - " + item.Value + " contratos"));
+            html.Append(HttpUtility.HtmlAttributeEncode(item.Key.ToString("dd/MM/yyyy") + " - " + item.Value + " contratos"));
             html.Append("'><span style='height:");
             html.Append(altura);
             html.Append("%'></span><small>");
