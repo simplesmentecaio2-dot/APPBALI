@@ -966,9 +966,31 @@
     }
   }
 
+  function revealFieldWizardStep(field) {
+    var sections = getWizardSections();
+    var checklist = getWizardChecklist();
+    var targetIndex = -1;
+
+    sections.forEach(function (section, index) {
+      if (targetIndex < 0 && elementContains(section, field)) {
+        targetIndex = index;
+      }
+    });
+
+    if (targetIndex < 0 && checklist && elementContains(checklist, field)) {
+      targetIndex = sections.length;
+    }
+
+    if (targetIndex >= 0 && targetIndex !== contractStepIndex) {
+      contractStepIndex = targetIndex;
+      applyWizardStep();
+    }
+  }
+
   function focusFirstInvalidField() {
     var firstInvalid = document.querySelector('.contract-field-error');
     if (!firstInvalid) return;
+    revealFieldWizardStep(firstInvalid);
     if (firstInvalid.scrollIntoView) {
       try {
         firstInvalid.scrollIntoView({ block: 'center', behavior: 'smooth' });
@@ -1711,6 +1733,8 @@
     if (!actions) return;
     var target = actions.querySelector('.contract-step-message');
     if (!target) return;
+    target.setAttribute('role', 'status');
+    target.setAttribute('aria-live', 'polite');
     target.textContent = message || '';
     target.style.display = message ? 'block' : 'none';
   }
