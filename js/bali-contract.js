@@ -344,6 +344,27 @@
     calculateContracts();
   }
 
+  function validateInlineChecklist(button) {
+    var ids = isEditSubmit(button)
+      ? ['chkConfereEdicao']
+      : ['chkConfereDocumento', 'chkConfereValores', 'chkConferePagamento'];
+
+    var missing = ids.some(function (id) {
+      var field = bySuffix(id);
+      return field && !field.checked;
+    });
+
+    if (!missing) return true;
+
+    alert(isEditSubmit(button)
+      ? 'Confirme o checklist da edição antes de gravar.'
+      : 'Confirme o checklist final antes de gravar o contrato.');
+
+    var first = ids.map(bySuffix).filter(Boolean)[0];
+    if (first && first.focus) first.focus();
+    return false;
+  }
+
   function handleSubmit(event) {
     var button = event.currentTarget;
     if (button.getAttribute('data-contract-confirmed') === 'true') {
@@ -362,9 +383,12 @@
       return false;
     }
 
-    event.preventDefault();
-    openChecklist(button);
-    return false;
+    if (!validateInlineChecklist(button)) {
+      event.preventDefault();
+      return false;
+    }
+
+    return true;
   }
 
   function removeLegacyPostbacks(field) {
@@ -453,7 +477,6 @@
     enhanceFields();
     bindSubmitButtons();
     ensureQualityPanel();
-    ensureChecklistModal();
     prepareMoneyFields(false);
     bindAjaxEndRequest();
   }

@@ -17,7 +17,7 @@
 
     <script src="../tables/js/jquery.dataTables.min.js"></script>
     <link href="../tables/estilo/table.css" rel="stylesheet" />
-    <link href="../css/bali-contract.css?v=20260624-contratos1" rel="stylesheet" />
+    <link href="../css/bali-contract.css?v=20260624-contratos3" rel="stylesheet" />
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -152,7 +152,7 @@
         }
     </script>
 
-    <script src="../js/bali-contract.js?v=20260624-contratos2"></script>
+    <script src="../js/bali-contract.js?v=20260624-contratos3"></script>
 </head>
 <body class="bali-contract-page contrato-byd">
     <form id="form1" style="height: 100%;" runat="server">
@@ -257,6 +257,15 @@ order by usuario_nome "></asp:SqlDataSource>
                                             </tr>
 
                                         </table>
+                                        <div class="contract-checklist">
+                                            <strong>Checklist final</strong>
+                                            <div class="contract-checklist-grid">
+                                                <label class="contract-check"><asp:CheckBox ID="chkConfereDocumento" runat="server" /> Documento do cliente conferido</label>
+                                                <label class="contract-check"><asp:CheckBox ID="chkConfereValores" runat="server" /> Valores conferidos</label>
+                                                <label class="contract-check"><asp:CheckBox ID="chkConferePagamento" runat="server" /> Forma de pagamento conferida</label>
+                                                <label class="contract-check"><asp:CheckBox ID="chkConfirmarDuplicidade" runat="server" /> Estou ciente caso exista contrato semelhante recente</label>
+                                            </div>
+                                        </div>
                                         <asp:Button ID="btnGravar" runat="server" Text="Gravar" OnClick="btnGravar_Click" CssClass="btns" />
 
 
@@ -648,6 +657,12 @@ order by usuario_nome "></asp:SqlDataSource>
                                             </tr>
 
                                         </table>
+                                    </div>
+                                    <div class="contract-checklist">
+                                        <strong>Checklist da edição</strong>
+                                        <div class="contract-checklist-grid">
+                                            <label class="contract-check"><asp:CheckBox ID="chkConfereEdicao" runat="server" /> Conferi as alterações antes de gravar</label>
+                                        </div>
                                     </div>
                                     <asp:Button ID="btnEditareGravar" runat="server" Text="Editar e Gravar" OnClick="btnEditareGravar_Click" CssClass="btns" />
                                 

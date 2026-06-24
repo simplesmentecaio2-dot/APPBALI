@@ -7,11 +7,13 @@ using System.Web.UI.WebControls;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.IO;
 using System.Text;
 
 public partial class veiculos_contrato : System.Web.UI.Page
 {
     private const string TabelaContratosBI = "dbo.veiculos_contrato_vendaJEEP";
+    private const string MarcaContrato = "Jeep";
     private const int DiasMaximosBI = 370;
     private const int TimeoutConsultaSegundos = 60;
 
@@ -58,6 +60,216 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         string script = "alert('" + HttpUtility.JavaScriptStringEncode(mensagem) + "');";
         ScriptManager.RegisterStartupScript(this, this.GetType(), Guid.NewGuid().ToString("N"), script, true);
+    }
+
+    private string UsuarioAtual()
+    {
+        return Session["usuario"] == null ? "sem usuario" : Session["usuario"].ToString();
+    }
+
+    private string LimparLog(string valor)
+    {
+        return (valor ?? "").Replace("\r", " ").Replace("\n", " ").Replace("\t", " ").Trim();
+    }
+
+    private void RegistrarContratoOperacao(string acao, string detalhe)
+    {
+        try
+        {
+            string pasta = Server.MapPath("~/App_Data");
+            Directory.CreateDirectory(pasta);
+            string linha = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CulturaBrasil)
+                + "\t" + MarcaContrato
+                + "\t" + LimparLog(UsuarioAtual())
+                + "\t" + LimparLog(acao)
+                + "\t" + LimparLog(detalhe);
+
+            File.AppendAllText(Path.Combine(pasta, "contrato-operacoes.log"), linha + Environment.NewLine, Encoding.UTF8);
+        }
+        catch
+        {
+        }
+    }
+
+    private string NormalizarChave(string valor)
+    {
+        StringBuilder texto = new StringBuilder();
+        foreach (char caractere in (valor ?? "").ToUpperInvariant())
+        {
+            if (Char.IsLetterOrDigit(caractere))
+            {
+                texto.Append(caractere);
+            }
+        }
+        return texto.ToString();
+    }
+
+    private bool ExisteContratoSemelhante(string tipo, out string contratoEncontrado)
+    {
+        contratoEncontrado = "";
+        string cpf = NormalizarChave(txtCPFCNPJ.Text);
+        string chassi = NormalizarChave(txtChassiPlaca.Text);
+        string modelo = (txtModelo.Text ?? "").Trim().ToUpperInvariant();
+
+        if (cpf.Length == 0 && chassi.Length == 0)
+        {
+            return false;
+        }
+
+        Veiculos vec = new Veiculos();
+        try
+        {
+            vec.Conexao();
+            using (SqlCommand oCmd = new SqlCommand())
+            {
+                oCmd.Connection = vec.oCon;
+                oCmd.CommandTimeout = TimeoutConsultaSegundos;
+                oCmd.CommandText = @"select top 1 id
+                                     from " + TabelaContratosBI + @"
+                                     where [data] >= dateadd(day, -30, getdate())
+                                       and tipo = @tipo
+                                       and (
+                                            (@chassi <> '' and upper(replace(replace(replace(replace(isnull(chassiplaca, ''), ' ', ''), '-', ''), '.', ''), '/', '')) = @chassi)
+                                            or
+                                            (@cpf <> '' and upper(replace(replace(replace(replace(isnull(cpfcnpj, ''), '.', ''), '-', ''), '/', ''), ' ', '')) = @cpf
+                                             and @modelo <> '' and upper(ltrim(rtrim(isnull(modelo, '')))) = @modelo
+                                             and abs(isnull(valorveiculo, 0) - @valor) <= 1)
+                                           )
+                                     order by [data] desc, id desc";
+                oCmd.CommandType = CommandType.Text;
+                oCmd.Parameters.Add("@tipo", SqlDbType.VarChar).Value = tipo ?? "";
+                oCmd.Parameters.Add("@cpf", SqlDbType.VarChar).Value = cpf;
+                oCmd.Parameters.Add("@chassi", SqlDbType.VarChar).Value = chassi;
+                oCmd.Parameters.Add("@modelo", SqlDbType.VarChar).Value = modelo;
+                oCmd.Parameters.Add("@valor", SqlDbType.Float).Value = Convert.ToDouble(LerMoeda(txtValoVeiculo.Text));
+
+                object resultado = oCmd.ExecuteScalar();
+                if (resultado != null && resultado != DBNull.Value)
+                {
+                    contratoEncontrado = resultado.ToString();
+                    return true;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            RegistrarContratoOperacao("ERRO_CONSULTA_DUPLICIDADE", ex.Message);
+        }
+        finally
+        {
+            vec.FecharConexao();
+        }
+
+        return false;
+    }
+
+    private bool ValidarChecklistFinalNovo(string tipo, out string mensagem)
+    {
+        List<string> erros = new List<string>();
+
+        if (!chkConfereDocumento.Checked) erros.Add("Confirme que o documento do cliente foi conferido.");
+        if (!chkConfereValores.Checked) erros.Add("Confirme que os valores foram conferidos.");
+        if (!chkConferePagamento.Checked) erros.Add("Confirme que a forma de pagamento foi conferida.");
+
+        string contratoSemelhante;
+        if (erros.Count == 0 && ExisteContratoSemelhante(tipo, out contratoSemelhante))
+        {
+            if (!chkConfirmarDuplicidade.Checked)
+            {
+                erros.Add("Existe um contrato semelhante recente (código " + contratoSemelhante + "). Se estiver correto gravar mesmo assim, marque a ciência de duplicidade.");
+            }
+            else
+            {
+                RegistrarContratoOperacao("DUPLICIDADE_CONFIRMADA", "Contrato semelhante=" + contratoSemelhante + "; CPF/CNPJ=" + txtCPFCNPJ.Text + "; Chassi/Placa=" + txtChassiPlaca.Text + "; Tipo=" + tipo);
+            }
+        }
+
+        if (erros.Count > 0)
+        {
+            mensagem = "Revise antes de gravar:\n- " + String.Join("\n- ", erros.ToArray());
+            return false;
+        }
+
+        mensagem = "";
+        return true;
+    }
+
+    private Dictionary<string, string> CamposEdicao()
+    {
+        Dictionary<string, string> campos = new Dictionary<string, string>();
+        campos["Cliente"] = txtEdCliente.Text;
+        campos["CPF/CNPJ"] = txtEdCPF.Text;
+        campos["Marca"] = txtEdMarca.Text;
+        campos["Modelo"] = txtEdModelo.Text;
+        campos["Chassi/Placa"] = txtEdChassi.Text;
+        campos["Valor veículo"] = txtEdValorVeic.Text;
+        campos["Entrada"] = txtEdEntrada.Text;
+        campos["Avaliação usada"] = txtEdValorUSADO.Text;
+        campos["Valor utilizado avaliação"] = txtEdVALORUSADOAVAILACAO.Text;
+        campos["Quitação"] = txtEdQuitacao.Text;
+        campos["Financiamento"] = txtEdFinanciamento.Text;
+        campos["Nº parcelas"] = txtEdNumeroParcelas.Text;
+        campos["Valor parcela"] = txtEdValorParcela.Text;
+        campos["Vendedor"] = txtEdVendedor.Text;
+        campos["Previsão"] = txtEdPrevisao.Text;
+        campos["Modalidade"] = rbtnEdAVISTA.Checked ? "A vista" : (rbtnEdAprazo.Checked ? "Financiamento" : "");
+        return campos;
+    }
+
+    private string MontarSnapshot(Dictionary<string, string> campos)
+    {
+        StringBuilder snapshot = new StringBuilder();
+        foreach (KeyValuePair<string, string> campo in campos)
+        {
+            snapshot.Append(campo.Key).Append("=").Append(LimparLog(campo.Value)).Append("\n");
+        }
+        return snapshot.ToString();
+    }
+
+    private Dictionary<string, string> LerSnapshot(string snapshot)
+    {
+        Dictionary<string, string> campos = new Dictionary<string, string>();
+        string[] linhas = (snapshot ?? "").Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        foreach (string linha in linhas)
+        {
+            int posicao = linha.IndexOf("=");
+            if (posicao > 0)
+            {
+                campos[linha.Substring(0, posicao)] = linha.Substring(posicao + 1);
+            }
+        }
+        return campos;
+    }
+
+    private void GuardarSnapshotEdicao()
+    {
+        ViewState["ContratoSnapshot"] = MontarSnapshot(CamposEdicao());
+    }
+
+    private void RegistrarHistoricoEdicao(string contrato)
+    {
+        Dictionary<string, string> anterior = LerSnapshot(Convert.ToString(ViewState["ContratoSnapshot"]));
+        Dictionary<string, string> atual = CamposEdicao();
+        List<string> mudancas = new List<string>();
+
+        foreach (KeyValuePair<string, string> campo in atual)
+        {
+            string valorAnterior = anterior.ContainsKey(campo.Key) ? anterior[campo.Key] : "";
+            string valorAtual = LimparLog(campo.Value);
+            if (!String.Equals(valorAnterior, valorAtual, StringComparison.Ordinal))
+            {
+                mudancas.Add(campo.Key + ": '" + valorAnterior + "' -> '" + valorAtual + "'");
+            }
+        }
+
+        if (mudancas.Count > 0)
+        {
+            RegistrarContratoOperacao("EDICAO_ALTERACOES", "Contrato=" + contrato + "; " + String.Join(" | ", mudancas.Take(40).ToArray()));
+        }
+        else
+        {
+            RegistrarContratoOperacao("EDICAO_SEM_ALTERACAO", "Contrato=" + contrato);
+        }
     }
 
     private decimal LerMoeda(string valor)
@@ -541,11 +753,17 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     return;
                 }
             }
-            catch (FormatException)
-            {
-                ExibirAlerta("Revise os campos de valor. Use apenas números no formato 150000,00.");
-                return;
-            }
+      catch (FormatException)
+      {
+          ExibirAlerta("Revise os campos de valor. Use apenas números no formato 150000,00.");
+          return;
+      }
+
+      if (!ValidarChecklistFinalNovo(tipo, out mensagemValidacao))
+      {
+          ExibirAlerta(mensagemValidacao);
+          return;
+      }
 
 
             try
@@ -575,16 +793,19 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 }
                 else if (obs.Equals("N") && codigo != null)
                 {
+                    RegistrarContratoOperacao("DUPLICIDADE_BLOQUEADA_PROCEDURE", "Contrato semelhante=" + codigo + "; CPF/CNPJ=" + txtCPFCNPJ.Text + "; Chassi/Placa=" + txtChassiPlaca.Text + "; Tipo=" + tipo);
                     ExibirAlerta("Possível duplicidade: já existe um contrato com estes dados. Código: " + codigo + ". Confira antes de tentar gravar novamente.");
                 }
                 else
                 {
+                    RegistrarContratoOperacao("ERRO_GRAVACAO", "Retorno procedure=" + obs + "; Código=" + codigo);
                     ExibirAlerta("Não foi possível gravar o contrato. Confira os campos obrigatórios e os valores informados.");
 
                 }
             }
             catch (Exception ex)
             {
+                RegistrarContratoOperacao("ERRO_GRAVACAO", ex.Message);
                 ExibirAlerta("Não foi possível gravar o contrato. Revise valores como valor do veículo, entrada, avaliação, quitação e parcelas.");
             }
 
@@ -669,6 +890,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
         txtEdCortesias.Text = cortesias; txtEdObs.Text = obs; txtEdPrevisao.Text = previsaoentrega; txtEdVendedor.Text = vendedor; txtEdVALORUSADOAVAILACAO.Text = vlutilizadoavaliacao; txtEdQuitacao.Text = vlquitacao; txtEdSaldoAvaliacao.Text = vlsaldoavaliacao; txtEdAnoMOdUSADO.Text = anomodeloVU;
         rbtnEdAVISTA.Checked = modalidade_pagamento == "A";
         rbtnEdAprazo.Checked = modalidade_pagamento == "F";
+        chkConfereEdicao.Checked = false;
+        GuardarSnapshotEdicao();
 
     }
 
@@ -705,6 +928,12 @@ public partial class veiculos_contrato : System.Web.UI.Page
           return;
       }
 
+      if (!chkConfereEdicao.Checked)
+      {
+          ExibirAlerta("Confirme o checklist da edição antes de gravar.");
+          return;
+      }
+
       Veiculos vec = new Veiculos();
            string contrato = vec.update_contrato_vendajeep(Convert.ToInt16(txtContrato.Text), txtEdCliente.Text, txtEdEndereco.Text, txtEdCep.Text, txtEdBairro.Text, txtEdCidade.Text,
                 txtEdUF.Text, txtEdCPF.Text, txtEdRG.Text, txtEdNascimento.Text, txtEdTelRes.Text,
@@ -715,14 +944,18 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 txtEdNumeroParcelas.Text, txtEdValorParcela.Text, txtEdPlanoFinanciamento.Text, txtEdCortesias.Text,
                 txtEdObs.Text, txtEdPrevisao.Text, txtEdVendedor.Text, txtEdVALORUSADOAVAILACAO.Text, txtEdQuitacao.Text, txtEdSaldoAvaliacao.Text);
 
+        RegistrarHistoricoEdicao(txtContrato.Text);
+        GuardarSnapshotEdicao();
+        chkConfereEdicao.Checked = false;
         ExibirAlerta("Contrato alterado com sucesso.");
 
 
 
         }
 
-       catch (Exception)
+       catch (Exception ex)
         {
+            RegistrarContratoOperacao("ERRO_EDICAO", ex.Message);
             ExibirAlerta("Não foi possível alterar o contrato. Revise valores, modalidade de pagamento, parcelas e vendedor.");
         }
 
