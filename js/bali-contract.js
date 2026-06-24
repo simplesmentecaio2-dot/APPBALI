@@ -157,6 +157,8 @@
       ids: ['txtCPFCNPJ', 'txtEdCPF'],
       placeholder: 'CPF ou CNPJ',
       inputmode: 'numeric',
+      autocomplete: 'off',
+      autocapitalize: 'off',
       numericBlank: true,
       maxLength: 18,
       normalize: formatCpfCnpj,
@@ -168,6 +170,8 @@
     {
       ids: ['txtChassiPlaca', 'txtEdChassi'],
       placeholder: 'Placa ou chassi',
+      autocomplete: 'off',
+      autocapitalize: 'characters',
       normalize: normalizePlateOrChassi,
       validate: function (value) {
         var length = lettersNumbersOnly(value).length;
@@ -178,6 +182,8 @@
     {
       ids: ['txtPlacaVU', 'txtEdPlacaUSADO'],
       placeholder: 'Placa do usado',
+      autocomplete: 'off',
+      autocapitalize: 'characters',
       normalize: normalizePlateOrChassi,
       validate: function (value) {
         return lettersNumbersOnly(value).length >= 7;
@@ -188,6 +194,7 @@
       ids: ['txtCEP', 'txtEdCep'],
       placeholder: '00000-000',
       inputmode: 'numeric',
+      autocomplete: 'postal-code',
       numericBlank: true,
       normalize: formatCep,
       validate: function (value) {
@@ -198,6 +205,8 @@
     {
       ids: ['txtUF', 'txtEdUF'],
       placeholder: 'UF',
+      autocomplete: 'address-level1',
+      autocapitalize: 'characters',
       normalize: function (value) {
         return String(value || '').trim().toUpperCase();
       },
@@ -210,6 +219,8 @@
       ids: ['txtEmail', 'txtEdEmail'],
       placeholder: 'email@dominio.com',
       inputmode: 'email',
+      autocomplete: 'email',
+      autocapitalize: 'off',
       normalize: function (value) {
         return String(value || '').trim().toLowerCase();
       },
@@ -222,6 +233,7 @@
       ids: ['txtNascimento', 'txtEdNascimento'],
       placeholder: 'dd/mm/aaaa',
       inputmode: 'numeric',
+      autocomplete: 'bday',
       numericBlank: true,
       validate: function (value) {
         return isValidPastDate(value);
@@ -244,6 +256,7 @@
       ids: ['txtTelREsidencial', 'txtTelCom', 'txtCelular', 'txtEdTelRes', 'txtEdComercial', 'txtEdCelular'],
       placeholder: '(00) 00000-0000',
       inputmode: 'tel',
+      autocomplete: 'tel',
       numericBlank: true,
       maxLength: 15,
       normalize: formatPhone,
@@ -2662,7 +2675,9 @@
           if (rule.placeholder) field.setAttribute('placeholder', rule.placeholder);
           if (rule.inputmode) field.setAttribute('inputmode', rule.inputmode);
           if (rule.maxLength) field.setAttribute('maxlength', rule.maxLength);
-          field.setAttribute('autocomplete', rule.inputmode === 'email' ? 'email' : 'off');
+          field.setAttribute('autocomplete', rule.autocomplete || (rule.inputmode === 'email' ? 'email' : 'off'));
+          if (rule.autocapitalize) field.setAttribute('autocapitalize', rule.autocapitalize);
+          if (rule.autocomplete === 'off') field.setAttribute('spellcheck', 'false');
 
           field.addEventListener('blur', function () {
             if (rule.normalize && !isFormatBlank(rule, field.value)) {
@@ -2676,6 +2691,27 @@
             showFieldMessage(field, '');
             scheduleQualityPanelUpdate();
           });
+        });
+      });
+    });
+  }
+
+  function enhanceAutocompleteFields() {
+    [
+      { ids: ['txtCliente', 'txtEdCliente'], autocomplete: 'name' },
+      { ids: ['txtEndereco', 'txtEdEndereco'], autocomplete: 'street-address' },
+      { ids: ['txtBairro', 'txtEdBairro'], autocomplete: 'address-level3' },
+      { ids: ['txtCidade', 'txtEdCidade'], autocomplete: 'address-level2' },
+      { ids: ['txtRGIE', 'txtEdRG'], autocomplete: 'off', spellcheck: false },
+      { ids: ['txtMarca', 'txtEdMarca', 'txtModelo', 'txtEdModelo', 'txtCorExterna', 'txtEdCorExt'], autocomplete: 'off' },
+      { ids: ['txtFinanceira', 'txtEdFinanceira', 'txtPlano', 'txtEdPlanoFinanciamento'], autocomplete: 'off' }
+    ].forEach(function (config) {
+      config.ids.forEach(function (id) {
+        allBySuffix(id).forEach(function (field) {
+          if (field.getAttribute('data-contract-autocomplete') === 'true') return;
+          field.setAttribute('data-contract-autocomplete', 'true');
+          field.setAttribute('autocomplete', config.autocomplete);
+          if (config.spellcheck === false || config.autocomplete === 'off') field.setAttribute('spellcheck', 'false');
         });
       });
     });
@@ -3089,6 +3125,7 @@
     enhanceLoadingIndicator();
     enhanceFields();
     enhanceFormatFields();
+    enhanceAutocompleteFields();
     enhanceIdentityFields();
     enhanceTextCleanupFields();
     markRequiredLabels();
