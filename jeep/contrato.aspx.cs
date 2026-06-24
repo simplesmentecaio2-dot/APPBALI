@@ -6,9 +6,15 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Data;
+using System.Data.SqlClient;
+using System.Globalization;
+using System.Text;
 
 public partial class veiculos_contrato : System.Web.UI.Page
 {
+    private const string TabelaContratosBI = "dbo.veiculos_contrato_vendaJEEP";
+
     protected void Page_Load(object sender, EventArgs e)
     {
 
@@ -22,11 +28,319 @@ public partial class veiculos_contrato : System.Web.UI.Page
             lblUsuario.Text = Session["usuario"].ToString();
         }
 
+        InicializarPeriodoBI();
+        if (!IsPostBack)
+        {
+            CarregarBI();
+        }
 
     }
     public string tabela;
     public string tabelaVU;
     public string tabelaVD;
+    public string biHtml;
+
+    protected void btnAtualizarBI_Click(object sender, EventArgs e)
+    {
+        InicializarPeriodoBI();
+        CarregarBI();
+        TabContainerProcesso.ActiveTabIndex = 0;
+    }
+
+    private void InicializarPeriodoBI()
+    {
+        DateTime inicioMes = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+        DateTime fimMes = inicioMes.AddMonths(1).AddDays(-1);
+
+        if (txtBiDtInicial.Text.Length == 0)
+        {
+            txtBiDtInicial.Text = inicioMes.ToString("dd/MM/yyyy");
+        }
+
+        if (txtBiDtFinal.Text.Length == 0)
+        {
+            txtBiDtFinal.Text = fimMes.ToString("dd/MM/yyyy");
+        }
+    }
+
+    private void CarregarBI()
+    {
+        DateTime inicio;
+        DateTime fim;
+        ObterPeriodoBI(out inicio, out fim);
+
+        try
+        {
+            List<ContratoBIItem> contratos = BuscarContratosBI(inicio, fim);
+            biHtml = MontarHtmlBI(contratos, inicio, fim);
+        }
+        catch (Exception ex)
+        {
+            biHtml = "<div class='contract-bi-empty'>Não foi possível carregar o BI agora. Detalhe: "
+                + HttpUtility.HtmlEncode(ex.Message) + "</div>";
+        }
+    }
+
+    private void ObterPeriodoBI(out DateTime inicio, out DateTime fim)
+    {
+        CultureInfo cultura = new CultureInfo("pt-BR");
+        DateTime inicioPadrao = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+        DateTime fimPadrao = inicioPadrao.AddMonths(1).AddDays(-1);
+
+        if (!DateTime.TryParse(txtBiDtInicial.Text, cultura, DateTimeStyles.None, out inicio))
+        {
+            inicio = inicioPadrao;
+        }
+
+        if (!DateTime.TryParse(txtBiDtFinal.Text, cultura, DateTimeStyles.None, out fim))
+        {
+            fim = fimPadrao;
+        }
+
+        if (fim < inicio)
+        {
+            DateTime troca = inicio;
+            inicio = fim;
+            fim = troca;
+        }
+
+        txtBiDtInicial.Text = inicio.ToString("dd/MM/yyyy");
+        txtBiDtFinal.Text = fim.ToString("dd/MM/yyyy");
+    }
+
+    private List<ContratoBIItem> BuscarContratosBI(DateTime inicio, DateTime fim)
+    {
+        List<ContratoBIItem> contratos = new List<ContratoBIItem>();
+        Veiculos vec = new Veiculos();
+
+        try
+        {
+            vec.Conexao();
+            using (SqlCommand oCmd = new SqlCommand())
+            {
+                oCmd.Connection = vec.oCon;
+                oCmd.CommandText = @"select id,
+                                            isnull(vendedor, '') vendedor,
+                                            isnull(tipo, '') tipo,
+                                            cast([data] as date) data,
+                                            isnull(valorveiculo, 0) valorveiculo,
+                                            isnull(modalidade_pagamento, '') modalidade_pagamento
+                                     from " + TabelaContratosBI + @"
+                                     where [data] >= @inicio
+                                       and [data] < dateadd(day, 1, @fim)
+                                       and tipo in ('VN', 'VU', 'VD')
+                                     order by [data] asc, id asc";
+                oCmd.CommandType = CommandType.Text;
+                oCmd.Parameters.Add("@inicio", SqlDbType.Date).Value = inicio;
+                oCmd.Parameters.Add("@fim", SqlDbType.Date).Value = fim;
+
+                using (SqlDataReader odr = oCmd.ExecuteReader())
+                {
+                    while (odr.Read())
+                    {
+                        contratos.Add(new ContratoBIItem
+                        {
+                            Vendedor = odr["vendedor"].ToString(),
+                            Tipo = odr["tipo"].ToString(),
+                            Data = Convert.ToDateTime(odr["data"]),
+                            Valor = ConverterDecimal(odr["valorveiculo"]),
+                            Pagamento = odr["modalidade_pagamento"].ToString()
+                        });
+                    }
+                }
+            }
+        }
+        finally
+        {
+            vec.FecharConexao();
+        }
+
+        return contratos;
+    }
+
+    private string MontarHtmlBI(List<ContratoBIItem> contratos, DateTime inicio, DateTime fim)
+    {
+        int total = contratos.Count;
+        int totalVN = contratos.Count(x => x.Tipo == "VN");
+        int totalVU = contratos.Count(x => x.Tipo == "VU");
+        int totalVD = contratos.Count(x => x.Tipo == "VD");
+        decimal valorTotal = contratos.Sum(x => x.Valor);
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class='contract-bi-period'>Período analisado: ");
+        html.Append(HttpUtility.HtmlEncode(inicio.ToString("dd/MM/yyyy")));
+        html.Append(" a ");
+        html.Append(HttpUtility.HtmlEncode(fim.ToString("dd/MM/yyyy")));
+        html.Append("</div>");
+
+        html.Append("<div class='contract-bi-cards'>");
+        html.Append(BiCard("Total", total.ToString(), "Contratos no período"));
+        html.Append(BiCard("Novos", totalVN.ToString(), "Contratos VN"));
+        html.Append(BiCard("Usados", totalVU.ToString(), "Contratos VU"));
+        html.Append(BiCard("Venda direta", totalVD.ToString(), "Contratos VD"));
+        html.Append(BiCard("Valor total", valorTotal.ToString("C0", new CultureInfo("pt-BR")), "Soma dos veículos"));
+        html.Append("</div>");
+
+        if (total == 0)
+        {
+            html.Append("<div class='contract-bi-empty'>Sem contratos encontrados no período selecionado.</div>");
+            return html.ToString();
+        }
+
+        Dictionary<string, int> porVendedor = AgruparPorTexto(contratos, "vendedor");
+        Dictionary<string, int> porTipo = AgruparPorTexto(contratos, "tipo");
+        Dictionary<string, int> porPagamento = AgruparPorTexto(contratos, "pagamento");
+        SortedDictionary<DateTime, int> porDia = AgruparPorDia(contratos, inicio, fim);
+
+        html.Append("<div class='contract-bi-layout'>");
+        html.Append("<section class='contract-bi-chart wide'><h3>Evolução diária</h3>");
+        html.Append(MontarGraficoDias(porDia));
+        html.Append("</section>");
+        html.Append("<section class='contract-bi-chart'><h3>Contratos por vendedor</h3>");
+        html.Append(MontarBarras(porVendedor, true));
+        html.Append("</section>");
+        html.Append("<section class='contract-bi-chart'><h3>Tipos de contrato</h3>");
+        html.Append(MontarBarras(porTipo, false));
+        html.Append("</section>");
+        html.Append("<section class='contract-bi-chart'><h3>Forma de pagamento</h3>");
+        html.Append(MontarBarras(porPagamento, false));
+        html.Append("</section>");
+        html.Append("</div>");
+
+        return html.ToString();
+    }
+
+    private string BiCard(string label, string value, string caption)
+    {
+        return "<article><span>" + HttpUtility.HtmlEncode(label) + "</span><strong>"
+            + HttpUtility.HtmlEncode(value) + "</strong><small>" + HttpUtility.HtmlEncode(caption) + "</small></article>";
+    }
+
+    private Dictionary<string, int> AgruparPorTexto(List<ContratoBIItem> contratos, string campo)
+    {
+        Dictionary<string, int> grupo = new Dictionary<string, int>();
+
+        foreach (ContratoBIItem contrato in contratos)
+        {
+            string chave = "";
+            if (campo == "vendedor") chave = contrato.Vendedor;
+            if (campo == "tipo") chave = NomeTipo(contrato.Tipo);
+            if (campo == "pagamento") chave = NomePagamento(contrato.Pagamento);
+            if (chave.Trim().Length == 0) chave = "Não informado";
+
+            if (!grupo.ContainsKey(chave)) grupo[chave] = 0;
+            grupo[chave]++;
+        }
+
+        return grupo;
+    }
+
+    private SortedDictionary<DateTime, int> AgruparPorDia(List<ContratoBIItem> contratos, DateTime inicio, DateTime fim)
+    {
+        SortedDictionary<DateTime, int> grupo = new SortedDictionary<DateTime, int>();
+        for (DateTime dia = inicio.Date; dia <= fim.Date; dia = dia.AddDays(1))
+        {
+            grupo[dia] = 0;
+        }
+
+        foreach (ContratoBIItem contrato in contratos)
+        {
+            DateTime dia = contrato.Data.Date;
+            if (!grupo.ContainsKey(dia)) grupo[dia] = 0;
+            grupo[dia]++;
+        }
+
+        return grupo;
+    }
+
+    private string MontarBarras(Dictionary<string, int> dados, bool limitar)
+    {
+        if (dados.Count == 0) return "<p class='contract-bi-muted'>Sem dados para exibir.</p>";
+        List<KeyValuePair<string, int>> ordenados = dados.OrderByDescending(x => x.Value).ThenBy(x => x.Key).ToList();
+        if (limitar) ordenados = ordenados.Take(12).ToList();
+
+        int max = ordenados.Max(x => x.Value);
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class='contract-bi-bars'>");
+
+        foreach (KeyValuePair<string, int> item in ordenados)
+        {
+            int porcentagem = max == 0 ? 0 : Convert.ToInt32(Math.Round((item.Value * 100.0) / max));
+            html.Append("<div class='contract-bi-bar'><div class='contract-bi-bar-head'><span>");
+            html.Append(HttpUtility.HtmlEncode(item.Key));
+            html.Append("</span><strong>");
+            html.Append(item.Value);
+            html.Append("</strong></div><div class='contract-bi-track'><span style='width:");
+            html.Append(porcentagem);
+            html.Append("%'></span></div></div>");
+        }
+
+        html.Append("</div>");
+        return html.ToString();
+    }
+
+    private string MontarGraficoDias(SortedDictionary<DateTime, int> dados)
+    {
+        int max = dados.Count == 0 ? 0 : dados.Max(x => x.Value);
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class='contract-bi-days'>");
+
+        foreach (KeyValuePair<DateTime, int> item in dados)
+        {
+            int altura = max == 0 ? 0 : Convert.ToInt32(Math.Round((item.Value * 100.0) / max));
+            if (item.Value > 0 && altura < 12) altura = 12;
+            html.Append("<div class='contract-bi-day' title='");
+            html.Append(HttpUtility.HtmlEncode(item.Key.ToString("dd/MM/yyyy") + " - " + item.Value + " contratos"));
+            html.Append("'><span style='height:");
+            html.Append(altura);
+            html.Append("%'></span><small>");
+            html.Append(HttpUtility.HtmlEncode(item.Key.ToString("dd/MM")));
+            html.Append("</small></div>");
+        }
+
+        html.Append("</div>");
+        return html.ToString();
+    }
+
+    private string NomeTipo(string tipo)
+    {
+        if (tipo == "VN") return "Novo";
+        if (tipo == "VU") return "Usado";
+        if (tipo == "VD") return "Venda direta";
+        return "Não informado";
+    }
+
+    private string NomePagamento(string pagamento)
+    {
+        if (pagamento == "A") return "À vista";
+        if (pagamento == "F") return "Financiamento";
+        return "Não informado";
+    }
+
+    private decimal ConverterDecimal(object valor)
+    {
+        if (valor == null || valor == DBNull.Value) return 0;
+        try
+        {
+            return Convert.ToDecimal(valor);
+        }
+        catch
+        {
+            decimal convertido;
+            if (decimal.TryParse(valor.ToString(), NumberStyles.Any, new CultureInfo("pt-BR"), out convertido)) return convertido;
+            if (decimal.TryParse(valor.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out convertido)) return convertido;
+            return 0;
+        }
+    }
+
+    private class ContratoBIItem
+    {
+        public string Vendedor { get; set; }
+        public string Tipo { get; set; }
+        public DateTime Data { get; set; }
+        public decimal Valor { get; set; }
+        public string Pagamento { get; set; }
+    }
 
 
     protected void rbtnVU_CheckedChanged(object sender, EventArgs e)

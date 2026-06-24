@@ -8,7 +8,7 @@
 <head runat="server">
     <title>Contrato de Venda - BYD</title>
     <link href="../css/estilo.css" rel="stylesheet" />
-    <link href="../css/bali-contract.css?v=20260624-ux" rel="stylesheet" />
+    <link href="../css/bali-contract.css?v=20260624-bi" rel="stylesheet" />
     <script src="../js/jquery-1.10.2.js"></script>
     <script src="../js/js.js"></script>
     <script src="../js/jquery.maskMoney.js"></script>
@@ -167,6 +167,34 @@
                     <td style="width: 100%;">
 
                         <asp:TabContainer ID="TabContainerProcesso" CssClass="tabPanelConsultar" Width="100%" runat="server" ActiveTabIndex="0">
+                            <asp:TabPanel ID="TabPanelBI" Style="padding: 20px;" runat="server" HeaderText="TabPanel1">
+                                <HeaderTemplate>
+                                    BI
+                                </HeaderTemplate>
+                                <ContentTemplate>
+                                    <div class="contract-bi-panel">
+                                        <div class="contract-bi-filter">
+                                            <div>
+                                                <span class="contract-bi-kicker">Indicadores</span>
+                                                <h2>BI de contratos BYD</h2>
+                                                <p>Resumo do período por tipo, vendedor, forma de pagamento e evolução diária.</p>
+                                            </div>
+                                            <div class="contract-bi-controls">
+                                                <label>Data inicial
+                                                    <asp:TextBox ID="txtBiDtInicial" CssClass="txts" runat="server"></asp:TextBox>
+                                                    <asp:CalendarExtender ID="CalendarExtenderBI1" runat="server" Enabled="True" Format="dd/MM/yyyy" TargetControlID="txtBiDtInicial"></asp:CalendarExtender>
+                                                </label>
+                                                <label>Data final
+                                                    <asp:TextBox ID="txtBiDtFinal" CssClass="txts" runat="server"></asp:TextBox>
+                                                    <asp:CalendarExtender ID="CalendarExtenderBI2" runat="server" Enabled="True" Format="dd/MM/yyyy" TargetControlID="txtBiDtFinal"></asp:CalendarExtender>
+                                                </label>
+                                                <asp:Button ID="btnAtualizarBI" runat="server" Text="Atualizar BI" CssClass="btns" OnClick="btnAtualizarBI_Click" />
+                                            </div>
+                                        </div>
+                                        <%=biHtml %>
+                                    </div>
+                                </ContentTemplate>
+                            </asp:TabPanel>
                             <asp:TabPanel ID="TabPanelProcessos" Style="padding: 20px;" runat="server" HeaderText="TabPanel1">
                                 <HeaderTemplate>
                                     Novo (+)
