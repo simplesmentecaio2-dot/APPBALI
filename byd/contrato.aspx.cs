@@ -439,18 +439,64 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
     }
 
+    private void NormalizarCpfCnpj(TextBox campo)
+    {
+        if (campo == null) return;
+        string digitos = SomenteDigitos(campo.Text);
+        if (digitos.Length == 11)
+        {
+            campo.Text = digitos.Substring(0, 3) + "." + digitos.Substring(3, 3) + "." + digitos.Substring(6, 3) + "-" + digitos.Substring(9, 2);
+        }
+        else if (digitos.Length == 14)
+        {
+            campo.Text = digitos.Substring(0, 2) + "." + digitos.Substring(2, 3) + "." + digitos.Substring(5, 3) + "/" + digitos.Substring(8, 4) + "-" + digitos.Substring(12, 2);
+        }
+    }
+
+    private void NormalizarTelefone(TextBox campo)
+    {
+        if (campo == null) return;
+        string digitos = SomenteDigitos(campo.Text);
+        if (digitos.Length == 10)
+        {
+            campo.Text = "(" + digitos.Substring(0, 2) + ") " + digitos.Substring(2, 4) + "-" + digitos.Substring(6, 4);
+        }
+        else if (digitos.Length == 11)
+        {
+            campo.Text = "(" + digitos.Substring(0, 2) + ") " + digitos.Substring(2, 5) + "-" + digitos.Substring(7, 4);
+        }
+    }
+
+    private void NormalizarChassiPlaca(TextBox campo)
+    {
+        if (campo == null) return;
+        campo.Text = SomenteLetrasNumeros(campo.Text).ToUpperInvariant();
+    }
+
     private void NormalizarFormatosNovo()
     {
         txtUF.Text = (txtUF.Text ?? "").Trim().ToUpperInvariant();
         txtEmail.Text = (txtEmail.Text ?? "").Trim().ToLowerInvariant();
+        NormalizarCpfCnpj(txtCPFCNPJ);
         NormalizarCep(txtCEP);
+        NormalizarTelefone(txtTelREsidencial);
+        NormalizarTelefone(txtTelCom);
+        NormalizarTelefone(txtCelular);
+        NormalizarChassiPlaca(txtChassiPlaca);
+        NormalizarChassiPlaca(txtPlacaVU);
     }
 
     private void NormalizarFormatosEdicao()
     {
         txtEdUF.Text = (txtEdUF.Text ?? "").Trim().ToUpperInvariant();
         txtEdEmail.Text = (txtEdEmail.Text ?? "").Trim().ToLowerInvariant();
+        NormalizarCpfCnpj(txtEdCPF);
         NormalizarCep(txtEdCep);
+        NormalizarTelefone(txtEdTelRes);
+        NormalizarTelefone(txtEdComercial);
+        NormalizarTelefone(txtEdCelular);
+        NormalizarChassiPlaca(txtEdChassi);
+        NormalizarChassiPlaca(txtEdPlacaUSADO);
     }
 
     private bool CpfCnpjValido(string valor)
