@@ -1,6 +1,5 @@
 (function () {
   var ajaxHooked = false;
-  var submitButton = null;
   var moneyFields = [
     'txtValoVeiculo',
     'txtEmplacamento',
@@ -235,61 +234,6 @@
     return issues;
   }
 
-  function legacyEnsureQualityPanel() {
-    if (document.getElementById('contractQualityPanel')) return;
-    var firstPanel = bySuffix('Panel1') || document.querySelector('.ajax__tab_body table');
-    if (!firstPanel || !firstPanel.parentNode) return;
-
-    var panel = document.createElement('div');
-    panel.id = 'contractQualityPanel';
-    panel.className = 'contract-quality-panel is-attention';
-    panel.innerHTML =
-      '<div class="contract-quality-main">' +
-      '<span class="contract-quality-label">Qualidade do contrato</span>' +
-      '<strong id="contractQualityStatus">Atenção</strong>' +
-      '<small id="contractQualityText">Preencha os campos principais para reduzir erros antes de gravar.</small>' +
-      '</div>' +
-      '<ul id="contractQualityList"></ul>';
-
-    firstPanel.parentNode.insertBefore(panel, firstPanel);
-  }
-
-  function legacyUpdateQualityPanel() {
-    ensureQualityPanel();
-    var panel = document.getElementById('contractQualityPanel');
-    if (!panel) return;
-
-    var isEdit = !!(bySuffix('txtEdCliente') && isVisible(bySuffix('txtEdCliente')));
-    var issues = collectIssues(isEdit, false);
-    var status = document.getElementById('contractQualityStatus');
-    var text = document.getElementById('contractQualityText');
-    var list = document.getElementById('contractQualityList');
-
-    panel.classList.remove('is-good', 'is-attention', 'is-risk');
-    if (issues.length === 0) {
-      panel.classList.add('is-good');
-      status.textContent = 'Completo';
-      text.textContent = 'Campos principais conferidos. Revise os dados antes de gravar.';
-    } else if (issues.length <= 2) {
-      panel.classList.add('is-attention');
-      status.textContent = 'Atenção';
-      text.textContent = 'Existem poucos pontos para conferir antes de gravar.';
-    } else {
-      panel.classList.add('is-risk');
-      status.textContent = 'Risco de erro';
-      text.textContent = 'Revise os campos sinalizados para evitar retorno do sistema.';
-    }
-
-    if (list) {
-      list.innerHTML = '';
-      issues.slice(0, 5).forEach(function (issue) {
-        var item = document.createElement('li');
-        item.textContent = issue;
-        list.appendChild(item);
-      });
-    }
-  }
-
   function getQualityHost(isEdit) {
     var button = bySuffix(isEdit ? 'btnEditareGravar' : 'btnGravar');
     if (button && button.parentNode) return button.parentNode;
@@ -369,68 +313,6 @@
         item.textContent = issue;
         list.appendChild(item);
       });
-    }
-  }
-
-  function ensureChecklistModal() {
-    var existing = document.getElementById('contractChecklistModal');
-    if (existing) return existing;
-
-    var modal = document.createElement('div');
-    modal.id = 'contractChecklistModal';
-    modal.className = 'contract-checklist-modal is-hidden';
-    modal.innerHTML =
-      '<div class="contract-checklist-dialog" role="dialog" aria-modal="true" aria-labelledby="contractChecklistTitle">' +
-      '<h2 id="contractChecklistTitle">Checklist final</h2>' +
-      '<p>Confirme os pontos abaixo antes de gravar o contrato.</p>' +
-      '<label><input type="checkbox" data-contract-check> Documento do cliente conferido</label>' +
-      '<label><input type="checkbox" data-contract-check> Valores e forma de pagamento conferidos</label>' +
-      '<label><input type="checkbox" data-contract-check> Veículo, chassi/placa e vendedor conferidos</label>' +
-      '<div class="contract-checklist-actions">' +
-      '<button type="button" class="secondary" id="contractChecklistCancel">Voltar</button>' +
-      '<button type="button" id="contractChecklistConfirm">Confirmar e gravar</button>' +
-      '</div>' +
-      '<small id="contractChecklistWarning"></small>' +
-      '</div>';
-
-    document.body.appendChild(modal);
-    document.getElementById('contractChecklistCancel').addEventListener('click', closeChecklist);
-    document.getElementById('contractChecklistConfirm').addEventListener('click', confirmChecklist);
-    return modal;
-  }
-
-  function openChecklist(button) {
-    submitButton = button;
-    var modal = ensureChecklistModal();
-    Array.prototype.slice.call(modal.querySelectorAll('[data-contract-check]')).forEach(function (checkbox) {
-      checkbox.checked = false;
-    });
-    var warning = document.getElementById('contractChecklistWarning');
-    if (warning) warning.textContent = '';
-    modal.classList.remove('is-hidden');
-  }
-
-  function closeChecklist() {
-    var modal = document.getElementById('contractChecklistModal');
-    if (modal) modal.classList.add('is-hidden');
-    submitButton = null;
-  }
-
-  function confirmChecklist() {
-    var modal = document.getElementById('contractChecklistModal');
-    var checks = modal ? Array.prototype.slice.call(modal.querySelectorAll('[data-contract-check]')) : [];
-    var warning = document.getElementById('contractChecklistWarning');
-    var allChecked = checks.every(function (checkbox) { return checkbox.checked; });
-
-    if (!allChecked) {
-      if (warning) warning.textContent = 'Marque todos os itens para liberar a gravação.';
-      return;
-    }
-
-    if (submitButton) {
-      submitButton.setAttribute('data-contract-confirmed', 'true');
-      closeChecklist();
-      submitButton.click();
     }
   }
 
