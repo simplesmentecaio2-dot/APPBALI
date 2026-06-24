@@ -127,6 +127,23 @@ public partial class veiculos_contrato : System.Web.UI.Page
         RegistrarContratoOperacao(acao, detalheContrato + "; Pendencias=" + (mensagem ?? "").Replace("\n", " | "));
     }
 
+    private bool RetornoProcedureDuplicidade(string obs, string codigo)
+    {
+        return String.Equals(obs, "N", StringComparison.OrdinalIgnoreCase) && !String.IsNullOrEmpty(codigo);
+    }
+
+    private string MensagemDuplicidadeProcedure(string codigo)
+    {
+        return "Possível duplicidade: já existe um contrato semelhante. Código: " + codigo + ". Confira CPF/CNPJ, chassi/placa, modelo e valor antes de tentar gravar novamente.";
+    }
+
+    private string MensagemErroProcedure(string obs, string codigo)
+    {
+        string retorno = String.IsNullOrEmpty(obs) ? "sem retorno" : obs;
+        string contrato = String.IsNullOrEmpty(codigo) ? "sem código" : codigo;
+        return "Não foi possível gravar o contrato. Retorno do banco: " + retorno + " (" + contrato + "). Confira campos obrigatórios, valores e vendedor.";
+    }
+
     private string NormalizarChave(string valor)
     {
         StringBuilder texto = new StringBuilder();
@@ -1292,7 +1309,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     txtNrParcelas.Text, txtVlParcelas.Text, txtPlano.Text, txtCortesias.Text,
                     txtObs.Text, txtPrevisao.Text, ddlVendedor.Text, tipo, txtVlUtilzadoAvaliacao.Text, txtQuitacao.Text, txtSaldoAvaliacao.Text, out codigo, out obs
                 );
-                if (obs.Equals("S"))
+                if (String.Equals(obs, "S", StringComparison.OrdinalIgnoreCase))
                 {
                     RegistrarContratoOperacao("GRAVACAO_SUCESSO", DetalheContratoNovo(tipo) + "; Contrato=" + codigo);
                     if (tipo == "VN")
@@ -1308,15 +1325,15 @@ public partial class veiculos_contrato : System.Web.UI.Page
                         Response.Redirect("Print-ContratoVD.aspx?contrato=" + codigo);
                     }
                 }
-                else if (obs.Equals("N") && codigo != null)
+                else if (RetornoProcedureDuplicidade(obs, codigo))
                 {
                     RegistrarContratoOperacao("DUPLICIDADE_BLOQUEADA_PROCEDURE", "Contrato semelhante=" + codigo + "; CPF/CNPJ=" + txtCPFCNPJ.Text + "; Chassi/Placa=" + txtChassiPlaca.Text + "; Tipo=" + tipo);
-                    ExibirAlerta("Possível duplicidade: já existe um contrato com estes dados. Código: " + codigo + ". Confira antes de tentar gravar novamente.");
+                    ExibirAlerta(MensagemDuplicidadeProcedure(codigo));
                 }
                 else
                 {
                     RegistrarContratoOperacao("ERRO_GRAVACAO", "Retorno procedure=" + obs + "; Código=" + codigo);
-                    ExibirAlerta("Não foi possível gravar o contrato. Confira os campos obrigatórios e os valores informados.");
+                    ExibirAlerta(MensagemErroProcedure(obs, codigo));
                 }
             }
             catch (Exception ex)
