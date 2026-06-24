@@ -959,6 +959,45 @@ body.bali-contract-page *::after {
   color: #b42318;
 }
 
+.bali-contract-page .contract-submit-summary {
+  display: grid;
+  gap: 8px;
+  width: min(100%, 30cm);
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(200, 58, 58, .24);
+  border-left: 4px solid #c83a3a;
+  border-radius: 8px;
+  background: #fff8f8;
+  box-shadow: 0 12px 26px rgba(127, 29, 29, .08);
+}
+
+.bali-contract-page .contract-submit-summary.is-hidden {
+  display: none;
+}
+
+.bali-contract-page .contract-submit-summary strong {
+  color: #981b1b;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.bali-contract-page .contract-submit-summary small {
+  color: #7f1d1d;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.bali-contract-page .contract-submit-summary ul {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 18px;
+  color: #7f1d1d;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .bali-contract-page .contract-bi-panel {
   display: grid;
   gap: 16px;

@@ -152,6 +152,15 @@
     if (field) field.value = value;
   }
 
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   function isVisible(field) {
     if (!field) return false;
     return !!(field.offsetWidth || field.offsetHeight || field.getClientRects().length);
@@ -516,8 +525,14 @@
 
     issues = issues.concat(collectFormatIssues(showMessages));
 
-    var financeValue = parseMoney(valueOf(isEdit ? 'txtEdFinanciamento' : 'txtVlFinanciamento'));
-    var balanceValue = parseMoney(valueOf(isEdit ? 'txtEdSaldoAvaliacao' : 'txtSaldoAvaliacao'));
+    var financeField = bySuffix(isEdit ? 'txtEdFinanciamento' : 'txtVlFinanciamento');
+    var financeValue = parseMoney(financeField ? financeField.value : '');
+    var balanceField = bySuffix(isEdit ? 'txtEdSaldoAvaliacao' : 'txtSaldoAvaliacao');
+    var balanceValue = parseMoney(balanceField ? balanceField.value : '');
+    if (showMessages) {
+      showFieldMessage(financeField, financeValue < 0 ? 'Valor calculado ficou negativo.' : '');
+      showFieldMessage(balanceField, balanceValue < 0 ? 'Valor calculado ficou negativo.' : '');
+    }
     if (financeValue < 0) issues.push('Financiamento ficou negativo. Confira valor, entrada e avaliação utilizada.');
     if (balanceValue < 0) issues.push('Saldo da avaliação ficou negativo. Confira avaliação, valor utilizado e quitação.');
 
@@ -542,6 +557,81 @@
     }
 
     return true;
+  }
+
+  function hideSubmitSummary() {
+    var existing = document.getElementById('contractSubmitSummary');
+    if (existing) existing.classList.add('is-hidden');
+  }
+
+  function placeSubmitSummary(panel, isEdit) {
+    var host = getQualityHost(isEdit);
+    if (!host) return false;
+
+    var quality = document.getElementById('contractQualityPanel');
+    if (quality && quality.parentNode === host) {
+      host.insertBefore(panel, quality);
+    } else if (panel.parentNode !== host) {
+      host.appendChild(panel);
+    }
+
+    return true;
+  }
+
+  function ensureSubmitSummary(isEdit) {
+    var existing = document.getElementById('contractSubmitSummary');
+    if (existing) {
+      placeSubmitSummary(existing, isEdit);
+      return existing;
+    }
+
+    var panel = document.createElement('div');
+    panel.id = 'contractSubmitSummary';
+    panel.className = 'contract-submit-summary is-hidden';
+    panel.setAttribute('role', 'alert');
+    placeSubmitSummary(panel, isEdit);
+    return panel;
+  }
+
+  function uniqueIssues(issues) {
+    var result = [];
+    issues.forEach(function (issue) {
+      if (issue && result.indexOf(issue) < 0) result.push(issue);
+    });
+    return result;
+  }
+
+  function showSubmitSummary(button, issues) {
+    var list = uniqueIssues(issues);
+    var panel = ensureSubmitSummary(isEditSubmit(button));
+    if (!panel) return;
+
+    var html = '<strong>Revise antes de gravar</strong><small>Corrija os campos marcados em vermelho e tente novamente.</small><ul>';
+    list.slice(0, 8).forEach(function (issue) {
+      html += '<li>' + escapeHtml(issue) + '</li>';
+    });
+    if (list.length > 8) {
+      html += '<li>Mais ' + (list.length - 8) + ' pendência(s) no formulário.</li>';
+    }
+    html += '</ul>';
+
+    panel.innerHTML = html;
+    panel.classList.remove('is-hidden');
+  }
+
+  function focusFirstInvalidField() {
+    var firstInvalid = document.querySelector('.contract-field-error');
+    if (!firstInvalid) return;
+    if (firstInvalid.scrollIntoView) {
+      try {
+        firstInvalid.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      } catch (ignore) {
+        firstInvalid.scrollIntoView(true);
+      }
+    }
+    window.setTimeout(function () {
+      if (firstInvalid.focus) firstInvalid.focus();
+    }, 220);
   }
 
   function ensureQualityPanel(isEdit) {
@@ -768,6 +858,7 @@
       button.className = String(button.className || '').replace(/\bis-submitting\b/g, '').replace(/\s+/g, ' ').trim();
     });
     contractAllowUnload = false;
+    hideSubmitSummary();
   }
 
   function setLoadingVisible(visible) {
@@ -818,6 +909,7 @@
     if (!isDirtyTrackedField(event.currentTarget)) return;
     contractDirty = true;
     updateDirtyNotice();
+    hideSubmitSummary();
   }
 
   function enhanceUnsavedWarning() {
@@ -860,18 +952,20 @@
     prepareMoneyFields(true);
     var issues = collectIssues(isEditSubmit(button), true);
     if (issues.length) {
-      var firstInvalid = document.querySelector('.contract-field-error');
-      if (firstInvalid && firstInvalid.focus) firstInvalid.focus();
+      showSubmitSummary(button, issues);
+      focusFirstInvalidField();
       event.preventDefault();
       updateQualityPanel();
       return false;
     }
 
     if (!validateInlineChecklist(button)) {
+      showSubmitSummary(button, ['Confirme o checklist final antes de gravar.']);
       event.preventDefault();
       return false;
     }
 
+    hideSubmitSummary();
     contractAllowUnload = true;
     markSubmitting(button);
     return true;
