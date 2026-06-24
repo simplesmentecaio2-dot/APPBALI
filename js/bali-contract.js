@@ -951,6 +951,140 @@
     return panel;
   }
 
+  function placeReviewSnapshot(panel, isEdit) {
+    var host = getQualityHost(isEdit);
+    if (!host) return false;
+
+    var quality = document.getElementById('contractQualityPanel');
+    var checklist = getWizardChecklist();
+    var submitButton = getWizardSubmitButton();
+
+    if (quality && quality.parentNode === host) {
+      if (quality.previousSibling !== panel) host.insertBefore(panel, quality);
+    } else if (checklist && checklist.parentNode === host) {
+      if (checklist.previousSibling !== panel) host.insertBefore(panel, checklist);
+    } else if (submitButton && submitButton.parentNode === host) {
+      if (submitButton.previousSibling !== panel) host.insertBefore(panel, submitButton);
+    } else if (panel.parentNode !== host) {
+      host.appendChild(panel);
+    }
+
+    return true;
+  }
+
+  function ensureReviewSnapshot(isEdit) {
+    var existing = document.getElementById('contractReviewSnapshot');
+    if (existing) {
+      placeReviewSnapshot(existing, isEdit);
+      return existing;
+    }
+
+    var panel = document.createElement('div');
+    panel.id = 'contractReviewSnapshot';
+    panel.className = 'contract-review-snapshot is-step-hidden';
+    panel.setAttribute('role', 'region');
+    panel.setAttribute('aria-label', 'Resumo de revisão do contrato');
+    placeReviewSnapshot(panel, isEdit);
+    return panel;
+  }
+
+  function displayFieldValue(id) {
+    var field = bySuffix(id);
+    if (!field || !isRelevantContractField(field)) return '';
+    if (field.tagName === 'SELECT') {
+      var optionText = field.options && field.selectedIndex >= 0 ? String(field.options[field.selectedIndex].text || '').trim() : '';
+      return validSelectedText(optionText) ? optionText : '';
+    }
+    return String(field.value || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function moneyReviewValue(id) {
+    var value = parseMoney(valueOf(id));
+    return value > 0 ? 'R$ ' + formatMoney(value) : '';
+  }
+
+  function joinReviewValues(values) {
+    return values.filter(function (value) {
+      return String(value || '').trim().length > 0;
+    }).join(' · ');
+  }
+
+  function paymentReviewText(mode) {
+    var rules = paymentRules[mode];
+    if (!rules) return '';
+
+    var cash = bySuffix(rules.cash);
+    var finance = bySuffix(rules.finance);
+    var financeValue = parseMoney(valueOf(rules.financeValue));
+    var parcels = digitsOnly(valueOf(rules.parcels));
+    var parcelValue = parseMoney(valueOf(rules.parcelValue));
+
+    if (finance && finance.checked) {
+      return joinReviewValues([
+        'Financiamento',
+        financeValue > 0 ? 'R$ ' + formatMoney(financeValue) : '',
+        parcels && parcelValue > 0 ? parcels + 'x de R$ ' + formatMoney(parcelValue) : ''
+      ]);
+    }
+
+    if (cash && cash.checked) {
+      return financeValue > 0 ? 'À vista, com financiamento informado: R$ ' + formatMoney(financeValue) : 'À vista';
+    }
+
+    return '';
+  }
+
+  function reviewSnapshotItems(mode) {
+    var isEdit = mode === 'edicao';
+    var cliente = displayFieldValue(isEdit ? 'txtEdCliente' : 'txtCliente');
+    var documento = displayFieldValue(isEdit ? 'txtEdCPF' : 'txtCPFCNPJ');
+    var veiculo = joinReviewValues([
+      displayFieldValue(isEdit ? 'txtEdMarca' : 'txtMarca'),
+      displayFieldValue(isEdit ? 'txtEdModelo' : 'txtModelo'),
+      displayFieldValue(isEdit ? 'txtEdAnomodelo' : 'txtAnoModelo')
+    ]);
+    var chassi = displayFieldValue(isEdit ? 'txtEdChassi' : 'txtChassiPlaca');
+    var valor = moneyReviewValue(isEdit ? 'txtEdValorVeic' : 'txtValoVeiculo');
+    var vendedor = displayFieldValue(isEdit ? 'txtEdVendedor' : 'ddlVendedor');
+    var pagamento = paymentReviewText(mode);
+
+    return [
+      { label: 'Cliente', value: cliente },
+      { label: 'CPF/CNPJ', value: documento },
+      { label: 'Veículo', value: veiculo },
+      { label: 'Placa/chassi', value: chassi },
+      { label: 'Valor do veículo', value: valor },
+      { label: 'Vendedor', value: vendedor },
+      { label: 'Pagamento', value: pagamento }
+    ];
+  }
+
+  function updateReviewSnapshot(isEdit) {
+    var panel = ensureReviewSnapshot(isEdit);
+    if (!panel) return;
+
+    var mode = isEdit ? 'edicao' : 'novo';
+    var items = reviewSnapshotItems(mode);
+    var missing = items.filter(function (item) { return !item.value; }).length;
+    var html = '<div class="contract-review-head"><div><span>Revisão final</span><strong>Resumo do contrato</strong></div><small>Confira os principais dados antes de gravar.</small></div><div class="contract-review-grid">';
+
+    items.forEach(function (item) {
+      var value = item.value || 'Não informado';
+      html += '<article' + (item.value ? '' : ' class="is-missing"') + '><span>' + escapeHtml(item.label) + '</span><strong>' + escapeHtml(value) + '</strong></article>';
+    });
+    html += '</div>';
+
+    if (missing) {
+      html += '<p class="contract-review-warning">' + missing + ' item(ns) principal(is) ainda precisam de conferência.</p>';
+    }
+
+    panel.innerHTML = html;
+    var host = getWizardHost();
+    if (host && (' ' + String(host.className || '') + ' ').indexOf(' contract-wizard-review ') >= 0) {
+      removeClass(panel, 'is-step-hidden');
+    }
+  }
+
   function uniqueIssues(issues) {
     var result = [];
     issues.forEach(function (issue) {
@@ -1066,6 +1200,7 @@
     var isNew = currentContractMode() === 'novo' && !!getWizardHost();
     var panel = ensureQualityPanel(isEdit);
     if (!panel) return;
+    updateReviewSnapshot(isEdit);
 
     if ((!isEdit && !isNew) || !contractHasAnyValue(isEdit)) {
       panel.classList.add('is-hidden');
@@ -1907,6 +2042,8 @@
     if (contractStepIndex > maxIndex) contractStepIndex = maxIndex;
 
     var reviewActive = checklist && contractStepIndex === sections.length;
+    var reviewSnapshot = reviewActive ? ensureReviewSnapshot(currentContractMode() === 'edicao') : document.getElementById('contractReviewSnapshot');
+    if (reviewActive) updateReviewSnapshot(currentContractMode() === 'edicao');
     addClass(host, 'contract-wizard-host');
     if (reviewActive) {
       addClass(host, 'contract-wizard-review');
@@ -1924,7 +2061,7 @@
       }
     });
 
-    [checklist, document.getElementById('contractQualityPanel'), document.getElementById('contractSubmitSummary'), submitButton].forEach(function (element) {
+    [reviewSnapshot, checklist, document.getElementById('contractQualityPanel'), document.getElementById('contractSubmitSummary'), submitButton].forEach(function (element) {
       if (!element) return;
       removeClass(element, 'is-step-hidden');
       if (!reviewActive) addClass(element, 'is-step-hidden');
