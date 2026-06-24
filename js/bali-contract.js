@@ -2398,6 +2398,7 @@
     return Array.prototype.slice.call(table.tBodies[0].rows).filter(function (row) {
       if (!row.cells || !row.cells.length) return false;
       if ((row.className || '').match(/dataTables_empty/)) return false;
+      if ((row.className || '').match(/contract-empty-row/)) return false;
       if ((row.cells[0].className || '').match(/dataTables_empty/)) return false;
       if (normalizeText(row.cells[0].textContent).indexOf('NENHUM CONTRATO') >= 0) return false;
       return true;
@@ -2419,7 +2420,10 @@
       ? 'Consulta Venda Direta'
       : (/tblConsultaProcesso2$/i.test(table.id || '') ? 'Consulta Usado' : 'Consulta Novo');
     var count = countLookupRows(table);
-    summary.innerHTML = '<div><span>' + label + '</span><strong>' + count + ' contrato(s)</strong></div><small>Use o filtro para localizar cliente, CPF ou vendedor. Clique em Imprimir para abrir o contrato.</small>';
+    var text = count > 0
+      ? 'Use o filtro para localizar cliente, CPF ou vendedor. Clique em Imprimir para abrir o contrato.'
+      : 'Nenhum contrato apareceu neste filtro. Revise as datas ou tente um período maior.';
+    summary.innerHTML = '<div><span>' + label + '</span><strong>' + count + ' contrato(s)</strong></div><small>' + text + '</small>';
   }
 
   function triggerLookupSearch(input) {

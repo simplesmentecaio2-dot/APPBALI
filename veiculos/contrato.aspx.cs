@@ -1642,10 +1642,12 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 oCmd.Parameters.Add("@dtInicio", SqlDbType.Date).Value = dtInicio;
                 oCmd.Parameters.Add("@dtFim", SqlDbType.Date).Value = dtFim;
 
+                int totalLinhas = 0;
                 using (SqlDataReader odr = oCmd.ExecuteReader())
                 {
                     while (odr.Read())
                     {
+                        totalLinhas++;
                         string id = Convert.ToString(odr["id"]);
                         html.Append("<tr>");
                         html.Append("<td style='text-align:center; font-size:12px;'><a href='")
@@ -1665,6 +1667,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
                         html.Append(ConsultaCell(odr["vendedor"]));
                         html.Append("</tr>");
                     }
+                }
+
+                if (totalLinhas == 0)
+                {
+                    html.Append("<tr class='contract-empty-row'><td colspan='9'><strong>Nenhum contrato encontrado neste período.</strong><small>Revise as datas ou tente um período maior.</small></td></tr>");
                 }
             }
         }
