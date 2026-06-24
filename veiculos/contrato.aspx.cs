@@ -451,22 +451,6 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
     }
 
-    private void NormalizarCamposMonetarios()
-    {
-        TextBox[] campos = new TextBox[]
-        {
-            txtValoVeiculo, txtEmplacamento, txtEntrada, txtCarroUsado, txtVlUtilzadoAvaliacao,
-            txtQuitacao, txtSaldoAvaliacao, txtVlFinanciamento, txtVlParcelas, txtEdValorVeic,
-            txtEdTAXAS, txtEdEntrada, txtEdValorUSADO, txtEdVALORUSADOAVAILACAO, txtEdQuitacao,
-            txtEdSaldoAvaliacao, txtEdFinanciamento, txtEdValorParcela
-        };
-
-        foreach (TextBox campo in campos)
-        {
-            NormalizarCampoMoeda(campo);
-        }
-    }
-
     private bool CampoVazio(string valor)
     {
         return (valor ?? "").Trim().Length == 0;
