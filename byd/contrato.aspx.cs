@@ -683,6 +683,13 @@ public partial class veiculos_contrato : System.Web.UI.Page
         return digitos.Length >= 10 && digitos.Length <= 11 && !DigitosRepetidos(digitos);
     }
 
+    private void ValidarValoresRelacionados(List<string> erros, decimal valorVeiculo, decimal entrada, decimal avaliacaoUsado, decimal avaliacaoUtilizada, decimal quitacao)
+    {
+        if (valorVeiculo > 0 && entrada > valorVeiculo) erros.Add("Entrada não pode ser maior que o valor do veículo.");
+        if (avaliacaoUsado > 0 && avaliacaoUtilizada > avaliacaoUsado) erros.Add("Valor utilizado da avaliação não pode ser maior que a avaliação do usado.");
+        if (avaliacaoUsado > 0 && quitacao > avaliacaoUsado) erros.Add("Quitação não pode ser maior que a avaliação do usado.");
+    }
+
     private void ValidarFormatoOpcional(List<string> erros, string valor, Func<string, bool> validador, string mensagem)
     {
         if (!CampoVazio(valor) && !validador(valor))
@@ -733,6 +740,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         if (!TextoSelecionadoValido(ddlVendedor.Text)) erros.Add("Selecione o vendedor.");
         if (LerMoeda(txtValoVeiculo.Text) <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
         ValidarFormatosNovo(erros);
+        ValidarValoresRelacionados(erros, LerMoeda(txtValoVeiculo.Text), LerMoeda(txtEntrada.Text), LerMoeda(txtCarroUsado.Text), LerMoeda(txtVlUtilzadoAvaliacao.Text), LerMoeda(txtQuitacao.Text));
 
         if (modalidadePagamento == "F")
         {
@@ -771,6 +779,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         if (!TextoSelecionadoValido(txtEdVendedor.Text)) erros.Add("Informe o vendedor.");
         if (LerMoeda(txtEdValorVeic.Text) <= 0) erros.Add("Valor do veículo deve ser maior que zero. Exemplo: 150000,00.");
         ValidarFormatosEdicao(erros);
+        ValidarValoresRelacionados(erros, LerMoeda(txtEdValorVeic.Text), LerMoeda(txtEdEntrada.Text), LerMoeda(txtEdValorUSADO.Text), LerMoeda(txtEdVALORUSADOAVAILACAO.Text), LerMoeda(txtEdQuitacao.Text));
 
         if (modalidadePagamento == "F")
         {

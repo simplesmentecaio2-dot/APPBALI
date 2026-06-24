@@ -843,26 +843,34 @@
     var financeValue = parseMoney(financeField ? financeField.value : '');
     var balanceField = bySuffix(isEdit ? 'txtEdSaldoAvaliacao' : 'txtSaldoAvaliacao');
     var balanceValue = parseMoney(balanceField ? balanceField.value : '');
+    var vehicleField = bySuffix(isEdit ? 'txtEdValorVeic' : 'txtValoVeiculo');
     var entryField = bySuffix(isEdit ? 'txtEdEntrada' : 'txtEntrada');
     var usedAppliedField = bySuffix(isEdit ? 'txtEdVALORUSADOAVAILACAO' : 'txtVlUtilzadoAvaliacao');
     var usedValueField = bySuffix(isEdit ? 'txtEdValorUSADO' : 'txtCarroUsado');
     var payoffField = bySuffix(isEdit ? 'txtEdQuitacao' : 'txtQuitacao');
+    var vehicleValue = parseMoney(vehicleField ? vehicleField.value : '');
     var entryValue = parseMoney(entryField ? entryField.value : '');
     var usedAppliedValue = parseMoney(usedAppliedField ? usedAppliedField.value : '');
     var usedValue = parseMoney(usedValueField ? usedValueField.value : '');
     var payoffValue = parseMoney(payoffField ? payoffField.value : '');
+    var entryLimitMessage = vehicleValue > 0 && entryValue > vehicleValue ? 'Entrada n\u00e3o pode ser maior que o valor do ve\u00edculo.' : '';
+    var usedAppliedLimitMessage = usedValue > 0 && usedAppliedValue > usedValue ? 'Valor utilizado n\u00e3o pode ser maior que a avalia\u00e7\u00e3o do usado.' : '';
+    var payoffLimitMessage = usedValue > 0 && payoffValue > usedValue ? 'Quita\u00e7\u00e3o n\u00e3o pode ser maior que a avalia\u00e7\u00e3o do usado.' : '';
 
     if (showMessages) {
       var financeMessage = financeValue < 0 ? 'Entrada + avaliação utilizada não podem superar o valor do veículo.' : '';
       showFieldMessage(financeField, financeMessage);
-      showFieldMessage(entryField, financeMessage && entryValue > 0 ? financeMessage : '');
-      showFieldMessage(usedAppliedField, financeMessage && usedAppliedValue > 0 ? financeMessage : '');
+      showFieldMessage(entryField, entryLimitMessage || (financeMessage && entryValue > 0 ? financeMessage : ''));
+      showFieldMessage(usedAppliedField, usedAppliedLimitMessage || (financeMessage && usedAppliedValue > 0 ? financeMessage : ''));
 
       var balanceMessage = balanceValue < 0 ? 'Quitação + valor utilizado não podem superar a avaliação do usado.' : '';
       showFieldMessage(balanceField, balanceMessage);
-      showFieldMessage(payoffField, balanceMessage && payoffValue > 0 ? balanceMessage : '');
+      showFieldMessage(payoffField, payoffLimitMessage || (balanceMessage && payoffValue > 0 ? balanceMessage : ''));
       showFieldMessage(usedValueField, balanceMessage && usedValue > 0 ? balanceMessage : '');
     }
+    if (entryLimitMessage) issues.push(entryLimitMessage);
+    if (usedAppliedLimitMessage) issues.push(usedAppliedLimitMessage);
+    if (payoffLimitMessage) issues.push(payoffLimitMessage);
     if (financeValue < 0) issues.push('Financiamento ficou negativo: entrada + avaliação utilizada superam o valor do veículo.');
     if (balanceValue < 0) issues.push('Saldo da avaliação ficou negativo: quitação + valor utilizado superam a avaliação do usado.');
 
