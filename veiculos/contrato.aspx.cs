@@ -605,7 +605,42 @@ public partial class veiculos_contrato : System.Web.UI.Page
     private bool CpfCnpjValido(string valor)
     {
         string digitos = SomenteDigitos(valor);
-        return digitos.Length == 11 || digitos.Length == 14;
+        if (digitos.Length == 11) return CpfValido(digitos);
+        if (digitos.Length == 14) return CnpjValido(digitos);
+        return false;
+    }
+
+    private bool DigitosRepetidos(string digitos)
+    {
+        return digitos.Length > 0 && digitos.All(delegate(char caractere) { return caractere == digitos[0]; });
+    }
+
+    private int CalcularDigitoDocumento(string digitos, int[] pesos)
+    {
+        int soma = 0;
+        for (int i = 0; i < pesos.Length; i++)
+        {
+            soma += (digitos[i] - '0') * pesos[i];
+        }
+
+        int resto = soma % 11;
+        return resto < 2 ? 0 : 11 - resto;
+    }
+
+    private bool CpfValido(string digitos)
+    {
+        if (digitos.Length != 11 || DigitosRepetidos(digitos)) return false;
+        int primeiro = CalcularDigitoDocumento(digitos, new int[] { 10, 9, 8, 7, 6, 5, 4, 3, 2 });
+        int segundo = CalcularDigitoDocumento(digitos, new int[] { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 });
+        return primeiro == digitos[9] - '0' && segundo == digitos[10] - '0';
+    }
+
+    private bool CnpjValido(string digitos)
+    {
+        if (digitos.Length != 14 || DigitosRepetidos(digitos)) return false;
+        int primeiro = CalcularDigitoDocumento(digitos, new int[] { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 });
+        int segundo = CalcularDigitoDocumento(digitos, new int[] { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 });
+        return primeiro == digitos[12] - '0' && segundo == digitos[13] - '0';
     }
 
     private bool CepValido(string valor)
@@ -656,7 +691,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void ValidarFormatosNovo(List<string> erros)
     {
-        ValidarFormatoOpcional(erros, txtCPFCNPJ.Text, CpfCnpjValido, "CPF/CNPJ deve ter 11 ou 14 números.");
+        ValidarFormatoOpcional(erros, txtCPFCNPJ.Text, CpfCnpjValido, "CPF/CNPJ deve ter 11 ou 14 números com dígitos válidos.");
         ValidarFormatoOpcional(erros, txtCEP.Text, CepValido, "CEP deve ter 8 números. Exemplo: 01001-000.");
         ValidarFormatoOpcional(erros, txtUF.Text, UfValida, "UF deve ter 2 letras. Exemplo: SP.");
         ValidarFormatoOpcional(erros, txtEmail.Text, EmailValido, "Informe um e-mail válido. Exemplo: cliente@email.com.");
@@ -669,7 +704,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void ValidarFormatosEdicao(List<string> erros)
     {
-        ValidarFormatoOpcional(erros, txtEdCPF.Text, CpfCnpjValido, "CPF/CNPJ deve ter 11 ou 14 números.");
+        ValidarFormatoOpcional(erros, txtEdCPF.Text, CpfCnpjValido, "CPF/CNPJ deve ter 11 ou 14 números com dígitos válidos.");
         ValidarFormatoOpcional(erros, txtEdCep.Text, CepValido, "CEP deve ter 8 números. Exemplo: 01001-000.");
         ValidarFormatoOpcional(erros, txtEdUF.Text, UfValida, "UF deve ter 2 letras. Exemplo: SP.");
         ValidarFormatoOpcional(erros, txtEdEmail.Text, EmailValido, "Informe um e-mail válido. Exemplo: cliente@email.com.");

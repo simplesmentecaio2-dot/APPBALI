@@ -161,10 +161,9 @@
       maxLength: 18,
       normalize: formatCpfCnpj,
       validate: function (value) {
-        var digits = digitsOnly(value);
-        return digits.length === 11 || digits.length === 14;
+        return isCpfCnpjValid(value);
       },
-      message: 'CPF/CNPJ deve ter 11 ou 14 n\u00fameros.'
+      message: 'CPF/CNPJ deve ter 11 ou 14 n\u00fameros com d\u00edgitos v\u00e1lidos.'
     },
     {
       ids: ['txtChassiPlaca', 'txtEdChassi'],
@@ -437,6 +436,42 @@
       return digits.substr(0, 2) + '.' + digits.substr(2, 3) + '.' + digits.substr(5, 3) + '/' + digits.substr(8, 4) + '-' + digits.substr(12, 2);
     }
     return String(value || '').trim();
+  }
+
+  function repeatedDigits(digits) {
+    return /^(\d)\1+$/.test(String(digits || ''));
+  }
+
+  function documentDigit(digits, weights) {
+    var sum = 0;
+    for (var i = 0; i < weights.length; i++) {
+      sum += parseInt(digits.charAt(i), 10) * weights[i];
+    }
+    var remainder = sum % 11;
+    return remainder < 2 ? 0 : 11 - remainder;
+  }
+
+  function isCpfValid(value) {
+    var digits = digitsOnly(value);
+    if (digits.length !== 11 || repeatedDigits(digits)) return false;
+    var first = documentDigit(digits, [10, 9, 8, 7, 6, 5, 4, 3, 2]);
+    var second = documentDigit(digits, [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]);
+    return first === parseInt(digits.charAt(9), 10) && second === parseInt(digits.charAt(10), 10);
+  }
+
+  function isCnpjValid(value) {
+    var digits = digitsOnly(value);
+    if (digits.length !== 14 || repeatedDigits(digits)) return false;
+    var first = documentDigit(digits, [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+    var second = documentDigit(digits, [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+    return first === parseInt(digits.charAt(12), 10) && second === parseInt(digits.charAt(13), 10);
+  }
+
+  function isCpfCnpjValid(value) {
+    var digits = digitsOnly(value);
+    if (digits.length === 11) return isCpfValid(digits);
+    if (digits.length === 14) return isCnpjValid(digits);
+    return false;
   }
 
   function formatPhone(value) {
