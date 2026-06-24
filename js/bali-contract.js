@@ -1,5 +1,8 @@
 (function () {
   var ajaxHooked = false;
+  var dirtyHooked = false;
+  var contractDirty = false;
+  var contractAllowUnload = false;
   var moneyFields = [
     'txtValoVeiculo',
     'txtEmplacamento',
@@ -185,6 +188,15 @@
     if (current.indexOf(' ' + className + ' ') < 0) {
       element.className = (element.className ? element.className + ' ' : '') + className;
     }
+  }
+
+  function closestClass(element, className) {
+    while (element && element.nodeType === 1) {
+      var current = ' ' + String(element.className || '') + ' ';
+      if (current.indexOf(' ' + className + ' ') >= 0) return element;
+      element = element.parentNode;
+    }
+    return null;
   }
 
   function parseMoney(value) {
@@ -755,6 +767,7 @@
       }
       button.className = String(button.className || '').replace(/\bis-submitting\b/g, '').replace(/\s+/g, ' ').trim();
     });
+    contractAllowUnload = false;
   }
 
   function setLoadingVisible(visible) {
@@ -771,6 +784,64 @@
     setLoadingVisible(false);
   }
 
+  function ensureDirtyNotice() {
+    var notice = document.getElementById('contractDirtyNotice');
+    if (notice) return notice;
+
+    notice = document.createElement('div');
+    notice.id = 'contractDirtyNotice';
+    notice.className = 'contract-dirty-notice is-hidden';
+    notice.setAttribute('role', 'status');
+    notice.textContent = 'Alterações não salvas';
+    document.body.appendChild(notice);
+    return notice;
+  }
+
+  function updateDirtyNotice() {
+    var notice = ensureDirtyNotice();
+    if (!notice) return;
+    if (contractDirty) {
+      notice.classList.remove('is-hidden');
+    } else {
+      notice.classList.add('is-hidden');
+    }
+  }
+
+  function isDirtyTrackedField(field) {
+    if (!field || field.disabled || field.readOnly) return false;
+    var type = String(field.type || '').toLowerCase();
+    if (type === 'hidden' || type === 'submit' || type === 'button' || type === 'image') return false;
+    return !!(closestClass(field, 'contract-form-section') || closestClass(field, 'contract-checklist'));
+  }
+
+  function markContractDirty(event) {
+    if (!isDirtyTrackedField(event.currentTarget)) return;
+    contractDirty = true;
+    updateDirtyNotice();
+  }
+
+  function enhanceUnsavedWarning() {
+    Array.prototype.slice.call(document.querySelectorAll('input, select, textarea')).forEach(function (field) {
+      if (field.getAttribute('data-contract-dirty') === 'true') return;
+      if (!isDirtyTrackedField(field)) return;
+      field.setAttribute('data-contract-dirty', 'true');
+      field.addEventListener('input', markContractDirty);
+      field.addEventListener('change', markContractDirty);
+    });
+
+    if (!dirtyHooked) {
+      window.addEventListener('beforeunload', function (event) {
+        if (!contractDirty || contractAllowUnload) return;
+        event.preventDefault();
+        event.returnValue = '';
+        return '';
+      });
+      dirtyHooked = true;
+    }
+
+    updateDirtyNotice();
+  }
+
   function handleSubmit(event) {
     var button = event.currentTarget;
     if (button.getAttribute('data-contract-submitting') === 'true') {
@@ -781,6 +852,7 @@
     if (button.getAttribute('data-contract-confirmed') === 'true') {
       button.removeAttribute('data-contract-confirmed');
       prepareMoneyFields(true);
+      contractAllowUnload = true;
       markSubmitting(button);
       return true;
     }
@@ -800,6 +872,7 @@
       return false;
     }
 
+    contractAllowUnload = true;
     markSubmitting(button);
     return true;
   }
@@ -1051,6 +1124,7 @@
     enhanceDateFilters();
     enhanceBiPeriodShortcuts();
     enhanceFormSections();
+    enhanceUnsavedWarning();
     enhanceLookupTables();
     bindSubmitButtons();
     prepareMoneyFields(false);
