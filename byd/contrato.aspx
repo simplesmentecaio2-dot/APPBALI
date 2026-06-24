@@ -18,14 +18,15 @@
     <link href="../tables/estilo/jquery-ui-1.8.4.custom.css" rel="stylesheet" />
     <link href="../tables/estilo/table.css" rel="stylesheet" />
     <link href="../tables/estilo/table_jui.css" rel="stylesheet" />
-    <link href="../css/bali-contract.css?v=20260624-calendario2" rel="stylesheet" />
+    <link href="../css/bali-contract.css?v=20260624-tabelas" rel="stylesheet" />
 
     <script type="text/javascript">
         $(document).ready(function () {
             oTable = $('#tblConsultaProcesso').dataTable({ //example é o ID da tabela
                 "bPaginate": true,
-                "bJQueryUI": true,
-                "sPaginationType": "full_numbers"
+                "bJQueryUI": false,
+                "sPaginationType": "full_numbers",
+                "iDisplayLength": 10
             });
         });
     </script>
@@ -34,8 +35,9 @@
         $(document).ready(function () {
             oTable = $('#tblConsultaProcesso2').dataTable({ //example é o ID da tabela
                 "bPaginate": true,
-                "bJQueryUI": true,
-                "sPaginationType": "full_numbers"
+                "bJQueryUI": false,
+                "sPaginationType": "full_numbers",
+                "iDisplayLength": 10
             });
         });
     </script>

@@ -423,15 +423,22 @@ body.bali-contract-page *::after {
   font-weight: 800;
 }
 
+.bali-contract-page #tblConsultaProcesso_wrapper,
+.bali-contract-page #tblConsultaProcesso2_wrapper,
 .bali-contract-page .dataTables_wrapper {
+  position: relative;
   overflow-x: auto;
-  padding: 10px;
-  border: 1px solid var(--contract-line);
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #e6edf5;
   border-radius: 8px;
   background: #fff;
-  box-shadow: none;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, .05);
 }
 
+.bali-contract-page #tblConsultaProcesso,
+.bali-contract-page #tblConsultaProcesso2,
+.bali-contract-page table.contract-lookup-table,
 .bali-contract-page table.display,
 .bali-contract-page table.dataTable {
   width: 100% !important;
@@ -442,40 +449,57 @@ body.bali-contract-page *::after {
   overflow: hidden;
 }
 
+.bali-contract-page #tblConsultaProcesso thead td,
+.bali-contract-page #tblConsultaProcesso2 thead td,
+.bali-contract-page table.contract-lookup-table thead td,
 .bali-contract-page table.display thead th,
 .bali-contract-page table.display thead td,
 .bali-contract-page table.dataTable thead th,
 .bali-contract-page table.dataTable thead td {
-  padding: 10px 12px;
+  padding: 11px 12px !important;
   border: 0 !important;
   border-bottom: 1px solid #dfe7f1 !important;
   background: #f7f9fc !important;
   color: #263241 !important;
-  font-size: 12px;
+  font-size: 11px !important;
   font-weight: 900;
-  text-align: left;
+  letter-spacing: .03em;
+  text-align: left !important;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
+.bali-contract-page #tblConsultaProcesso tbody td,
+.bali-contract-page #tblConsultaProcesso2 tbody td,
+.bali-contract-page table.contract-lookup-table tbody td,
 .bali-contract-page table.display tbody td,
 .bali-contract-page table.dataTable tbody td {
-  padding: 9px 12px;
+  padding: 10px 12px !important;
   border: 0 !important;
   border-top: 1px solid #eef3f8 !important;
   background: #fff !important;
-  font-size: 12px;
-  font-weight: 700;
+  color: #344054 !important;
+  font-size: 12px !important;
+  font-weight: 650;
+  line-height: 1.35;
+  text-align: left !important;
   white-space: nowrap;
 }
 
+.bali-contract-page #tblConsultaProcesso tbody tr:nth-child(even) td,
+.bali-contract-page #tblConsultaProcesso2 tbody tr:nth-child(even) td,
+.bali-contract-page table.contract-lookup-table tbody tr:nth-child(even) td,
 .bali-contract-page table.display tbody tr:nth-child(even) td,
 .bali-contract-page table.dataTable tbody tr:nth-child(even) td {
   background: #fbfdff !important;
 }
 
+.bali-contract-page #tblConsultaProcesso tbody tr:hover td,
+.bali-contract-page #tblConsultaProcesso2 tbody tr:hover td,
+.bali-contract-page table.contract-lookup-table tbody tr:hover td,
 .bali-contract-page table.display tbody tr:hover td,
 .bali-contract-page table.dataTable tbody tr:hover td {
-  background: #f4f8fd !important;
+  background: #f5f8fc !important;
   color: var(--contract-brand-strong);
 }
 
@@ -491,14 +515,55 @@ body.bali-contract-page *::after {
 }
 
 .bali-contract-page .dataTables_wrapper .fg-toolbar {
-  padding: 8px 0;
+  padding: 8px 0 !important;
+}
+
+.bali-contract-page .dataTables_wrapper .dataTables_length,
+.bali-contract-page .dataTables_wrapper .dataTables_filter,
+.bali-contract-page .dataTables_wrapper .dataTables_info,
+.bali-contract-page .dataTables_wrapper .dataTables_paginate {
+  float: none !important;
+  width: auto !important;
+}
+
+.bali-contract-page .dataTables_wrapper .dataTables_length,
+.bali-contract-page .dataTables_wrapper .dataTables_filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  margin: 0 12px 10px 0 !important;
+  color: #667085 !important;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.bali-contract-page .dataTables_wrapper .dataTables_filter {
+  float: right !important;
+  margin-right: 0 !important;
+}
+
+.bali-contract-page .dataTables_wrapper .dataTables_info {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  margin: 10px 0 0 !important;
+  color: #667085 !important;
+}
+
+.bali-contract-page .dataTables_wrapper .dataTables_paginate {
+  float: right !important;
+  margin: 10px 0 0 !important;
 }
 
 .bali-contract-page .dataTables_filter input,
 .bali-contract-page .dataTables_length select {
   width: auto !important;
-  min-height: 32px;
-  margin-left: 6px;
+  min-height: 34px;
+  margin-left: 0;
+  border-color: #d8e2ee !important;
+  background: #fff !important;
+  box-shadow: none !important;
 }
 
 .bali-contract-page .dataTables_paginate,
@@ -512,9 +577,13 @@ body.bali-contract-page *::after {
 }
 
 .bali-contract-page .dataTables_paginate .paginate_button,
+.bali-contract-page .paging_full_numbers span.paginate_button,
+.bali-contract-page .paging_full_numbers span.paginate_active,
 .bali-contract-page .fg-button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-width: 30px;
   min-height: 30px;
   margin: 2px;
   padding: 0 9px !important;
@@ -528,10 +597,41 @@ body.bali-contract-page *::after {
 }
 
 .bali-contract-page .dataTables_paginate .paginate_button.current,
+.bali-contract-page .paging_full_numbers span.paginate_active,
 .bali-contract-page .fg-button.ui-state-disabled {
   border-color: var(--contract-brand-ring) !important;
   background: var(--contract-brand-soft) !important;
   color: var(--contract-brand-strong) !important;
+}
+
+.bali-contract-page .paging_full_numbers {
+  width: auto !important;
+  height: auto !important;
+  line-height: normal !important;
+}
+
+.bali-contract-page table.display tr.odd td.sorting_1,
+.bali-contract-page table.display tr.odd td.sorting_2,
+.bali-contract-page table.display tr.odd td.sorting_3,
+.bali-contract-page table.display tr.even td.sorting_1,
+.bali-contract-page table.display tr.even td.sorting_2,
+.bali-contract-page table.display tr.even td.sorting_3,
+.bali-contract-page table.dataTable tr.odd td.sorting_1,
+.bali-contract-page table.dataTable tr.odd td.sorting_2,
+.bali-contract-page table.dataTable tr.odd td.sorting_3,
+.bali-contract-page table.dataTable tr.even td.sorting_1,
+.bali-contract-page table.dataTable tr.even td.sorting_2,
+.bali-contract-page table.dataTable tr.even td.sorting_3 {
+  background: inherit !important;
+}
+
+.bali-contract-page table.display thead .sorting,
+.bali-contract-page table.display thead .sorting_asc,
+.bali-contract-page table.display thead .sorting_desc,
+.bali-contract-page table.dataTable thead .sorting,
+.bali-contract-page table.dataTable thead .sorting_asc,
+.bali-contract-page table.dataTable thead .sorting_desc {
+  cursor: pointer;
 }
 
 .bali-contract-page .ajax__calendar,
