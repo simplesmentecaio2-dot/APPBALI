@@ -8,7 +8,7 @@
 <head runat="server">
     <title>Contrato de Venda - Jeep</title>
     <link href="../css/estilo.css" rel="stylesheet" />
-    <link href="../css/bali-contract.css?v=20260624-1" rel="stylesheet" />
+    <link href="../css/bali-contract.css?v=20260624-ux" rel="stylesheet" />
     <script src="../js/jquery-1.10.2.js"></script>
     <script src="../js/js.js"></script>
     <script src="../js/jquery.maskMoney.js"></script>
@@ -123,6 +123,7 @@
         }
     </script>
 
+    <script src="../js/bali-contract.js?v=20260624-ux"></script>
 </head>
 <body class="bali-contract-page contrato-jeep">
     <form id="form1" style="height: 100%;" runat="server">

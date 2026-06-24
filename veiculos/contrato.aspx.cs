@@ -72,6 +72,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     }
     protected void btnGravar_Click(object sender, EventArgs e)
     {
+        calcula();
 
         if (rBtnModPagFinanciamento.Checked || rBtnModPagVista.Checked)
         {
@@ -183,6 +184,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
             if (txtVlUtilzadoAvaliacao.Text == "") { txtVlUtilzadoAvaliacao.Text = "0"; }
             if (txtQuitacao.Text == "") { txtQuitacao.Text = "0"; }
             if (txtCarroUsado.Text == "") { txtCarroUsado.Text = "0"; }
+            if (txtEdValorVeic.Text == "") { txtEdValorVeic.Text = "0"; }
+            if (txtEdEntrada.Text == "") { txtEdEntrada.Text = "0"; }
+            if (txtEdVALORUSADOAVAILACAO.Text == "") { txtEdVALORUSADOAVAILACAO.Text = "0"; }
+            if (txtEdValorUSADO.Text == "") { txtEdValorUSADO.Text = "0"; }
+            if (txtEdQuitacao.Text == "") { txtEdQuitacao.Text = "0"; }
 
 
 
@@ -237,6 +243,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
         try
         {
+            calcula();
             string modpag = "";
             if (rbtnEdAVISTA.Checked)
             {

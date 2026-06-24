@@ -576,6 +576,205 @@ body.bali-contract-page *::after {
   color: #fff !important;
 }
 
+.bali-contract-page .contract-quality-panel {
+  display: grid;
+  grid-template-columns: minmax(240px, .38fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  margin: 0 0 16px;
+  padding: 14px;
+  border: 1px solid var(--contract-line);
+  border-left: 5px solid var(--contract-brand);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, .08);
+}
+
+.bali-contract-page .contract-quality-main {
+  display: grid;
+  gap: 4px;
+}
+
+.bali-contract-page .contract-quality-label {
+  color: var(--contract-muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.bali-contract-page .contract-quality-panel strong {
+  color: var(--contract-ink);
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.bali-contract-page .contract-quality-panel small {
+  color: var(--contract-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bali-contract-page .contract-quality-panel ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bali-contract-page .contract-quality-panel li {
+  position: relative;
+  padding-left: 17px;
+  color: var(--contract-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.bali-contract-page .contract-quality-panel li::before {
+  position: absolute;
+  top: .52em;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 99px;
+  background: currentColor;
+  content: "";
+}
+
+.bali-contract-page .contract-quality-panel.is-good {
+  border-left-color: #168a55;
+}
+
+.bali-contract-page .contract-quality-panel.is-good strong,
+.bali-contract-page .contract-quality-panel.is-good li {
+  color: #168a55;
+}
+
+.bali-contract-page .contract-quality-panel.is-attention {
+  border-left-color: #c88400;
+}
+
+.bali-contract-page .contract-quality-panel.is-attention strong,
+.bali-contract-page .contract-quality-panel.is-attention li {
+  color: #9a6500;
+}
+
+.bali-contract-page .contract-quality-panel.is-risk {
+  border-left-color: #c83a3a;
+}
+
+.bali-contract-page .contract-quality-panel.is-risk strong,
+.bali-contract-page .contract-quality-panel.is-risk li {
+  color: #b42318;
+}
+
+.bali-contract-page .contract-field-error {
+  border-color: #c83a3a !important;
+  background: #fff8f8 !important;
+  box-shadow: 0 0 0 3px rgba(200, 58, 58, .16) !important;
+}
+
+.bali-contract-page .contract-field-message {
+  margin-top: 5px;
+  color: #b42318;
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: none;
+}
+
+.contract-checklist-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(15, 23, 42, .58);
+  backdrop-filter: blur(5px);
+}
+
+.contract-checklist-modal.is-hidden {
+  display: none;
+}
+
+.contract-checklist-dialog {
+  width: min(520px, 100%);
+  padding: 22px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 28px 80px rgba(15, 23, 42, .32);
+}
+
+.contract-checklist-dialog h2 {
+  margin: 0 0 6px;
+  color: #17202a;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.contract-checklist-dialog p {
+  margin: 0 0 14px;
+  color: #667085;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.contract-checklist-dialog label {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 9px 0;
+  padding: 10px;
+  border: 1px solid #dce4ee;
+  border-radius: 8px;
+  background: #f8fbff;
+  color: #17202a;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.contract-checklist-dialog input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--contract-brand);
+}
+
+.contract-checklist-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.contract-checklist-actions button {
+  min-height: 38px;
+  padding: 0 15px;
+  border: 1px solid var(--contract-brand);
+  border-radius: 8px;
+  background: var(--contract-brand);
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.contract-checklist-actions button.secondary {
+  border-color: #dce4ee;
+  background: #fff;
+  color: #17202a;
+}
+
+#contractChecklistWarning {
+  display: block;
+  min-height: 18px;
+  margin-top: 8px;
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 850;
+}
+
 @media (max-width: 980px) {
   .bali-contract-page #topo,
   .bali-contract-page #table-menu {
@@ -626,6 +825,10 @@ body.bali-contract-page *::after {
 
   .bali-contract-page .ajax__tab_body table {
     min-width: 760px;
+  }
+
+  .bali-contract-page .contract-quality-panel {
+    grid-template-columns: 1fr;
   }
 }
 
