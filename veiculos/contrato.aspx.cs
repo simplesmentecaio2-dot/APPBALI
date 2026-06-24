@@ -176,6 +176,39 @@ public partial class veiculos_contrato : System.Web.UI.Page
         return true;
     }
 
+    private bool ObterPeriodoConsulta(string inicioTexto, string fimTexto, out DateTime inicio, out DateTime fim)
+    {
+        bool inicioOk = DateTime.TryParse(inicioTexto, CulturaBrasil, DateTimeStyles.None, out inicio);
+        bool fimOk = DateTime.TryParse(fimTexto, CulturaBrasil, DateTimeStyles.None, out fim);
+
+        if (!inicioOk || !fimOk)
+        {
+            return false;
+        }
+
+        if (fim < inicio)
+        {
+            DateTime troca = inicio;
+            inicio = fim;
+            fim = troca;
+        }
+
+        return true;
+    }
+
+    private bool PrepararPeriodoConsulta(TextBox campoInicio, TextBox campoFim, string descricao, out DateTime inicio, out DateTime fim)
+    {
+        if (!ObterPeriodoConsulta(campoInicio.Text, campoFim.Text, out inicio, out fim))
+        {
+            ExibirAlerta("Informe uma data inicial e uma data final válidas para consultar contratos " + descricao + ".");
+            return false;
+        }
+
+        campoInicio.Text = inicio.ToString("dd/MM/yyyy");
+        campoFim.Text = fim.ToString("dd/MM/yyyy");
+        return true;
+    }
+
     protected void btnAtualizarBI_Click(object sender, EventArgs e)
     {
         InicializarPeriodoBI();
@@ -736,12 +769,26 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     protected void Button1_Click(object sender, EventArgs e)
     {
+        DateTime dtInicio;
+        DateTime dtFim;
+        if (!PrepararPeriodoConsulta(txtDtInicialVN, txtDtFinalVN, "novos", out dtInicio, out dtFim))
+        {
+            return;
+        }
+
         string tabelaR;
         select_Tab_Consulta(txtDtInicialVN.Text,txtDtFinalVN.Text, out tabelaR);
         tabela = tabelaR;
     }
     protected void Button2_Click(object sender, EventArgs e)
     {
+        DateTime dtInicio;
+        DateTime dtFim;
+        if (!PrepararPeriodoConsulta(txtDtInicialVU, txtDtFinalVU, "usados", out dtInicio, out dtFim))
+        {
+            return;
+        }
+
         string tabelaVUR;
 
         select_Tab_ConsultaVU(txtDtInicialVU.Text,txtDtFinalVU.Text, out tabelaVUR);
@@ -750,6 +797,13 @@ public partial class veiculos_contrato : System.Web.UI.Page
     }
     protected void ButtonVD_Click(object sender, EventArgs e)
     {
+        DateTime dtInicio;
+        DateTime dtFim;
+        if (!PrepararPeriodoConsulta(txtDtInicialVD, txtDtFinalVD, "de venda direta", out dtInicio, out dtFim))
+        {
+            return;
+        }
+
         string tabelaVDR;
         select_Tab_ConsultaVD(txtDtInicialVD.Text, txtDtFinalVD.Text, out tabelaVDR);
 
@@ -1024,5 +1078,3 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
 
 }
-
-

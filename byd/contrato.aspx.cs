@@ -724,12 +724,16 @@ public partial class veiculos_contrato : System.Web.UI.Page
   {
       Veiculos ovec = new Veiculos();
       string tabelaR;
-      string tabelaVUR;
+      DateTime dtInicio;
+      DateTime dtFim;
+      if (!PrepararPeriodoConsulta(txtDtInicialVN, txtDtFinalVN, "novos", out dtInicio, out dtFim))
+      {
+          return;
+      }
+
       ovec.select_Tab_ConsultaBYD(txtDtInicialVN.Text, txtDtFinalVN.Text, out tabelaR);
-      //ovec.select_Tab_ConsultaVU(out tabelaVUR);
 
       tabela = tabelaR;
-     // tabelaVU = tabelaVUR;
   }
   protected void Button2_Click(object sender, EventArgs e)
   {
@@ -737,14 +741,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
       DateTime dtInicio;
       DateTime dtFim;
 
-      if (!ObterPeriodoConsulta(txtDtInicialVU.Text, txtDtFinalVU.Text, out dtInicio, out dtFim))
+      if (!PrepararPeriodoConsulta(txtDtInicialVU, txtDtFinalVU, "usados", out dtInicio, out dtFim))
       {
-          ExibirAlerta("Informe uma data inicial e uma data final válidas para consultar contratos usados.");
           return;
       }
-
-      txtDtInicialVU.Text = dtInicio.ToString("dd/MM/yyyy");
-      txtDtFinalVU.Text = dtFim.ToString("dd/MM/yyyy");
 
       select_Tab_ConsultaVUPeriodo("Print-ContratoVUBYD.aspx", dtInicio, dtFim, out tabelaVUR);
 
@@ -768,6 +768,19 @@ public partial class veiculos_contrato : System.Web.UI.Page
           fim = troca;
       }
 
+      return true;
+  }
+
+  private bool PrepararPeriodoConsulta(TextBox campoInicio, TextBox campoFim, string descricao, out DateTime inicio, out DateTime fim)
+  {
+      if (!ObterPeriodoConsulta(campoInicio.Text, campoFim.Text, out inicio, out fim))
+      {
+          ExibirAlerta("Informe uma data inicial e uma data final válidas para consultar contratos " + descricao + ".");
+          return false;
+      }
+
+      campoInicio.Text = inicio.ToString("dd/MM/yyyy");
+      campoFim.Text = fim.ToString("dd/MM/yyyy");
       return true;
   }
 
@@ -857,5 +870,4 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
 
 }
-
 
