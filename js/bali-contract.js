@@ -1406,6 +1406,39 @@
     return issues;
   }
 
+  function updatePaymentHint() {
+    var mode = currentContractMode();
+    var rules = paymentRules[mode];
+    if (!rules) return;
+
+    var cash = bySuffix(rules.cash);
+    var finance = bySuffix(rules.finance);
+    var anchor = finance || cash;
+    if (!anchor) return;
+
+    var cell = anchor.closest ? anchor.closest('td') : anchor.parentNode;
+    if (!cell) return;
+
+    var hint = cell.querySelector('.contract-payment-hint');
+    if (!hint) {
+      hint = document.createElement('div');
+      hint.className = 'contract-payment-hint';
+      cell.appendChild(hint);
+    }
+
+    removeClass(hint, 'is-financed');
+    removeClass(hint, 'is-cash');
+    if (finance && finance.checked) {
+      addClass(hint, 'is-financed');
+      hint.textContent = 'Financiamento: confira financeira, quantidade de parcelas e valor da parcela.';
+    } else if (cash && cash.checked) {
+      addClass(hint, 'is-cash');
+      hint.textContent = 'À vista: confira entrada e formas de pagamento antes de gravar.';
+    } else {
+      hint.textContent = 'Selecione à vista ou financiamento para continuar.';
+    }
+  }
+
   function validateWizardStep(index, showMessages) {
     var mode = currentContractMode();
     var stage = getStageNameByIndex(index);
@@ -2232,10 +2265,18 @@
       allBySuffix(id).forEach(function (field) {
         if (field.getAttribute('data-contract-pay-watch') === 'true') return;
         field.setAttribute('data-contract-pay-watch', 'true');
-        field.addEventListener('change', updateQualityPanel);
-        field.addEventListener('click', updateQualityPanel);
+        field.addEventListener('change', function () {
+          updatePaymentHint();
+          updateQualityPanel();
+        });
+        field.addEventListener('click', function () {
+          updatePaymentHint();
+          updateQualityPanel();
+        });
       });
     });
+
+    updatePaymentHint();
   }
 
   function enhanceFormatFields() {
