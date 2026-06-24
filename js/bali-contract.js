@@ -1130,7 +1130,7 @@
 
       var tools = document.createElement('div');
       tools.className = 'contract-audit-tools';
-      tools.innerHTML = '<input type="text" placeholder="Filtrar por contrato, usu\u00e1rio ou texto" aria-label="Filtrar auditoria" /><select aria-label="Filtrar por ocorr\u00eancia"><option value="">Todas as ocorr\u00eancias</option></select><div class="contract-audit-presets"><button type="button" data-audit-preset="">Todos</button><button type="button" data-audit-preset="attention">Atenção</button><button type="button" data-audit-preset="success">Sucessos</button><button type="button" data-audit-preset="edit">Edições</button></div><button type="button" data-audit-copy="true">Copiar visíveis</button><small></small>';
+      tools.innerHTML = '<input type="text" placeholder="Filtrar por contrato, usu\u00e1rio ou texto" aria-label="Filtrar auditoria" /><select aria-label="Filtrar por ocorr\u00eancia"><option value="">Todas as ocorr\u00eancias</option></select><div class="contract-audit-presets"><button type="button" data-audit-preset="">Todos</button><button type="button" data-audit-preset="attention">Atenção</button><button type="button" data-audit-preset="success">Sucessos</button><button type="button" data-audit-preset="edit">Edições</button></div><button type="button" data-audit-copy="true">Copiar visíveis</button><button type="button" data-audit-csv="true">CSV visível</button><small></small>';
 
       var select = tools.querySelector('select');
       actions.forEach(function (action) {
@@ -1143,6 +1143,7 @@
       var input = tools.querySelector('input');
       var status = tools.querySelector('small');
       var copyButton = tools.querySelector('[data-audit-copy]');
+      var csvButton = tools.querySelector('[data-audit-csv]');
       var activePreset = '';
       var presetButtons = Array.prototype.slice.call(tools.querySelectorAll('[data-audit-preset]'));
       var matchPreset = function (action) {
@@ -1203,6 +1204,38 @@
             applyFilter();
           }, 1800);
         });
+      });
+
+      csvButton.addEventListener('click', function () {
+        var visibleItems = items.filter(function (item) {
+          return item.style.display !== 'none';
+        });
+        if (!visibleItems.length) {
+          status.textContent = 'Nenhum registro visível para exportar.';
+          return;
+        }
+
+        var escapeCsv = function (value) {
+          return '"' + String(value || '').replace(/"/g, '""') + '"';
+        };
+        var lines = ['"Acao";"Registro"'];
+        visibleItems.forEach(function (item) {
+          lines.push(escapeCsv(item.getAttribute('data-audit-action') || '') + ';' + escapeCsv(String(item.textContent || '').replace(/\s+/g, ' ').trim()));
+        });
+
+        var brand = document.body.className.indexOf('contrato-jeep') >= 0 ? 'jeep' : (document.body.className.indexOf('contrato-byd') >= 0 ? 'byd' : 'fiat');
+        var fileName = 'auditoria-contratos-' + brand + '-' + new Date().toISOString().slice(0, 10) + '.csv';
+        var blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.setTimeout(function () {
+          URL.revokeObjectURL(link.href);
+        }, 1000);
+        status.textContent = visibleItems.length + ' registro(s) exportado(s).';
       });
 
       var anchor = panel.querySelector('.contract-audit-cards') || panel.firstChild;
