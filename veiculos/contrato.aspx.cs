@@ -159,7 +159,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             {
                 oCmd.Connection = vec.oCon;
                 oCmd.CommandTimeout = TimeoutConsultaSegundos;
-                oCmd.CommandText = @"select top 1 id
+                oCmd.CommandText = @"select top 1 id, [data], cliente, modelo, vendedor, valorveiculo
                                      from " + TabelaContratosBI + @"
                                      where [data] >= dateadd(day, -30, getdate())
                                        and tipo = @tipo
@@ -178,11 +178,20 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 oCmd.Parameters.Add("@modelo", SqlDbType.VarChar).Value = modelo;
                 oCmd.Parameters.Add("@valor", SqlDbType.Float).Value = Convert.ToDouble(LerMoeda(txtValoVeiculo.Text));
 
-                object resultado = oCmd.ExecuteScalar();
-                if (resultado != null && resultado != DBNull.Value)
+                using (SqlDataReader reader = oCmd.ExecuteReader())
                 {
-                    contratoEncontrado = resultado.ToString();
-                    return true;
+                    if (reader.Read())
+                    {
+                        string data = reader["data"] == DBNull.Value ? "" : Convert.ToDateTime(reader["data"]).ToString("dd/MM/yyyy");
+                        decimal valor = reader["valorveiculo"] == DBNull.Value ? 0M : Convert.ToDecimal(reader["valorveiculo"]);
+                        contratoEncontrado = "Contrato " + reader["id"]
+                            + (data.Length > 0 ? ", data " + data : "")
+                            + ", cliente " + Convert.ToString(reader["cliente"])
+                            + ", modelo " + Convert.ToString(reader["modelo"])
+                            + ", vendedor " + Convert.ToString(reader["vendedor"])
+                            + ", valor " + valor.ToString("C", CulturaBrasil);
+                        return true;
+                    }
                 }
             }
         }
@@ -211,7 +220,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         {
             if (!chkConfirmarDuplicidade.Checked)
             {
-                erros.Add("Existe um contrato semelhante recente (código " + contratoSemelhante + "). Se estiver correto gravar mesmo assim, marque a ciência de duplicidade.");
+                erros.Add("Existe um contrato semelhante recente: " + contratoSemelhante + ". Se for uma nova compra legítima do mesmo cliente, marque a ciência de duplicidade para continuar.");
             }
             else
             {
