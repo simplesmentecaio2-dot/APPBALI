@@ -1392,7 +1392,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     protected void btnGravar_Click(object sender, EventArgs e)
     {
-        calcula();
+        if (!CalcularValoresContrato(true))
+        {
+            RegistrarContratoOperacao("VALIDACAO_CALCULO_NOVO", "Falha ao calcular financiamento/saldo antes da gravação.");
+            return;
+        }
 
         if (rBtnModPagFinanciamento.Checked || rBtnModPagVista.Checked)
         {
@@ -1514,6 +1518,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
     }
     protected void calcula()
     {
+        CalcularValoresContrato(true);
+    }
+
+    private bool CalcularValoresContrato(bool exibirAlerta)
+    {
 
 
         try
@@ -1529,10 +1538,15 @@ public partial class veiculos_contrato : System.Web.UI.Page
             txtSaldoAvaliacao.Text = FormatarMoedaSistema(saldoAvaliacao);
             txtEdFinanciamento.Text = FormatarMoedaSistema(financiamentoEdicao);
             txtEdSaldoAvaliacao.Text = FormatarMoedaSistema(saldoAvaliacaoEdicao);
+            return true;
         }
         catch (Exception)
         {
-            ExibirAlerta("Não consegui calcular os valores. Use números no formato 150000,00 e evite letras nos campos de valor.");
+            if (exibirAlerta)
+            {
+                ExibirAlerta("Não consegui calcular os valores. Use números no formato 150000,00 e evite letras nos campos de valor.");
+            }
+            return false;
         }
 
     }
@@ -1579,7 +1593,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
       try
         {
-      calcula();
+      if (!CalcularValoresContrato(true))
+      {
+          RegistrarContratoOperacao("VALIDACAO_CALCULO_EDICAO", "Falha ao calcular financiamento/saldo antes da edição.");
+          return;
+      }
 
       string modpag = "";
       string tipo = "";
