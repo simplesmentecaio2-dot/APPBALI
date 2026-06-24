@@ -3,6 +3,8 @@
   var dirtyHooked = false;
   var contractDirty = false;
   var contractAllowUnload = false;
+  var draftTimer = null;
+  var pageLoadedAt = new Date().getTime();
   var moneyFields = [
     'txtValoVeiculo',
     'txtEmplacamento',
@@ -905,11 +907,189 @@
     return !!(closestClass(field, 'contract-form-section') || closestClass(field, 'contract-checklist'));
   }
 
+  function canUseStorage() {
+    try {
+      var key = '__bali_contract_storage__';
+      window.localStorage.setItem(key, '1');
+      window.localStorage.removeItem(key);
+      return true;
+    } catch (ignore) {
+      return false;
+    }
+  }
+
+  function draftKey() {
+    var path = String(window.location.pathname || '').toLowerCase();
+    var editVisible = !!(bySuffix('txtEdCliente') && isVisible(bySuffix('txtEdCliente')));
+    if (editVisible) {
+      return 'bali-contract-draft:' + path + ':editar:' + (valueOf('txtContrato') || 'sem-id');
+    }
+    return 'bali-contract-draft:' + path + ':novo';
+  }
+
+  function draftFields() {
+    return Array.prototype.slice.call(document.querySelectorAll('input, select, textarea')).filter(isDirtyTrackedField);
+  }
+
+  function fieldDraftKey(field) {
+    return field.id || field.name || '';
+  }
+
+  function readDraftField(field) {
+    var type = String(field.type || '').toLowerCase();
+    if (type === 'checkbox' || type === 'radio') return field.checked;
+    return field.value;
+  }
+
+  function writeDraftField(field, value) {
+    var type = String(field.type || '').toLowerCase();
+    if (type === 'checkbox' || type === 'radio') {
+      field.checked = value === true || value === 'true';
+    } else {
+      field.value = value == null ? '' : String(value);
+    }
+  }
+
+  function collectDraft() {
+    var fields = {};
+    var hasValue = false;
+    draftFields().forEach(function (field) {
+      var key = fieldDraftKey(field);
+      if (!key) return;
+      var value = readDraftField(field);
+      fields[key] = value;
+      if (value === true || String(value || '').trim().length > 0) hasValue = true;
+    });
+
+    if (!hasValue) return null;
+    return {
+      version: 1,
+      savedAt: new Date().getTime(),
+      path: window.location.pathname,
+      fields: fields
+    };
+  }
+
+  function saveContractDraft() {
+    if (!canUseStorage()) return;
+    var draft = collectDraft();
+    try {
+      if (!draft) {
+        window.localStorage.removeItem(draftKey());
+      } else {
+        window.localStorage.setItem(draftKey(), JSON.stringify(draft));
+      }
+    } catch (ignore) {
+    }
+  }
+
+  function scheduleDraftSave() {
+    window.clearTimeout(draftTimer);
+    draftTimer = window.setTimeout(saveContractDraft, 350);
+  }
+
+  function readContractDraft() {
+    if (!canUseStorage()) return null;
+    try {
+      var raw = window.localStorage.getItem(draftKey());
+      return raw ? JSON.parse(raw) : null;
+    } catch (ignore) {
+      return null;
+    }
+  }
+
+  function clearContractDraft() {
+    window.clearTimeout(draftTimer);
+    if (!canUseStorage()) return;
+    try {
+      window.localStorage.removeItem(draftKey());
+    } catch (ignore) {
+    }
+  }
+
+  function hideDraftPanel() {
+    var panel = document.getElementById('contractDraftPanel');
+    if (panel) panel.classList.add('is-hidden');
+  }
+
+  function ensureDraftPanel(isEdit) {
+    var existing = document.getElementById('contractDraftPanel');
+    var host = getQualityHost(isEdit);
+    if (!host) return null;
+
+    if (existing) {
+      if (existing.parentNode !== host) host.insertBefore(existing, host.firstChild);
+      return existing;
+    }
+
+    var panel = document.createElement('div');
+    panel.id = 'contractDraftPanel';
+    panel.className = 'contract-draft-panel is-hidden';
+    panel.innerHTML =
+      '<div><strong>Rascunho encontrado</strong><small>Existe um preenchimento salvo neste navegador.</small></div>' +
+      '<div class="contract-draft-actions">' +
+      '<button type="button" data-draft-action="restore">Recuperar</button>' +
+      '<button type="button" data-draft-action="discard">Descartar</button>' +
+      '</div>';
+    host.insertBefore(panel, host.firstChild);
+    return panel;
+  }
+
+  function restoreContractDraft(draft) {
+    if (!draft || !draft.fields) return;
+    draftFields().forEach(function (field) {
+      var key = fieldDraftKey(field);
+      if (key && Object.prototype.hasOwnProperty.call(draft.fields, key)) {
+        writeDraftField(field, draft.fields[key]);
+        showFieldMessage(field, '');
+      }
+    });
+    calculateContracts();
+    contractDirty = true;
+    updateDirtyNotice();
+    hideDraftPanel();
+    updateQualityPanel();
+  }
+
+  function enhanceDraftRecovery() {
+    var fields = draftFields();
+    if (!fields.length) {
+      hideDraftPanel();
+      return;
+    }
+
+    var draft = readContractDraft();
+    if (!draft || !draft.fields || !draft.savedAt || draft.savedAt >= pageLoadedAt) {
+      hideDraftPanel();
+      return;
+    }
+
+    var panel = ensureDraftPanel(!!(bySuffix('txtEdCliente') && isVisible(bySuffix('txtEdCliente'))));
+    if (!panel || panel.getAttribute('data-draft-bound') === 'true') {
+      if (panel) panel.classList.remove('is-hidden');
+      return;
+    }
+
+    panel.setAttribute('data-draft-bound', 'true');
+    Array.prototype.slice.call(panel.querySelectorAll('[data-draft-action]')).forEach(function (button) {
+      button.addEventListener('click', function () {
+        if (button.getAttribute('data-draft-action') === 'restore') {
+          restoreContractDraft(readContractDraft());
+        } else {
+          clearContractDraft();
+          hideDraftPanel();
+        }
+      });
+    });
+    panel.classList.remove('is-hidden');
+  }
+
   function markContractDirty(event) {
     if (!isDirtyTrackedField(event.currentTarget)) return;
     contractDirty = true;
     updateDirtyNotice();
     hideSubmitSummary();
+    scheduleDraftSave();
   }
 
   function enhanceUnsavedWarning() {
@@ -1219,6 +1399,7 @@
     enhanceBiPeriodShortcuts();
     enhanceFormSections();
     enhanceUnsavedWarning();
+    enhanceDraftRecovery();
     enhanceLookupTables();
     bindSubmitButtons();
     prepareMoneyFields(false);
