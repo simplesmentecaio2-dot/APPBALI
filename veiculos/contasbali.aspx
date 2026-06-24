@@ -6,14 +6,15 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title></title>
+    <title>Contas Fiat - Bali</title>
     <link href="../css/estilo.css" rel="stylesheet" />
+    <link href="../css/bali-utility.css?v=20260624-2" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
     <script src="../../js/js.js"></script>
 </head>
-<body>
+<body class="bali-utility-page utility-fiat">
   <script>
          function aguarde() {
              document.getElementById('ag').style.visibility = 'visible';
@@ -46,7 +47,7 @@
                     MENU >>
                 </div>
                 <div style="text-align: right; margin-right: 15px;">
-                    <asp:Label ID="lblFrmID" runat="server" Text="Sistemas"></asp:Label>
+                    <asp:Label ID="lblFrmID" runat="server" Text="Contas Fiat"></asp:Label>
                 </div>
             </div>
             <img id="openMenu" src="../../img/openMenu.png" style="height: 68px; width: 68px; position: absolute; z-index: 200; top: 60px; left: 10px; display: none;" />
@@ -55,7 +56,7 @@
                     MENU <<
                 </div>
                 
-                <div class="item-menu"><a class="links" href="default.aspx">Inicio</a></div>
+                <div class="item-menu"><a class="links" href="default.aspx">Início</a></div>
 
                 <div id="completa-menu-left"></div>
             </div>
@@ -63,7 +64,7 @@
             <asp:TabContainer ID="TabRecibo" runat="server" CssClass="tabPanelConsultar" Width="100%" ActiveTabIndex="0">
                 <asp:TabPanel ID="TabPanel1" runat="server" HeaderText="TabPanel1">
                     <HeaderTemplate>
-                        Contas Bali
+                        Contas Fiat
                     </HeaderTemplate>
 
 
@@ -81,7 +82,7 @@
 
                     <ContentTemplate>
                         <fieldset>
-                            <legend>Contas Bali </legend>
+                            <legend>Contas Fiat</legend>
                            
                              
                             <br />

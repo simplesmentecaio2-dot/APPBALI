@@ -6,14 +6,15 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title></title>
+    <title>Telefones das Financeiras Jeep - Bali</title>
     <link href="../css/estilo.css" rel="stylesheet" />
+    <link href="../css/bali-utility.css?v=20260624-2" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
     <script src="../../js/js.js"></script>
 </head>
-<body>
+<body class="bali-utility-page utility-jeep">
   <script>
          function aguarde() {
              document.getElementById('ag').style.visibility = 'visible';
@@ -46,7 +47,7 @@
                     MENU >>
                 </div>
                 <div style="text-align: right; margin-right: 15px;">
-                    <asp:Label ID="lblFrmID" runat="server" Text="Sistemas"></asp:Label>
+                    <asp:Label ID="lblFrmID" runat="server" Text="Telefones das Financeiras Jeep"></asp:Label>
                 </div>
             </div>
             <img id="openMenu" src="../../img/openMenu.png" style="height: 68px; width: 68px; position: absolute; z-index: 200; top: 60px; left: 10px; display: none;" />
@@ -54,7 +55,7 @@
                 <div class="item-menu" style="padding-left: 80px; height: 50px; line-height: 60px;" onclick="escondeMenuLeft()">
                     MENU <<
                 </div>
-                <div class="item-menu"><a class="links" href="default.aspx">Inicio</a></div>
+                <div class="item-menu"><a class="links" href="default.aspx">Início</a></div>
 
                 <div id="completa-menu-left"></div>
             </div>
@@ -81,7 +82,7 @@
 
                     
 <ContentTemplate>
-<fieldset><legend>Financeiras </legend><br />
+<fieldset><legend>Financeiras</legend><br />
                             <img src="../img/imprimir.png" style="width: 30px; cursor: pointer;" onclick="javascript: imprimePanel()" /> <asp:Panel ID="pnlImpressao" runat="server" Width="100%" Height="100%"><div style="width: 19cm; border: 1px solid black; font-family: 'Times New Roman'; padding: 20px;" id="recibo"><div style="text-align: center"><img src="../img/header-contratoJEEP.png" style="height: 35px; width: 682px" /></div>
 
                                     <div style="text-align: center; font-size: large;"><img src="../img/TelefoneFinanceiras.PNG" /></div>
