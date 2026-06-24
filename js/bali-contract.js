@@ -1128,7 +1128,7 @@
 
       var tools = document.createElement('div');
       tools.className = 'contract-audit-tools';
-      tools.innerHTML = '<input type="text" placeholder="Filtrar por contrato, usu\u00e1rio ou texto" aria-label="Filtrar auditoria" /><select aria-label="Filtrar por ocorr\u00eancia"><option value="">Todas as ocorr\u00eancias</option></select><button type="button">Copiar visíveis</button><small></small>';
+      tools.innerHTML = '<input type="text" placeholder="Filtrar por contrato, usu\u00e1rio ou texto" aria-label="Filtrar auditoria" /><select aria-label="Filtrar por ocorr\u00eancia"><option value="">Todas as ocorr\u00eancias</option></select><div class="contract-audit-presets"><button type="button" data-audit-preset="">Todos</button><button type="button" data-audit-preset="attention">Atenção</button><button type="button" data-audit-preset="success">Sucessos</button><button type="button" data-audit-preset="edit">Edições</button></div><button type="button" data-audit-copy="true">Copiar visíveis</button><small></small>';
 
       var select = tools.querySelector('select');
       actions.forEach(function (action) {
@@ -1140,7 +1140,17 @@
 
       var input = tools.querySelector('input');
       var status = tools.querySelector('small');
-      var copyButton = tools.querySelector('button');
+      var copyButton = tools.querySelector('[data-audit-copy]');
+      var activePreset = '';
+      var presetButtons = Array.prototype.slice.call(tools.querySelectorAll('[data-audit-preset]'));
+      var matchPreset = function (action) {
+        var upper = String(action || '').toUpperCase();
+        if (!activePreset) return true;
+        if (activePreset === 'attention') return upper.indexOf('ERRO') === 0 || upper.indexOf('VALIDACAO') === 0 || upper.indexOf('CHECKLIST') === 0 || upper.indexOf('DUPLICIDADE') >= 0;
+        if (activePreset === 'success') return upper.indexOf('SUCESSO') >= 0 || upper.indexOf('GRAVACAO_SUCESSO') >= 0;
+        if (activePreset === 'edit') return upper.indexOf('EDICAO') >= 0;
+        return true;
+      };
       var applyFilter = function () {
         var text = normalizeText(input.value);
         var actionValue = select.value;
@@ -1150,9 +1160,10 @@
           var itemAction = item.querySelector('strong');
           itemAction = itemAction ? String(itemAction.textContent || '').trim() : '';
           var matchAction = !actionValue || itemAction === actionValue;
+          var matchQuick = matchPreset(itemAction);
           var matchText = !text || normalizeText(item.textContent).indexOf(text) >= 0;
-          item.style.display = matchAction && matchText ? '' : 'none';
-          if (matchAction && matchText) visible++;
+          item.style.display = matchAction && matchQuick && matchText ? '' : 'none';
+          if (matchAction && matchQuick && matchText) visible++;
         });
 
         status.textContent = visible + ' registro(s) vis\u00edvel(is)';
@@ -1160,6 +1171,17 @@
 
       input.addEventListener('input', applyFilter);
       select.addEventListener('change', applyFilter);
+      presetButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          activePreset = button.getAttribute('data-audit-preset') || '';
+          presetButtons.forEach(function (item) {
+            removeClass(item, 'is-active');
+          });
+          addClass(button, 'is-active');
+          applyFilter();
+        });
+      });
+      if (presetButtons.length) addClass(presetButtons[0], 'is-active');
       copyButton.addEventListener('click', function () {
         var visibleItems = items.filter(function (item) {
           return item.style.display !== 'none';
