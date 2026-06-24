@@ -1217,6 +1217,194 @@ body.bali-contract-page *::after {
   font-weight: 800;
 }
 
+.bali-contract-page .contract-audit-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.bali-contract-page .contract-audit-filter {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--contract-line);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, var(--contract-brand-soft), rgba(255, 255, 255, .86)),
+    #fff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .05);
+}
+
+.bali-contract-page .contract-audit-filter h2 {
+  margin: 0;
+  color: var(--contract-ink);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.bali-contract-page .contract-audit-filter p {
+  max-width: 680px;
+  margin: 3px 0 0;
+  color: var(--contract-muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.bali-contract-page .contract-audit-search {
+  display: grid;
+  grid-template-columns: minmax(130px, 170px) auto;
+  gap: 8px;
+  align-items: end;
+}
+
+.bali-contract-page .contract-audit-search label {
+  display: grid;
+  gap: 5px;
+  color: var(--contract-muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.bali-contract-page .contract-audit-search .btns {
+  min-width: 150px;
+}
+
+.bali-contract-page .contract-audit-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.bali-contract-page .contract-audit-cards article,
+.bali-contract-page .contract-audit-box,
+.bali-contract-page .contract-audit-history,
+.bali-contract-page .contract-audit-empty {
+  border: 1px solid var(--contract-line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .05);
+}
+
+.bali-contract-page .contract-audit-cards article {
+  display: grid;
+  gap: 4px;
+  min-height: 86px;
+  padding: 14px;
+}
+
+.bali-contract-page .contract-audit-cards span,
+.bali-contract-page .contract-audit-cards small,
+.bali-contract-page .contract-audit-list span,
+.bali-contract-page .contract-audit-list small,
+.bali-contract-page .contract-audit-history span,
+.bali-contract-page .contract-audit-history p {
+  color: var(--contract-muted);
+}
+
+.bali-contract-page .contract-audit-cards span {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.bali-contract-page .contract-audit-cards strong {
+  color: var(--contract-ink);
+  font-size: 26px;
+  font-weight: 950;
+}
+
+.bali-contract-page .contract-audit-cards small {
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.bali-contract-page .contract-audit-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, .85fr) minmax(360px, 1.15fr);
+  gap: 12px;
+}
+
+.bali-contract-page .contract-audit-box,
+.bali-contract-page .contract-audit-history {
+  padding: 14px;
+}
+
+.bali-contract-page .contract-audit-box h3,
+.bali-contract-page .contract-audit-history h3 {
+  margin: 0 0 10px;
+  color: var(--contract-ink);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.bali-contract-page .contract-audit-bars,
+.bali-contract-page .contract-audit-list,
+.bali-contract-page .contract-audit-history {
+  display: grid;
+  gap: 8px;
+}
+
+.bali-contract-page .contract-audit-bars div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.bali-contract-page .contract-audit-bars span {
+  overflow: hidden;
+  color: var(--contract-ink);
+  font-size: 12px;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bali-contract-page .contract-audit-bars strong {
+  color: var(--contract-brand-strong);
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.bali-contract-page .contract-audit-list article,
+.bali-contract-page .contract-audit-history article {
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+  border: 1px solid #edf2f7;
+  border-radius: 8px;
+  background: #fbfdff;
+}
+
+.bali-contract-page .contract-audit-list strong,
+.bali-contract-page .contract-audit-history strong {
+  color: var(--contract-ink);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.bali-contract-page .contract-audit-list span,
+.bali-contract-page .contract-audit-list small,
+.bali-contract-page .contract-audit-history span,
+.bali-contract-page .contract-audit-history p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.bali-contract-page .contract-audit-empty {
+  padding: 14px;
+  color: var(--contract-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .bali-contract-page table.contract-date-filter {
   width: auto !important;
   max-width: 640px;
@@ -1647,16 +1835,20 @@ body.bali-contract-page *::after {
   }
 
   .bali-contract-page .contract-bi-filter,
+  .bali-contract-page .contract-audit-filter,
   .bali-contract-page .contract-checklist-grid,
+  .bali-contract-page .contract-audit-grid,
   .bali-contract-page .contract-bi-layout {
     grid-template-columns: 1fr;
   }
 
-  .bali-contract-page .contract-bi-cards {
+  .bali-contract-page .contract-bi-cards,
+  .bali-contract-page .contract-audit-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .bali-contract-page .contract-bi-controls {
+  .bali-contract-page .contract-bi-controls,
+  .bali-contract-page .contract-audit-search {
     grid-template-columns: 1fr;
   }
 
@@ -1726,6 +1918,10 @@ body.bali-contract-page *::after {
   }
 
   .bali-contract-page .contract-bi-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .bali-contract-page .contract-audit-cards {
     grid-template-columns: 1fr;
   }
 }

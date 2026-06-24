@@ -17,7 +17,7 @@
 
     <script src="../tables/js/jquery.dataTables.min.js"></script>
     <link href="../tables/estilo/table.css" rel="stylesheet" />
-    <link href="../css/bali-contract.css?v=20260624-contratos20" rel="stylesheet" />
+    <link href="../css/bali-contract.css?v=20260624-contratos21" rel="stylesheet" />
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -221,6 +221,30 @@
                                             </div>
                                         </div>
                                         <%=biHtml %>
+                                    </div>
+                                </ContentTemplate>
+                            </asp:TabPanel>
+                            <asp:TabPanel ID="TabPanelAuditoria" Style="padding: 20px;" runat="server" HeaderText="TabPanel1">
+                                <HeaderTemplate>
+                                    Auditoria
+                                </HeaderTemplate>
+                                <ContentTemplate>
+                                    <div class="contract-audit-panel">
+                                        <div class="contract-audit-filter">
+                                            <div>
+                                                <span class="contract-bi-kicker">Auditoria</span>
+                                                <h2>Ocorrências dos contratos</h2>
+                                                <p>Resumo de validações, erros, duplicidades, gravações e edições registradas.</p>
+                                            </div>
+                                            <div class="contract-audit-search">
+                                                <label>ID do contrato
+                                                    <asp:TextBox ID="txtAuditoriaContrato" CssClass="txts" runat="server"></asp:TextBox>
+                                                </label>
+                                                <asp:Button ID="btnConsultarHistoricoContrato" runat="server" Text="Consultar histórico" CssClass="btns" OnClick="btnConsultarHistoricoContrato_Click" />
+                                            </div>
+                                        </div>
+                                        <%=auditoriaHtml %>
+                                        <%=historicoHtml %>
                                     </div>
                                 </ContentTemplate>
                             </asp:TabPanel>

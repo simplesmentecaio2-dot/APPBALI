@@ -48,12 +48,19 @@ public partial class veiculos_contrato : System.Web.UI.Page
         {
             CarregarBI();
         }
+        auditoriaHtml = MontarHtmlAuditoriaContrato();
+        if (String.IsNullOrEmpty(historicoHtml))
+        {
+            historicoHtml = "<div class='contract-audit-empty'>Informe o ID de um contrato para consultar o histórico de alterações e ocorrências.</div>";
+        }
 
     }
     public string tabela;
     public string tabelaVU;
     public string tabelaVD;
     public string biHtml;
+    public string auditoriaHtml;
+    public string historicoHtml;
 
     private static readonly CultureInfo CulturaBrasil = new CultureInfo("pt-BR");
 
@@ -857,6 +864,147 @@ public partial class veiculos_contrato : System.Web.UI.Page
             if (decimal.TryParse(valor.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out convertido)) return convertido;
             return 0;
         }
+    }
+
+    private List<ContratoLogItem> LerLogsContrato()
+    {
+        List<ContratoLogItem> logs = new List<ContratoLogItem>();
+        try
+        {
+            string caminho = Server.MapPath("~/App_Data/contrato-operacoes.log");
+            if (!File.Exists(caminho)) return logs;
+
+            string[] linhas = File.ReadAllLines(caminho, Encoding.UTF8);
+            int inicio = Math.Max(0, linhas.Length - 1500);
+            for (int i = inicio; i < linhas.Length; i++)
+            {
+                string[] partes = linhas[i].Split('\t');
+                if (partes.Length < 5) continue;
+                if (!String.Equals(partes[1], MarcaContrato, StringComparison.OrdinalIgnoreCase)) continue;
+
+                DateTime data;
+                DateTime.TryParse(partes[0], CulturaBrasil, DateTimeStyles.None, out data);
+                logs.Add(new ContratoLogItem
+                {
+                    Data = data,
+                    Usuario = partes[2],
+                    Acao = partes[3],
+                    Detalhe = partes[4]
+                });
+            }
+        }
+        catch
+        {
+        }
+
+        return logs.OrderByDescending(x => x.Data).ToList();
+    }
+
+    private string AuditCard(string label, string value, string caption)
+    {
+        return "<article><span>" + HttpUtility.HtmlEncode(label) + "</span><strong>"
+            + HttpUtility.HtmlEncode(value) + "</strong><small>" + HttpUtility.HtmlEncode(caption) + "</small></article>";
+    }
+
+    private bool AcaoComAtencao(string acao)
+    {
+        acao = (acao ?? "").ToUpperInvariant();
+        return acao.StartsWith("ERRO") || acao.StartsWith("VALIDACAO") || acao.StartsWith("CHECKLIST") || acao.IndexOf("DUPLICIDADE") >= 0;
+    }
+
+    private string MontarHtmlAuditoriaContrato()
+    {
+        List<ContratoLogItem> logs = LerLogsContrato();
+        if (logs.Count == 0) return "<div class='contract-audit-empty'>Nenhuma ocorrência de contrato registrada para esta marca.</div>";
+
+        DateTime limite = DateTime.Today.AddDays(-30);
+        List<ContratoLogItem> recentes = logs.Where(x => x.Data >= limite).ToList();
+        if (recentes.Count == 0) recentes = logs.Take(60).ToList();
+
+        int atencoes = recentes.Count(x => AcaoComAtencao(x.Acao));
+        int sucessos = recentes.Count(x => x.Acao == "GRAVACAO_SUCESSO" || x.Acao == "EDICAO_SUCESSO");
+        int edicoes = recentes.Count(x => x.Acao.StartsWith("EDICAO"));
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class='contract-audit-cards'>");
+        html.Append(AuditCard("Ocorrências", recentes.Count.ToString(), "Últimos registros analisados"));
+        html.Append(AuditCard("Atenção", atencoes.ToString(), "Validações, erros e duplicidades"));
+        html.Append(AuditCard("Sucessos", sucessos.ToString(), "Gravações e edições concluídas"));
+        html.Append(AuditCard("Edições", edicoes.ToString(), "Alterações registradas"));
+        html.Append("</div>");
+
+        html.Append("<div class='contract-audit-grid'>");
+        html.Append("<section class='contract-audit-box'><h3>Principais ocorrências</h3><div class='contract-audit-bars'>");
+        foreach (var grupo in recentes.GroupBy(x => x.Acao).OrderByDescending(x => x.Count()).ThenBy(x => x.Key).Take(8))
+        {
+            html.Append("<div><span>").Append(HttpUtility.HtmlEncode(grupo.Key)).Append("</span><strong>").Append(grupo.Count()).Append("</strong></div>");
+        }
+        html.Append("</div></section>");
+
+        html.Append("<section class='contract-audit-box'><h3>Últimos registros</h3><div class='contract-audit-list'>");
+        foreach (ContratoLogItem item in logs.Take(10))
+        {
+            html.Append("<article><strong>").Append(HttpUtility.HtmlEncode(item.Acao)).Append("</strong><span>")
+                .Append(HttpUtility.HtmlEncode(item.Data == DateTime.MinValue ? "" : item.Data.ToString("dd/MM/yyyy HH:mm")))
+                .Append(" · ").Append(HttpUtility.HtmlEncode(item.Usuario)).Append("</span><small>")
+                .Append(HttpUtility.HtmlEncode(item.Detalhe)).Append("</small></article>");
+        }
+        html.Append("</div></section></div>");
+        return html.ToString();
+    }
+
+    private bool DetalhePossuiContrato(string detalhe, string contrato)
+    {
+        foreach (string parte in (detalhe ?? "").Split(';'))
+        {
+            string texto = parte.Trim();
+            if (texto.StartsWith("Contrato=", StringComparison.OrdinalIgnoreCase)
+                && texto.Substring("Contrato=".Length).Trim() == contrato)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private string MontarHistoricoContrato(string contrato)
+    {
+        contrato = (contrato ?? "").Trim();
+        if (contrato.Length == 0) return "<div class='contract-audit-empty'>Informe o ID de um contrato para consultar o histórico.</div>";
+
+        List<ContratoLogItem> logs = LerLogsContrato()
+            .Where(x => DetalhePossuiContrato(x.Detalhe, contrato))
+            .Take(80)
+            .ToList();
+
+        if (logs.Count == 0) return "<div class='contract-audit-empty'>Nenhuma ocorrência encontrada para o contrato " + HttpUtility.HtmlEncode(contrato) + ".</div>";
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<section class='contract-audit-history'><h3>Histórico do contrato ")
+            .Append(HttpUtility.HtmlEncode(contrato)).Append("</h3>");
+        foreach (ContratoLogItem item in logs)
+        {
+            html.Append("<article><strong>").Append(HttpUtility.HtmlEncode(item.Acao)).Append("</strong><span>")
+                .Append(HttpUtility.HtmlEncode(item.Data == DateTime.MinValue ? "" : item.Data.ToString("dd/MM/yyyy HH:mm")))
+                .Append(" · ").Append(HttpUtility.HtmlEncode(item.Usuario)).Append("</span><p>")
+                .Append(HttpUtility.HtmlEncode(item.Detalhe)).Append("</p></article>");
+        }
+        html.Append("</section>");
+        return html.ToString();
+    }
+
+    protected void btnConsultarHistoricoContrato_Click(object sender, EventArgs e)
+    {
+        auditoriaHtml = MontarHtmlAuditoriaContrato();
+        historicoHtml = MontarHistoricoContrato(txtAuditoriaContrato.Text);
+    }
+
+    private class ContratoLogItem
+    {
+        public DateTime Data { get; set; }
+        public string Usuario { get; set; }
+        public string Acao { get; set; }
+        public string Detalhe { get; set; }
     }
 
     private class ContratoBIItem
