@@ -2675,10 +2675,17 @@
     var escapeCsv = function (value) {
       return '"' + String(value || '').replace(/\s+/g, ' ').trim().replace(/"/g, '""') + '"';
     };
+    var cellText = function (cell, index) {
+      if (index === 0 && cell.querySelector) {
+        var idText = cell.querySelector('.contract-id-action span');
+        if (idText) return String(idText.textContent || '').replace(/^#/, '').trim();
+      }
+      return String(cell.textContent || '').replace(/\s+/g, ' ').trim();
+    };
     var lines = [headers.map(escapeCsv).join(';')];
     Array.prototype.slice.call(table.tBodies[0].rows).forEach(function (row) {
       if (!row.cells || !row.cells.length || row.style.display === 'none' || (row.className || '').match(/contract-empty-row|dataTables_empty/)) return;
-      lines.push(Array.prototype.slice.call(row.cells).map(function (cell) { return escapeCsv(cell.textContent); }).join(';'));
+      lines.push(Array.prototype.slice.call(row.cells).map(function (cell, index) { return escapeCsv(cellText(cell, index)); }).join(';'));
     });
 
     if (lines.length === 1) return 0;
