@@ -1394,6 +1394,25 @@
     contractStepIndex = index;
     showWizardMessage('');
     applyWizardStep();
+    scrollActiveWizardStep();
+  }
+
+  function scrollActiveWizardStep() {
+    if (!window.matchMedia || !window.matchMedia('(max-width: 980px)').matches) return;
+
+    var host = getWizardHost();
+    if (!host) return;
+
+    var target = host.querySelector('.contract-form-section.is-step-active');
+    if (!target && (' ' + String(host.className || '') + ' ').indexOf(' contract-wizard-review ') >= 0) {
+      target = getWizardChecklist() || document.getElementById('contractQualityPanel');
+    }
+
+    if (target && target.scrollIntoView) {
+      window.setTimeout(function () {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 40);
+    }
   }
 
   function applyWizardStep() {
