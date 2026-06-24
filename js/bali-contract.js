@@ -201,6 +201,11 @@
     }
   }
 
+  function removeClass(element, className) {
+    if (!element) return;
+    element.className = String(element.className || '').replace(new RegExp('\\b' + className + '\\b', 'g'), '').replace(/\s+/g, ' ').trim();
+  }
+
   function closestClass(element, className) {
     while (element && element.nodeType === 1) {
       var current = ' ' + String(element.className || '') + ' ';
@@ -928,12 +933,23 @@
 
     if (!missing) {
       showChecklistMessage(button, '');
+      removeClass(getChecklistForButton(button), 'is-warning');
       return true;
     }
 
     showChecklistMessage(button, isEditSubmit(button)
       ? 'Confirme o checklist da edição antes de gravar.'
       : 'Confirme o checklist final antes de gravar o contrato.');
+
+    var checklist = getChecklistForButton(button);
+    if (checklist) {
+      addClass(checklist, 'is-warning');
+      try {
+        checklist.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      } catch (ignore) {
+        checklist.scrollIntoView(true);
+      }
+    }
 
     var first = ids.map(bySuffix).filter(Boolean)[0];
     if (first && first.focus) first.focus();
@@ -1526,6 +1542,7 @@
 
       field.addEventListener('change', function () {
         toggle();
+        removeClass(closestClass(field, 'contract-checklist'), 'is-warning');
         var checklist = closestTag(field, 'div');
         var warning = checklist && checklist.parentNode ? checklist.parentNode.querySelector('.contract-checklist-warning') : null;
         if (warning) {
