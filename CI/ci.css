@@ -1,0 +1,543 @@
+:root {
+  --ink: #172033;
+  --muted: #64748b;
+  --line: #d9e1ed;
+  --soft: #f5f7fb;
+  --panel: #fff;
+  --brand: #c9333a;
+  --brand-strong: #9d1f2a;
+  --danger: #b42318;
+  --success: #067647;
+  --shadow: 0 18px 45px rgba(15, 23, 42, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  background: #eef3f8;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 18px;
+  color: #fff;
+  background: linear-gradient(180deg, #182033, #2c405f);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--brand-strong);
+  background: #fff;
+  font-weight: 900;
+}
+
+.brand strong,
+.brand small {
+  display: block;
+}
+
+.brand small {
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.side-nav {
+  display: grid;
+  gap: 8px;
+}
+
+.side-nav a {
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.side-nav a:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.content {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 28px;
+}
+
+.hero,
+.panel,
+.summary-grid article {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+  padding: 24px;
+}
+
+.hero h1,
+.panel h2 {
+  margin: 0;
+}
+
+.hero p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.eyebrow {
+  display: inline-flex;
+  margin-bottom: 8px;
+  color: var(--brand-strong);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.primary-link,
+.secondary-link,
+.primary-button,
+.secondary-button,
+.print-actions button,
+.print-actions a {
+  min-height: 40px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.primary-link,
+.primary-button,
+.print-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: var(--brand);
+}
+
+.secondary-link,
+.secondary-button,
+.print-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  background: #e9eef6;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.summary-grid article {
+  padding: 18px;
+}
+
+.summary-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.summary-grid strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--brand-strong);
+  font-size: 34px;
+  line-height: 1;
+}
+
+.panel {
+  margin-bottom: 18px;
+  padding: 20px;
+}
+
+.panel-header,
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr)) 130px auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.form-grid .wide {
+  grid-column: 1 / -1;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  color: var(--ink);
+}
+
+.text-field,
+.select-field,
+.textarea-field {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: #fff;
+  font-size: 14px;
+}
+
+.text-field,
+.select-field {
+  height: 40px;
+}
+
+.textarea-field {
+  min-height: 92px;
+  padding: 12px;
+  resize: vertical;
+}
+
+.text-field:focus,
+.select-field:focus,
+.textarea-field:focus {
+  border-color: var(--brand);
+  outline: 3px solid rgba(201, 51, 58, 0.14);
+}
+
+.edit-password {
+  display: grid;
+  grid-template-columns: minmax(240px, 360px) minmax(200px, 1fr);
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 14px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fafcff;
+}
+
+.edit-password small {
+  color: var(--muted);
+}
+
+.form-message {
+  margin-bottom: 16px;
+  border: 1px solid #b7dfcc;
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: var(--success);
+  background: #ecfdf3;
+  font-weight: 800;
+}
+
+.form-message.error {
+  border-color: #f2b8b5;
+  color: var(--danger);
+  background: #fff1f0;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ci-table {
+  width: 100%;
+  min-width: 920px;
+  border-collapse: collapse;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.ci-table th {
+  padding: 12px;
+  color: #334155;
+  background: #edf3fb;
+  font-size: 12px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.ci-table td {
+  border-top: 1px solid var(--line);
+  padding: 12px;
+  color: #243044;
+  font-size: 14px;
+}
+
+.table-action {
+  display: inline-flex;
+  margin-right: 8px;
+  color: var(--brand-strong);
+  font-weight: 900;
+}
+
+.table-action.danger {
+  color: var(--danger);
+}
+
+.ci-print-page {
+  background: #dfe6ef;
+}
+
+.print-sheet {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 18px auto;
+  padding: 14mm;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+}
+
+.print-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 3px solid var(--brand);
+  padding-bottom: 12px;
+}
+
+.print-logo {
+  max-width: 170px;
+  max-height: 70px;
+  object-fit: contain;
+}
+
+.print-title {
+  text-align: right;
+}
+
+.print-title span,
+.print-meta span,
+.print-grid span,
+.print-block span,
+.print-footer span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.print-title h1 {
+  margin: 5px 0 0;
+  color: var(--brand-strong);
+  font-size: 24px;
+}
+
+.print-meta,
+.print-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.print-meta {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.print-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.print-meta div,
+.print-grid div,
+.print-block {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.print-meta strong,
+.print-grid strong,
+.print-grid small {
+  display: block;
+  margin-top: 4px;
+}
+
+.print-block {
+  margin-top: 12px;
+}
+
+.print-block h2 {
+  margin: 5px 0 0;
+  font-size: 18px;
+}
+
+.print-block p {
+  margin: 8px 0 0;
+  line-height: 1.45;
+}
+
+.print-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  margin-top: 34px;
+}
+
+.signature {
+  border-top: 1px solid var(--ink);
+  padding-top: 8px;
+  text-align: center;
+}
+
+.print-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 auto 24px;
+}
+
+.marca-jeep {
+  --brand: #287246;
+  --brand-strong: #155734;
+}
+
+.marca-byd {
+  --brand: #1969b3;
+  --brand-strong: #0d4f8f;
+}
+
+@media (max-width: 1120px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+  }
+
+  .side-nav {
+    display: flex;
+    min-width: max-content;
+  }
+
+  .filter-grid,
+  .form-grid,
+  .edit-password {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .content {
+    padding: 16px;
+  }
+
+  .hero,
+  .panel-header,
+  .form-actions,
+  .sidebar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .panel,
+  .hero {
+    padding: 16px;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .print-sheet {
+    width: auto;
+    min-height: auto;
+    margin: 0;
+    padding: 10mm;
+    box-shadow: none;
+  }
+
+  .print-actions {
+    display: none;
+  }
+}
