@@ -48,6 +48,14 @@
     return 'default';
   }
 
+  function inferIconFromText(text) {
+    var fakeCard = {
+      getAttribute: function () { return ''; },
+      textContent: text || ''
+    };
+    return inferIcon(fakeCard);
+  }
+
   function applyIcon(card) {
     var iconBox = card.querySelector('.central-link-icon');
     if (!iconBox) {
@@ -78,6 +86,9 @@
       applyIcon(cards[i]);
     }
   }
+
+  window.centralLinksApplyIcons = initializeIcons;
+  window.centralLinksInferIcon = inferIconFromText;
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeIcons);

@@ -8,8 +8,9 @@
     <title>Central Jeep | Grupo Bali</title>
     <link href="../css/central-links.css" rel="stylesheet" />
     <script src="../js/central-links-icons.js" defer="defer"></script>
+    <script src="../js/central-links-maintenance.js" defer="defer"></script>
 </head>
-<body class="central-links-page brand-jeep">
+<body class="central-links-page brand-jeep" data-brand-name="Jeep" data-links-api="central-links.ashx?AspxAutoDetectCookieSupport=1">
     <form id="form1" runat="server">
         <div class="central-shell">
             <header class="central-topbar">

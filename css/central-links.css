@@ -285,6 +285,248 @@ body.central-links-page {
   color: var(--ink);
 }
 
+.central-maintenance-button,
+.central-maintenance-close,
+.central-maintenance-password-row button,
+.central-maintenance-actions button,
+.central-maintenance-item-actions button {
+  min-height: 38px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--ink);
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color .16s ease, background .16s ease, color .16s ease;
+}
+
+.central-maintenance-button,
+.central-maintenance-password-row button,
+.central-maintenance-actions button:first-child {
+  border-color: var(--brand-color);
+  background: var(--brand-color);
+  color: #fff;
+}
+
+.central-maintenance-button {
+  padding: 0 14px;
+}
+
+.central-maintenance-close,
+.central-maintenance-actions button,
+.central-maintenance-item-actions button {
+  padding: 0 12px;
+}
+
+.central-maintenance-button:hover,
+.central-maintenance-button:focus,
+.central-maintenance-close:hover,
+.central-maintenance-close:focus,
+.central-maintenance-password-row button:hover,
+.central-maintenance-password-row button:focus,
+.central-maintenance-actions button:hover,
+.central-maintenance-actions button:focus,
+.central-maintenance-item-actions button:hover,
+.central-maintenance-item-actions button:focus {
+  border-color: var(--brand-color);
+  background: var(--brand-soft);
+  color: var(--ink);
+  outline: none;
+}
+
+.central-maintenance-panel[hidden] {
+  display: none;
+}
+
+.central-maintenance-lock,
+.central-maintenance-form,
+.central-maintenance-list {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.central-maintenance-lock {
+  padding: 16px;
+}
+
+.central-maintenance-lock label,
+.central-maintenance-fields label {
+  display: grid;
+  gap: 7px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.central-maintenance-password-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.central-maintenance-password-row input,
+.central-maintenance-fields input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0 12px;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.central-maintenance-password-row input:focus,
+.central-maintenance-fields input:focus {
+  border-color: var(--brand-color);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+  outline: none;
+}
+
+.central-maintenance-error,
+.central-maintenance-feedback {
+  margin: 10px 0 0;
+  color: #9f1d1d;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.central-maintenance-feedback {
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: rgba(22, 101, 52, .10);
+  color: #166534;
+}
+
+.central-maintenance-feedback.is-error {
+  background: rgba(159, 29, 29, .10);
+  color: #9f1d1d;
+}
+
+.central-maintenance-workspace[hidden],
+.central-maintenance-lock[hidden],
+.central-maintenance-feedback[hidden] {
+  display: none;
+}
+
+.central-maintenance-form {
+  padding: 16px;
+}
+
+.central-maintenance-fields {
+  display: grid;
+  grid-template-columns: minmax(160px, .9fr) minmax(140px, .7fr) minmax(220px, 1.4fr);
+  gap: 12px;
+}
+
+.central-icon-picker {
+  margin-top: 14px;
+}
+
+.central-icon-picker p {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.central-icon-option {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin: 0 6px 6px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  cursor: pointer;
+}
+
+.central-icon-option img {
+  width: 25px;
+  height: 25px;
+}
+
+.central-icon-option.is-selected {
+  border-color: var(--brand-color);
+  background: var(--brand-soft);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+.central-maintenance-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.central-maintenance-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px;
+}
+
+.central-maintenance-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+}
+
+.central-maintenance-item-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.central-maintenance-item-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius);
+  background: var(--brand-soft);
+}
+
+.central-maintenance-item-icon img {
+  width: 25px;
+  height: 25px;
+}
+
+.central-maintenance-item-main strong,
+.central-maintenance-item-main small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.central-maintenance-item-main strong {
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.central-maintenance-item-main small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.central-maintenance-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
 .brand-fiat {
   --brand-color: #c83a3a;
   --brand-soft: rgba(200, 58, 58, .10);
@@ -360,6 +602,15 @@ body.central-links-page {
 
   .central-card-panel {
     padding: 14px;
+  }
+
+  .central-maintenance-fields,
+  .central-maintenance-item {
+    grid-template-columns: 1fr;
+  }
+
+  .central-maintenance-item-actions {
+    justify-content: flex-start;
   }
 }
 
