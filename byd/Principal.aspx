@@ -1,74 +1,103 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Principal.aspx.cs" Inherits="veiculos_Default" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Principal.aspx.cs" Inherits="veiculos_Default" %>
 
 <!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR">
 <head runat="server">
-    <title></title>
-    <link href="../css/estilo.css" rel="stylesheet" />
-    <script src="../scripts/jquery-1.10.2.js"></script>
-    <script src="../scripts/js.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Central BYD | Grupo Bali</title>
+    <link href="../css/central-links.css" rel="stylesheet" />
 </head>
-<body>
-    <form id="form1" style="height:100%;" runat="server">
-        <div id="topo">
-            <table id="table-menu">
-                <tr>
-                    <td id="table-menu-logo" ><font style="font-family:Arial black; font-size:32px;  font-style:italic; color:white; margin-left:13px;"><a href="../Default.aspx" class="linkHome"><img src="../img/bydbranco.png" style="height: 36px; width: 141px" /></a></font><font style="font-family:Calibri; font-size:14px; margin-left:5px;  font-style:italic; color:white;">APP</font><%--<img src="img/logo4.png" style="margin-left:13px; margin-top:-10px; height: 78px; width: 161px;" />--%></td>
-                    <td id="table-menu-usuario" class="idUser">Usuário: <asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text="CAIO AUGUSTO"></asp:Label>   Perfil: <asp:Label ID="lblPerfil" CssClass="idUser" runat="server" style="margin-right:13px;" Text=""></asp:Label></td>
-                </tr>
-            </table>
-        </div>
-        <div id="linha-branca"></div>
-        <div id="menu-topo">
-            
-        </div>
-        <div id="menu">
-            
-        </div>
-       
-        <div id="Cont">
-            <table cellpadding="15">
-                <tr>
+<body class="central-links-page brand-byd">
+    <form id="form1" runat="server">
+        <div class="central-shell">
+            <header class="central-topbar">
+                <div class="central-topbar-inner">
+                    <a class="central-brand" href="../Default.aspx" aria-label="Voltar para a pagina inicial">
+                        <img src="../img/bydbranco.png" alt="Bali BYD" />
+                        <span class="central-brand-copy">
+                            <strong>Bali BYD</strong>
+                            <span>Central de acesso</span>
+                        </span>
+                    </a>
+                    <div class="central-user">
+                        <div>Usu&aacute;rio: <span><asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text="CAIO AUGUSTO"></asp:Label></span></div>
+                        <div>Perfil: <span><asp:Label ID="lblPerfil" CssClass="idUser" runat="server" Text=""></asp:Label></span></div>
+                    </div>
+                </div>
+            </header>
 
-                    <%--<td class="table-menu"><a class="links" href="contrato.aspx"><img src="../img/pastas.png" style="height: 38px; width: 38px; vertical-align:middle; border:none;" /> Contrato de Compra e Venda</a></td>		    
-                    <td class="table-menu"><a class="links" href="Seminovos-Painel-de-Controle.aspx"><img src="../img/pastas.png" style="height: 38px; width: 38px; vertical-align:middle; border:none;" /> Site Bali VU</a></td>
-                    <td class="table-menu"><a class="links" href="../Novos/GERAL.aspx"><img src="../img/pastas.png" style="height: 38px; width: 38px; vertical-align:middle; border:none;" /> Novos</a></td>--%>
-                    <td class="table-menu"><a class="links" href="../jeep/bi.aspx"> <img src="../img/pastas.png" style="height: 38px; width: 38px; vertical-align:middle; border:none;" /> Ranking de Vendas</a></td>
-                     <td class="table-menu"><a class="links" href="http://129.13.147.54/workflow/Portal/default.html"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> WORKFLOW</a></td>
-                    <td class="table-menu"><a class="links" href="contrato.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Contrato</a></td>
-                    <td class="table-menu"><a class="links" href="http://129.13.147.127/intranet/formbyd/"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" />Pedido de VD</a></td>
-                    <td class="table-menu"><a class="links" href="recibo_DescontoBYD.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Recibo de Desconto</a></td>
-                    <td class="table-menu"><a class="links" href="../admfinanceiro/Recibo/EntregaBYD.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Entrega do Veículo</a></td>
-                    <td class="table-menu"><a class="links" href="testdrive.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Termo Test Drive</a></td>
-                     <td class="table-menu"><a class="links" href="contasbyd.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Contas Bancárias BYD</a></td>
-                    <td class="table-menu"><a class="links" href="domicilio.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Att. de Domicilio</a></td> 
-		    <td class="table-menu"><a class="links" href="prospeccao.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Prospecção</a></td>
-                     <%--<td class="table-menu"><a class="links" href="bi.aspx"> <img src="../img/pastas.png" style="height: 38px; width: 38px; vertical-align:middle; border:none;" /> BI</a></td>--%>
-		 <%-- <td class="table-menu"><a class="links" href="desempenho.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" />Desempenho por Vendedor</a></td>--%>
-                    <%--	<td class="table-menu"><a class="links" href="ftp://balisia.com.br/"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Download de Arquivos</a></td>--%>
-		    <%--<td class="table-menu"><a class="links" href="../gerencia/veiculos/veiculos.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Gerencia</a></td>--%>
+            <main class="central-main">
+                <section class="central-hero">
+                    <div>
+                        <span class="central-eyebrow">BYD &middot; Grupo Bali</span>
+                        <h1>Central de acesso BYD</h1>
+                        <p>Acesse ranking, workflow, contratos, recibos, pedido de venda direta, test drive e informa&ccedil;&otilde;es operacionais da Bali BYD.</p>
+                    </div>
+                    <div class="central-summary" aria-label="Resumo dos atalhos">
+                        <div class="central-summary-item"><strong>10</strong><span>atalhos</span></div>
+                        <div class="central-summary-item"><strong>BYD</strong><span>opera&ccedil;&atilde;o</span></div>
+                    </div>
+                </section>
 
+                <section class="central-card-panel">
+                    <div class="central-section-title">
+                        <div>
+                            <h2>Atalhos BYD</h2>
+                            <p>Links principais para a rotina comercial e administrativa.</p>
+                        </div>
+                    </div>
 
-		                             
+                    <div class="central-link-grid">
+                        <a class="central-link-card" href="../jeep/bi.aspx">
+                            <span class="central-link-icon"><img src="../img/Graph.png" alt="" /></span>
+                            <span><span class="central-link-title">Ranking de Vendas</span><span class="central-link-caption">Indicadores</span></span>
+                        </a>
+                        <a class="central-link-card" href="http://129.13.147.54/workflow/Portal/default.html">
+                            <span class="central-link-icon"><img src="../img/relatorio.png" alt="" /></span>
+                            <span><span class="central-link-title">Workflow</span><span class="central-link-caption">Processos</span></span>
+                        </a>
+                        <a class="central-link-card" href="contrato.aspx">
+                            <span class="central-link-icon"><img src="../img/header-contratoBYD.png" alt="" /></span>
+                            <span><span class="central-link-title">Contrato</span><span class="central-link-caption">Compra e venda</span></span>
+                        </a>
+                        <a class="central-link-card" href="http://129.13.147.127/intranet/formbyd/">
+                            <span class="central-link-icon"><img src="../img/BYD.png" alt="" /></span>
+                            <span><span class="central-link-title">Pedido de VD</span><span class="central-link-caption">Venda direta</span></span>
+                        </a>
+                        <a class="central-link-card" href="recibo_DescontoBYD.aspx">
+                            <span class="central-link-icon"><img src="../img/rebibodedesconto.png" alt="" /></span>
+                            <span><span class="central-link-title">Recibo de Desconto</span><span class="central-link-caption">Financeiro</span></span>
+                        </a>
+                        <a class="central-link-card" href="../admfinanceiro/Recibo/EntregaBYD.aspx">
+                            <span class="central-link-icon"><img src="../img/entrega_saida.png" alt="" /></span>
+                            <span><span class="central-link-title">Entrega do Ve&iacute;culo</span><span class="central-link-caption">Entrega</span></span>
+                        </a>
+                        <a class="central-link-card" href="testdrive.aspx">
+                            <span class="central-link-icon"><img src="../img/TERMOTESTDRIVEBYD.JPG" alt="" /></span>
+                            <span><span class="central-link-title">Termo Test Drive</span><span class="central-link-caption">Experi&ecirc;ncia</span></span>
+                        </a>
+                        <a class="central-link-card" href="contasbyd.aspx">
+                            <span class="central-link-icon"><img src="../img/BYD.png" alt="" /></span>
+                            <span><span class="central-link-title">Contas Banc&aacute;rias BYD</span><span class="central-link-caption">Financeiro</span></span>
+                        </a>
+                        <a class="central-link-card" href="domicilio.aspx">
+                            <span class="central-link-icon"><img src="../img/domicilio.PNG" alt="" /></span>
+                            <span><span class="central-link-title">Atualiza&ccedil;&atilde;o de Domic&iacute;lio</span><span class="central-link-caption">Cadastro</span></span>
+                        </a>
+                        <a class="central-link-card" href="prospeccao.aspx">
+                            <span class="central-link-icon"><img src="../img/relatorio.png" alt="" /></span>
+                            <span><span class="central-link-title">Prospec&ccedil;&atilde;o</span><span class="central-link-caption">Vendas</span></span>
+                        </a>
+                    </div>
+                </section>
 
-                
-                </tr>
-            </table>
-
-            <table style="width: 100%; padding: 13px; text-align: left;" align="center"> 
-                <tr>
-                    <td >
-                        <h1 style="color:darkred;">IP: <asp:Label ID="lblIp" runat="server" Text="Label"></asp:Label></h1>
-                        <hr />
-                        TI - BALI Motors | (61) 3362-6208 | ti@bali.com.br
-                    </td>
-                </tr>
-            </table>
-
-
-                
-            
+                <footer class="central-footer">
+                    <strong>IP:</strong> <asp:Label ID="lblIp" runat="server" Text="Label"></asp:Label>
+                    <br />
+                    TI - BALI Motors | (61) 3362-6208 | ti@bali.com.br
+                </footer>
+            </main>
         </div>
     </form>
 </body>

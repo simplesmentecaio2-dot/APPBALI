@@ -1,0 +1,369 @@
+:root {
+  --page-bg: #f3f6fa;
+  --surface: #ffffff;
+  --ink: #17202a;
+  --muted: #697586;
+  --border: #dbe2ea;
+  --shadow: 0 18px 42px rgba(15, 23, 42, .10);
+  --radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body.central-links-page {
+  margin: 0;
+  color: var(--ink);
+  background: linear-gradient(180deg, #fbfcfe 0%, var(--page-bg) 44%, #eef3f8 100%);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.central-shell {
+  min-height: 100vh;
+}
+
+.central-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid rgba(255, 255, 255, .18);
+  background: #111827;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .18);
+}
+
+.central-topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 68px;
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.central-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: #fff;
+  text-decoration: none;
+}
+
+.central-brand img {
+  width: auto;
+  max-width: 150px;
+  max-height: 42px;
+  object-fit: contain;
+}
+
+.central-brand-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.central-brand-copy strong {
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.15;
+}
+
+.central-brand-copy span {
+  color: rgba(255, 255, 255, .68);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+.central-user {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 14px;
+  color: rgba(255, 255, 255, .78);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.central-user span {
+  color: #fff;
+}
+
+.central-main {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0 36px;
+}
+
+.central-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: center;
+  min-height: 190px;
+  padding: 26px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: var(--radius);
+  color: #fff;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.central-hero h1 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+.central-hero p {
+  max-width: 720px;
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, .78);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.central-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, .72);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.central-summary {
+  display: grid;
+  grid-template-columns: repeat(2, 112px);
+  gap: 10px;
+}
+
+.central-summary-item {
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, .10);
+}
+
+.central-summary-item strong {
+  display: block;
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.central-summary-item span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(255, 255, 255, .70);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.central-card-panel {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, .07);
+}
+
+.central-section-title {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.central-section-title h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 22px;
+  letter-spacing: 0;
+}
+
+.central-section-title p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.central-link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.central-link-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: center;
+  min-height: 96px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--ink);
+  text-decoration: none;
+  background: #fff;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.central-link-card:hover,
+.central-link-card:focus {
+  color: var(--ink);
+  text-decoration: none;
+  transform: translateY(-2px);
+  border-color: var(--brand-color);
+  box-shadow: 0 18px 34px rgba(15, 23, 42, .12);
+  outline: none;
+}
+
+.central-link-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: var(--radius);
+  background: var(--brand-soft);
+  overflow: hidden;
+}
+
+.central-link-icon img {
+  max-width: 38px;
+  max-height: 38px;
+  object-fit: contain;
+}
+
+.central-link-title {
+  display: block;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.central-link-caption {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.central-footer {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.central-footer strong {
+  color: var(--ink);
+}
+
+.brand-fiat {
+  --brand-color: #c83a3a;
+  --brand-soft: rgba(200, 58, 58, .10);
+}
+
+.brand-jeep {
+  --brand-color: #4f6f35;
+  --brand-soft: rgba(79, 111, 53, .12);
+}
+
+.brand-byd {
+  --brand-color: #2f6fbd;
+  --brand-soft: rgba(47, 111, 189, .12);
+}
+
+.brand-fiat .central-topbar,
+.brand-fiat .central-hero {
+  background:
+    linear-gradient(135deg, rgba(200, 58, 58, .22), transparent 46%),
+    linear-gradient(135deg, #2b1113 0%, #74343a 55%, #241113 100%);
+}
+
+.brand-jeep .central-topbar,
+.brand-jeep .central-hero {
+  background:
+    linear-gradient(135deg, rgba(91, 126, 63, .28), transparent 46%),
+    linear-gradient(135deg, #121b13 0%, #455c33 56%, #111812 100%);
+}
+
+.brand-byd .central-topbar,
+.brand-byd .central-hero {
+  background:
+    linear-gradient(135deg, rgba(47, 111, 189, .30), transparent 46%),
+    linear-gradient(135deg, #0d1b2f 0%, #255b95 56%, #0c1828 100%);
+}
+
+.brand-fiat .central-link-icon {
+  background: rgba(200, 58, 58, .10);
+}
+
+.brand-jeep .central-link-icon {
+  background: rgba(79, 111, 53, .12);
+}
+
+.brand-byd .central-link-icon {
+  background: rgba(47, 111, 189, .12);
+}
+
+@media (max-width: 780px) {
+  .central-topbar-inner,
+  .central-main {
+    width: min(100% - 22px, 1180px);
+  }
+
+  .central-topbar-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 12px 0;
+  }
+
+  .central-user {
+    justify-content: flex-start;
+  }
+
+  .central-hero {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .central-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .central-card-panel {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .central-link-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .central-link-card {
+    min-height: 86px;
+  }
+}

@@ -1,76 +1,107 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Default.aspx.cs" Inherits="veiculos_Default" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Default.aspx.cs" Inherits="veiculos_Default" %>
 
 <!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-BR">
 <head runat="server">
-    <title></title>
-    <link href="../css/estilo.css" rel="stylesheet" />
-    <script src="../scripts/jquery-1.10.2.js"></script>
-    <script src="../scripts/js.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Central Fiat | Grupo Bali</title>
+    <link href="../css/central-links.css" rel="stylesheet" />
 </head>
-<body>
-    <form id="form1" style="height:100%;" runat="server">
-        <div id="topo">
-            <table id="table-menu">
-                <tr>
-                    <td id="table-menu-logo" ><font style="font-family:Arial black; font-size:32px;  font-style:italic; color:white; margin-left:13px;"><a href="../Default.aspx" class="linkHome"><img src="../img/logobali.png" /></a></font><font style="font-family:Calibri; font-size:14px; margin-left:5px;  font-style:italic; color:white;">APP</font><%--<img src="img/logo4.png" style="margin-left:13px; margin-top:-10px; height: 78px; width: 161px;" />--%></td>
-                    <td id="table-menu-usuario" class="idUser">Usuário: <asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text="" ></asp:Label>   Perfil: <asp:Label ID="lblPerfil" CssClass="idUser" runat="server" style="margin-right:13px;" Text=""></asp:Label></td>
-                </tr>
-            </table>
-        </div>
-        <div id="linha-branca"></div>
-        <div id="menu-topo">
-            
-        </div>
-        <div id="menu">
-            
-        </div>
-       
-        <div id="Cont">
-            <table cellpadding="15">
-                <tr>
+<body class="central-links-page brand-fiat">
+    <form id="form1" runat="server">
+        <div class="central-shell">
+            <header class="central-topbar">
+                <div class="central-topbar-inner">
+                    <a class="central-brand" href="../Default.aspx" aria-label="Voltar para a pagina inicial">
+                        <img src="../img/logobali.png" alt="Bali Fiat" />
+                        <span class="central-brand-copy">
+                            <strong>Bali Fiat</strong>
+                            <span>Central de acesso</span>
+                        </span>
+                    </a>
+                    <div class="central-user">
+                        <div>Usu&aacute;rio: <span><asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text=""></asp:Label></span></div>
+                        <div>Perfil: <span><asp:Label ID="lblPerfil" CssClass="idUser" runat="server" Text=""></asp:Label></span></div>
+                    </div>
+                </div>
+            </header>
 
-                    <%--<td class="table-menu"><a class="links" href="contrato.aspx"><img src="../img/pastas.png" style="height: 38px; width: 38px; vertical-align:middle; border:none;" /> Contrato de Compra e Venda</a></td>		    
-                    <td class="table-menu"><a class="links" href="Seminovos-Painel-de-Controle.aspx"><img src="../img/pastas.png" style="height: 38px; width: 38px; vertical-align:middle; border:none;" /> Site Bali VU</a></td>
-                    <td class="table-menu"><a class="links" href="../Novos/GERAL.aspx"><img src="../img/pastas.png" style="height: 38px; width: 38px; vertical-align:middle; border:none;" /> Novos</a></td>--%>
-                    <%--<td class="table-menu"><a class="links" href="patio/Default.aspx"> <img src="../img/pastas.png" style="height: 38px; width: 38px; vertical-align:middle; border:none;" /> Novos</a></td>--%>
-                    <td class="table-menu"><a class="links" href="contrato.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Contrato</a></td>
-                   <%-- <td class="table-menu"><a class="links" href="ESTOQUEVN.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Ranking  de Vendas</a></td>--%>
-                    <td class="table-menu"><a class="links" href="http://129.13.146.87/ftp/GUIA2022.pdf"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" />Guia do Comprador</a></td>
-                    <td class="table-menu"><a class="links" href="recibo_Desconto.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Recibo de Desconto</a></td>
-                    <td class="table-menu"><a class="links" href="../admfinanceiro/Recibo/Entrega.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Entrega do Veículo</a></td>
-                    <td class="table-menu"><a class="links" href="testdrive.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Termo Test Drive</a></td>                     
-                     <%-- <td class="table-menu"><a class="links" href="ESTOQUEVN.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Estoque VN</a></td>--%>
-                    <%--<td class="table-menu"><a class="links" href="guiadocomprador.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Guia do Comprador</a></td>--%>
-                     <td class="table-menu"><a class="links" href="telfinanceiras.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Telefone das Financeiras</a></td>
-                     <td class="table-menu"><a class="links" href="contasbali.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Contas Bali</a></td>
-                    <td class="table-menu"><a class="links" href="infLOJAS.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Informações das Lojas</a></td> 
-		    <td class="table-menu"><a class="links" href="prospeccao.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Prospecção</a></td>
-		  <td class="table-menu"><a class="links" href="desempenho.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" />Desempenho por Vendedor</a></td>
-         <td class="table-menu"><a class="links" href="http://129.13.146.87/ftp/4%20VENDAS/Documentos/comunica%c3%a7%c3%a3o%20interna%20NOVA.doc"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Comunicação Interna </a></td>
-		    <%--<td class="table-menu"><a class="links" href="../gerencia/veiculos/veiculos.aspx"><img src="../img/pastas.png" style="height: 35px; width: 35px; vertical-align:middle; border:none;" /> Gerencia</a></td>--%>
+            <main class="central-main">
+                <section class="central-hero">
+                    <div>
+                        <span class="central-eyebrow">Fiat &middot; Grupo Bali</span>
+                        <h1>Central de acesso Fiat</h1>
+                        <p>Acesse contratos, recibos, entregas, test drive, financeiro, lojas e ferramentas operacionais da Bali Fiat.</p>
+                    </div>
+                    <div class="central-summary" aria-label="Resumo dos atalhos">
+                        <div class="central-summary-item"><strong>11</strong><span>atalhos</span></div>
+                        <div class="central-summary-item"><strong>Fiat</strong><span>vendas</span></div>
+                    </div>
+                </section>
 
+                <section class="central-card-panel">
+                    <div class="central-section-title">
+                        <div>
+                            <h2>Atalhos Fiat</h2>
+                            <p>Links principais para a rotina comercial e administrativa.</p>
+                        </div>
+                    </div>
 
-		                             
+                    <div class="central-link-grid">
+                        <a class="central-link-card" href="contrato.aspx">
+                            <span class="central-link-icon"><img src="../img/header-contrato.png" alt="" /></span>
+                            <span><span class="central-link-title">Contrato</span><span class="central-link-caption">Compra e venda</span></span>
+                        </a>
+                        <a class="central-link-card" href="http://129.13.146.87/ftp/GUIA2022.pdf">
+                            <span class="central-link-icon"><img src="../img/GUIDADOCOMPRADOR.png" alt="" /></span>
+                            <span><span class="central-link-title">Guia do Comprador</span><span class="central-link-caption">Documentos</span></span>
+                        </a>
+                        <a class="central-link-card" href="recibo_Desconto.aspx">
+                            <span class="central-link-icon"><img src="../img/rebibodedesconto.png" alt="" /></span>
+                            <span><span class="central-link-title">Recibo de Desconto</span><span class="central-link-caption">Financeiro</span></span>
+                        </a>
+                        <a class="central-link-card" href="../admfinanceiro/Recibo/Entrega.aspx">
+                            <span class="central-link-icon"><img src="../img/entrega_saida.png" alt="" /></span>
+                            <span><span class="central-link-title">Entrega do Ve&iacute;culo</span><span class="central-link-caption">Entrega</span></span>
+                        </a>
+                        <a class="central-link-card" href="testdrive.aspx">
+                            <span class="central-link-icon"><img src="../img/TERMOTESTDRIVE.JPG" alt="" /></span>
+                            <span><span class="central-link-title">Termo Test Drive</span><span class="central-link-caption">Experi&ecirc;ncia</span></span>
+                        </a>
+                        <a class="central-link-card" href="telfinanceiras.aspx">
+                            <span class="central-link-icon"><img src="../img/TelefoneFinanceiras.PNG" alt="" /></span>
+                            <span><span class="central-link-title">Telefone das Financeiras</span><span class="central-link-caption">Contatos</span></span>
+                        </a>
+                        <a class="central-link-card" href="contasbali.aspx">
+                            <span class="central-link-icon"><img src="../img/contasbali.PNG" alt="" /></span>
+                            <span><span class="central-link-title">Contas Bali</span><span class="central-link-caption">Financeiro</span></span>
+                        </a>
+                        <a class="central-link-card" href="infLOJAS.aspx">
+                            <span class="central-link-icon"><img src="../img/infLOJAS.jpg" alt="" /></span>
+                            <span><span class="central-link-title">Informa&ccedil;&otilde;es das Lojas</span><span class="central-link-caption">Unidades</span></span>
+                        </a>
+                        <a class="central-link-card" href="prospeccao.aspx">
+                            <span class="central-link-icon"><img src="../img/relatorio.png" alt="" /></span>
+                            <span><span class="central-link-title">Prospec&ccedil;&atilde;o</span><span class="central-link-caption">Vendas</span></span>
+                        </a>
+                        <a class="central-link-card" href="desempenho.aspx">
+                            <span class="central-link-icon"><img src="../img/Graph.png" alt="" /></span>
+                            <span><span class="central-link-title">Desempenho por Vendedor</span><span class="central-link-caption">Indicadores</span></span>
+                        </a>
+                        <a class="central-link-card" href="http://129.13.146.87/ftp/4%20VENDAS/Documentos/comunica%c3%a7%c3%a3o%20interna%20NOVA.doc">
+                            <span class="central-link-icon"><img src="../img/resumo.png" alt="" /></span>
+                            <span><span class="central-link-title">Comunica&ccedil;&atilde;o Interna</span><span class="central-link-caption">Documento</span></span>
+                        </a>
+                    </div>
+                </section>
 
-                
-                </tr>
-            </table>
-
-            <table style="width: 100%; padding: 13px; text-align: left;" align="center"> 
-                <tr>
-                    <td >
-                        <h1 style="color:darkred;">IP: <asp:Label ID="lblIp" runat="server" Text="Label"></asp:Label></h1>
-                        <hr />
-                        TI - BALI Automóveis | (61) 3362-6208 | ti@bali.com.br
-                    </td>
-                </tr>
-            </table>
-
-
-                
-            
+                <footer class="central-footer">
+                    <strong>IP:</strong> <asp:Label ID="lblIp" runat="server" Text="Label"></asp:Label>
+                    <br />
+                    TI - BALI Autom&oacute;veis | (61) 3362-6208 | ti@bali.com.br
+                </footer>
+            </main>
         </div>
     </form>
 </body>
