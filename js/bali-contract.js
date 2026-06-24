@@ -235,7 +235,7 @@
     return issues;
   }
 
-  function ensureQualityPanel() {
+  function legacyEnsureQualityPanel() {
     if (document.getElementById('contractQualityPanel')) return;
     var firstPanel = bySuffix('Panel1') || document.querySelector('.ajax__tab_body table');
     if (!firstPanel || !firstPanel.parentNode) return;
@@ -254,7 +254,7 @@
     firstPanel.parentNode.insertBefore(panel, firstPanel);
   }
 
-  function updateQualityPanel() {
+  function legacyUpdateQualityPanel() {
     ensureQualityPanel();
     var panel = document.getElementById('contractQualityPanel');
     if (!panel) return;
@@ -498,9 +498,12 @@
       return field && !field.checked;
     });
 
-    if (!missing) return true;
+    if (!missing) {
+      showChecklistMessage(button, '');
+      return true;
+    }
 
-    alert(isEditSubmit(button)
+    showChecklistMessage(button, isEditSubmit(button)
       ? 'Confirme o checklist da edição antes de gravar.'
       : 'Confirme o checklist final antes de gravar o contrato.');
 
@@ -509,11 +512,66 @@
     return false;
   }
 
+  function getChecklistForButton(button) {
+    var host = button && button.parentNode;
+    if (host && host.querySelector) {
+      var local = host.querySelector('.contract-checklist');
+      if (local) return local;
+    }
+    return null;
+  }
+
+  function showChecklistMessage(button, message) {
+    var checklist = getChecklistForButton(button);
+    if (!checklist) return;
+
+    var warning = checklist.querySelector('.contract-checklist-warning');
+    if (!warning) {
+      warning = document.createElement('small');
+      warning.className = 'contract-checklist-warning';
+      checklist.appendChild(warning);
+    }
+
+    warning.textContent = message || '';
+    warning.style.display = message ? 'block' : 'none';
+  }
+
+  function markSubmitting(button) {
+    if (!button) return;
+    button.setAttribute('data-contract-submitting', 'true');
+    button.setAttribute('aria-busy', 'true');
+    if (!button.getAttribute('data-contract-label') && button.value) {
+      button.setAttribute('data-contract-label', button.value);
+      button.value = 'Gravando...';
+    }
+    if ((' ' + button.className + ' ').indexOf(' is-submitting ') < 0) {
+      button.className = (button.className ? button.className + ' ' : '') + 'is-submitting';
+    }
+  }
+
+  function resetSubmittingButtons() {
+    Array.prototype.slice.call(document.querySelectorAll('[data-contract-submitting="true"]')).forEach(function (button) {
+      button.removeAttribute('data-contract-submitting');
+      button.removeAttribute('aria-busy');
+      if (button.getAttribute('data-contract-label')) {
+        button.value = button.getAttribute('data-contract-label');
+        button.removeAttribute('data-contract-label');
+      }
+      button.className = String(button.className || '').replace(/\bis-submitting\b/g, '').replace(/\s+/g, ' ').trim();
+    });
+  }
+
   function handleSubmit(event) {
     var button = event.currentTarget;
+    if (button.getAttribute('data-contract-submitting') === 'true') {
+      event.preventDefault();
+      return false;
+    }
+
     if (button.getAttribute('data-contract-confirmed') === 'true') {
       button.removeAttribute('data-contract-confirmed');
       prepareMoneyFields(true);
+      markSubmitting(button);
       return true;
     }
 
@@ -532,6 +590,7 @@
       return false;
     }
 
+    markSubmitting(button);
     return true;
   }
 
@@ -594,6 +653,37 @@
     });
   }
 
+  function enhanceChecklist() {
+    Array.prototype.slice.call(document.querySelectorAll('.contract-check input')).forEach(function (field) {
+      if (field.getAttribute('data-contract-check-enhanced') === 'true') return;
+      field.setAttribute('data-contract-check-enhanced', 'true');
+
+      var label = closestTag(field, 'label');
+      var toggle = function () {
+        if (!label) return;
+        var currentClass = ' ' + String(label.className || '') + ' ';
+        if (field.checked) {
+          if (currentClass.indexOf(' is-checked ') < 0) {
+            label.className = (label.className ? label.className + ' ' : '') + 'is-checked';
+          }
+        } else {
+          label.className = String(label.className || '').replace(/\bis-checked\b/g, '').replace(/\s+/g, ' ').trim();
+        }
+      };
+
+      field.addEventListener('change', function () {
+        toggle();
+        var checklist = closestTag(field, 'div');
+        var warning = checklist && checklist.parentNode ? checklist.parentNode.querySelector('.contract-checklist-warning') : null;
+        if (warning) {
+          warning.textContent = '';
+          warning.style.display = 'none';
+        }
+      });
+      toggle();
+    });
+  }
+
   function bindSubmitButtons() {
     ['btnGravar', 'btnEditareGravar'].forEach(function (id) {
       allBySuffix(id).forEach(function (button) {
@@ -618,7 +708,9 @@
 
   function init() {
     if (!isContractPage()) return;
+    resetSubmittingButtons();
     enhanceFields();
+    enhanceChecklist();
     enhanceDateFilters();
     enhanceFormSections();
     bindSubmitButtons();

@@ -430,6 +430,15 @@ body.bali-contract-page *::after {
   box-shadow: 0 18px 34px var(--contract-brand-ring);
 }
 
+.bali-contract-page .btns.is-submitting,
+.bali-contract-page input[type="submit"].is-submitting,
+.bali-contract-page input[type="button"].is-submitting {
+  cursor: progress;
+  filter: saturate(.85);
+  opacity: .82;
+  transform: none;
+}
+
 .bali-contract-page input[type="image"] {
   width: 32px !important;
   height: 32px !important;
@@ -1049,6 +1058,20 @@ body.bali-contract-page *::after {
   width: 16px;
   height: 16px;
   accent-color: var(--contract-brand-strong);
+}
+
+.bali-contract-page .contract-check.is-checked {
+  border-color: var(--contract-brand);
+  background: var(--contract-brand-soft);
+  color: var(--contract-brand-strong);
+}
+
+.bali-contract-page .contract-checklist-warning {
+  display: none;
+  margin-top: 10px;
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .bali-contract-page .contract-bi-period {
