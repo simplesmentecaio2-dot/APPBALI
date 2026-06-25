@@ -732,6 +732,52 @@ label {
   font-weight: 700;
 }
 
+.ci-checklist {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.1fr) repeat(3, minmax(180px, 1fr));
+  gap: 10px;
+  align-items: stretch;
+  margin: 14px 0 16px;
+  border: 1px solid #d7e2f0;
+  border-radius: 8px;
+  padding: 12px;
+  background: linear-gradient(180deg, #fff, #f8fbff);
+}
+
+.ci-checklist strong {
+  display: block;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.ci-checklist p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.check-option {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--ink);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.check-option input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--brand);
+  flex: 0 0 auto;
+}
+
 .assistant-actions {
   grid-column: 1 / -1;
   display: flex;
@@ -1276,6 +1322,10 @@ label {
 
   .ci-assistant {
     align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .ci-checklist {
     grid-template-columns: 1fr;
   }
 

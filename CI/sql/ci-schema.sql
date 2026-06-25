@@ -829,6 +829,23 @@ BEGIN
     SET @status_ci = LTRIM(RTRIM(ISNULL(@status_ci, 'Emitida')));
     SET @corpo = LTRIM(RTRIM(ISNULL(@corpo, '')));
 
+    IF @status_ci NOT IN ('Rascunho', 'Emitida', 'Revisada')
+    BEGIN
+        SET @status_ci = 'Emitida';
+    END
+
+    IF @status_ci = 'Rascunho'
+    BEGIN
+        IF @origem_area = '' SET @origem_area = N'A definir';
+        IF @origem_responsavel = '' SET @origem_responsavel = N'A definir';
+        IF @destino_area = '' SET @destino_area = N'A definir';
+        IF @destinatario = '' SET @destinatario = N'A definir';
+        IF @assunto = '' SET @assunto = N'Rascunho de CI';
+        IF @categoria = '' SET @categoria = N'Comunicado';
+        IF @prioridade = '' SET @prioridade = N'Normal';
+        IF @corpo = '' SET @corpo = N'Texto a definir.';
+    END
+
     DECLARE @erro_obrigatorios NVARCHAR(200);
     SET @erro_obrigatorios = N'Preencha todos os campos obrigat' + NCHAR(243) + N'rios da CI.';
 
@@ -838,11 +855,6 @@ BEGIN
     BEGIN
         RAISERROR(@erro_obrigatorios, 16, 1);
         RETURN;
-    END
-
-    IF @status_ci NOT IN ('Rascunho', 'Emitida', 'Revisada')
-    BEGIN
-        SET @status_ci = 'Emitida';
     END
 
     IF ISNULL(@id_ci, 0) = 0

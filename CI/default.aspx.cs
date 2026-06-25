@@ -416,6 +416,22 @@ public partial class ci_default : System.Web.UI.Page
         }
     }
 
+    protected void btnSalvarRascunhoBanco_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            Selecionar(ddlStatusCI, "Rascunho");
+            PrepararRascunhoParcial();
+            btnSalvar_Click(sender, e);
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("Salvar rascunho de CI", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("nova");
+        }
+    }
+
     protected void gvCis_RowCommand(object sender, GridViewCommandEventArgs e)
     {
         string argumento = Convert.ToString(e.CommandArgument);
@@ -1040,6 +1056,7 @@ public partial class ci_default : System.Web.UI.Page
         txtProvidencias.Text = row["providencias"].ToString();
         txtObservacoes.Text = row["observacoes"].ToString();
         txtCriadoPor.Text = row["criado_por"].ToString();
+        LimparChecklistFinal();
         litTituloForm.Text = "Editar " + row["codigo_ci"].ToString();
         CarregarCiencias(id);
         CarregarHistorico(id);
@@ -1068,6 +1085,7 @@ public partial class ci_default : System.Web.UI.Page
         txtProvidencias.Text = row["providencias"].ToString();
         txtObservacoes.Text = row["observacoes"].ToString();
         txtCriadoPor.Text = row["criado_por"].ToString();
+        LimparChecklistFinal();
         litTituloForm.Text = "Nova CI baseada em " + row["codigo_ci"].ToString();
         pnlCiencia.Visible = false;
         gvCiencias.DataSource = null;
@@ -1208,6 +1226,7 @@ public partial class ci_default : System.Web.UI.Page
         txtCorpo.Text = row["conteudo"].ToString();
         ddlStatusCI.SelectedValue = "Rascunho";
         Selecionar(ddlCategoria, row["categoria"].ToString());
+        LimparChecklistFinal();
         litTituloForm.Text = "Nova CI baseada em anota\u00e7\u00e3o";
     }
 
@@ -1298,6 +1317,7 @@ public partial class ci_default : System.Web.UI.Page
         txtObservacoes.Text = "";
         txtCriadoPor.Text = "";
         txtModeloNome.Text = "";
+        LimparChecklistFinal();
         txtCienciaSetor.Text = "";
         txtCienciaResponsavel.Text = "";
         txtCienciaObservacao.Text = "";
@@ -1327,12 +1347,18 @@ public partial class ci_default : System.Web.UI.Page
         if (!ValorPermitido(ddlCategoria, ddlCategoria.SelectedValue)) return "Selecione uma categoria v\u00e1lida.";
         if (!ValorPermitido(ddlPrioridade, ddlPrioridade.SelectedValue)) return "Selecione uma prioridade v\u00e1lida.";
         if (!ValorPermitido(ddlStatusCI, ddlStatusCI.SelectedValue)) return "Selecione um status v\u00e1lido para a CI.";
-        if (TextoCurto(txtOrigemArea.Text).Length == 0) return "Informe a \u00e1rea de origem.";
-        if (TextoCurto(txtOrigemResponsavel.Text).Length == 0) return "Informe o respons\u00e1vel pela origem.";
-        if (TextoCurto(txtDestinoArea.Text).Length == 0) return "Informe a \u00e1rea de destino.";
-        if (TextoCurto(txtDestinatario.Text).Length == 0) return "Informe o destinat\u00e1rio.";
-        if (TextoCurto(txtAssunto.Text).Length == 0) return "Informe o assunto.";
-        if (TextoLongoEntrada(txtCorpo.Text).Length == 0) return "Informe o texto da comunica\u00e7\u00e3o.";
+        bool rascunho = String.Equals(ddlStatusCI.SelectedValue, "Rascunho", StringComparison.OrdinalIgnoreCase);
+        if (!rascunho)
+        {
+            if (TextoCurto(txtOrigemArea.Text).Length == 0) return "Informe a \u00e1rea de origem.";
+            if (TextoCurto(txtOrigemResponsavel.Text).Length == 0) return "Informe o respons\u00e1vel pela origem.";
+            if (TextoCurto(txtDestinoArea.Text).Length == 0) return "Informe a \u00e1rea de destino.";
+            if (TextoCurto(txtDestinatario.Text).Length == 0) return "Informe o destinat\u00e1rio.";
+            if (TextoCurto(txtAssunto.Text).Length == 0) return "Informe o assunto.";
+            if (TextoLongoEntrada(txtCorpo.Text).Length == 0) return "Informe o texto da comunica\u00e7\u00e3o.";
+            if (!ChecklistFinalConfirmado()) return "Confirme o checklist final antes de emitir ou revisar a CI.";
+        }
+
         if (TextoCurto(txtOrigemArea.Text).Length > 120) return "A \u00e1rea de origem deve ter at\u00e9 120 caracteres.";
         if (TextoCurto(txtOrigemResponsavel.Text).Length > 160) return "O respons\u00e1vel deve ter at\u00e9 160 caracteres.";
         if (TextoCurto(txtDestinoArea.Text).Length > 120) return "A \u00e1rea de destino deve ter at\u00e9 120 caracteres.";
@@ -1342,15 +1368,43 @@ public partial class ci_default : System.Web.UI.Page
         if (TextoLongoEntrada(txtCorpo.Text).Length > 6000) return "Reduza o texto da comunica\u00e7\u00e3o para at\u00e9 6000 caracteres.";
         if (TextoLongoEntrada(txtProvidencias.Text).Length > 2500) return "Reduza as provid\u00eancias solicitadas para at\u00e9 2500 caracteres.";
         if (TextoLongoEntrada(txtObservacoes.Text).Length > 1800) return "Reduza as observa\u00e7\u00f5es para at\u00e9 1800 caracteres.";
-        if (ContemMarcadorModelo(txtAssunto.Text) ||
-            ContemMarcadorModelo(txtCorpo.Text) ||
-            ContemMarcadorModelo(txtProvidencias.Text) ||
-            ContemMarcadorModelo(txtObservacoes.Text))
+        if (!rascunho &&
+            (ContemMarcadorModelo(txtAssunto.Text) ||
+             ContemMarcadorModelo(txtCorpo.Text) ||
+             ContemMarcadorModelo(txtProvidencias.Text) ||
+             ContemMarcadorModelo(txtObservacoes.Text)))
         {
             return "Substitua os trechos entre colchetes antes de salvar a CI.";
         }
 
         return "";
+    }
+
+    private void PrepararRascunhoParcial()
+    {
+        if (TextoCurto(txtData.Text).Length == 0)
+        {
+            txtData.Text = DateTime.Today.ToString("yyyy-MM-dd");
+        }
+
+        if (TextoCurto(txtOrigemArea.Text).Length == 0) txtOrigemArea.Text = "A definir";
+        if (TextoCurto(txtOrigemResponsavel.Text).Length == 0) txtOrigemResponsavel.Text = "A definir";
+        if (TextoCurto(txtDestinoArea.Text).Length == 0) txtDestinoArea.Text = "A definir";
+        if (TextoCurto(txtDestinatario.Text).Length == 0) txtDestinatario.Text = "A definir";
+        if (TextoCurto(txtAssunto.Text).Length == 0) txtAssunto.Text = "Rascunho de CI";
+        if (TextoLongoEntrada(txtCorpo.Text).Length == 0) txtCorpo.Text = "Texto a definir.";
+    }
+
+    private bool ChecklistFinalConfirmado()
+    {
+        return chkChecklistDocumento.Checked && chkChecklistDestino.Checked && chkChecklistTexto.Checked;
+    }
+
+    private void LimparChecklistFinal()
+    {
+        chkChecklistDocumento.Checked = false;
+        chkChecklistDestino.Checked = false;
+        chkChecklistTexto.Checked = false;
     }
 
     private void NormalizarFormulario()

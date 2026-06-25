@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-anotacoes" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-checklist" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -467,8 +467,29 @@
                         </label>
                     </div>
 
+                    <div class="ci-checklist" aria-label="Checklist final da CI">
+                        <div>
+                            <span class="eyebrow">Checklist final</span>
+                            <strong>Confer&ecirc;ncia antes de emitir</strong>
+                            <p>Obrigat&oacute;rio para CI emitida ou revisada. Rascunhos podem ser salvos incompletos.</p>
+                        </div>
+                        <label class="check-option">
+                            <asp:CheckBox ID="chkChecklistDocumento" runat="server" />
+                            <span>Documento, data e marca conferidos</span>
+                        </label>
+                        <label class="check-option">
+                            <asp:CheckBox ID="chkChecklistDestino" runat="server" />
+                            <span>Origem, destino e destinat&aacute;rio conferidos</span>
+                        </label>
+                        <label class="check-option">
+                            <asp:CheckBox ID="chkChecklistTexto" runat="server" />
+                            <span>Texto revisado, sem campos de modelo pendentes</span>
+                        </label>
+                    </div>
+
                     <div class="form-actions">
                         <asp:Button ID="btnSalvar" runat="server" Text="Salvar CI" CssClass="primary-button" OnClick="btnSalvar_Click" OnClientClick="return validarCICliente();" />
+                        <asp:Button ID="btnSalvarRascunhoBanco" runat="server" Text="Salvar rascunho no banco" CssClass="secondary-button" OnClick="btnSalvarRascunhoBanco_Click" />
                         <a class="secondary-link" href="default.aspx?view=consulta">Voltar para consulta</a>
                     </div>
 
@@ -703,6 +724,11 @@
                     { id: '<%= txtProvidencias.ClientID %>', nome: 'provid\u00eancias solicitadas', max: 2500 },
                     { id: '<%= txtObservacoes.ClientID %>', nome: 'observa\u00e7\u00f5es', max: 1800 }
                 ];
+                var checklistFinalCI = [
+                    { id: '<%= chkChecklistDocumento.ClientID %>', mensagem: 'Confirme que documento, data e marca foram conferidos.' },
+                    { id: '<%= chkChecklistDestino.ClientID %>', mensagem: 'Confirme que origem, destino e destinat\u00e1rio foram conferidos.' },
+                    { id: '<%= chkChecklistTexto.ClientID %>', mensagem: 'Confirme que o texto foi revisado e n\u00e3o possui campos pendentes.' }
+                ];
 
                 function campo(id) {
                     return document.getElementById(id);
@@ -750,6 +776,7 @@
                     }
 
                     var camposParaLimpar = camposObrigatorios.map(function (item) { return item.id; }).concat(camposComModelo);
+                    for (var c = 0; c < checklistFinalCI.length; c++) camposParaLimpar.push(checklistFinalCI[c].id);
                     for (var i = 0; i < camposParaLimpar.length; i++) {
                         var item = campo(camposParaLimpar[i]);
                         if (item) item.classList.remove('field-error');
@@ -938,19 +965,31 @@
                 window.validarCICliente = function () {
                     limparErros();
 
+                    var ehRascunho = valor('<%= ddlStatusCI.ClientID %>') === 'Rascunho';
                     for (var i = 0; i < camposObrigatorios.length; i++) {
                         var item = campo(camposObrigatorios[i].id);
-                        if (!item || item.value.trim().length === 0) {
+                        var campoData = camposObrigatorios[i].id === '<%= txtData.ClientID %>';
+                        if ((!ehRascunho || campoData) && (!item || item.value.trim().length === 0)) {
                             mostrarErro(camposObrigatorios[i].mensagem, item);
                             return false;
                         }
                     }
 
-                    for (var p = 0; p < camposComModelo.length; p++) {
-                        var campoModelo = campo(camposComModelo[p]);
-                        if (campoModelo && contemMarcadorModelo(campoModelo.value)) {
-                            mostrarErro('Substitua os trechos entre colchetes antes de salvar a CI.', campoModelo);
-                            return false;
+                    if (!ehRascunho) {
+                        for (var p = 0; p < camposComModelo.length; p++) {
+                            var campoModelo = campo(camposComModelo[p]);
+                            if (campoModelo && contemMarcadorModelo(campoModelo.value)) {
+                                mostrarErro('Substitua os trechos entre colchetes antes de salvar a CI.', campoModelo);
+                                return false;
+                            }
+                        }
+
+                        for (var q = 0; q < checklistFinalCI.length; q++) {
+                            var check = campo(checklistFinalCI[q].id);
+                            if (!check || !check.checked) {
+                                mostrarErro(checklistFinalCI[q].mensagem, check);
+                                return false;
+                            }
                         }
                     }
 
