@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-quality" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-requiredby" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -499,8 +499,8 @@
                         <label class="wide">Observa&ccedil;&otilde;es
                             <asp:TextBox ID="txtObservacoes" runat="server" CssClass="textarea-field" TextMode="MultiLine" Rows="3"></asp:TextBox>
                         </label>
-                        <label>Criado por
-                            <asp:TextBox ID="txtCriadoPor" runat="server" CssClass="text-field" MaxLength="160"></asp:TextBox>
+                        <label><span class="field-label-line">Criado por <span class="required-mark">obrigat&oacute;rio</span></span>
+                            <asp:TextBox ID="txtCriadoPor" runat="server" CssClass="text-field" MaxLength="160" placeholder="Nome de quem est&aacute; criando a CI"></asp:TextBox>
                         </label>
                     </div>
 
@@ -526,7 +526,7 @@
 
                     <div class="form-actions">
                         <asp:Button ID="btnSalvar" runat="server" Text="Salvar CI" CssClass="primary-button" OnClick="btnSalvar_Click" OnClientClick="return validarCICliente();" />
-                        <asp:Button ID="btnSalvarRascunhoBanco" runat="server" Text="Salvar rascunho no banco" CssClass="secondary-button" OnClick="btnSalvarRascunhoBanco_Click" />
+                        <asp:Button ID="btnSalvarRascunhoBanco" runat="server" Text="Salvar rascunho no banco" CssClass="secondary-button" OnClick="btnSalvarRascunhoBanco_Click" OnClientClick="return validarCriadoPorCI();" />
                         <button type="button" class="secondary-button" onclick="abrirPreviaImpressaoCI()">Pr&eacute;via de impress&atilde;o</button>
                         <a class="secondary-link" href="default.aspx?view=consulta">Voltar para consulta</a>
                     </div>
@@ -755,7 +755,8 @@
                     { id: '<%= txtDestinoArea.ClientID %>', mensagem: 'Informe a \u00e1rea de destino.' },
                     { id: '<%= txtDestinatario.ClientID %>', mensagem: 'Informe o destinat\u00e1rio.' },
                     { id: '<%= txtAssunto.ClientID %>', mensagem: 'Informe o assunto.' },
-                    { id: '<%= txtCorpo.ClientID %>', mensagem: 'Informe o texto da comunica\u00e7\u00e3o.' }
+                    { id: '<%= txtCorpo.ClientID %>', mensagem: 'Informe o texto da comunica\u00e7\u00e3o.' },
+                    { id: '<%= txtCriadoPor.ClientID %>', mensagem: 'Informe quem est\u00e1 criando a CI no campo Criado por.', sempre: true }
                 ];
                 var camposComModelo = [
                     '<%= txtAssunto.ClientID %>',
@@ -1138,7 +1139,8 @@
                     for (var i = 0; i < camposObrigatorios.length; i++) {
                         var item = campo(camposObrigatorios[i].id);
                         var campoData = camposObrigatorios[i].id === '<%= txtData.ClientID %>';
-                        if ((!ehRascunho || campoData) && (!item || item.value.trim().length === 0)) {
+                        var sempreObrigatorio = campoData || camposObrigatorios[i].sempre;
+                        if ((!ehRascunho || sempreObrigatorio) && (!item || item.value.trim().length === 0)) {
                             mostrarErro(camposObrigatorios[i].mensagem, item);
                             return false;
                         }
@@ -1179,6 +1181,17 @@
                         botaoSalvar.value = 'Salvando...';
                         botaoSalvar.classList.add('is-loading');
                         botaoSalvar.setAttribute('aria-busy', 'true');
+                    }
+
+                    return true;
+                };
+
+                window.validarCriadoPorCI = function () {
+                    limparErros();
+                    var criadoPor = campo('<%= txtCriadoPor.ClientID %>');
+                    if (!criadoPor || criadoPor.value.trim().length === 0) {
+                        mostrarErro('Informe quem est\u00e1 criando a CI no campo Criado por.', criadoPor);
+                        return false;
                     }
 
                     return true;

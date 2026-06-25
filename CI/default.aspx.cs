@@ -1646,6 +1646,7 @@ public partial class ci_default : System.Web.UI.Page
         if (!ValorPermitido(ddlPrioridade, ddlPrioridade.SelectedValue)) return "Selecione uma prioridade v\u00e1lida.";
         if (!ValorPermitido(ddlStatusCI, ddlStatusCI.SelectedValue)) return "Selecione um status v\u00e1lido para a CI.";
         bool rascunho = String.Equals(ddlStatusCI.SelectedValue, "Rascunho", StringComparison.OrdinalIgnoreCase);
+        if (TextoCurto(txtCriadoPor.Text).Length == 0) return "Informe quem est\u00e1 criando a CI no campo Criado por.";
         if (!rascunho)
         {
             if (TextoCurto(txtOrigemArea.Text).Length == 0) return "Informe a \u00e1rea de origem.";
