@@ -246,6 +246,17 @@ public partial class ci_default : System.Web.UI.Page
         litTotal.Text = resumo.Rows[0]["total_cis"].ToString();
         litAtivas.Text = resumo.Rows[0]["cis_ativas"].ToString();
         litRecentes.Text = resumo.Rows[0]["ultimos_30_dias"].ToString();
+        litMesAtual.Text = ValorResumo(resumo.Rows[0], "mes_atual");
+        litCanceladas.Text = ValorResumo(resumo.Rows[0], "cis_canceladas");
+        litFiat.Text = ValorResumo(resumo.Rows[0], "fiat_ativas");
+        litJeep.Text = ValorResumo(resumo.Rows[0], "jeep_ativas");
+        litByd.Text = ValorResumo(resumo.Rows[0], "byd_ativas");
+    }
+
+    private string ValorResumo(DataRow row, string coluna)
+    {
+        if (row.Table.Columns.IndexOf(coluna) < 0 || row[coluna] == DBNull.Value) return "0";
+        return row[coluna].ToString();
     }
 
     private void CarregarLista()

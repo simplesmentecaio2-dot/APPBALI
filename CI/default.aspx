@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-historico" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-indicadores" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -60,6 +60,26 @@
                     <article>
                         <span>&Uacute;ltimos 30 dias</span>
                         <strong><asp:Literal ID="litRecentes" runat="server" Text="0"></asp:Literal></strong>
+                    </article>
+                    <article>
+                        <span>Este m&ecirc;s</span>
+                        <strong><asp:Literal ID="litMesAtual" runat="server" Text="0"></asp:Literal></strong>
+                    </article>
+                    <article>
+                        <span>Canceladas</span>
+                        <strong><asp:Literal ID="litCanceladas" runat="server" Text="0"></asp:Literal></strong>
+                    </article>
+                    <article>
+                        <span>Fiat ativas</span>
+                        <strong><asp:Literal ID="litFiat" runat="server" Text="0"></asp:Literal></strong>
+                    </article>
+                    <article>
+                        <span>Jeep ativas</span>
+                        <strong><asp:Literal ID="litJeep" runat="server" Text="0"></asp:Literal></strong>
+                    </article>
+                    <article>
+                        <span>BYD ativas</span>
+                        <strong><asp:Literal ID="litByd" runat="server" Text="0"></asp:Literal></strong>
                     </article>
                 </section>
 

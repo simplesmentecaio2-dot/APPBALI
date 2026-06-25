@@ -74,7 +74,12 @@ BEGIN
     SELECT
         COUNT(1) AS total_cis,
         SUM(CASE WHEN ativo = 1 THEN 1 ELSE 0 END) AS cis_ativas,
-        SUM(CASE WHEN data_documento >= DATEADD(DAY, -30, CAST(GETDATE() AS DATE)) AND ativo = 1 THEN 1 ELSE 0 END) AS ultimos_30_dias
+        SUM(CASE WHEN ativo = 0 THEN 1 ELSE 0 END) AS cis_canceladas,
+        SUM(CASE WHEN data_documento >= DATEADD(DAY, -30, CAST(GETDATE() AS DATE)) AND ativo = 1 THEN 1 ELSE 0 END) AS ultimos_30_dias,
+        SUM(CASE WHEN data_documento >= DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) AND ativo = 1 THEN 1 ELSE 0 END) AS mes_atual,
+        SUM(CASE WHEN origem_marca LIKE '%Fiat%' AND ativo = 1 THEN 1 ELSE 0 END) AS fiat_ativas,
+        SUM(CASE WHEN origem_marca LIKE '%Jeep%' AND ativo = 1 THEN 1 ELSE 0 END) AS jeep_ativas,
+        SUM(CASE WHEN origem_marca LIKE '%BYD%' AND ativo = 1 THEN 1 ELSE 0 END) AS byd_ativas
     FROM dbo.ci_comunicacoes;
 END
 GO
