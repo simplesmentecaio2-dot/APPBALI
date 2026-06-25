@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sistema de Ramais</title>
-    <link href="ramais.css?v=20260625-mobile" rel="stylesheet" />
+    <link href="ramais.css?v=20260625-paging" rel="stylesheet" />
 </head>
 <body class="ramais-page">
     <form id="form1" runat="server">
@@ -121,7 +121,7 @@
                     </div>
 
                     <div class="table-wrap">
-                        <asp:GridView ID="gvConsulta" runat="server" CssClass="ramais-table" AutoGenerateColumns="false" EmptyDataText="Nenhum ramal encontrado para os filtros informados." OnRowCommand="gvRamais_RowCommand" OnRowDataBound="Grid_RowDataBound">
+                        <asp:GridView ID="gvConsulta" runat="server" CssClass="ramais-table" AutoGenerateColumns="false" EmptyDataText="Nenhum ramal encontrado para os filtros informados." AllowPaging="true" PageSize="15" PagerStyle-CssClass="ramais-pager" OnPageIndexChanging="Grid_PageIndexChanging" OnRowCommand="gvRamais_RowCommand" OnRowDataBound="Grid_RowDataBound">
                             <Columns>
                                 <asp:BoundField DataField="nome" HeaderText="Nome" />
                                 <asp:BoundField DataField="ramal" HeaderText="Ramal" />
@@ -170,7 +170,7 @@
                     </div>
 
                     <div class="table-wrap">
-                        <asp:GridView ID="gvRamais" runat="server" CssClass="ramais-table" AutoGenerateColumns="false" EmptyDataText="Nenhum ramal cadastrado." OnRowCommand="gvRamais_RowCommand" OnRowDataBound="Grid_RowDataBound">
+                        <asp:GridView ID="gvRamais" runat="server" CssClass="ramais-table" AutoGenerateColumns="false" EmptyDataText="Nenhum ramal cadastrado." AllowPaging="true" PageSize="15" PagerStyle-CssClass="ramais-pager" OnPageIndexChanging="Grid_PageIndexChanging" OnRowCommand="gvRamais_RowCommand" OnRowDataBound="Grid_RowDataBound">
                             <Columns>
                                 <asp:BoundField DataField="nome" HeaderText="Nome" />
                                 <asp:BoundField DataField="ramal" HeaderText="Ramal" />
@@ -212,7 +212,7 @@
                         </div>
 
                         <div class="table-wrap">
-                            <asp:GridView ID="gvLojas" runat="server" CssClass="ramais-table compact" AutoGenerateColumns="false" EmptyDataText="Nenhuma loja cadastrada." OnRowCommand="gvLojas_RowCommand" OnRowDataBound="Grid_RowDataBound">
+                            <asp:GridView ID="gvLojas" runat="server" CssClass="ramais-table compact" AutoGenerateColumns="false" EmptyDataText="Nenhuma loja cadastrada." AllowPaging="true" PageSize="10" PagerStyle-CssClass="ramais-pager" OnPageIndexChanging="Grid_PageIndexChanging" OnRowCommand="gvLojas_RowCommand" OnRowDataBound="Grid_RowDataBound">
                                 <Columns>
                                     <asp:BoundField DataField="nome" HeaderText="Loja" />
                                     <asp:BoundField DataField="status" HeaderText="Status" />
@@ -250,7 +250,7 @@
                         </div>
 
                         <div class="table-wrap">
-                            <asp:GridView ID="gvSetores" runat="server" CssClass="ramais-table compact" AutoGenerateColumns="false" EmptyDataText="Nenhum setor cadastrado." OnRowCommand="gvSetores_RowCommand" OnRowDataBound="Grid_RowDataBound">
+                            <asp:GridView ID="gvSetores" runat="server" CssClass="ramais-table compact" AutoGenerateColumns="false" EmptyDataText="Nenhum setor cadastrado." AllowPaging="true" PageSize="10" PagerStyle-CssClass="ramais-pager" OnPageIndexChanging="Grid_PageIndexChanging" OnRowCommand="gvSetores_RowCommand" OnRowDataBound="Grid_RowDataBound">
                                 <Columns>
                                     <asp:BoundField DataField="nome" HeaderText="Setor" />
                                     <asp:BoundField DataField="status" HeaderText="Status" />

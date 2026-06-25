@@ -176,6 +176,35 @@ public partial class ramais_default : System.Web.UI.Page
         }
     }
 
+    protected void Grid_PageIndexChanging(object sender, GridViewPageEventArgs e)
+    {
+        GridView grid = sender as GridView;
+        if (grid == null) return;
+
+        grid.PageIndex = e.NewPageIndex;
+
+        if (grid == gvConsulta)
+        {
+            CarregarRamais();
+            AplicarTela("consulta");
+        }
+        else if (grid == gvRamais)
+        {
+            CarregarRamais();
+            AplicarTela("ramais");
+        }
+        else if (grid == gvLojas)
+        {
+            CarregarLojas();
+            AplicarTela("lojas");
+        }
+        else if (grid == gvSetores)
+        {
+            CarregarSetores();
+            AplicarTela("setores");
+        }
+    }
+
     protected void btnSalvarLoja_Click(object sender, EventArgs e)
     {
         try
