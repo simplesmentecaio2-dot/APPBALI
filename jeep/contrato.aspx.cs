@@ -17,6 +17,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     private const int DiasMaximosBI = 370;
     private const int DiasMaximosConsulta = 370;
     private const int TimeoutConsultaSegundos = 60;
+    private const int LimiteLinhasConsulta = 750;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -1836,9 +1837,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
           {
               oCmd.Connection = vec.oCon;
               oCmd.CommandTimeout = TimeoutConsultaSegundos;
-              oCmd.CommandText = @"select id,
-                                          isnull(cliente, '') cliente,
-                                          isnull(cpfcnpj, '') cpfcnpj,
+                oCmd.CommandText = @"select top (@limiteConsulta) id,
+                                            isnull(cliente, '') cliente,
+                                            isnull(cpfcnpj, '') cpfcnpj,
                                           isnull(RGIE, '') RGIE,
                                           isnull(tel_residencial, '') tel_residencial,
                                           isnull(tel_comercial, '') tel_comercial,
@@ -1850,19 +1851,27 @@ public partial class veiculos_contrato : System.Web.UI.Page
                                      and [data] >= @dtInicio
                                      and [data] < dateadd(day, 1, @dtFim)
                                    order by [data] desc, id desc";
-              oCmd.CommandType = CommandType.Text;
-              oCmd.Parameters.Add("@tipo", SqlDbType.VarChar, 2).Value = tipo;
-              oCmd.Parameters.Add("@dtInicio", SqlDbType.Date).Value = dtInicio;
-              oCmd.Parameters.Add("@dtFim", SqlDbType.Date).Value = dtFim;
+                oCmd.CommandType = CommandType.Text;
+                oCmd.Parameters.Add("@tipo", SqlDbType.VarChar, 2).Value = tipo;
+                oCmd.Parameters.Add("@dtInicio", SqlDbType.Date).Value = dtInicio;
+                oCmd.Parameters.Add("@dtFim", SqlDbType.Date).Value = dtFim;
+                oCmd.Parameters.Add("@limiteConsulta", SqlDbType.Int).Value = LimiteLinhasConsulta + 1;
 
-              int totalLinhas = 0;
-              using (SqlDataReader odr = oCmd.ExecuteReader(CommandBehavior.SequentialAccess))
-              {
-                  while (odr.Read())
-                  {
-                      totalLinhas++;
-                      string id = Convert.ToString(odr["id"]);
-                      html.Append("<tr>");
+                int totalLinhas = 0;
+                bool limiteExcedido = false;
+                using (SqlDataReader odr = oCmd.ExecuteReader(CommandBehavior.SequentialAccess))
+                {
+                    while (odr.Read())
+                    {
+                        totalLinhas++;
+                        if (totalLinhas > LimiteLinhasConsulta)
+                        {
+                            limiteExcedido = true;
+                            break;
+                        }
+
+                        string id = Convert.ToString(odr["id"]);
+                        html.Append("<tr>");
                       html.Append("<td style='text-align:center; font-size:12px;'><a href='")
                           .Append(HttpUtility.HtmlAttributeEncode(paginaImpressao))
                           .Append("?contrato=")
@@ -1882,12 +1891,19 @@ public partial class veiculos_contrato : System.Web.UI.Page
                   }
               }
 
-              if (totalLinhas == 0)
-              {
-                  html.Append("<tr class='contract-empty-row'><td colspan='9'><strong>Nenhum contrato encontrado neste período.</strong><small>Revise as datas ou tente um período maior.</small></td></tr>");
-              }
-          }
-      }
+                if (totalLinhas == 0)
+                {
+                    html.Append("<tr class='contract-empty-row'><td colspan='9'><strong>Nenhum contrato encontrado neste período.</strong><small>Revise as datas ou tente um período maior.</small></td></tr>");
+                }
+                else if (limiteExcedido)
+                {
+                    html.Append("<tr class='contract-limit-row'><td colspan='9'><strong>Mostrando os ")
+                        .Append(LimiteLinhasConsulta.ToString(CulturaBrasil))
+                        .Append(" contratos mais recentes deste filtro.</strong><small>Para ver resultados mais específicos, reduza o período ou use o filtro da tabela por cliente, CPF/CNPJ ou vendedor.</small></td></tr>");
+                    RegistrarContratoOperacao("CONSULTA_LIMITE_RESULTADO", "Tipo=" + tipo + "; Inicio=" + dtInicio.ToString("dd/MM/yyyy") + "; Fim=" + dtFim.ToString("dd/MM/yyyy") + "; Limite=" + LimiteLinhasConsulta.ToString(CulturaBrasil));
+                }
+            }
+        }
       finally
       {
           vec.FecharConexao();

@@ -939,6 +939,27 @@ body.bali-contract-page *::after {
   color: var(--contract-brand-strong);
 }
 
+.bali-contract-page table.contract-lookup-table tbody tr.contract-limit-row td,
+.bali-contract-page table.display tbody tr.contract-limit-row td,
+.bali-contract-page table.dataTable tbody tr.contract-limit-row td {
+  border-top: 1px solid #f8d7a8;
+  color: #7c3f00 !important;
+  background: #fff8ec !important;
+  text-align: left !important;
+}
+
+.bali-contract-page tr.contract-limit-row strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.bali-contract-page tr.contract-limit-row small {
+  display: block;
+  color: #8a5a1f;
+  font-size: 12px;
+}
+
 .bali-contract-page table.contract-lookup-table tbody td.contract-id-cell,
 .bali-contract-page table.display tbody td.contract-id-cell,
 .bali-contract-page table.dataTable tbody td.contract-id-cell {
