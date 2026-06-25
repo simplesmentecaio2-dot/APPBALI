@@ -69,6 +69,7 @@ const maintenanceIconPreview = document.getElementById('maintenanceIconPreview')
 const maintenanceIconPickerClose = Array.from(document.querySelectorAll('[data-maintenance-icon-close]'));
 const maintenanceList = document.getElementById('maintenanceList');
 const maintenanceListSummary = document.getElementById('maintenanceListSummary');
+const maintenanceAudit = document.getElementById('maintenanceAudit');
 const maintenanceSearch = document.getElementById('maintenanceSearch');
 const maintenanceListSection = document.getElementById('maintenanceListSection');
 const maintenanceNewShortcut = document.getElementById('maintenanceNewShortcut');
@@ -842,6 +843,67 @@ function exportShortcutsBackup() {
   setMaintenanceStatus('Backup JSON gerado.', 'ok');
 }
 
+function normalizedUrlKey(value) {
+  return safeTrim(value)
+    .replace(/\/+$/, '')
+    .toLowerCase();
+}
+
+function getShortcutAudit() {
+  const titleMap = new Map();
+  const urlMap = new Map();
+  const emptyLinks = [];
+
+  shortcuts.forEach((shortcut) => {
+    const section = shortcut.section || 'bali';
+    const titleKey = `${section}|${normalizeText(shortcut.title)}`;
+    const urlKey = `${section}|${normalizedUrlKey(shortcut.url)}`;
+
+    if (normalizeText(shortcut.title)) {
+      titleMap.set(titleKey, (titleMap.get(titleKey) || 0) + 1);
+    }
+
+    if (normalizedUrlKey(shortcut.url) && shortcut.url !== '#') {
+      urlMap.set(urlKey, (urlMap.get(urlKey) || 0) + 1);
+    } else {
+      emptyLinks.push(shortcut);
+    }
+  });
+
+  return {
+    duplicateTitles: Array.from(titleMap.values()).filter((count) => count > 1).length,
+    duplicateUrls: Array.from(urlMap.values()).filter((count) => count > 1).length,
+    emptyLinks: emptyLinks.length
+  };
+}
+
+function renderMaintenanceAudit() {
+  if (!maintenanceAudit || !isMaintenanceUnlocked()) return;
+
+  const audit = getShortcutAudit();
+  const hasIssue = audit.duplicateTitles || audit.duplicateUrls || audit.emptyLinks;
+  maintenanceAudit.classList.toggle('is-ok', !hasIssue);
+  maintenanceAudit.classList.toggle('is-warning', Boolean(hasIssue));
+  maintenanceAudit.innerHTML = '';
+
+  const title = document.createElement('strong');
+  title.textContent = hasIssue ? 'Atenção na lista' : 'Lista consistente';
+  maintenanceAudit.appendChild(title);
+
+  const items = [
+    { label: 'nomes repetidos no mesmo grupo', count: audit.duplicateTitles },
+    { label: 'links repetidos no mesmo grupo', count: audit.duplicateUrls },
+    { label: 'atalhos sem link', count: audit.emptyLinks }
+  ];
+
+  items.forEach((item) => {
+    const badge = document.createElement('span');
+    badge.textContent = `${item.count} ${item.label}`;
+    badge.className = item.count ? 'has-issue' : '';
+    maintenanceAudit.appendChild(badge);
+  });
+}
+
 function readFileText(file) {
   if (file && typeof file.text === 'function') {
     return file.text();
@@ -915,6 +977,7 @@ function getMaintenanceFilters() {
 
 function renderMaintenanceList() {
   if (!maintenanceList || !isMaintenanceUnlocked()) return;
+  renderMaintenanceAudit();
 
   const filters = getMaintenanceFilters();
   const isSearchFiltered = Boolean(filters.term);

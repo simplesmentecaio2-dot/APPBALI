@@ -1103,6 +1103,51 @@ img {
   margin-bottom: .85rem;
 }
 
+.maintenance-audit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  align-items: center;
+  margin-bottom: .85rem;
+  padding: .65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+}
+
+.maintenance-audit strong {
+  margin-right: .25rem;
+  color: var(--ink);
+  font-size: .86rem;
+  font-weight: 900;
+}
+
+.maintenance-audit span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: .2rem .5rem;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--muted);
+  font-size: .76rem;
+  font-weight: 850;
+}
+
+.maintenance-audit.is-ok {
+  border-color: rgba(22, 121, 76, .18);
+  background: rgba(22, 121, 76, .06);
+}
+
+.maintenance-audit.is-warning {
+  border-color: rgba(215, 25, 32, .18);
+  background: var(--accent-soft);
+}
+
+.maintenance-audit .has-issue {
+  color: var(--accent);
+}
+
 .maintenance-list-controls {
   display: grid;
   grid-template-columns: minmax(150px, .42fr) minmax(0, 1fr);
