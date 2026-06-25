@@ -23,7 +23,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         if (Session["usuario"] == null || Session["usuario"].ToString().Equals(""))
         {
-            Response.Redirect("./loginAppcontrato.aspx");
+            Response.Redirect("./loginAppcontrato.aspx", false);
+            Context.ApplicationInstance.CompleteRequest();
+            return;
         }
         else
         {
