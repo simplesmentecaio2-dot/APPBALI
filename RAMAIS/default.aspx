@@ -6,10 +6,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sistema de Ramais</title>
-    <link href="ramais.css?v=20260625-export" rel="stylesheet" />
+    <link href="ramais.css?v=20260625-a11y" rel="stylesheet" />
 </head>
 <body class="ramais-page">
     <form id="form1" runat="server">
+        <a class="skip-link" href="#conteudo">Ir para o conte&uacute;do</a>
         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
         <asp:HiddenField ID="hfSenhaManutencao" runat="server" />
 
@@ -35,7 +36,7 @@
                 <asp:Button ID="btnSair" runat="server" Text="Voltar" CssClass="secondary-button" OnClick="btnSair_Click" />
             </aside>
 
-            <main class="content">
+            <main class="content" id="conteudo" tabindex="-1">
                 <header class="hero">
                     <div>
                         <span class="eyebrow">Comunica&ccedil;&atilde;o interna</span>
@@ -430,6 +431,11 @@
 
                     return true;
                 };
+
+                var params = new URLSearchParams(window.location.search);
+                var viewAtual = params.get('view') || 'consulta';
+                var linkAtivo = document.querySelector('.side-nav a[href*="view=' + viewAtual + '"]');
+                if (linkAtivo) linkAtivo.classList.add('is-active');
             })();
         </script>
     </form>
