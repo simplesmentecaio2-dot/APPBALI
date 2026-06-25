@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-checklist" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-quality" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -398,6 +398,16 @@
                             <span>Texto</span>
                             <strong id="ciTextCount">0 caracteres</strong>
                             <p>Use uma comunica&ccedil;&atilde;o objetiva para facilitar a impress&atilde;o.</p>
+                        </article>
+                        <article id="ciQualityCard">
+                            <span>Qualidade</span>
+                            <strong id="ciQualityText">Aten&ccedil;&atilde;o</strong>
+                            <p id="ciQualityHint">Preencha os campos para avaliar a CI.</p>
+                        </article>
+                        <article>
+                            <span>Sugest&atilde;o</span>
+                            <strong id="ciCategorySuggestion">Categoria atual</strong>
+                            <p id="ciCategoryHint">A categoria sugerida aparece conforme o texto digitado.</p>
                         </article>
                     </div>
                     <div class="ci-assistant">
@@ -825,6 +835,56 @@
                     return /\[[^\]]+\]/.test(texto || '');
                 }
 
+                function sugerirCategoriaCI(texto) {
+                    var base = (texto || '').toLowerCase();
+                    if (/financeir|pagamento|boleto|nota fiscal|nf|desconto|reembolso|credito|cr\u00e9dito/.test(base)) return 'Financeiro';
+                    if (/autoriza|aprovacao|aprova\u00e7\u00e3o|permissao|permiss\u00e3o/.test(base)) return 'Autoriza\u00e7\u00e3o';
+                    if (/solicita|solicito|pedido|precisamos|necessario|necess\u00e1rio/.test(base)) return 'Solicita\u00e7\u00e3o';
+                    if (/procedimento|processo|fluxo|regra|orientacao|orienta\u00e7\u00e3o/.test(base)) return 'Procedimento';
+                    if (/administrativ|documento|arquivo|cadastro|setor/.test(base)) return 'Administrativo';
+                    return 'Comunicado';
+                }
+
+                function avaliarQualidadeCI(preenchidos, corpo, assunto) {
+                    var status = valor('<%= ddlStatusCI.ClientID %>');
+                    var score = 100;
+                    var pendencias = [];
+                    var faltantes = camposObrigatorios.length - preenchidos;
+                    if (faltantes > 0) {
+                        score -= faltantes * 10;
+                        pendencias.push('campos obrigat\u00f3rios pendentes');
+                    }
+                    if ((assunto || '').length < 8) {
+                        score -= 10;
+                        pendencias.push('assunto muito curto');
+                    }
+                    if ((corpo || '').length > 0 && corpo.length < 40) {
+                        score -= 12;
+                        pendencias.push('texto muito curto');
+                    }
+                    if (corpo.length > 3200) {
+                        score -= 8;
+                        pendencias.push('texto longo para impress\u00e3o');
+                    }
+                    if (contemMarcadorModelo(assunto) || contemMarcadorModelo(corpo)) {
+                        score -= 25;
+                        pendencias.push('trechos de modelo pendentes');
+                    }
+                    if (status !== 'Rascunho') {
+                        for (var q = 0; q < checklistFinalCI.length; q++) {
+                            var check = campo(checklistFinalCI[q].id);
+                            if (!check || !check.checked) {
+                                score -= 8;
+                                if (pendencias.indexOf('checklist final pendente') < 0) pendencias.push('checklist final pendente');
+                            }
+                        }
+                    }
+
+                    if (score >= 85) return { texto: 'Completa', classe: 'is-success', dica: 'CI pronta para emiss\u00e3o.' };
+                    if (score >= 60) return { texto: 'Aten\u00e7\u00e3o', classe: 'is-warning', dica: 'Revise: ' + pendencias.slice(0, 2).join(' e ') + '.' };
+                    return { texto: 'Risco de erro', classe: 'is-danger', dica: 'Corrija antes de emitir: ' + pendencias.slice(0, 2).join(' e ') + '.' };
+                }
+
                 function atualizarPainelCI() {
                     var preenchidos = 0;
                     var progressoTexto = document.getElementById('ciProgressText');
@@ -833,6 +893,11 @@
                     var previaMeta = document.getElementById('ciPreviewMeta');
                     var contadorTexto = document.getElementById('ciTextCount');
                     var cardTexto = contadorTexto ? contadorTexto.closest('article') : null;
+                    var cardQualidade = document.getElementById('ciQualityCard');
+                    var textoQualidade = document.getElementById('ciQualityText');
+                    var dicaQualidade = document.getElementById('ciQualityHint');
+                    var sugestaoCategoria = document.getElementById('ciCategorySuggestion');
+                    var dicaCategoria = document.getElementById('ciCategoryHint');
 
                     for (var i = 0; i < camposObrigatorios.length; i++) {
                         if (valor(camposObrigatorios[i].id).length > 0) preenchidos++;
@@ -853,6 +918,24 @@
                     if (contadorTexto) {
                         contadorTexto.textContent = corpo.length + ' caractere' + (corpo.length === 1 ? '' : 's');
                         if (cardTexto) cardTexto.classList.toggle('is-warning', corpo.length > 3000);
+                    }
+
+                    var qualidade = avaliarQualidadeCI(preenchidos, corpo, assunto);
+                    if (cardQualidade) {
+                        cardQualidade.classList.remove('is-success', 'is-warning', 'is-danger');
+                        cardQualidade.classList.add(qualidade.classe);
+                    }
+                    if (textoQualidade) textoQualidade.textContent = qualidade.texto;
+                    if (dicaQualidade) dicaQualidade.textContent = qualidade.dica;
+
+                    var textoParaSugestao = [assunto, corpo, valor('<%= txtProvidencias.ClientID %>'), valor('<%= txtObservacoes.ClientID %>')].join(' ');
+                    var sugerida = sugerirCategoriaCI(textoParaSugestao);
+                    var atual = valor('<%= ddlCategoria.ClientID %>') || 'Comunicado';
+                    if (sugestaoCategoria) sugestaoCategoria.textContent = sugerida;
+                    if (dicaCategoria) {
+                        dicaCategoria.textContent = sugerida === atual
+                            ? 'Categoria coerente com o texto.'
+                            : 'Considere trocar de ' + atual + ' para ' + sugerida + '.';
                     }
                 }
 
@@ -1043,9 +1126,12 @@
                 for (var c = 0; c < camposObrigatorios.length; c++) adicionarMonitorado(camposObrigatorios[c].id);
                 for (var t = 0; t < limitesTextoCI.length; t++) adicionarMonitorado(limitesTextoCI[t].id);
                 adicionarMonitorado('<%= ddlMarca.ClientID %>');
+                adicionarMonitorado('<%= ddlCategoria.ClientID %>');
+                adicionarMonitorado('<%= ddlPrioridade.ClientID %>');
                 adicionarMonitorado('<%= ddlStatusCI.ClientID %>');
                 adicionarMonitorado('<%= txtAssunto.ClientID %>');
                 adicionarMonitorado('<%= txtCorpo.ClientID %>');
+                for (var k = 0; k < checklistFinalCI.length; k++) adicionarMonitorado(checklistFinalCI[k].id);
 
                 for (var m = 0; m < camposMonitorados.length; m++) {
                     var monitorado = campo(camposMonitorados[m]);

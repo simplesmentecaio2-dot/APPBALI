@@ -648,7 +648,7 @@ label {
 
 .ci-form-insights {
   display: grid;
-  grid-template-columns: .8fr 1.2fr .8fr;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px;
   margin-bottom: 14px;
 }
@@ -688,6 +688,24 @@ label {
 .ci-form-insights article.is-warning {
   border-color: #f4c27a;
   background: #fff8eb;
+}
+
+.ci-form-insights article.is-success {
+  border-color: #b7dfcc;
+  background: #ecfdf3;
+}
+
+.ci-form-insights article.is-danger {
+  border-color: #f2b8b5;
+  background: #fff1f0;
+}
+
+.ci-form-insights article.is-success strong {
+  color: var(--success);
+}
+
+.ci-form-insights article.is-danger strong {
+  color: var(--danger);
 }
 
 .ci-progress {
