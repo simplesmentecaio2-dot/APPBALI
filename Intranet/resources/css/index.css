@@ -326,6 +326,21 @@ img {
   flex-wrap: wrap;
   gap: .45rem;
   align-items: center;
+  scrollbar-color: rgba(17, 24, 39, .24) transparent;
+  scrollbar-width: thin;
+}
+
+.quick-filters::-webkit-scrollbar {
+  height: 6px;
+}
+
+.quick-filters::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.quick-filters::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(17, 24, 39, .22);
 }
 
 .category-chip {
@@ -1428,6 +1443,7 @@ img {
     overflow-x: auto;
     padding-bottom: .15rem;
     scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
   }
 
   .category-chip {
