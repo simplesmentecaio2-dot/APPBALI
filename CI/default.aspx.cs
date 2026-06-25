@@ -241,7 +241,9 @@ public partial class ci_default : System.Web.UI.Page
 
     private bool SenhaInformada()
     {
-        return String.Equals((txtSenhaEdicao.Text ?? "").Trim(), SenhaEdicao, StringComparison.Ordinal);
+        bool autorizada = String.Equals((hfSenhaEdicao.Value ?? "").Trim(), SenhaEdicao, StringComparison.Ordinal);
+        hfSenhaEdicao.Value = "";
+        return autorizada;
     }
 
     private string ChaveEdicaoCI(int id)

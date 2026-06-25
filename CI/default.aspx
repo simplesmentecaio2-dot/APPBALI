@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260624-ci-ramais2" rel="stylesheet" />
+    <link href="ci.css?v=20260624-ci-password2" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -46,6 +46,7 @@
                 <asp:Panel ID="pnlMensagem" runat="server" CssClass="form-message" Visible="false">
                     <asp:Literal ID="litMensagem" runat="server"></asp:Literal>
                 </asp:Panel>
+                <asp:HiddenField ID="hfSenhaEdicao" runat="server" />
 
                 <section class="summary-grid">
                     <article>
@@ -96,13 +97,6 @@
                         <asp:Button ID="btnFiltrar" runat="server" Text="Filtrar" CssClass="primary-button" OnClick="btnFiltrar_Click" />
                     </div>
 
-                    <div class="edit-password">
-                        <label>Senha para editar ou cancelar
-                            <asp:TextBox ID="txtSenhaEdicao" runat="server" CssClass="text-field" TextMode="Password" autocomplete="current-password"></asp:TextBox>
-                        </label>
-                        <small>Informe a senha para editar ou cancelar uma CI. Depois da libera&ccedil;&atilde;o, voc&ecirc; pode salvar a altera&ccedil;&atilde;o nessa mesma sess&atilde;o.</small>
-                    </div>
-
                     <div class="table-wrap">
                         <asp:GridView ID="gvCis" runat="server" CssClass="ci-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma CI encontrada." OnRowCommand="gvCis_RowCommand">
                             <Columns>
@@ -115,8 +109,8 @@
                                 <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                     <ItemTemplate>
                                         <a class="table-action" href='print.aspx?id=<%# Eval("id_ci") %>' target="_blank">Imprimir</a>
-                                        <asp:LinkButton ID="lnkEditar" runat="server" CssClass="table-action" CommandName="EditarCI" CommandArgument='<%# Eval("id_ci") %>'>Editar</asp:LinkButton>
-                                        <asp:LinkButton ID="lnkCancelar" runat="server" CssClass="table-action danger" CommandName="CancelarCI" CommandArgument='<%# Eval("id_ci") %>' OnClientClick="return confirm('Deseja cancelar esta CI?');">Cancelar</asp:LinkButton>
+                                        <asp:LinkButton ID="lnkEditar" runat="server" CssClass="table-action" CommandName="EditarCI" CommandArgument='<%# Eval("id_ci") %>' OnClientClick="return solicitarSenhaCI('editar', this);">Editar</asp:LinkButton>
+                                        <asp:LinkButton ID="lnkCancelar" runat="server" CssClass="table-action danger" CommandName="CancelarCI" CommandArgument='<%# Eval("id_ci") %>' OnClientClick="return confirmarCancelamentoCI(this);">Cancelar</asp:LinkButton>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>
@@ -199,8 +193,82 @@
                 </section>
             </main>
         </div>
+
+        <div class="password-modal" id="modalSenhaCI" aria-hidden="true">
+            <div class="password-dialog" role="dialog" aria-modal="true" aria-labelledby="tituloSenhaCI">
+                <span class="eyebrow">Acesso protegido</span>
+                <h3 id="tituloSenhaCI">Confirmar a&ccedil;&atilde;o na CI</h3>
+                <p id="textoSenhaCI">Informe a senha para continuar.</p>
+                <label>Senha
+                    <input id="txtSenhaCICliente" class="text-field" type="password" autocomplete="current-password" />
+                </label>
+                <div class="modal-actions">
+                    <button type="button" class="secondary-button" onclick="fecharSenhaCI();">Cancelar</button>
+                    <button type="button" class="primary-button" onclick="confirmarSenhaCI();">Continuar</button>
+                </div>
+            </div>
+        </div>
+
         <script>
             (function () {
+                var postbackCIPendente = null;
+                var modalSenhaCI = document.getElementById('modalSenhaCI');
+                var campoSenhaCI = document.getElementById('txtSenhaCICliente');
+                var textoSenhaCI = document.getElementById('textoSenhaCI');
+
+                function executarPostbackCI() {
+                    if (!postbackCIPendente) return;
+
+                    var href = postbackCIPendente;
+                    postbackCIPendente = null;
+
+                    if (href.indexOf('javascript:') === 0) {
+                        href = href.replace(/^javascript:/, '');
+                    }
+
+                    if (href) {
+                        window.setTimeout(function () {
+                            eval(href);
+                        }, 0);
+                    }
+                }
+
+                window.solicitarSenhaCI = function (acao, link) {
+                    postbackCIPendente = link ? link.href : null;
+                    if (textoSenhaCI) textoSenhaCI.textContent = 'Informe a senha para ' + (acao || 'continuar') + ' esta CI.';
+                    if (campoSenhaCI) campoSenhaCI.value = '';
+                    if (modalSenhaCI) modalSenhaCI.classList.add('is-open');
+                    if (campoSenhaCI) window.setTimeout(function () { campoSenhaCI.focus(); }, 80);
+                    return false;
+                };
+
+                window.confirmarCancelamentoCI = function (link) {
+                    if (!window.confirm('Deseja cancelar esta CI?')) return false;
+                    return window.solicitarSenhaCI('cancelar', link);
+                };
+
+                window.fecharSenhaCI = function () {
+                    postbackCIPendente = null;
+                    if (modalSenhaCI) modalSenhaCI.classList.remove('is-open');
+                    if (campoSenhaCI) campoSenhaCI.value = '';
+                };
+
+                window.confirmarSenhaCI = function () {
+                    var campoServidor = document.getElementById('<%= hfSenhaEdicao.ClientID %>');
+                    if (campoServidor && campoSenhaCI) campoServidor.value = campoSenhaCI.value;
+                    if (modalSenhaCI) modalSenhaCI.classList.remove('is-open');
+                    executarPostbackCI();
+                };
+
+                document.addEventListener('keydown', function (event) {
+                    if (!modalSenhaCI || !modalSenhaCI.classList.contains('is-open')) return;
+                    if (event.key === 'Escape') window.fecharSenhaCI();
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        window.confirmarSenhaCI();
+                    }
+                });
+
                 var camposObrigatorios = [
                     { id: '<%= txtData.ClientID %>', mensagem: 'Informe a data da CI.' },
                     { id: '<%= txtOrigemArea.ClientID %>', mensagem: 'Informe a \u00e1rea de origem.' },

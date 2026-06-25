@@ -325,22 +325,6 @@ label {
   outline: 3px solid rgba(201, 51, 58, 0.14);
 }
 
-.edit-password {
-  display: grid;
-  grid-template-columns: minmax(240px, 360px) minmax(200px, 1fr);
-  gap: 12px;
-  align-items: end;
-  margin-bottom: 14px;
-  border: 1px dashed var(--line);
-  border-radius: 8px;
-  padding: 12px;
-  background: #fafcff;
-}
-
-.edit-password small {
-  color: var(--muted);
-}
-
 .form-message {
   margin-bottom: 16px;
   border: 1px solid #b7dfcc;
@@ -418,6 +402,47 @@ label {
 
 .table-action.danger {
   color: var(--danger);
+}
+
+.password-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: none;
+  place-items: center;
+  padding: 18px;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.password-modal.is-open {
+  display: grid;
+}
+
+.password-dialog {
+  width: min(420px, 100%);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px;
+  background: #fff;
+  box-shadow: 0 26px 70px rgba(15, 23, 42, 0.22);
+}
+
+.password-dialog h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 22px;
+}
+
+.password-dialog p {
+  margin: 8px 0 18px;
+  color: var(--muted);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
 }
 
 .ci-print-page {
@@ -576,8 +601,7 @@ label {
   }
 
   .filter-grid,
-  .form-grid,
-  .edit-password {
+  .form-grid {
     grid-template-columns: 1fr;
   }
 }
