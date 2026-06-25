@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title><%=CodigoCI%> - Impress&atilde;o</title>
-    <link href="ci.css?v=20260625-ci-printlink" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-print-ux" rel="stylesheet" />
 </head>
 <body class="ci-print-page <%=MarcaClasse%>">
     <form id="form1" runat="server">
@@ -14,7 +14,7 @@
             <span class="eyebrow">Impress&atilde;o indispon&iacute;vel</span>
             <h1><asp:Literal ID="litErroTitulo" runat="server"></asp:Literal></h1>
             <p><asp:Literal ID="litErroMensagem" runat="server"></asp:Literal></p>
-            <a class="primary-link" href="default.aspx">Voltar para CI</a>
+            <a class="primary-link" href="default.aspx?view=consulta">Voltar para consulta</a>
         </asp:Panel>
 
         <main id="pnlDocumento" runat="server" class="print-sheet">
@@ -83,7 +83,8 @@
         </main>
         <div id="pnlAcoes" runat="server" class="print-actions">
             <button type="button" onclick="window.print()">Imprimir</button>
-            <a href="default.aspx">Voltar</a>
+            <a href="default.aspx?view=nova">Nova CI</a>
+            <a href="default.aspx?view=consulta">Voltar para consulta</a>
         </div>
     </form>
 </body>
