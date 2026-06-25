@@ -534,6 +534,14 @@ public partial class ci_default : System.Web.UI.Page
         if (TextoCurto(txtDestinatario.Text).Length > 160) return "O destinat\u00e1rio deve ter at\u00e9 160 caracteres.";
         if (TextoCurto(txtAssunto.Text).Length > 200) return "O assunto deve ter at\u00e9 200 caracteres.";
         if (TextoCurto(txtCriadoPor.Text).Length > 160) return "O campo criado por deve ter at\u00e9 160 caracteres.";
+        if (ContemMarcadorModelo(txtAssunto.Text) ||
+            ContemMarcadorModelo(txtCorpo.Text) ||
+            ContemMarcadorModelo(txtProvidencias.Text) ||
+            ContemMarcadorModelo(txtObservacoes.Text))
+        {
+            return "Substitua os trechos entre colchetes antes de salvar a CI.";
+        }
+
         return "";
     }
 
@@ -628,6 +636,14 @@ public partial class ci_default : System.Web.UI.Page
         }
 
         return texto.Replace("\n", "\r\n");
+    }
+
+    private bool ContemMarcadorModelo(string valor)
+    {
+        string texto = valor ?? "";
+        int abre = texto.IndexOf("[", StringComparison.Ordinal);
+        int fecha = texto.IndexOf("]", StringComparison.Ordinal);
+        return abre >= 0 && fecha > abre;
     }
 
     private SqlParameter Param(string nome, SqlDbType tipo, object valor, int tamanho = 0)

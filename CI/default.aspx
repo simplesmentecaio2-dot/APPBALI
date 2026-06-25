@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-nav" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-validacao" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -395,6 +395,12 @@
                     { id: '<%= txtAssunto.ClientID %>', mensagem: 'Informe o assunto.' },
                     { id: '<%= txtCorpo.ClientID %>', mensagem: 'Informe o texto da comunica\u00e7\u00e3o.' }
                 ];
+                var camposComModelo = [
+                    '<%= txtAssunto.ClientID %>',
+                    '<%= txtCorpo.ClientID %>',
+                    '<%= txtProvidencias.ClientID %>',
+                    '<%= txtObservacoes.ClientID %>'
+                ];
 
                 function campo(id) {
                     return document.getElementById(id);
@@ -441,8 +447,9 @@
                         aviso.classList.remove('is-visible');
                     }
 
-                    for (var i = 0; i < camposObrigatorios.length; i++) {
-                        var item = campo(camposObrigatorios[i].id);
+                    var camposParaLimpar = camposObrigatorios.map(function (item) { return item.id; }).concat(camposComModelo);
+                    for (var i = 0; i < camposParaLimpar.length; i++) {
+                        var item = campo(camposParaLimpar[i]);
                         if (item) item.classList.remove('field-error');
                     }
                 }
@@ -463,6 +470,10 @@
                 function valor(id) {
                     var item = campo(id);
                     return item ? item.value.trim() : '';
+                }
+
+                function contemMarcadorModelo(texto) {
+                    return /\[[^\]]+\]/.test(texto || '');
                 }
 
                 function atualizarPainelCI() {
@@ -629,6 +640,14 @@
                         var item = campo(camposObrigatorios[i].id);
                         if (!item || item.value.trim().length === 0) {
                             mostrarErro(camposObrigatorios[i].mensagem, item);
+                            return false;
+                        }
+                    }
+
+                    for (var p = 0; p < camposComModelo.length; p++) {
+                        var campoModelo = campo(camposComModelo[p]);
+                        if (campoModelo && contemMarcadorModelo(campoModelo.value)) {
+                            mostrarErro('Substitua os trechos entre colchetes antes de salvar a CI.', campoModelo);
                             return false;
                         }
                     }
