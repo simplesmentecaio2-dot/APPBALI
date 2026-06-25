@@ -527,6 +527,7 @@
                     <div class="form-actions">
                         <asp:Button ID="btnSalvar" runat="server" Text="Salvar CI" CssClass="primary-button" OnClick="btnSalvar_Click" OnClientClick="return validarCICliente();" />
                         <asp:Button ID="btnSalvarRascunhoBanco" runat="server" Text="Salvar rascunho no banco" CssClass="secondary-button" OnClick="btnSalvarRascunhoBanco_Click" />
+                        <button type="button" class="secondary-button" onclick="abrirPreviaImpressaoCI()">Pr&eacute;via de impress&atilde;o</button>
                         <a class="secondary-link" href="default.aspx?view=consulta">Voltar para consulta</a>
                     </div>
 
@@ -1044,6 +1045,58 @@
                     atualizarPainelCI();
                     ajustarTextareasCI();
                 }
+
+                function htmlSeguroCI(texto) {
+                    return String(texto || '')
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#039;');
+                }
+
+                function textoParagrafosCI(texto) {
+                    var partes = String(texto || '').replace(/\r\n/g, '\n').split(/\n+/);
+                    var html = '';
+                    for (var i = 0; i < partes.length; i++) {
+                        if (partes[i].trim().length === 0) continue;
+                        html += '<p>' + htmlSeguroCI(partes[i]) + '</p>';
+                    }
+                    return html || '<p>A definir.</p>';
+                }
+
+                function formatarDataPreviaCI(valorData) {
+                    if (!/^\d{4}-\d{2}-\d{2}$/.test(valorData || '')) return valorData || 'sem data';
+                    return valorData.substring(8, 10) + '/' + valorData.substring(5, 7) + '/' + valorData.substring(0, 4);
+                }
+
+                window.abrirPreviaImpressaoCI = function () {
+                    var dados = camposRascunhoCI();
+                    var janela = window.open('', '_blank', 'noopener,noreferrer');
+                    if (!janela) {
+                        mostrarErro('N\u00e3o foi poss\u00edvel abrir a pr\u00e9via. Verifique o bloqueador de pop-ups.', null);
+                        return;
+                    }
+
+                    var marca = dados.marca || 'Grupo Bali';
+                    var cor = marca.indexOf('Jeep') >= 0 ? '#287246' : (marca.indexOf('BYD') >= 0 ? '#1969b3' : '#c9333a');
+                    var documento = '<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><title>Pr\u00e9via da CI</title>' +
+                        '<style>@page{size:A4;margin:10mm}body{margin:0;background:#dfe6ef;font-family:Arial,Helvetica,sans-serif;color:#172033}.sheet{width:210mm;min-height:297mm;margin:18px auto;padding:14mm;background:#fff;box-shadow:0 20px 60px rgba(15,23,42,.18)}header{display:flex;justify-content:space-between;gap:18px;border-bottom:3px solid ' + cor + ';padding-bottom:12px}.brand{display:grid;place-items:center;min-width:180px;min-height:64px;border-radius:10px;padding:12px 18px;color:#fff;background:' + cor + ';font-weight:900}.title{text-align:right}.title span,.meta span,.grid span,.block span,footer span{color:#64748b;font-size:11px;font-weight:900;text-transform:uppercase}.title h1{margin:5px 0 0;color:' + cor + ';font-size:24px}.meta,.grid{display:grid;gap:10px;margin-top:14px}.meta{grid-template-columns:repeat(5,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.meta div,.grid div,.block{border:1px solid #d9e1ed;border-radius:8px;padding:10px}.meta strong,.grid strong,.grid small{display:block;margin-top:4px}.block{margin-top:12px}.block h2{margin:5px 0 0;font-size:18px}.block p{margin:8px 0 0;line-height:1.45}footer{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}.sig{border-top:1px solid #94a3b8;padding-top:8px;text-align:center}@media print{body{background:#fff}.sheet{width:auto;min-height:auto;margin:0;padding:0;box-shadow:none}.meta{grid-template-columns:repeat(5,1fr)!important}.grid,footer{grid-template-columns:repeat(2,1fr)!important}}</style></head><body><main class="sheet">' +
+                        '<header><div class="brand">' + htmlSeguroCI(marca) + '</div><div class="title"><span>Comunica\u00e7\u00e3o Interna</span><h1>Pr\u00e9via</h1></div></header>' +
+                        '<section class="meta"><div><span>Data</span><strong>' + htmlSeguroCI(formatarDataPreviaCI(dados.data)) + '</strong></div><div><span>Marca</span><strong>' + htmlSeguroCI(marca) + '</strong></div><div><span>Categoria</span><strong>' + htmlSeguroCI(dados.categoria) + '</strong></div><div><span>Prioridade</span><strong>' + htmlSeguroCI(dados.prioridade) + '</strong></div><div><span>Status</span><strong>' + htmlSeguroCI(dados.status) + '</strong></div></section>' +
+                        '<section class="grid"><div><span>Origem</span><strong>' + htmlSeguroCI(dados.origemArea || 'A definir') + '</strong><small>' + htmlSeguroCI(dados.origemResponsavel || 'A definir') + '</small></div><div><span>Destino</span><strong>' + htmlSeguroCI(dados.destinoArea || 'A definir') + '</strong><small>' + htmlSeguroCI(dados.destinatario || 'A definir') + '</small></div></section>' +
+                        '<section class="block"><span>Assunto</span><h2>' + htmlSeguroCI(dados.assunto || 'Sem assunto informado') + '</h2></section>' +
+                        '<section class="block"><span>Comunica\u00e7\u00e3o</span>' + textoParagrafosCI(dados.corpo) + '</section>';
+
+                    if ((dados.providencias || '').trim().length > 0) documento += '<section class="block"><span>Provid\u00eancias solicitadas</span>' + textoParagrafosCI(dados.providencias) + '</section>';
+                    if ((dados.observacoes || '').trim().length > 0) documento += '<section class="block"><span>Observa\u00e7\u00f5es</span>' + textoParagrafosCI(dados.observacoes) + '</section>';
+                    documento += '<footer><div><span>Emitido por</span><strong>' + htmlSeguroCI(dados.criadoPor || 'A definir') + '</strong><small>Pr\u00e9via sem grava\u00e7\u00e3o</small></div><div class="sig"><span>Assinatura / ci\u00eancia</span></div></footer></main></body></html>';
+
+                    janela.document.open();
+                    janela.document.write(documento);
+                    janela.document.close();
+                    janela.focus();
+                };
 
                 window.salvarRascunhoCI = function () {
                     try {
