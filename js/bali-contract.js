@@ -3154,6 +3154,7 @@
       if (onlyVisible && row.style.display === 'none') return false;
       if ((row.className || '').match(/dataTables_empty/)) return false;
       if ((row.className || '').match(/contract-empty-row/)) return false;
+      if ((row.className || '').match(/contract-limit-row/)) return false;
       if ((row.cells[0].className || '').match(/dataTables_empty/)) return false;
       if (normalizeText(row.cells[0].textContent).indexOf('NENHUM CONTRATO') >= 0) return false;
       return true;
@@ -3220,10 +3221,13 @@
       ? 'Consulta Venda Direta'
       : (/tblConsultaProcesso2$/i.test(table.id || '') ? 'Consulta Usado' : 'Consulta Novo');
     var count = countLookupRows(table);
-    var text = count > 0
+    var hasLimitWarning = !!(table.querySelector && table.querySelector('tr.contract-limit-row'));
+    var text = hasLimitWarning
+      ? 'Resultado limitado aos contratos mais recentes. Reduza o período ou filtre por cliente, CPF/CNPJ ou vendedor.'
+      : count > 0
       ? 'Use o filtro para localizar cliente, CPF ou vendedor. Clique em Imprimir para abrir o contrato.'
       : 'Nenhum contrato apareceu neste filtro. Revise as datas ou tente um período maior.';
-    var signature = label + ':' + count + ':' + text;
+    var signature = label + ':' + count + ':' + text + ':' + hasLimitWarning;
     if (summary.getAttribute('data-contract-summary') === signature) return;
     summary.innerHTML = '<div><span>' + label + '</span><strong>' + count + ' contrato(s) visível(is)</strong></div><small>' + text + '</small><div class="contract-lookup-actions"><button type="button" class="contract-lookup-action contract-lookup-copy">Copiar IDs</button><button type="button" class="contract-lookup-action contract-lookup-export">CSV</button></div>';
     summary.setAttribute('data-contract-summary', signature);
