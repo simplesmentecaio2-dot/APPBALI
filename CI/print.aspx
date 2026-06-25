@@ -70,11 +70,6 @@
                 <asp:Literal ID="litObservacoes" runat="server"></asp:Literal>
             </section>
 
-            <section class="print-block print-related" id="secAnexos" runat="server">
-                <span>Anexos</span>
-                <asp:Literal ID="litAnexos" runat="server"></asp:Literal>
-            </section>
-
             <section class="print-block print-related" id="secCiencias" runat="server">
                 <span>Ci&ecirc;ncias registradas</span>
                 <asp:Literal ID="litCiencias" runat="server"></asp:Literal>

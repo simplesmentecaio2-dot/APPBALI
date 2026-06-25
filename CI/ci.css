@@ -564,22 +564,6 @@ label {
   font-size: 14px;
 }
 
-.file-field {
-  width: 100%;
-  border: 1px dashed #b9c7da;
-  border-radius: 8px;
-  padding: 12px;
-  color: var(--ink);
-  background: #f8fbff;
-  font-size: 14px;
-}
-
-.field-hint {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-}
-
 .text-field,
 .select-field {
   height: 40px;
@@ -824,12 +808,6 @@ label {
 }
 
 .history-panel {
-  margin-top: 18px;
-  border-top: 1px solid var(--line);
-  padding-top: 18px;
-}
-
-.attachments-panel {
   margin-top: 18px;
   border-top: 1px solid var(--line);
   padding-top: 18px;

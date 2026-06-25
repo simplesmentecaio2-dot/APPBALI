@@ -156,12 +156,9 @@ public partial class ci_print : System.Web.UI.Page
 
     private void CarregarRelacionados(int id)
     {
-        DataTable anexos = ObterTabelaRelacionada("dbo.ci_anexo_listar", "@id_ci", id);
         DataTable ciencias = ObterTabelaRelacionada("dbo.ci_ciencia_listar", "@id_ci", id);
 
-        secAnexos.Visible = anexos.Rows.Count > 0;
         secCiencias.Visible = ciencias.Rows.Count > 0;
-        litAnexos.Text = RenderizarAnexos(anexos);
         litCiencias.Text = RenderizarCiencias(ciencias);
     }
 
@@ -178,24 +175,6 @@ public partial class ci_print : System.Web.UI.Page
             adapter.Fill(tabela);
             return tabela;
         }
-    }
-
-    private string RenderizarAnexos(DataTable dados)
-    {
-        if (dados.Rows.Count == 0) return "";
-
-        StringBuilder html = new StringBuilder();
-        html.Append("<ul class=\"print-list\">");
-        foreach (DataRow row in dados.Rows)
-        {
-            html.Append("<li><strong>");
-            html.Append(Html(row["nome_original"].ToString()));
-            html.Append("</strong><small>");
-            html.Append(Html(row["tamanho_formatado"].ToString()));
-            html.Append("</small></li>");
-        }
-        html.Append("</ul>");
-        return html.ToString();
     }
 
     private string RenderizarCiencias(DataTable dados)

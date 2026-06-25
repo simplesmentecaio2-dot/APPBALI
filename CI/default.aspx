@@ -9,7 +9,7 @@
     <link href="ci.css?v=20260625-ci-anotacoes" rel="stylesheet" />
 </head>
 <body class="ci-page">
-    <form id="form1" runat="server" enctype="multipart/form-data">
+    <form id="form1" runat="server">
         <a class="skip-link" href="#conteudo">Ir para o conte&uacute;do</a>
         <div class="app-shell">
             <aside class="sidebar">
@@ -126,7 +126,6 @@
                         <article><span>Rascunhos</span><strong><asp:Literal ID="litBiRascunhos" runat="server" Text="0"></asp:Literal></strong></article>
                         <article><span>Revisadas</span><strong><asp:Literal ID="litBiRevisadas" runat="server" Text="0"></asp:Literal></strong></article>
                         <article><span>Canceladas</span><strong><asp:Literal ID="litBiCanceladas" runat="server" Text="0"></asp:Literal></strong></article>
-                        <article><span>Anexos</span><strong><asp:Literal ID="litBiAnexos" runat="server" Text="0"></asp:Literal></strong></article>
                         <article><span>Ci&ecirc;ncias</span><strong><asp:Literal ID="litBiCiencias" runat="server" Text="0"></asp:Literal></strong></article>
                     </section>
                     <div class="bi-grid">
@@ -457,41 +456,12 @@
                         <label>Criado por
                             <asp:TextBox ID="txtCriadoPor" runat="server" CssClass="text-field" MaxLength="160"></asp:TextBox>
                         </label>
-                        <label class="wide">Anexo opcional
-                            <asp:FileUpload ID="fuAnexo" runat="server" CssClass="file-field" />
-                            <small class="field-hint">Aceita PDF, imagens, Word e Excel at&eacute; 8 MB. Para anexar mais arquivos, salve a CI novamente com o pr&oacute;ximo arquivo.</small>
-                        </label>
                     </div>
 
                     <div class="form-actions">
                         <asp:Button ID="btnSalvar" runat="server" Text="Salvar CI" CssClass="primary-button" OnClick="btnSalvar_Click" OnClientClick="return validarCICliente();" />
                         <a class="secondary-link" href="default.aspx?view=consulta">Voltar para consulta</a>
                     </div>
-
-                    <asp:Panel ID="pnlAnexos" runat="server" CssClass="attachments-panel" Visible="false">
-                        <div class="panel-header compact-header">
-                            <div>
-                                <span class="eyebrow">Arquivos</span>
-                                <h3>Anexos da CI</h3>
-                                <p class="panel-subtitle">Arquivos vinculados a este documento.</p>
-                            </div>
-                        </div>
-                        <div class="table-wrap">
-                            <asp:GridView ID="gvAnexos" runat="server" CssClass="ci-table compact-table" AutoGenerateColumns="false" EmptyDataText="Nenhum anexo registrado para esta CI." OnRowCommand="gvAnexos_RowCommand" OnRowDataBound="gvAnexos_RowDataBound">
-                                <Columns>
-                                    <asp:BoundField DataField="nome_original" HeaderText="Arquivo" />
-                                    <asp:BoundField DataField="tamanho_formatado" HeaderText="Tamanho" />
-                                    <asp:BoundField DataField="dt_upload" HeaderText="Enviado em" DataFormatString="{0:dd/MM/yyyy HH:mm}" />
-                                    <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
-                                        <ItemTemplate>
-                                            <a class="table-action" href='<%# Eval("caminho_relativo") %>' target="_blank" rel="noopener">Abrir</a>
-                                            <asp:LinkButton ID="lnkExcluirAnexo" runat="server" CssClass="table-action danger" CommandName="ExcluirAnexo" CommandArgument='<%# Eval("id_anexo") %>' OnClientClick="return solicitarSenhaCI('excluir anexo', this);">Excluir</asp:LinkButton>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>
-                                </Columns>
-                            </asp:GridView>
-                        </div>
-                    </asp:Panel>
 
                     <asp:Panel ID="pnlCiencia" runat="server" CssClass="ack-panel" Visible="false">
                         <div class="panel-header compact-header">
