@@ -1120,6 +1120,102 @@ BEGIN
 END
 GO
 
+CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_restaurar_historico
+    @id_historico INT,
+    @usuario NVARCHAR(160) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    SET @usuario = NULLIF(LTRIM(RTRIM(ISNULL(@usuario, ''))), '');
+
+    DECLARE @id_ci INT;
+    SELECT @id_ci = id_ci
+    FROM dbo.ci_comunicacoes_historico
+    WHERE id_historico = @id_historico;
+
+    IF @id_ci IS NULL
+    BEGIN
+        DECLARE @erro_historico NVARCHAR(200);
+        SET @erro_historico = N'Hist' + NCHAR(243) + N'rico n' + NCHAR(227) + N'o encontrado para restaura' + NCHAR(231) + NCHAR(227) + N'o.';
+        RAISERROR(@erro_historico, 16, 1);
+        RETURN;
+    END
+
+    IF NOT EXISTS (SELECT 1 FROM dbo.ci_comunicacoes WHERE id_ci = @id_ci)
+    BEGIN
+        DECLARE @erro_ci_atual NVARCHAR(200);
+        SET @erro_ci_atual = N'CI atual n' + NCHAR(227) + N'o encontrada para restaura' + NCHAR(231) + NCHAR(227) + N'o.';
+        RAISERROR(@erro_ci_atual, 16, 1);
+        RETURN;
+    END
+
+    BEGIN TRANSACTION;
+
+    INSERT INTO dbo.ci_comunicacoes_historico
+    (
+        id_ci, acao, ano, numero, data_documento, origem_marca, origem_area,
+        origem_responsavel, destino_area, destinatario, assunto, categoria,
+        prioridade, corpo, providencias, observacoes, criado_por, status_ci, ativo
+    )
+    SELECT
+        id_ci, N'Restaura' + NCHAR(231) + NCHAR(227) + N'o - estado antes', ano, numero, data_documento, origem_marca, origem_area,
+        origem_responsavel, destino_area, destinatario, assunto, categoria,
+        prioridade, corpo, providencias, observacoes, criado_por, status_ci, ativo
+    FROM dbo.ci_comunicacoes
+    WHERE id_ci = @id_ci;
+
+    INSERT INTO dbo.ci_comunicacoes_historico_campos (id_ci, campo, valor_antigo, valor_novo, usuario)
+    SELECT @id_ci, N'Vers' + NCHAR(227) + N'o restaurada',
+           N'Estado atual salvo no hist' + NCHAR(243) + N'rico antes da restaura' + NCHAR(231) + NCHAR(227) + N'o.',
+           N'Restaurado para hist' + NCHAR(243) + N'rico ' + CONVERT(NVARCHAR(20), @id_historico),
+           @usuario
+    UNION ALL
+    SELECT @id_ci, N'Status', c.status_ci, h.status_ci, @usuario
+    FROM dbo.ci_comunicacoes c
+    INNER JOIN dbo.ci_comunicacoes_historico h ON h.id_historico = @id_historico
+    WHERE c.id_ci = @id_ci AND ISNULL(c.status_ci, '') <> ISNULL(h.status_ci, '')
+    UNION ALL
+    SELECT @id_ci, N'Assunto', c.assunto, h.assunto, @usuario
+    FROM dbo.ci_comunicacoes c
+    INNER JOIN dbo.ci_comunicacoes_historico h ON h.id_historico = @id_historico
+    WHERE c.id_ci = @id_ci AND ISNULL(c.assunto, '') <> ISNULL(h.assunto, '')
+    UNION ALL
+    SELECT @id_ci, N'Texto da CI', LEFT(c.corpo, 4000), LEFT(h.corpo, 4000), @usuario
+    FROM dbo.ci_comunicacoes c
+    INNER JOIN dbo.ci_comunicacoes_historico h ON h.id_historico = @id_historico
+    WHERE c.id_ci = @id_ci AND ISNULL(c.corpo, '') <> ISNULL(h.corpo, '');
+
+    UPDATE c
+    SET ano = ISNULL(h.ano, c.ano),
+        numero = ISNULL(h.numero, c.numero),
+        data_documento = ISNULL(h.data_documento, c.data_documento),
+        origem_marca = ISNULL(h.origem_marca, c.origem_marca),
+        origem_area = ISNULL(h.origem_area, c.origem_area),
+        origem_responsavel = ISNULL(h.origem_responsavel, c.origem_responsavel),
+        destino_area = ISNULL(h.destino_area, c.destino_area),
+        destinatario = ISNULL(h.destinatario, c.destinatario),
+        assunto = ISNULL(h.assunto, c.assunto),
+        categoria = ISNULL(h.categoria, c.categoria),
+        prioridade = ISNULL(h.prioridade, c.prioridade),
+        corpo = ISNULL(h.corpo, c.corpo),
+        providencias = h.providencias,
+        observacoes = h.observacoes,
+        criado_por = ISNULL(h.criado_por, c.criado_por),
+        status_ci = ISNULL(NULLIF(h.status_ci, ''), CASE WHEN ISNULL(h.ativo, 1) = 1 THEN 'Emitida' ELSE 'Cancelada' END),
+        ativo = ISNULL(h.ativo, c.ativo),
+        dt_alteracao = GETDATE()
+    FROM dbo.ci_comunicacoes c
+    INNER JOIN dbo.ci_comunicacoes_historico h ON h.id_historico = @id_historico
+    WHERE c.id_ci = @id_ci;
+
+    COMMIT TRANSACTION;
+
+    EXEC dbo.ci_comunicacao_obter @id_ci = @id_ci;
+END
+GO
+
 CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_cancelar
     @id_ci INT
 AS

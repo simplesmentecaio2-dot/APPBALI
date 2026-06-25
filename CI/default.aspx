@@ -569,13 +569,19 @@
                             </div>
                         </div>
                         <div class="table-wrap">
-                            <asp:GridView ID="gvHistorico" runat="server" CssClass="ci-table compact-table" AutoGenerateColumns="false" EmptyDataText="Nenhum hist&oacute;rico registrado para esta CI." OnRowDataBound="gvHistorico_RowDataBound">
+                            <asp:GridView ID="gvHistorico" runat="server" CssClass="ci-table compact-table" AutoGenerateColumns="false" EmptyDataText="Nenhum hist&oacute;rico registrado para esta CI." OnRowCommand="gvHistorico_RowCommand" OnRowDataBound="gvHistorico_RowDataBound">
                                 <Columns>
                                     <asp:BoundField DataField="dt_evento" HeaderText="Data/hora" DataFormatString="{0:dd/MM/yyyy HH:mm}" />
                                     <asp:BoundField DataField="acao" HeaderText="A&ccedil;&atilde;o" />
                                     <asp:BoundField DataField="origem_marca" HeaderText="Marca" />
+                                    <asp:BoundField DataField="status_ci" HeaderText="Status anterior" />
                                     <asp:BoundField DataField="assunto" HeaderText="Assunto anterior" />
                                     <asp:BoundField DataField="criado_por" HeaderText="Criado por" />
+                                    <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
+                                        <ItemTemplate>
+                                            <asp:LinkButton ID="lnkRestaurarHistorico" runat="server" CssClass="table-action" CommandName="RestaurarHistorico" CommandArgument='<%# Eval("id_historico") %>' OnClientClick="return solicitarSenhaCI('restaurar vers&atilde;o anterior', this);">Restaurar</asp:LinkButton>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
                                 </Columns>
                             </asp:GridView>
                         </div>

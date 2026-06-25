@@ -715,6 +715,64 @@ public partial class ci_default : System.Web.UI.Page
     {
         if (e.Row.RowType != DataControlRowType.DataRow) return;
         AplicarRotulosMobile(gvHistorico, e.Row);
+
+        if (e.Row.Cells.Count > 3)
+        {
+            string status = Server.HtmlDecode(e.Row.Cells[3].Text ?? "").Trim();
+            if (status.Length == 0 || status == "&nbsp;") status = "Emitida";
+            string classe = "ci-status-active";
+            if (status.Equals("Cancelada", StringComparison.OrdinalIgnoreCase)) classe = "ci-status-canceled";
+            else if (status.Equals("Rascunho", StringComparison.OrdinalIgnoreCase)) classe = "ci-status-draft";
+            else if (status.Equals("Revisada", StringComparison.OrdinalIgnoreCase)) classe = "ci-status-reviewed";
+            e.Row.Cells[3].CssClass = "status-cell";
+            e.Row.Cells[3].Text = "<span class=\"status-badge " + classe + "\">" + Server.HtmlEncode(status) + "</span>";
+        }
+    }
+
+    protected void gvHistorico_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName != "RestaurarHistorico") return;
+
+        if (!SenhaInformada())
+        {
+            MostrarMensagem("Informe a senha correta para restaurar a vers\u00e3o anterior da CI.", true);
+            AplicarTela("nova");
+            return;
+        }
+
+        int idHistorico;
+        if (!Int32.TryParse(Convert.ToString(e.CommandArgument), out idHistorico) || idHistorico <= 0)
+        {
+            MostrarMensagem("Hist\u00f3rico inv\u00e1lido para restaura\u00e7\u00e3o.", true);
+            AplicarTela("nova");
+            return;
+        }
+
+        try
+        {
+            DataTable restaurada = ExecutarTabela("dbo.ci_comunicacao_restaurar_historico",
+                Param("@id_historico", SqlDbType.Int, idHistorico),
+                Param("@usuario", SqlDbType.NVarChar, TextoCurto(txtCriadoPor.Text), 160));
+
+            if (restaurada.Rows.Count == 0)
+            {
+                MostrarMensagem("N\u00e3o foi poss\u00edvel restaurar esta vers\u00e3o.", true);
+                AplicarTela("nova");
+                return;
+            }
+
+            int idCi = Convert.ToInt32(restaurada.Rows[0]["id_ci"]);
+            AutorizarEdicaoCI(idCi);
+            CarregarCI(idCi);
+            AplicarTela("nova");
+            MostrarMensagem("Vers\u00e3o anterior restaurada com sucesso. O estado antes da restaura\u00e7\u00e3o tamb\u00e9m ficou salvo no hist\u00f3rico.", false);
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("Restaurar hist\u00f3rico da CI", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("nova");
+        }
     }
 
     protected void btnRegistrarCiencia_Click(object sender, EventArgs e)
