@@ -519,6 +519,14 @@ public partial class ramais_default : System.Web.UI.Page
         litTotalRamais.Text = resumo.Rows[0]["total_ramais"].ToString();
         litTotalLojas.Text = resumo.Rows[0]["total_lojas"].ToString();
         litTotalSetores.Text = resumo.Rows[0]["total_setores"].ToString();
+        litRamaisInativos.Text = ValorResumo(resumo.Rows[0], "ramais_inativos");
+        litLojasComRamais.Text = ValorResumo(resumo.Rows[0], "lojas_com_ramais");
+    }
+
+    private string ValorResumo(DataRow row, string coluna)
+    {
+        if (row.Table.Columns.IndexOf(coluna) < 0 || row[coluna] == DBNull.Value) return "0";
+        return row[coluna].ToString();
     }
 
     private void CarregarRamais()

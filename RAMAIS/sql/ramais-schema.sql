@@ -56,7 +56,9 @@ BEGIN
     SELECT
         (SELECT COUNT(1) FROM dbo.ramais WHERE ativo = 1) AS total_ramais,
         (SELECT COUNT(1) FROM dbo.ramais_lojas WHERE ativo = 1) AS total_lojas,
-        (SELECT COUNT(1) FROM dbo.ramais_setores WHERE ativo = 1) AS total_setores;
+        (SELECT COUNT(1) FROM dbo.ramais_setores WHERE ativo = 1) AS total_setores,
+        (SELECT COUNT(1) FROM dbo.ramais WHERE ativo = 0) AS ramais_inativos,
+        (SELECT COUNT(DISTINCT id_loja) FROM dbo.ramais WHERE ativo = 1) AS lojas_com_ramais;
 END
 GO
 

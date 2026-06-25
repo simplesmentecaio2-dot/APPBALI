@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sistema de Ramais</title>
-    <link href="ramais.css?v=20260625-a11y" rel="stylesheet" />
+    <link href="ramais.css?v=20260625-metrics" rel="stylesheet" />
 </head>
 <body class="ramais-page">
     <form id="form1" runat="server">
@@ -71,6 +71,14 @@
                     <article>
                         <span>Setores cadastrados</span>
                         <strong><asp:Literal ID="litTotalSetores" runat="server" Text="0"></asp:Literal></strong>
+                    </article>
+                    <article>
+                        <span>Ramais inativos</span>
+                        <strong><asp:Literal ID="litRamaisInativos" runat="server" Text="0"></asp:Literal></strong>
+                    </article>
+                    <article>
+                        <span>Lojas com ramais</span>
+                        <strong><asp:Literal ID="litLojasComRamais" runat="server" Text="0"></asp:Literal></strong>
                     </article>
                 </section>
 
