@@ -2838,6 +2838,44 @@
     updateDirtyNotice();
   }
 
+  function normalizeContractFieldsBeforeSubmit() {
+    [
+      'txtCliente', 'txtEndereco', 'txtBairro', 'txtCidade', 'txtMarca', 'txtModelo', 'txtCorExterna',
+      'txtOpcionais', 'txtModMarca', 'txtAnoModelo', 'txtFinanceira', 'txtFormasPagamento', 'txtCortesias', 'txtObs',
+      'txtEdCliente', 'txtEdEndereco', 'txtEdBairro', 'txtEdCidade', 'txtEdMarca', 'txtEdModelo', 'txtEdCorExt',
+      'txtEdOpcionais', 'txtEdModMarcaUSADO', 'txtEdAnoMOdUSADO', 'txtEdFinanceira', 'txtEdFormasPagamento',
+      'txtEdCortesias', 'txtEdObs', 'txtEdPlanoFinanciamento'
+    ].forEach(function (id) {
+      allBySuffix(id).forEach(function (field) {
+        if (field && field.tagName !== 'SELECT') field.value = String(field.value || '').replace(/\s+/g, ' ').trim();
+      });
+    });
+
+    ['txtEmail', 'txtEdEmail'].forEach(function (id) {
+      allBySuffix(id).forEach(function (field) {
+        if (field) field.value = String(field.value || '').trim().toLowerCase();
+      });
+    });
+
+    ['txtUF', 'txtEdUF'].forEach(function (id) {
+      allBySuffix(id).forEach(function (field) {
+        if (field) field.value = lettersNumbersOnly(field.value).slice(0, 2).toUpperCase();
+      });
+    });
+
+    ['txtChassiPlaca', 'txtPlacaVU', 'txtEdChassi', 'txtEdPlacaUSADO'].forEach(function (id) {
+      allBySuffix(id).forEach(function (field) {
+        if (field) field.value = normalizePlateOrChassi(field.value);
+      });
+    });
+
+    ['txtNrParcelas', 'txtEdNumeroParcelas', 'txtPrevisao', 'txtEdPrevisao'].forEach(function (id) {
+      allBySuffix(id).forEach(function (field) {
+        if (field) field.value = digitsOnly(field.value).slice(0, 3);
+      });
+    });
+  }
+
   function handleSubmit(event) {
     var button = event.currentTarget;
     if (button.getAttribute('data-contract-submitting') === 'true') {
@@ -2847,12 +2885,14 @@
 
     if (button.getAttribute('data-contract-confirmed') === 'true') {
       button.removeAttribute('data-contract-confirmed');
+      normalizeContractFieldsBeforeSubmit();
       prepareMoneyFields(true);
       contractAllowUnload = true;
       markSubmitting(button);
       return true;
     }
 
+    normalizeContractFieldsBeforeSubmit();
     prepareMoneyFields(true);
     var issues = collectIssues(isEditSubmit(button), true);
     if (issues.length) {
