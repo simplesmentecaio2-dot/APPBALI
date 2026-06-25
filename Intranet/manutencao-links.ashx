@@ -11,6 +11,7 @@ public class IntranetManutencaoLinks : IHttpHandler
 {
     private const string SenhaManutencao = "@bali2025";
     private const int TamanhoMaximoAviso = 8 * 1024 * 1024;
+    private static readonly Encoding Utf8SemBom = new UTF8Encoding(false);
 
     public bool IsReusable
     {
@@ -20,7 +21,7 @@ public class IntranetManutencaoLinks : IHttpHandler
     public void ProcessRequest(HttpContext context)
     {
         context.Response.ContentType = "application/json";
-        context.Response.ContentEncoding = Encoding.UTF8;
+        context.Response.ContentEncoding = Utf8SemBom;
         context.Response.TrySkipIisCustomErrors = true;
 
         try
@@ -131,7 +132,7 @@ public class IntranetManutencaoLinks : IHttpHandler
         AvisoConfig aviso = CarregarAviso(context);
         string arquivo = CaminhoArquivoAtalhos(context);
         string json = serializer.Serialize(new { ok = true, exists = true, shortcuts = atalhosLimpos, updatedAt = DataAtual(), notice = aviso });
-        File.WriteAllText(arquivo, json, Encoding.UTF8);
+        File.WriteAllText(arquivo, json, Utf8SemBom);
 
         EscreverJson(context, new { ok = true, count = atalhosLimpos.Count });
     }
@@ -276,7 +277,7 @@ public class IntranetManutencaoLinks : IHttpHandler
         JavaScriptSerializer serializer = new JavaScriptSerializer();
         serializer.MaxJsonLength = int.MaxValue;
         string json = serializer.Serialize(aviso);
-        File.WriteAllText(CaminhoArquivoAviso(context), json, Encoding.UTF8);
+        File.WriteAllText(CaminhoArquivoAviso(context), json, Utf8SemBom);
     }
 
     private AvisoConfig AvisoPadrao()
