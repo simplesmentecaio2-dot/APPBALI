@@ -128,7 +128,6 @@
         if (barra && barra.parentNode) {
             barra.parentNode.removeChild(barra);
         }
-        removerClasse(document.body, 'bali-print-page');
     }
 
     function atualizarTextos() {
