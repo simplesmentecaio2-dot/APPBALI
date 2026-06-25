@@ -6,6 +6,7 @@ Modulo interno para cadastrar, consultar, editar, cancelar e imprimir Comunicaco
 
 - `default.aspx`: cadastro, consulta, filtros, exportacao CSV, duplicacao de CI e historico de alteracoes.
 - `print.aspx`: impressao da CI em layout A4, com logos por marca e destaque para documentos cancelados.
+- `erros.aspx`: consulta protegida dos erros registrados em `App_Data/ci-erros.log`.
 
 ## Banco de dados
 
@@ -45,6 +46,7 @@ O script versionado fica em `sql/ci-schema.sql`.
 - Textareas com altura automatica.
 - Tabelas responsivas em formato de card no mobile.
 - Impressao com status, horario de geracao e marca d'agua para CI cancelada.
+- Painel protegido para consulta de logs da CI.
 
 ## Logs
 
