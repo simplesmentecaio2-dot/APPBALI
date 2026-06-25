@@ -301,6 +301,14 @@ public partial class ci_default : System.Web.UI.Page
         AplicarRotulosMobile(gvHistorico, e.Row);
     }
 
+    protected void gvHistoricoCampos_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType != DataControlRowType.DataRow) return;
+        AplicarRotulosMobile(gvHistoricoCampos, e.Row);
+        TruncarCelulaLonga(e.Row, 2, 160);
+        TruncarCelulaLonga(e.Row, 3, 160);
+    }
+
     private void CarregarTudo()
     {
         CarregarResumo();
@@ -512,14 +520,19 @@ public partial class ci_default : System.Web.UI.Page
         pnlHistorico.Visible = false;
         gvHistorico.DataSource = null;
         gvHistorico.DataBind();
+        gvHistoricoCampos.DataSource = null;
+        gvHistoricoCampos.DataBind();
     }
 
     private void CarregarHistorico(int id)
     {
         DataTable historico = ExecutarTabela("dbo.ci_comunicacao_historico_listar", Param("@id_ci", SqlDbType.Int, id));
+        DataTable historicoCampos = ExecutarTabela("dbo.ci_comunicacao_historico_campos_listar", Param("@id_ci", SqlDbType.Int, id));
         pnlHistorico.Visible = true;
         gvHistorico.DataSource = historico;
         gvHistorico.DataBind();
+        gvHistoricoCampos.DataSource = historicoCampos;
+        gvHistoricoCampos.DataBind();
     }
 
     private void LimparFormulario()
@@ -544,6 +557,17 @@ public partial class ci_default : System.Web.UI.Page
         pnlHistorico.Visible = false;
         gvHistorico.DataSource = null;
         gvHistorico.DataBind();
+        gvHistoricoCampos.DataSource = null;
+        gvHistoricoCampos.DataBind();
+    }
+
+    private void TruncarCelulaLonga(GridViewRow row, int indice, int limite)
+    {
+        if (row.Cells.Count <= indice) return;
+        string texto = Server.HtmlDecode(row.Cells[indice].Text ?? "").Trim();
+        if (texto.Length <= limite) return;
+        row.Cells[indice].ToolTip = texto;
+        row.Cells[indice].Text = Server.HtmlEncode(texto.Substring(0, limite) + "...");
     }
 
     private string ValidarCampos()

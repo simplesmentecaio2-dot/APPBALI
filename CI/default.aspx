@@ -334,6 +334,24 @@
                                 </Columns>
                             </asp:GridView>
                         </div>
+                        <div class="panel-header compact-header history-detail-title">
+                            <div>
+                                <span class="eyebrow">Campos alterados</span>
+                                <h3>Detalhamento das mudan&ccedil;as</h3>
+                                <p class="panel-subtitle">Mostra o valor anterior e o novo valor gravado em cada edi&ccedil;&atilde;o.</p>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <asp:GridView ID="gvHistoricoCampos" runat="server" CssClass="ci-table compact-table field-history-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma altera&ccedil;&atilde;o de campo registrada para esta CI." OnRowDataBound="gvHistoricoCampos_RowDataBound">
+                                <Columns>
+                                    <asp:BoundField DataField="dt_evento" HeaderText="Data/hora" DataFormatString="{0:dd/MM/yyyy HH:mm}" />
+                                    <asp:BoundField DataField="campo" HeaderText="Campo" />
+                                    <asp:BoundField DataField="valor_antigo" HeaderText="Valor anterior" />
+                                    <asp:BoundField DataField="valor_novo" HeaderText="Novo valor" />
+                                    <asp:BoundField DataField="usuario" HeaderText="Usu&aacute;rio" />
+                                </Columns>
+                            </asp:GridView>
+                        </div>
                     </asp:Panel>
                 </asp:Panel>
             </main>

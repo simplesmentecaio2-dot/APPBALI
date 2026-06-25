@@ -96,6 +96,26 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID('dbo.ci_comunicacoes_historico_campos', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.ci_comunicacoes_historico_campos (
+        id_historico_campo INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        id_ci INT NOT NULL,
+        campo NVARCHAR(80) NOT NULL,
+        valor_antigo NVARCHAR(MAX) NULL,
+        valor_novo NVARCHAR(MAX) NULL,
+        usuario NVARCHAR(160) NULL,
+        dt_evento DATETIME NOT NULL CONSTRAINT DF_ci_comunicacoes_historico_campos_dt_evento DEFAULT (GETDATE())
+    );
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_comunicacoes_historico_campos_ci' AND object_id = OBJECT_ID('dbo.ci_comunicacoes_historico_campos'))
+BEGIN
+    CREATE INDEX IX_ci_comunicacoes_historico_campos_ci ON dbo.ci_comunicacoes_historico_campos (id_ci, dt_evento DESC);
+END
+GO
+
 CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_resumo
 AS
 BEGIN
@@ -298,6 +318,8 @@ BEGIN
     END
     ELSE
     BEGIN
+        DECLARE @usuario_historico NVARCHAR(160) = NULLIF(@criado_por, '');
+
         INSERT INTO dbo.ci_comunicacoes_historico
         (
             id_ci, acao, ano, numero, data_documento, origem_marca, origem_area,
@@ -311,6 +333,63 @@ BEGIN
         FROM dbo.ci_comunicacoes
         WHERE id_ci = @id_ci
           AND ativo = 1;
+
+        INSERT INTO dbo.ci_comunicacoes_historico_campos (id_ci, campo, valor_antigo, valor_novo, usuario)
+        SELECT @id_ci, N'Data da CI', CONVERT(NVARCHAR(30), data_documento, 103), CONVERT(NVARCHAR(30), @data_documento, 103), @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(CONVERT(NVARCHAR(30), data_documento, 23), '') <> ISNULL(CONVERT(NVARCHAR(30), @data_documento, 23), '')
+        UNION ALL
+        SELECT @id_ci, N'Marca', origem_marca, @origem_marca, @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(origem_marca, '') <> ISNULL(@origem_marca, '')
+        UNION ALL
+        SELECT @id_ci, N'Area de origem', origem_area, @origem_area, @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(origem_area, '') <> ISNULL(@origem_area, '')
+        UNION ALL
+        SELECT @id_ci, N'Responsavel', origem_responsavel, @origem_responsavel, @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(origem_responsavel, '') <> ISNULL(@origem_responsavel, '')
+        UNION ALL
+        SELECT @id_ci, N'Area de destino', destino_area, @destino_area, @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(destino_area, '') <> ISNULL(@destino_area, '')
+        UNION ALL
+        SELECT @id_ci, N'Destinatario', destinatario, @destinatario, @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(destinatario, '') <> ISNULL(@destinatario, '')
+        UNION ALL
+        SELECT @id_ci, N'Assunto', assunto, @assunto, @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(assunto, '') <> ISNULL(@assunto, '')
+        UNION ALL
+        SELECT @id_ci, N'Categoria', categoria, @categoria, @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(categoria, '') <> ISNULL(@categoria, '')
+        UNION ALL
+        SELECT @id_ci, N'Prioridade', prioridade, @prioridade, @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(prioridade, '') <> ISNULL(@prioridade, '')
+        UNION ALL
+        SELECT @id_ci, N'Status', status_ci, @status_ci, @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(status_ci, '') <> ISNULL(@status_ci, '')
+        UNION ALL
+        SELECT @id_ci, N'Texto', corpo, @corpo, @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(corpo, '') <> ISNULL(@corpo, '')
+        UNION ALL
+        SELECT @id_ci, N'Providencias', ISNULL(providencias, ''), ISNULL(@providencias, ''), @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(providencias, '') <> ISNULL(@providencias, '')
+        UNION ALL
+        SELECT @id_ci, N'Observacoes', ISNULL(observacoes, ''), ISNULL(@observacoes, ''), @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(observacoes, '') <> ISNULL(@observacoes, '')
+        UNION ALL
+        SELECT @id_ci, N'Criado por', ISNULL(criado_por, ''), ISNULL(@criado_por, ''), @usuario_historico
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(criado_por, '') <> ISNULL(@criado_por, '');
 
         UPDATE dbo.ci_comunicacoes
         SET data_documento = @data_documento,
@@ -365,6 +444,26 @@ BEGIN
     FROM dbo.ci_comunicacoes_historico
     WHERE id_ci = @id_ci
     ORDER BY dt_evento DESC, id_historico DESC;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_historico_campos_listar
+    @id_ci INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT TOP 100
+        id_historico_campo,
+        id_ci,
+        campo,
+        valor_antigo,
+        valor_novo,
+        ISNULL(usuario, '') AS usuario,
+        dt_evento
+    FROM dbo.ci_comunicacoes_historico_campos
+    WHERE id_ci = @id_ci
+    ORDER BY dt_evento DESC, id_historico_campo DESC;
 END
 GO
 

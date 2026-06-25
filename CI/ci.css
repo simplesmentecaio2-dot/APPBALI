@@ -633,8 +633,21 @@ label {
   padding-top: 18px;
 }
 
+.history-detail-title {
+  margin-top: 18px;
+}
+
 .compact-table {
   min-width: 760px;
+}
+
+.field-history-table {
+  min-width: 980px;
+}
+
+.field-history-table td {
+  vertical-align: top;
+  overflow-wrap: anywhere;
 }
 
 .compact-table th,
