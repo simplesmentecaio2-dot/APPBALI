@@ -1060,6 +1060,23 @@ label {
   background: var(--brand);
 }
 
+.ci-custom-pager {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.ci-custom-pager .is-disabled {
+  pointer-events: none;
+  cursor: default;
+  opacity: .45;
+}
+
 .password-modal {
   position: fixed;
   inset: 0;
@@ -1488,6 +1505,7 @@ label {
   .panel-header,
   .form-actions,
   .panel-tools,
+  .ci-custom-pager,
   .hero-side,
   .sidebar {
     align-items: stretch;

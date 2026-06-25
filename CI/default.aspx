@@ -348,7 +348,7 @@
                     </div>
 
                     <div class="table-wrap">
-                        <asp:GridView ID="gvCis" runat="server" CssClass="ci-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma CI encontrada." AllowPaging="true" AllowSorting="true" PageSize="12" PagerStyle-CssClass="ci-pager" OnPageIndexChanging="gvCis_PageIndexChanging" OnSorting="gvCis_Sorting" OnRowCommand="gvCis_RowCommand" OnRowDataBound="gvCis_RowDataBound">
+                        <asp:GridView ID="gvCis" runat="server" CssClass="ci-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma CI encontrada." AllowPaging="false" AllowSorting="true" PageSize="12" OnPageIndexChanging="gvCis_PageIndexChanging" OnSorting="gvCis_Sorting" OnRowCommand="gvCis_RowCommand" OnRowDataBound="gvCis_RowDataBound">
                             <Columns>
                                 <asp:BoundField DataField="codigo_ci" HeaderText="C&oacute;digo" SortExpression="codigo_ci" />
                                 <asp:BoundField DataField="data_documento" HeaderText="Data" DataFormatString="{0:dd/MM/yyyy}" SortExpression="data_documento" />
@@ -369,6 +369,13 @@
                                 </asp:TemplateField>
                             </Columns>
                         </asp:GridView>
+                    </div>
+                    <div class="ci-custom-pager" aria-label="Paginação da consulta">
+                        <asp:LinkButton ID="lnkPaginaPrimeira" runat="server" CssClass="secondary-button" CommandArgument="first" OnClick="lnkPagerConsulta_Click">Primeira</asp:LinkButton>
+                        <asp:LinkButton ID="lnkPaginaAnterior" runat="server" CssClass="secondary-button" CommandArgument="prev" OnClick="lnkPagerConsulta_Click">Anterior</asp:LinkButton>
+                        <asp:Literal ID="litPagerConsulta" runat="server"></asp:Literal>
+                        <asp:LinkButton ID="lnkPaginaProxima" runat="server" CssClass="secondary-button" CommandArgument="next" OnClick="lnkPagerConsulta_Click">Pr&oacute;xima</asp:LinkButton>
+                        <asp:LinkButton ID="lnkPaginaUltima" runat="server" CssClass="secondary-button" CommandArgument="last" OnClick="lnkPagerConsulta_Click">&Uacute;ltima</asp:LinkButton>
                     </div>
                 </asp:Panel>
 

@@ -108,7 +108,7 @@ public partial class ci_default : System.Web.UI.Page
 
     protected void btnFiltrar_Click(object sender, EventArgs e)
     {
-        gvCis.PageIndex = 0;
+        DefinirIndicePaginaConsulta(0);
         CarregarLista();
         AplicarTela("consulta");
     }
@@ -239,7 +239,7 @@ public partial class ci_default : System.Web.UI.Page
         txtFiltroCriadoPor.Text = "";
         txtBusca.Text = "";
         chkSomenteAtivas.Checked = true;
-        gvCis.PageIndex = 0;
+        DefinirIndicePaginaConsulta(0);
         CarregarLista();
         AplicarTela("consulta");
     }
@@ -253,7 +253,24 @@ public partial class ci_default : System.Web.UI.Page
         }
 
         gvCis.PageSize = tamanho;
-        gvCis.PageIndex = 0;
+        DefinirIndicePaginaConsulta(0);
+        CarregarLista();
+        AplicarTela("consulta");
+    }
+
+    protected void lnkPagerConsulta_Click(object sender, EventArgs e)
+    {
+        LinkButton botao = sender as LinkButton;
+        string acao = botao != null ? botao.CommandArgument : "";
+        int pagina = IndicePaginaConsulta();
+        int ultima = UltimaPaginaConsulta();
+
+        if (acao == "first") pagina = 0;
+        else if (acao == "prev") pagina = Math.Max(0, pagina - 1);
+        else if (acao == "next") pagina = Math.Min(ultima, pagina + 1);
+        else if (acao == "last") pagina = ultima;
+
+        DefinirIndicePaginaConsulta(pagina);
         CarregarLista();
         AplicarTela("consulta");
     }
@@ -587,7 +604,7 @@ public partial class ci_default : System.Web.UI.Page
 
     protected void gvCis_PageIndexChanging(object sender, GridViewPageEventArgs e)
     {
-        gvCis.PageIndex = e.NewPageIndex;
+        DefinirIndicePaginaConsulta(e.NewPageIndex);
         CarregarLista();
         AplicarTela("consulta");
     }
@@ -600,7 +617,7 @@ public partial class ci_default : System.Web.UI.Page
 
         ViewState["CiSortExpression"] = e.SortExpression;
         ViewState["CiSortDirection"] = novaDirecao;
-        gvCis.PageIndex = 0;
+        DefinirIndicePaginaConsulta(0);
         CarregarLista();
         AplicarTela("consulta");
     }
@@ -1103,13 +1120,73 @@ public partial class ci_default : System.Web.UI.Page
 
     private void CarregarLista()
     {
-        DataTable dados = ObterListaFiltrada();
-        AplicarOrdenacao(dados);
-        AjustarPaginaConsulta(dados.Rows.Count);
+        int total;
+        DataTable dados = ObterListaPaginada(out total);
+        AjustarPaginaConsulta(total);
+        if (total > 0 && dados.Rows.Count == 0 && IndicePaginaConsulta() > 0)
+        {
+            dados = ObterListaPaginada(out total);
+        }
+
         gvCis.DataSource = dados;
         gvCis.DataBind();
-        AtualizarResumoConsulta(dados.Rows.Count, Convert.ToString(ViewState["CiAvisoConsulta"] ?? ""));
+        AtualizarResumoConsulta(total, Convert.ToString(ViewState["CiAvisoConsulta"] ?? ""));
+        AtualizarPagerConsulta(total);
         ViewState["CiAvisoConsulta"] = "";
+    }
+
+    private DataTable ObterListaPaginada(out int total)
+    {
+        DateTime inicio;
+        DateTime fim;
+        bool inicioValido = ObterData(txtFiltroInicio.Text, out inicio);
+        bool fimValido = ObterData(txtFiltroFim.Text, out fim);
+        string avisoConsulta = "";
+
+        if (inicioValido && fimValido && inicio > fim)
+        {
+            DateTime troca = inicio;
+            inicio = fim;
+            fim = troca;
+            txtFiltroInicio.Text = inicio.ToString("yyyy-MM-dd");
+            txtFiltroFim.Text = fim.ToString("yyyy-MM-dd");
+            avisoConsulta = "Per\u00edodo ajustado automaticamente: a data inicial era maior que a data final.";
+        }
+
+        ViewState["CiAvisoConsulta"] = avisoConsulta;
+
+        object dtInicio = inicioValido ? (object)inicio : DBNull.Value;
+        object dtFim = fimValido ? (object)fim : DBNull.Value;
+        string campo = Convert.ToString(ViewState["CiSortExpression"]);
+        string direcao = Convert.ToString(ViewState["CiSortDirection"]);
+        if (String.IsNullOrEmpty(campo)) campo = "data_documento";
+        if (direcao != "ASC" && direcao != "DESC") direcao = "DESC";
+
+        DataTable dados = ExecutarTabela("dbo.ci_comunicacao_listar_paginado",
+            Param("@dt_inicio", SqlDbType.Date, dtInicio),
+            Param("@dt_fim", SqlDbType.Date, dtFim),
+            Param("@origem_marca", SqlDbType.NVarChar, ddlFiltroMarca.SelectedValue, 40),
+            Param("@categoria", SqlDbType.NVarChar, ddlFiltroCategoria.SelectedValue, 60),
+            Param("@prioridade", SqlDbType.NVarChar, ddlFiltroPrioridade.SelectedValue, 20),
+            Param("@status_ci", SqlDbType.NVarChar, ddlFiltroStatus.SelectedValue, 20),
+            Param("@origem_area", SqlDbType.NVarChar, TextoCurto(txtFiltroOrigem.Text), 120),
+            Param("@destino_area", SqlDbType.NVarChar, TextoCurto(txtFiltroDestino.Text), 120),
+            Param("@criado_por", SqlDbType.NVarChar, TextoCurto(txtFiltroCriadoPor.Text), 160),
+            Param("@termo", SqlDbType.NVarChar, txtBusca.Text.Trim(), 160),
+            Param("@somente_ativas", SqlDbType.Bit, chkSomenteAtivas.Checked),
+            Param("@pagina_indice", SqlDbType.Int, IndicePaginaConsulta()),
+            Param("@pagina_tamanho", SqlDbType.Int, TamanhoPaginaConsulta()),
+            Param("@ordenar_por", SqlDbType.NVarChar, campo, 40),
+            Param("@ordenar_direcao", SqlDbType.NVarChar, direcao, 4));
+
+        total = 0;
+        if (dados.Rows.Count > 0 && dados.Columns.Contains("total_linhas"))
+        {
+            Int32.TryParse(Convert.ToString(dados.Rows[0]["total_linhas"]), out total);
+        }
+
+        ViewState["CiTotalConsulta"] = total;
+        return dados;
     }
 
     private DataTable ObterListaFiltrada()
@@ -1173,14 +1250,14 @@ public partial class ci_default : System.Web.UI.Page
     {
         if (total <= 0)
         {
-            gvCis.PageIndex = 0;
+            DefinirIndicePaginaConsulta(0);
             return;
         }
 
-        int ultimaPagina = (total - 1) / gvCis.PageSize;
-        if (gvCis.PageIndex > ultimaPagina)
+        int ultimaPagina = (total - 1) / TamanhoPaginaConsulta();
+        if (IndicePaginaConsulta() > ultimaPagina)
         {
-            gvCis.PageIndex = ultimaPagina;
+            DefinirIndicePaginaConsulta(ultimaPagina);
         }
     }
 
@@ -1194,9 +1271,56 @@ public partial class ci_default : System.Web.UI.Page
             return;
         }
 
-        int primeira = total == 0 ? 0 : (gvCis.PageIndex * gvCis.PageSize) + 1;
-        int ultima = Math.Min(total, primeira + gvCis.PageSize - 1);
+        int primeira = total == 0 ? 0 : (IndicePaginaConsulta() * TamanhoPaginaConsulta()) + 1;
+        int ultima = Math.Min(total, primeira + TamanhoPaginaConsulta() - 1);
         litResultadoConsulta.Text = prefixo + "Exibindo " + primeira.ToString() + " a " + ultima.ToString() + " de " + total.ToString() + " CI" + (total == 1 ? "." : "s.");
+    }
+
+    private int IndicePaginaConsulta()
+    {
+        int indice;
+        return Int32.TryParse(Convert.ToString(ViewState["CiPageIndex"]), out indice) && indice > 0 ? indice : 0;
+    }
+
+    private void DefinirIndicePaginaConsulta(int indice)
+    {
+        ViewState["CiPageIndex"] = Math.Max(0, indice);
+    }
+
+    private int TamanhoPaginaConsulta()
+    {
+        int tamanho;
+        if (!Int32.TryParse(ddlPageSize.SelectedValue, out tamanho) || tamanho <= 0) tamanho = 12;
+        return tamanho;
+    }
+
+    private int UltimaPaginaConsulta()
+    {
+        int total;
+        if (!Int32.TryParse(Convert.ToString(ViewState["CiTotalConsulta"]), out total) || total <= 0) return 0;
+        return (total - 1) / TamanhoPaginaConsulta();
+    }
+
+    private void AtualizarPagerConsulta(int total)
+    {
+        int ultima = total > 0 ? (total - 1) / TamanhoPaginaConsulta() : 0;
+        int atual = Math.Min(IndicePaginaConsulta(), ultima);
+        DefinirIndicePaginaConsulta(atual);
+
+        litPagerConsulta.Text = total <= 0
+            ? "Nenhuma p\u00e1gina"
+            : "P\u00e1gina " + (atual + 1).ToString() + " de " + (ultima + 1).ToString();
+
+        ConfigurarBotaoPager(lnkPaginaPrimeira, total > 0 && atual > 0);
+        ConfigurarBotaoPager(lnkPaginaAnterior, total > 0 && atual > 0);
+        ConfigurarBotaoPager(lnkPaginaProxima, total > 0 && atual < ultima);
+        ConfigurarBotaoPager(lnkPaginaUltima, total > 0 && atual < ultima);
+    }
+
+    private void ConfigurarBotaoPager(LinkButton botao, bool habilitado)
+    {
+        botao.Enabled = habilitado;
+        botao.CssClass = habilitado ? "secondary-button" : "secondary-button is-disabled";
     }
 
     private void AplicarRotulosMobile(GridView grid, GridViewRow row)

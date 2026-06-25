@@ -337,6 +337,113 @@ BEGIN
 END
 GO
 
+CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_listar_paginado
+    @dt_inicio DATE = NULL,
+    @dt_fim DATE = NULL,
+    @origem_marca NVARCHAR(40) = NULL,
+    @categoria NVARCHAR(60) = NULL,
+    @prioridade NVARCHAR(20) = NULL,
+    @status_ci NVARCHAR(20) = NULL,
+    @origem_area NVARCHAR(120) = NULL,
+    @destino_area NVARCHAR(120) = NULL,
+    @criado_por NVARCHAR(160) = NULL,
+    @termo NVARCHAR(160) = NULL,
+    @somente_ativas BIT = 1,
+    @pagina_indice INT = 0,
+    @pagina_tamanho INT = 12,
+    @ordenar_por NVARCHAR(40) = N'data_documento',
+    @ordenar_direcao NVARCHAR(4) = N'DESC'
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SET @origem_marca = NULLIF(LTRIM(RTRIM(ISNULL(@origem_marca, ''))), '');
+    SET @categoria = NULLIF(LTRIM(RTRIM(ISNULL(@categoria, ''))), '');
+    SET @prioridade = NULLIF(LTRIM(RTRIM(ISNULL(@prioridade, ''))), '');
+    SET @status_ci = NULLIF(LTRIM(RTRIM(ISNULL(@status_ci, ''))), '');
+    SET @origem_area = NULLIF(LTRIM(RTRIM(ISNULL(@origem_area, ''))), '');
+    SET @destino_area = NULLIF(LTRIM(RTRIM(ISNULL(@destino_area, ''))), '');
+    SET @criado_por = NULLIF(LTRIM(RTRIM(ISNULL(@criado_por, ''))), '');
+    SET @termo = NULLIF(LTRIM(RTRIM(ISNULL(@termo, ''))), '');
+    SET @ordenar_por = LOWER(LTRIM(RTRIM(ISNULL(@ordenar_por, 'data_documento'))));
+    SET @ordenar_direcao = UPPER(LTRIM(RTRIM(ISNULL(@ordenar_direcao, 'DESC'))));
+
+    IF @pagina_indice < 0 SET @pagina_indice = 0;
+    IF @pagina_tamanho NOT IN (12, 25, 50) SET @pagina_tamanho = 12;
+    IF @ordenar_direcao NOT IN ('ASC', 'DESC') SET @ordenar_direcao = 'DESC';
+    IF @ordenar_por NOT IN ('codigo_ci', 'data_documento', 'origem_marca', 'destinatario', 'assunto', 'status')
+    BEGIN
+        SET @ordenar_por = 'data_documento';
+    END
+
+    ;WITH filtrada AS
+    (
+        SELECT
+            id_ci,
+            ano,
+            numero,
+            'CI-' + CAST(ano AS VARCHAR(4)) + '-' + RIGHT('0000' + CAST(numero AS VARCHAR(10)), 4) AS codigo_ci,
+            data_documento,
+            origem_marca,
+            origem_area,
+            destino_area,
+            destinatario,
+            assunto,
+            categoria,
+            prioridade,
+            CASE WHEN ativo = 0 THEN 'Cancelada' ELSE ISNULL(NULLIF(status_ci, ''), 'Emitida') END AS status,
+            ISNULL(NULLIF(status_ci, ''), CASE WHEN ativo = 1 THEN 'Emitida' ELSE 'Cancelada' END) AS status_ci,
+            ativo,
+            dt_cadastro
+        FROM dbo.ci_comunicacoes
+        WHERE (@dt_inicio IS NULL OR data_documento >= @dt_inicio)
+          AND (@dt_fim IS NULL OR data_documento <= @dt_fim)
+          AND (@origem_marca IS NULL OR origem_marca = @origem_marca)
+          AND (@categoria IS NULL OR categoria = @categoria)
+          AND (@prioridade IS NULL OR prioridade = @prioridade)
+          AND (@status_ci IS NULL OR (CASE WHEN ativo = 0 THEN 'Cancelada' ELSE ISNULL(NULLIF(status_ci, ''), 'Emitida') END) = @status_ci)
+          AND (@origem_area IS NULL OR origem_area LIKE '%' + @origem_area + '%')
+          AND (@destino_area IS NULL OR destino_area LIKE '%' + @destino_area + '%')
+          AND (@criado_por IS NULL OR criado_por LIKE '%' + @criado_por + '%')
+          AND (@somente_ativas = 0 OR ativo = 1)
+          AND (
+                @termo IS NULL
+                OR ('CI-' + CAST(ano AS VARCHAR(4)) + '-' + RIGHT('0000' + CAST(numero AS VARCHAR(10)), 4)) LIKE '%' + @termo + '%'
+                OR CAST(numero AS VARCHAR(10)) LIKE '%' + @termo + '%'
+                OR assunto LIKE '%' + @termo + '%'
+                OR origem_area LIKE '%' + @termo + '%'
+                OR origem_responsavel LIKE '%' + @termo + '%'
+                OR destino_area LIKE '%' + @termo + '%'
+                OR destinatario LIKE '%' + @termo + '%'
+                OR categoria LIKE '%' + @termo + '%'
+                OR criado_por LIKE '%' + @termo + '%'
+                OR corpo LIKE '%' + @termo + '%'
+              )
+    )
+    SELECT
+        *,
+        COUNT(1) OVER() AS total_linhas
+    FROM filtrada
+    ORDER BY
+        CASE WHEN @ordenar_por = 'codigo_ci' AND @ordenar_direcao = 'ASC' THEN codigo_ci END ASC,
+        CASE WHEN @ordenar_por = 'codigo_ci' AND @ordenar_direcao = 'DESC' THEN codigo_ci END DESC,
+        CASE WHEN @ordenar_por = 'data_documento' AND @ordenar_direcao = 'ASC' THEN data_documento END ASC,
+        CASE WHEN @ordenar_por = 'data_documento' AND @ordenar_direcao = 'DESC' THEN data_documento END DESC,
+        CASE WHEN @ordenar_por = 'origem_marca' AND @ordenar_direcao = 'ASC' THEN origem_marca END ASC,
+        CASE WHEN @ordenar_por = 'origem_marca' AND @ordenar_direcao = 'DESC' THEN origem_marca END DESC,
+        CASE WHEN @ordenar_por = 'destinatario' AND @ordenar_direcao = 'ASC' THEN destinatario END ASC,
+        CASE WHEN @ordenar_por = 'destinatario' AND @ordenar_direcao = 'DESC' THEN destinatario END DESC,
+        CASE WHEN @ordenar_por = 'assunto' AND @ordenar_direcao = 'ASC' THEN assunto END ASC,
+        CASE WHEN @ordenar_por = 'assunto' AND @ordenar_direcao = 'DESC' THEN assunto END DESC,
+        CASE WHEN @ordenar_por = 'status' AND @ordenar_direcao = 'ASC' THEN status END ASC,
+        CASE WHEN @ordenar_por = 'status' AND @ordenar_direcao = 'DESC' THEN status END DESC,
+        data_documento DESC,
+        id_ci DESC
+    OFFSET (@pagina_indice * @pagina_tamanho) ROWS
+    FETCH NEXT @pagina_tamanho ROWS ONLY;
+END
+GO
+
 CREATE OR ALTER PROCEDURE dbo.ci_anotacao_listar
     @termo NVARCHAR(160) = NULL,
     @categoria NVARCHAR(80) = NULL
