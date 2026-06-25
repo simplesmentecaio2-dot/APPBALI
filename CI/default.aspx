@@ -52,7 +52,7 @@
                 </asp:Panel>
                 <asp:HiddenField ID="hfSenhaEdicao" runat="server" />
 
-                <section class="summary-grid">
+                <asp:Panel ID="pnlResumoBi" runat="server" CssClass="summary-grid">
                     <article>
                         <span>Total de CIs</span>
                         <strong><asp:Literal ID="litTotal" runat="server" Text="0"></asp:Literal></strong>
@@ -93,7 +93,7 @@
                         <span>BYD ativas</span>
                         <strong><asp:Literal ID="litByd" runat="server" Text="0"></asp:Literal></strong>
                     </article>
-                </section>
+                </asp:Panel>
 
                 <asp:Panel ID="pnlBi" runat="server" CssClass="panel bi-panel">
                     <div class="panel-header">

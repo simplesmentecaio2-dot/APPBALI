@@ -940,6 +940,7 @@ public partial class ci_default : System.Web.UI.Page
         bool mostrarAnotacoes = String.Equals(tela, "anotacoes", StringComparison.OrdinalIgnoreCase) ||
             String.Equals(tela, "anotacao", StringComparison.OrdinalIgnoreCase);
 
+        pnlResumoBi.Visible = mostrarBi;
         pnlBi.Visible = mostrarBi;
         pnlAnotacoes.Visible = mostrarAnotacoes;
         pnlConsulta.Visible = !mostrarCadastro && !mostrarBi && !mostrarAnotacoes;
