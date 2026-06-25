@@ -469,6 +469,57 @@ label {
   transition: width 0.18s ease;
 }
 
+.ci-assistant {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fff;
+}
+
+.ci-assistant strong {
+  display: block;
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.ci-assistant p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.assistant-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.assistant-actions button {
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: #f8fbff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.assistant-actions button:hover,
+.assistant-actions button:focus {
+  border-color: var(--brand);
+  color: var(--brand-strong);
+  outline: 0;
+}
+
 .field-error {
   border-color: var(--danger) !important;
   outline: 3px solid rgba(180, 35, 24, 0.12) !important;
@@ -775,6 +826,15 @@ label {
   .form-grid,
   .ci-form-insights {
     grid-template-columns: 1fr;
+  }
+
+  .ci-assistant {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .assistant-actions {
+    justify-content: flex-start;
   }
 }
 

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-consulta" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-formux" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -162,6 +162,21 @@
                             <strong id="ciTextCount">0 caracteres</strong>
                             <p>Use uma comunica&ccedil;&atilde;o objetiva para facilitar a impress&atilde;o.</p>
                         </article>
+                    </div>
+                    <div class="ci-assistant">
+                        <div>
+                            <span class="eyebrow">Apoio de preenchimento</span>
+                            <strong>Modelos r&aacute;pidos e rascunho local</strong>
+                            <p id="ciDraftStatus">Use os modelos como ponto de partida ou salve um rascunho neste navegador.</p>
+                        </div>
+                        <div class="assistant-actions">
+                            <button type="button" onclick="aplicarModeloCI('comunicado')">Comunicado</button>
+                            <button type="button" onclick="aplicarModeloCI('solicitacao')">Solicita&ccedil;&atilde;o</button>
+                            <button type="button" onclick="aplicarModeloCI('procedimento')">Procedimento</button>
+                            <button type="button" onclick="salvarRascunhoCI()">Salvar rascunho</button>
+                            <button type="button" onclick="restaurarRascunhoCI()">Restaurar</button>
+                            <button type="button" onclick="limparRascunhoCI()">Limpar rascunho</button>
+                        </div>
                     </div>
                     <div class="form-grid">
                         <label>Marca
@@ -413,6 +428,123 @@
                     if (previaMeta) previaMeta.textContent = marca + ' | ' + data + ' | ' + destino;
                     if (contadorTexto) contadorTexto.textContent = corpo.length + ' caractere' + (corpo.length === 1 ? '' : 's');
                 }
+
+                function statusRascunhoCI(texto) {
+                    var status = document.getElementById('ciDraftStatus');
+                    if (status) status.textContent = texto;
+                }
+
+                function camposRascunhoCI() {
+                    return {
+                        marca: valor('<%= ddlMarca.ClientID %>'),
+                        data: valor('<%= txtData.ClientID %>'),
+                        categoria: valor('<%= ddlCategoria.ClientID %>'),
+                        prioridade: valor('<%= ddlPrioridade.ClientID %>'),
+                        origemArea: valor('<%= txtOrigemArea.ClientID %>'),
+                        origemResponsavel: valor('<%= txtOrigemResponsavel.ClientID %>'),
+                        destinoArea: valor('<%= txtDestinoArea.ClientID %>'),
+                        destinatario: valor('<%= txtDestinatario.ClientID %>'),
+                        assunto: valor('<%= txtAssunto.ClientID %>'),
+                        corpo: valor('<%= txtCorpo.ClientID %>'),
+                        providencias: valor('<%= txtProvidencias.ClientID %>'),
+                        observacoes: valor('<%= txtObservacoes.ClientID %>'),
+                        criadoPor: valor('<%= txtCriadoPor.ClientID %>')
+                    };
+                }
+
+                function preencherCampoCI(id, valorCampo) {
+                    var item = campo(id);
+                    if (item) item.value = valorCampo || '';
+                }
+
+                function preencherRascunhoCI(dados) {
+                    if (!dados) return;
+                    preencherCampoCI('<%= ddlMarca.ClientID %>', dados.marca);
+                    preencherCampoCI('<%= txtData.ClientID %>', dados.data);
+                    preencherCampoCI('<%= ddlCategoria.ClientID %>', dados.categoria);
+                    preencherCampoCI('<%= ddlPrioridade.ClientID %>', dados.prioridade);
+                    preencherCampoCI('<%= txtOrigemArea.ClientID %>', dados.origemArea);
+                    preencherCampoCI('<%= txtOrigemResponsavel.ClientID %>', dados.origemResponsavel);
+                    preencherCampoCI('<%= txtDestinoArea.ClientID %>', dados.destinoArea);
+                    preencherCampoCI('<%= txtDestinatario.ClientID %>', dados.destinatario);
+                    preencherCampoCI('<%= txtAssunto.ClientID %>', dados.assunto);
+                    preencherCampoCI('<%= txtCorpo.ClientID %>', dados.corpo);
+                    preencherCampoCI('<%= txtProvidencias.ClientID %>', dados.providencias);
+                    preencherCampoCI('<%= txtObservacoes.ClientID %>', dados.observacoes);
+                    preencherCampoCI('<%= txtCriadoPor.ClientID %>', dados.criadoPor);
+                    atualizarPainelCI();
+                }
+
+                window.salvarRascunhoCI = function () {
+                    try {
+                        localStorage.setItem('bali-ci-rascunho', JSON.stringify(camposRascunhoCI()));
+                        statusRascunhoCI('Rascunho salvo neste navegador.');
+                    } catch (erro) {
+                        statusRascunhoCI('N\u00e3o foi poss\u00edvel salvar o rascunho neste navegador.');
+                    }
+                };
+
+                window.restaurarRascunhoCI = function () {
+                    try {
+                        var texto = localStorage.getItem('bali-ci-rascunho');
+                        if (!texto) {
+                            statusRascunhoCI('Nenhum rascunho salvo neste navegador.');
+                            return;
+                        }
+
+                        preencherRascunhoCI(JSON.parse(texto));
+                        statusRascunhoCI('Rascunho restaurado. Revise os dados antes de salvar.');
+                    } catch (erro) {
+                        statusRascunhoCI('N\u00e3o foi poss\u00edvel restaurar o rascunho.');
+                    }
+                };
+
+                window.limparRascunhoCI = function () {
+                    try {
+                        localStorage.removeItem('bali-ci-rascunho');
+                        statusRascunhoCI('Rascunho removido deste navegador.');
+                    } catch (erro) {
+                        statusRascunhoCI('N\u00e3o foi poss\u00edvel remover o rascunho.');
+                    }
+                };
+
+                window.aplicarModeloCI = function (tipo) {
+                    var corpoAtual = valor('<%= txtCorpo.ClientID %>');
+                    var assuntoAtual = valor('<%= txtAssunto.ClientID %>');
+                    if ((corpoAtual.length > 0 || assuntoAtual.length > 0) && !window.confirm('Substituir assunto e texto atuais pelo modelo selecionado?')) {
+                        return;
+                    }
+
+                    var modelos = {
+                        comunicado: {
+                            categoria: 'Comunicado',
+                            assunto: 'Comunicado interno',
+                            corpo: 'Comunicamos que [descreva a informa\u00e7\u00e3o principal], com validade a partir de [data].\n\nSolicitamos que todos os envolvidos tomem ci\u00eancia e sigam as orienta\u00e7\u00f5es descritas nesta CI.',
+                            providencias: 'Divulgar aos envolvidos, registrar ci\u00eancia e acompanhar o cumprimento das orienta\u00e7\u00f5es.'
+                        },
+                        solicitacao: {
+                            categoria: 'Solicita\u00e7\u00e3o',
+                            assunto: 'Solicita\u00e7\u00e3o interna',
+                            corpo: 'Solicitamos [descreva a solicita\u00e7\u00e3o] para atendimento at\u00e9 [data ou prazo].\n\nMotivo: [descreva o motivo ou contexto].',
+                            providencias: 'Avaliar a solicita\u00e7\u00e3o, executar as a\u00e7\u00f5es necess\u00e1rias e retornar ao respons\u00e1vel.'
+                        },
+                        procedimento: {
+                            categoria: 'Procedimento',
+                            assunto: 'Procedimento interno',
+                            corpo: 'A partir de [data], o procedimento para [tema] dever\u00e1 seguir as etapas abaixo:\n\n1. [Etapa 1]\n2. [Etapa 2]\n3. [Etapa 3]\n\nEm caso de d\u00favida, procurar o respons\u00e1vel pela origem desta CI.',
+                            providencias: 'Orientar a equipe, aplicar o novo procedimento e reportar eventuais inconsist\u00eancias.'
+                        }
+                    };
+
+                    var modelo = modelos[tipo];
+                    if (!modelo) return;
+                    preencherCampoCI('<%= ddlCategoria.ClientID %>', modelo.categoria);
+                    preencherCampoCI('<%= txtAssunto.ClientID %>', modelo.assunto);
+                    preencherCampoCI('<%= txtCorpo.ClientID %>', modelo.corpo);
+                    preencherCampoCI('<%= txtProvidencias.ClientID %>', modelo.providencias);
+                    atualizarPainelCI();
+                    statusRascunhoCI('Modelo aplicado. Personalize os trechos entre colchetes antes de salvar.');
+                };
 
                 window.validarCICliente = function () {
                     limparErros();
