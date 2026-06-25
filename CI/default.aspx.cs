@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Text;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -95,7 +96,7 @@ public partial class ci_default : System.Web.UI.Page
             Response.Write("\r\n");
         }
 
-        Response.End();
+        HttpContext.Current.ApplicationInstance.CompleteRequest();
     }
 
     protected void btnNova_Click(object sender, EventArgs e)
@@ -229,6 +230,14 @@ public partial class ci_default : System.Web.UI.Page
         if (e.Row.Cells.Count > 5)
         {
             e.Row.Cells[5].CssClass = status.Equals("Cancelada", StringComparison.OrdinalIgnoreCase) ? "ci-status-canceled" : "ci-status-active";
+        }
+
+        if (status.Equals("Cancelada", StringComparison.OrdinalIgnoreCase))
+        {
+            LinkButton editar = e.Row.FindControl("lnkEditar") as LinkButton;
+            LinkButton cancelar = e.Row.FindControl("lnkCancelar") as LinkButton;
+            if (editar != null) editar.Visible = false;
+            if (cancelar != null) cancelar.Visible = false;
         }
     }
 
