@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-duplicar" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-saida" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -308,6 +308,7 @@
                 var campoSenhaCI = document.getElementById('txtSenhaCICliente');
                 var textoSenhaCI = document.getElementById('textoSenhaCI');
                 var salvandoCI = false;
+                var formularioAlterado = false;
 
                 function executarPostbackCI() {
                     if (!postbackCIPendente) return;
@@ -628,7 +629,15 @@
                     if (!monitorado) continue;
                     monitorado.addEventListener('input', atualizarPainelCI);
                     monitorado.addEventListener('change', atualizarPainelCI);
+                    monitorado.addEventListener('input', function () { formularioAlterado = true; });
+                    monitorado.addEventListener('change', function () { formularioAlterado = true; });
                 }
+
+                window.addEventListener('beforeunload', function (event) {
+                    if (!formularioAlterado || salvandoCI) return;
+                    event.preventDefault();
+                    event.returnValue = '';
+                });
 
                 atualizarPainelCI();
             })();
