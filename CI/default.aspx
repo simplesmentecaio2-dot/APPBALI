@@ -6,10 +6,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-mobile" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-a11y" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
+        <a class="skip-link" href="#conteudo">Ir para o conte&uacute;do</a>
         <div class="app-shell">
             <aside class="sidebar">
                 <a class="brand" href="default.aspx">
@@ -26,7 +27,7 @@
                 </nav>
             </aside>
 
-            <main class="content">
+            <main class="content" id="conteudo" tabindex="-1">
                 <header class="hero">
                     <div>
                         <span class="eyebrow">Documento interno</span>
