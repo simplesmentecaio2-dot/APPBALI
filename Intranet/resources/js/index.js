@@ -4,6 +4,7 @@ const SHORTCUT_CACHE_KEY = 'centralBaliShortcutsCache';
 const FAVORITES_KEY = 'centralBaliShortcutFavorites';
 const RECENT_KEY = 'centralBaliRecentShortcuts';
 const SECTION_STATE_KEY = 'centralBaliOpenSections';
+const COMPACT_MODE_KEY = 'centralBaliCompactMode';
 const MAX_RECENT_SHORTCUTS = 12;
 const SHORTCUTS_FETCH_TIMEOUT = 10000;
 const MAINTENANCE_PASSWORD = '@bali2025';
@@ -43,6 +44,7 @@ const focusSearchButton = document.getElementById('focusSearch');
 const shortcutLoadStatus = document.getElementById('shortcutLoadStatus');
 const emptyState = document.getElementById('emptyState');
 const filterButtons = Array.from(document.querySelectorAll('[data-filter-section]'));
+const compactModeButton = document.getElementById('toggleCompactMode');
 const navbarCollapse = document.getElementById('mainMenu');
 
 const maintenanceSection = document.getElementById('manutencao');
@@ -249,6 +251,40 @@ function writeRecentShortcuts() {
     window.localStorage.setItem(RECENT_KEY, JSON.stringify(recentShortcuts.slice(0, MAX_RECENT_SHORTCUTS)));
   } catch (error) {
     return;
+  }
+}
+
+function setCompactMode(isCompact) {
+  document.body.classList.toggle('is-compact', isCompact);
+  if (compactModeButton) {
+    compactModeButton.classList.toggle('active', isCompact);
+    compactModeButton.setAttribute('aria-pressed', isCompact ? 'true' : 'false');
+    const icon = compactModeButton.querySelector('i');
+    if (icon) {
+      icon.className = isCompact ? 'bi bi-arrows-expand' : 'bi bi-arrows-collapse';
+    }
+  }
+
+  try {
+    window.localStorage.setItem(COMPACT_MODE_KEY, isCompact ? 'true' : 'false');
+  } catch (error) {
+    return;
+  }
+}
+
+function initializeCompactMode() {
+  let isCompact = false;
+  try {
+    isCompact = window.localStorage.getItem(COMPACT_MODE_KEY) === 'true';
+  } catch (error) {
+    isCompact = false;
+  }
+
+  setCompactMode(isCompact);
+  if (compactModeButton) {
+    compactModeButton.addEventListener('click', () => {
+      setCompactMode(!document.body.classList.contains('is-compact'));
+    });
   }
 }
 
@@ -1594,6 +1630,7 @@ async function initializePage() {
   defaultShortcuts = extractDefaultShortcuts();
   favoriteShortcuts = readFavoriteShortcuts();
   recentShortcuts = readRecentShortcuts();
+  initializeCompactMode();
   const cached = readShortcutCache();
   if (cached) {
     shortcuts = cached.shortcuts.map(sanitizeShortcut).filter((shortcut) => shortcut.title && shortcut.section);

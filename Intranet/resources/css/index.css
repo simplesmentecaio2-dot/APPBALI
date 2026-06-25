@@ -387,6 +387,10 @@ img {
   color: #fff;
 }
 
+.utility-chip {
+  margin-left: auto;
+}
+
 .content-section {
   padding: 1rem 0 4rem;
 }
@@ -709,6 +713,47 @@ img {
   background: #dfe3ea;
   color: #667085;
   pointer-events: none;
+}
+
+body.is-compact .shortcut-grid {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: .58rem;
+}
+
+body.is-compact .shortcut-section.is-open .shortcut-grid {
+  padding: .75rem;
+}
+
+body.is-compact .shortcut-card {
+  min-height: 108px;
+  gap: .58rem;
+  padding: .62rem 2.35rem .62rem .62rem;
+}
+
+body.is-compact .shortcut-icon {
+  width: 46px;
+  height: 46px;
+}
+
+body.is-compact .shortcut-icon img {
+  width: 34px;
+  height: 34px;
+}
+
+body.is-compact .shortcut-badge {
+  margin-bottom: .28rem;
+  font-size: .6rem;
+}
+
+body.is-compact .shortcut-card h3 {
+  font-size: .86rem;
+  line-height: 1.14;
+}
+
+body.is-compact .shortcut-link {
+  min-height: 34px;
+  padding: .42rem .58rem;
+  font-size: .8rem;
 }
 
 .empty-state {
@@ -1523,6 +1568,10 @@ img {
   .category-chip {
     flex: 0 0 auto;
     scroll-snap-align: start;
+  }
+
+  .utility-chip {
+    margin-left: 0;
   }
 
   .section-heading {
