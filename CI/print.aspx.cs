@@ -20,16 +20,14 @@ public partial class ci_print : System.Web.UI.Page
         int id;
         if (!Int32.TryParse(Request.QueryString["id"], out id) || id <= 0)
         {
-            Response.Write("CI n&atilde;o informada.");
-            Response.End();
+            MostrarErro("CI n\u00e3o informada", "Informe uma CI v\u00e1lida para abrir a impress\u00e3o.");
             return;
         }
 
         DataTable dados = ObterCI(id);
         if (dados.Rows.Count == 0)
         {
-            Response.Write("CI n&atilde;o encontrada.");
-            Response.End();
+            MostrarErro("CI n\u00e3o encontrada", "N\u00e3o localizamos uma comunica\u00e7\u00e3o interna com o ID informado.");
             return;
         }
 
@@ -47,6 +45,7 @@ public partial class ci_print : System.Web.UI.Page
         litMarca.Text = Html(marca);
         litCategoria.Text = Html(row["categoria"].ToString());
         litPrioridade.Text = Html(row["prioridade"].ToString());
+        litStatus.Text = Html(row["status"].ToString());
         litOrigemArea.Text = Html(row["origem_area"].ToString());
         litOrigemResponsavel.Text = Html(row["origem_responsavel"].ToString());
         litDestinoArea.Text = Html(row["destino_area"].ToString());
@@ -56,11 +55,22 @@ public partial class ci_print : System.Web.UI.Page
         litProvidencias.Text = TextoLongo(row["providencias"].ToString());
         litObservacoes.Text = TextoLongo(row["observacoes"].ToString());
         litCriadoPor.Text = Html(row["criado_por"].ToString());
+        litEmitidaEm.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
 
         secProvidencias.Visible = row["providencias"].ToString().Trim().Length > 0;
         secObservacoes.Visible = row["observacoes"].ToString().Trim().Length > 0;
 
         ConfigurarLogo(marca);
+    }
+
+    private void MostrarErro(string titulo, string mensagem)
+    {
+        Response.StatusCode = 200;
+        pnlDocumento.Visible = false;
+        pnlAcoes.Visible = false;
+        pnlErro.Visible = true;
+        litErroTitulo.Text = Html(titulo);
+        litErroMensagem.Text = Html(mensagem);
     }
 
     private void ConfigurarLogo(string marca)

@@ -736,7 +736,7 @@ label {
 }
 
 .print-meta {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
 }
 
 .print-grid {
@@ -781,6 +781,12 @@ label {
   margin-top: 34px;
 }
 
+.print-footer small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+}
+
 .signature {
   border-top: 1px solid var(--ink);
   padding-top: 8px;
@@ -792,6 +798,28 @@ label {
   justify-content: center;
   gap: 10px;
   margin: 0 auto 24px;
+}
+
+.print-error {
+  width: min(560px, calc(100% - 32px));
+  margin: 40px auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.print-error h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 24px;
+}
+
+.print-error p {
+  margin: 10px 0 18px;
+  color: var(--muted);
+  font-weight: 700;
 }
 
 .marca-jeep {
@@ -858,6 +886,12 @@ label {
   }
 
   .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .print-meta,
+  .print-grid,
+  .print-footer {
     grid-template-columns: 1fr;
   }
 

@@ -6,11 +6,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title><%=CodigoCI%> - Impress&atilde;o</title>
-    <link href="ci.css?v=20260625-ci-formux" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-printux" rel="stylesheet" />
 </head>
 <body class="ci-print-page <%=MarcaClasse%>">
     <form id="form1" runat="server">
-        <main class="print-sheet">
+        <asp:Panel ID="pnlErro" runat="server" CssClass="print-error" Visible="false">
+            <span class="eyebrow">Impress&atilde;o indispon&iacute;vel</span>
+            <h1><asp:Literal ID="litErroTitulo" runat="server"></asp:Literal></h1>
+            <p><asp:Literal ID="litErroMensagem" runat="server"></asp:Literal></p>
+            <a class="primary-link" href="default.aspx">Voltar para CI</a>
+        </asp:Panel>
+
+        <main id="pnlDocumento" runat="server" class="print-sheet">
             <header class="print-header">
                 <div class="print-logo-wrap">
                     <asp:Image ID="imgLogo" runat="server" CssClass="print-logo" Visible="false" />
@@ -27,6 +34,7 @@
                 <div><span>Marca</span><strong><asp:Literal ID="litMarca" runat="server"></asp:Literal></strong></div>
                 <div><span>Categoria</span><strong><asp:Literal ID="litCategoria" runat="server"></asp:Literal></strong></div>
                 <div><span>Prioridade</span><strong><asp:Literal ID="litPrioridade" runat="server"></asp:Literal></strong></div>
+                <div><span>Status</span><strong><asp:Literal ID="litStatus" runat="server"></asp:Literal></strong></div>
             </section>
 
             <section class="print-grid">
@@ -66,13 +74,14 @@
                 <div>
                     <span>Emitido por</span>
                     <strong><asp:Literal ID="litCriadoPor" runat="server"></asp:Literal></strong>
+                    <small>Gerado em <asp:Literal ID="litEmitidaEm" runat="server"></asp:Literal></small>
                 </div>
                 <div class="signature">
                     <span>Assinatura / ci&ecirc;ncia</span>
                 </div>
             </footer>
         </main>
-        <div class="print-actions">
+        <div id="pnlAcoes" runat="server" class="print-actions">
             <button type="button" onclick="window.print()">Imprimir</button>
             <a href="default.aspx">Voltar</a>
         </div>
