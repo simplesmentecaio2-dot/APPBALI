@@ -37,8 +37,7 @@ public partial class ci_default : System.Web.UI.Page
             txtBiFim.Text = hoje.ToString("yyyy-MM-dd");
             txtData.Text = hoje.ToString("yyyy-MM-dd");
             string tela = ObterTelaAtual();
-            CarregarTudo();
-            if (tela == "bi") CarregarBi();
+            CarregarTelaInicial(tela);
             AplicarTela(tela);
             MostrarAvisoViewStateExpirado();
         }
@@ -396,7 +395,7 @@ public partial class ci_default : System.Web.UI.Page
             int idSalvo = salvo.Rows.Count > 0 ? Convert.ToInt32(salvo.Rows[0]["id_ci"]) : 0;
             LimparAutorizacaoEdicaoCI(id);
             LimparFormulario();
-            CarregarTudo();
+            CarregarConsultaEssencial();
             AplicarTela("consulta");
             if (idSalvo > 0)
             {
@@ -472,7 +471,7 @@ public partial class ci_default : System.Web.UI.Page
                 ExecutarSemRetorno("dbo.ci_comunicacao_cancelar", Param("@id_ci", SqlDbType.Int, id));
                 LimparAutorizacaoEdicaoCI(id);
                 LimparFormulario();
-                CarregarTudo();
+                CarregarConsultaEssencial();
                 AplicarTela("consulta");
                 MostrarMensagem("CI cancelada com sucesso.", false);
             }
@@ -669,13 +668,36 @@ public partial class ci_default : System.Web.UI.Page
         TruncarCelulaLonga(e.Row, 3, 160);
     }
 
-    private void CarregarTudo()
+    private void CarregarConsultaEssencial()
     {
         CarregarResumo();
         CarregarLista();
-        CarregarModelos();
-        CarregarCategoriasAnotacoes();
-        CarregarAnotacoes();
+    }
+
+    private void CarregarTelaInicial(string tela)
+    {
+        CarregarResumo();
+
+        if (String.Equals(tela, "bi", StringComparison.OrdinalIgnoreCase))
+        {
+            CarregarBi();
+            return;
+        }
+
+        if (String.Equals(tela, "nova", StringComparison.OrdinalIgnoreCase))
+        {
+            CarregarModelos();
+            return;
+        }
+
+        if (String.Equals(tela, "anotacoes", StringComparison.OrdinalIgnoreCase))
+        {
+            CarregarCategoriasAnotacoes();
+            CarregarAnotacoes();
+            return;
+        }
+
+        CarregarLista();
     }
 
     private string ObterTelaAtual()
@@ -958,6 +980,7 @@ public partial class ci_default : System.Web.UI.Page
 
     private void CarregarCI(int id)
     {
+        CarregarModelos();
         DataTable dados = ExecutarTabela("dbo.ci_comunicacao_obter", Param("@id_ci", SqlDbType.Int, id));
         if (dados.Rows.Count == 0) return;
 
@@ -984,6 +1007,7 @@ public partial class ci_default : System.Web.UI.Page
 
     private void CarregarCIDuplicada(int id, string marcaDestino)
     {
+        CarregarModelos();
         DataTable dados = ExecutarTabela("dbo.ci_comunicacao_obter", Param("@id_ci", SqlDbType.Int, id));
         if (dados.Rows.Count == 0) return;
 

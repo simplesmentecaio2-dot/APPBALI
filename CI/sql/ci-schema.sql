@@ -390,7 +390,9 @@ BEGIN
 
     IF @titulo = '' OR @conteudo = ''
     BEGIN
-        RAISERROR(N'Informe o nome da anotação e o texto padrão.', 16, 1);
+        DECLARE @erro_anotacao_obrigatoria NVARCHAR(200);
+        SET @erro_anotacao_obrigatoria = N'Informe o nome da anota' + NCHAR(231) + NCHAR(227) + N'o e o texto padr' + NCHAR(227) + N'o.';
+        RAISERROR(@erro_anotacao_obrigatoria, 16, 1);
         RETURN;
     END
 
@@ -411,6 +413,14 @@ BEGIN
             dt_alteracao = GETDATE()
         WHERE id_anotacao = @id_anotacao
           AND ativo = 1;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            DECLARE @erro_anotacao_inexistente NVARCHAR(200);
+            SET @erro_anotacao_inexistente = N'N' + NCHAR(227) + N'o foi poss' + NCHAR(237) + N'vel salvar: anota' + NCHAR(231) + NCHAR(227) + N'o inexistente ou exclu' + NCHAR(237) + N'da.';
+            RAISERROR(@erro_anotacao_inexistente, 16, 1);
+            RETURN;
+        END
     END
 
     EXEC dbo.ci_anotacao_obter @id_anotacao = @id_anotacao;
@@ -653,6 +663,14 @@ BEGIN
             dt_alteracao = GETDATE()
         WHERE id_modelo = @id_modelo
           AND ativo = 1;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            DECLARE @erro_modelo_inexistente NVARCHAR(200);
+            SET @erro_modelo_inexistente = N'N' + NCHAR(227) + N'o foi poss' + NCHAR(237) + N'vel salvar: modelo inexistente ou exclu' + NCHAR(237) + N'do.';
+            RAISERROR(@erro_modelo_inexistente, 16, 1);
+            RETURN;
+        END
     END
 
     EXEC dbo.ci_modelo_obter @id_modelo = @id_modelo;
