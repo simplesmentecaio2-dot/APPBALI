@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-limites" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-acoes" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">

@@ -663,13 +663,37 @@ label {
 
 .table-action {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
   margin-right: 8px;
+  margin-bottom: 6px;
+  border: 1px solid #c9d7e8;
+  border-radius: 999px;
+  padding: 0 10px;
   color: var(--brand-strong);
+  background: #fff;
   font-weight: 900;
+  font-size: 12px;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.table-action:hover,
+.table-action:focus {
+  border-color: var(--brand);
+  background: #f4f8ff;
+  outline: 0;
 }
 
 .table-action.danger {
+  border-color: #f1c4bf;
   color: var(--danger);
+}
+
+.table-action.danger:hover,
+.table-action.danger:focus {
+  background: #fff5f4;
 }
 
 .ci-pager td {
