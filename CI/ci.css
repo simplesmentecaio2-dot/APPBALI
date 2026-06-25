@@ -129,6 +129,13 @@ a {
   color: var(--muted);
 }
 
+.panel-subtitle {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .eyebrow {
   display: inline-flex;
   margin-bottom: 8px;
@@ -393,6 +400,24 @@ label {
   font-size: 14px;
 }
 
+.ci-table tr:nth-child(even) td {
+  background: #fafcff;
+}
+
+.ci-table tr:hover td {
+  background: #f5f8fc;
+}
+
+.ci-status-active,
+.ci-status-canceled {
+  color: var(--success);
+  font-weight: 900;
+}
+
+.ci-status-canceled {
+  color: var(--danger);
+}
+
 .table-action {
   display: inline-flex;
   margin-right: 8px;
@@ -402,6 +427,36 @@ label {
 
 .table-action.danger {
   color: var(--danger);
+}
+
+.ci-pager td {
+  padding: 14px 12px !important;
+  background: #fff !important;
+}
+
+.ci-pager table {
+  margin-left: auto;
+}
+
+.ci-pager a,
+.ci-pager span {
+  display: inline-grid;
+  min-width: 34px;
+  height: 34px;
+  place-items: center;
+  margin-left: 5px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.ci-pager span {
+  border-color: var(--brand);
+  color: #fff;
+  background: var(--brand);
 }
 
 .password-modal {

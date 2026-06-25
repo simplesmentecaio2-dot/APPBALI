@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 
 public partial class ci_default : System.Web.UI.Page
@@ -28,6 +29,7 @@ public partial class ci_default : System.Web.UI.Page
 
     protected void btnFiltrar_Click(object sender, EventArgs e)
     {
+        gvCis.PageIndex = 0;
         CarregarLista();
     }
 
@@ -38,6 +40,7 @@ public partial class ci_default : System.Web.UI.Page
         ddlFiltroMarca.SelectedValue = "";
         txtBusca.Text = "";
         chkSomenteAtivas.Checked = true;
+        gvCis.PageIndex = 0;
         CarregarLista();
     }
 
@@ -144,6 +147,23 @@ public partial class ci_default : System.Web.UI.Page
         }
     }
 
+    protected void gvCis_PageIndexChanging(object sender, GridViewPageEventArgs e)
+    {
+        gvCis.PageIndex = e.NewPageIndex;
+        CarregarLista();
+    }
+
+    protected void gvCis_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType != DataControlRowType.DataRow) return;
+
+        string status = Convert.ToString(DataBinder.Eval(e.Row.DataItem, "status"));
+        if (e.Row.Cells.Count > 5)
+        {
+            e.Row.Cells[5].CssClass = status.Equals("Cancelada", StringComparison.OrdinalIgnoreCase) ? "ci-status-canceled" : "ci-status-active";
+        }
+    }
+
     private void CarregarTudo()
     {
         CarregarResumo();
@@ -175,8 +195,38 @@ public partial class ci_default : System.Web.UI.Page
             Param("@termo", SqlDbType.NVarChar, txtBusca.Text.Trim(), 160),
             Param("@somente_ativas", SqlDbType.Bit, chkSomenteAtivas.Checked));
 
+        AjustarPaginaConsulta(dados.Rows.Count);
         gvCis.DataSource = dados;
         gvCis.DataBind();
+        AtualizarResumoConsulta(dados.Rows.Count);
+    }
+
+    private void AjustarPaginaConsulta(int total)
+    {
+        if (total <= 0)
+        {
+            gvCis.PageIndex = 0;
+            return;
+        }
+
+        int ultimaPagina = (total - 1) / gvCis.PageSize;
+        if (gvCis.PageIndex > ultimaPagina)
+        {
+            gvCis.PageIndex = ultimaPagina;
+        }
+    }
+
+    private void AtualizarResumoConsulta(int total)
+    {
+        if (total == 0)
+        {
+            litResultadoConsulta.Text = "Nenhuma CI encontrada para os filtros selecionados.";
+            return;
+        }
+
+        int primeira = total == 0 ? 0 : (gvCis.PageIndex * gvCis.PageSize) + 1;
+        int ultima = Math.Min(total, primeira + gvCis.PageSize - 1);
+        litResultadoConsulta.Text = "Exibindo " + primeira.ToString() + " a " + ultima.ToString() + " de " + total.ToString() + " CI" + (total == 1 ? "." : "s.");
     }
 
     private void CarregarCI(int id)

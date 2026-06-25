@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260624-ci-password2" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-table" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -68,6 +68,7 @@
                         <div>
                             <span class="eyebrow">Consulta</span>
                             <h2>Localizar CIs</h2>
+                            <p class="panel-subtitle"><asp:Literal ID="litResultadoConsulta" runat="server" Text="Use os filtros para localizar documentos internos."></asp:Literal></p>
                         </div>
                         <asp:Button ID="btnLimpar" runat="server" Text="Limpar filtros" CssClass="secondary-button" OnClick="btnLimpar_Click" />
                     </div>
@@ -98,7 +99,7 @@
                     </div>
 
                     <div class="table-wrap">
-                        <asp:GridView ID="gvCis" runat="server" CssClass="ci-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma CI encontrada." OnRowCommand="gvCis_RowCommand">
+                        <asp:GridView ID="gvCis" runat="server" CssClass="ci-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma CI encontrada." AllowPaging="true" PageSize="12" PagerStyle-CssClass="ci-pager" OnPageIndexChanging="gvCis_PageIndexChanging" OnRowCommand="gvCis_RowCommand" OnRowDataBound="gvCis_RowDataBound">
                             <Columns>
                                 <asp:BoundField DataField="codigo_ci" HeaderText="C&oacute;digo" />
                                 <asp:BoundField DataField="data_documento" HeaderText="Data" DataFormatString="{0:dd/MM/yyyy}" />
