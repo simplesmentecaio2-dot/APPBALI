@@ -197,11 +197,6 @@
                                 <asp:GridView ID="gvAnotacoes" runat="server" CssClass="ci-table notes-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma anota&ccedil;&atilde;o encontrada." OnRowCommand="gvAnotacoes_RowCommand" OnRowDataBound="gvAnotacoes_RowDataBound">
                                     <Columns>
                                         <asp:BoundField DataField="titulo" HeaderText="Nome" />
-                                        <asp:BoundField DataField="categoria" HeaderText="Categoria" />
-                                        <asp:BoundField DataField="tags" HeaderText="Tags" />
-                                        <asp:BoundField DataField="qtde_usos" HeaderText="Usos" />
-                                        <asp:BoundField DataField="resumo" HeaderText="Resumo" />
-                                        <asp:BoundField DataField="dt_referencia" HeaderText="Atualizada" DataFormatString="{0:dd/MM/yyyy HH:mm}" />
                                         <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                             <ItemTemplate>
                                                 <asp:LinkButton ID="lnkAbrirAnotacao" runat="server" CssClass="table-action" CommandName="AbrirAnotacao" CommandArgument='<%# Eval("id_anotacao") %>'>Abrir</asp:LinkButton>
@@ -211,6 +206,11 @@
                                                 <asp:LinkButton ID="lnkExcluirAnotacao" runat="server" CssClass="table-action danger" CommandName="ExcluirAnotacao" CommandArgument='<%# Eval("id_anotacao") %>' OnClientClick="return confirm('Deseja excluir esta anota&ccedil;&atilde;o?');">Excluir</asp:LinkButton>
                                             </ItemTemplate>
                                         </asp:TemplateField>
+                                        <asp:BoundField DataField="categoria" HeaderText="Categoria" />
+                                        <asp:BoundField DataField="tags" HeaderText="Tags" />
+                                        <asp:BoundField DataField="qtde_usos" HeaderText="Usos" />
+                                        <asp:BoundField DataField="resumo" HeaderText="Resumo" />
+                                        <asp:BoundField DataField="dt_referencia" HeaderText="Atualizada" DataFormatString="{0:dd/MM/yyyy HH:mm}" />
                                     </Columns>
                                 </asp:GridView>
                             </div>

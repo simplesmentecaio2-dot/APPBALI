@@ -707,7 +707,7 @@ public partial class ci_default : System.Web.UI.Page
     {
         if (e.Row.RowType != DataControlRowType.DataRow) return;
         AplicarRotulosMobile(gvAnotacoes, e.Row);
-        TruncarCelulaLonga(e.Row, 4, 140);
+        TruncarCelulaLonga(e.Row, 5, 140);
 
         bool favorito = false;
         object valorFavorito = DataBinder.Eval(e.Row.DataItem, "favorito");
