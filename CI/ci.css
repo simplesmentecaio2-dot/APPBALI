@@ -719,12 +719,37 @@ label {
 }
 
 .print-sheet {
+  position: relative;
   width: 210mm;
   min-height: 297mm;
   margin: 18px auto;
   padding: 14mm;
   background: #fff;
   box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+}
+
+.ci-cancelada .print-sheet::before {
+  content: "CI CANCELADA";
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  z-index: 0;
+  transform: translate(-50%, -50%) rotate(-24deg);
+  color: rgba(180, 35, 24, 0.08);
+  font-size: 72px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.ci-cancelada .print-sheet > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ci-cancelada .print-header {
+  border-bottom-color: var(--danger);
 }
 
 .print-header {

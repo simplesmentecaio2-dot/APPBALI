@@ -37,15 +37,20 @@ public partial class ci_print : System.Web.UI.Page
     private void Preencher(DataRow row)
     {
         string marca = row["origem_marca"].ToString();
+        string status = row["status"].ToString();
         CodigoCI = row["codigo_ci"].ToString();
         MarcaClasse = ClasseMarca(marca);
+        if (status.Equals("Cancelada", StringComparison.OrdinalIgnoreCase))
+        {
+            MarcaClasse += " ci-cancelada";
+        }
 
         litCodigo.Text = Html(CodigoCI);
         litData.Text = Convert.ToDateTime(row["data_documento"]).ToString("dd/MM/yyyy");
         litMarca.Text = Html(marca);
         litCategoria.Text = Html(row["categoria"].ToString());
         litPrioridade.Text = Html(row["prioridade"].ToString());
-        litStatus.Text = Html(row["status"].ToString());
+        litStatus.Text = Html(status);
         litOrigemArea.Text = Html(row["origem_area"].ToString());
         litOrigemResponsavel.Text = Html(row["origem_responsavel"].ToString());
         litDestinoArea.Text = Html(row["destino_area"].ToString());
