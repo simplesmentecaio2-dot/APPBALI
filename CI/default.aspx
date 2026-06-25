@@ -352,6 +352,43 @@
                         </div>
                     </asp:Panel>
 
+                    <asp:Panel ID="pnlCiencia" runat="server" CssClass="ack-panel" Visible="false">
+                        <div class="panel-header compact-header">
+                            <div>
+                                <span class="eyebrow">Ci&ecirc;ncia</span>
+                                <h3>Controle de ci&ecirc;ncia</h3>
+                                <p class="panel-subtitle">Registre setores ou respons&aacute;veis que tomaram ci&ecirc;ncia desta comunica&ccedil;&atilde;o.</p>
+                            </div>
+                        </div>
+                        <div class="ack-form">
+                            <label>Setor
+                                <asp:TextBox ID="txtCienciaSetor" runat="server" CssClass="text-field" MaxLength="120"></asp:TextBox>
+                            </label>
+                            <label>Respons&aacute;vel
+                                <asp:TextBox ID="txtCienciaResponsavel" runat="server" CssClass="text-field" MaxLength="160"></asp:TextBox>
+                            </label>
+                            <label>Observa&ccedil;&atilde;o
+                                <asp:TextBox ID="txtCienciaObservacao" runat="server" CssClass="text-field" MaxLength="500"></asp:TextBox>
+                            </label>
+                            <asp:Button ID="btnRegistrarCiencia" runat="server" Text="Registrar ci&ecirc;ncia" CssClass="secondary-button" OnClick="btnRegistrarCiencia_Click" />
+                        </div>
+                        <div class="table-wrap">
+                            <asp:GridView ID="gvCiencias" runat="server" CssClass="ci-table compact-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma ci&ecirc;ncia registrada para esta CI." OnRowCommand="gvCiencias_RowCommand" OnRowDataBound="gvCiencias_RowDataBound">
+                                <Columns>
+                                    <asp:BoundField DataField="dt_ciencia" HeaderText="Data/hora" DataFormatString="{0:dd/MM/yyyy HH:mm}" />
+                                    <asp:BoundField DataField="setor" HeaderText="Setor" />
+                                    <asp:BoundField DataField="responsavel" HeaderText="Respons&aacute;vel" />
+                                    <asp:BoundField DataField="observacao" HeaderText="Observa&ccedil;&atilde;o" />
+                                    <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
+                                        <ItemTemplate>
+                                            <asp:LinkButton ID="lnkExcluirCiencia" runat="server" CssClass="table-action danger" CommandName="ExcluirCiencia" CommandArgument='<%# Eval("id_ciencia") %>' OnClientClick="return solicitarSenhaCI('excluir ci&ecirc;ncia', this);">Excluir</asp:LinkButton>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                </Columns>
+                            </asp:GridView>
+                        </div>
+                    </asp:Panel>
+
                     <asp:Panel ID="pnlHistorico" runat="server" CssClass="history-panel" Visible="false">
                         <div class="panel-header compact-header">
                             <div>

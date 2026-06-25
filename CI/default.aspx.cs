@@ -476,6 +476,89 @@ public partial class ci_default : System.Web.UI.Page
         AplicarRotulosMobile(gvAnexos, e.Row);
     }
 
+    protected void btnRegistrarCiencia_Click(object sender, EventArgs e)
+    {
+        int idCi = ObterIdAtual();
+        if (idCi <= 0)
+        {
+            MostrarMensagem("Salve a CI antes de registrar ci\u00eancia.", true);
+            AplicarTela("nova");
+            return;
+        }
+
+        string setor = TextoCurto(txtCienciaSetor.Text);
+        string responsavel = TextoCurto(txtCienciaResponsavel.Text);
+        if (setor.Length == 0 || responsavel.Length == 0)
+        {
+            MostrarMensagem("Informe setor e respons\u00e1vel para registrar ci\u00eancia.", true);
+            AplicarTela("nova");
+            return;
+        }
+
+        try
+        {
+            ExecutarSemRetorno("dbo.ci_ciencia_registrar",
+                Param("@id_ci", SqlDbType.Int, idCi),
+                Param("@setor", SqlDbType.NVarChar, setor, 120),
+                Param("@responsavel", SqlDbType.NVarChar, responsavel, 160),
+                Param("@observacao", SqlDbType.NVarChar, TextoCurto(txtCienciaObservacao.Text), 500));
+
+            txtCienciaSetor.Text = "";
+            txtCienciaResponsavel.Text = "";
+            txtCienciaObservacao.Text = "";
+            CarregarCiencias(idCi);
+            AplicarTela("nova");
+            MostrarMensagem("Ci\u00eancia registrada com sucesso.", false);
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("Registrar ci\u00eancia de CI", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("nova");
+        }
+    }
+
+    protected void gvCiencias_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName != "ExcluirCiencia") return;
+
+        if (!SenhaInformada())
+        {
+            MostrarMensagem("Informe a senha correta para excluir ci\u00eancias da CI.", true);
+            AplicarTela("nova");
+            return;
+        }
+
+        int idCiencia;
+        if (!Int32.TryParse(Convert.ToString(e.CommandArgument), out idCiencia) || idCiencia <= 0)
+        {
+            MostrarMensagem("Registro de ci\u00eancia inv\u00e1lido para exclus\u00e3o.", true);
+            AplicarTela("nova");
+            return;
+        }
+
+        try
+        {
+            ExecutarSemRetorno("dbo.ci_ciencia_excluir", Param("@id_ciencia", SqlDbType.Int, idCiencia));
+            int idCi = ObterIdAtual();
+            if (idCi > 0) CarregarCiencias(idCi);
+            AplicarTela("nova");
+            MostrarMensagem("Registro de ci\u00eancia removido.", false);
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("Excluir ci\u00eancia de CI", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("nova");
+        }
+    }
+
+    protected void gvCiencias_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType != DataControlRowType.DataRow) return;
+        AplicarRotulosMobile(gvCiencias, e.Row);
+    }
+
     protected void gvHistoricoCampos_RowDataBound(object sender, GridViewRowEventArgs e)
     {
         if (e.Row.RowType != DataControlRowType.DataRow) return;
@@ -668,6 +751,7 @@ public partial class ci_default : System.Web.UI.Page
         txtCriadoPor.Text = row["criado_por"].ToString();
         litTituloForm.Text = "Editar " + row["codigo_ci"].ToString();
         CarregarAnexos(id);
+        CarregarCiencias(id);
         CarregarHistorico(id);
     }
 
@@ -697,6 +781,9 @@ public partial class ci_default : System.Web.UI.Page
         pnlAnexos.Visible = false;
         gvAnexos.DataSource = null;
         gvAnexos.DataBind();
+        pnlCiencia.Visible = false;
+        gvCiencias.DataSource = null;
+        gvCiencias.DataBind();
         pnlHistorico.Visible = false;
         gvHistorico.DataSource = null;
         gvHistorico.DataBind();
@@ -758,6 +845,14 @@ public partial class ci_default : System.Web.UI.Page
         gvAnexos.DataBind();
     }
 
+    private void CarregarCiencias(int id)
+    {
+        DataTable ciencias = ExecutarTabela("dbo.ci_ciencia_listar", Param("@id_ci", SqlDbType.Int, id));
+        pnlCiencia.Visible = true;
+        gvCiencias.DataSource = ciencias;
+        gvCiencias.DataBind();
+    }
+
     private void LimparFormulario()
     {
         LimparAutorizacaoEdicaoCI(ObterIdAtual());
@@ -780,6 +875,12 @@ public partial class ci_default : System.Web.UI.Page
         pnlAnexos.Visible = false;
         gvAnexos.DataSource = null;
         gvAnexos.DataBind();
+        txtCienciaSetor.Text = "";
+        txtCienciaResponsavel.Text = "";
+        txtCienciaObservacao.Text = "";
+        pnlCiencia.Visible = false;
+        gvCiencias.DataSource = null;
+        gvCiencias.DataBind();
         litTituloForm.Text = "Nova CI";
         pnlHistorico.Visible = false;
         gvHistorico.DataSource = null;

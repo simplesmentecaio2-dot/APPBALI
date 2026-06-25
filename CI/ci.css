@@ -668,6 +668,20 @@ label {
   padding-top: 18px;
 }
 
+.ack-panel {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
+.ack-form {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(180px, 1fr) minmax(220px, 1.4fr) auto;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
 .history-detail-title {
   margin-top: 18px;
 }
@@ -1047,6 +1061,10 @@ label {
   }
 
   .model-manager {
+    grid-template-columns: 1fr;
+  }
+
+  .ack-form {
     grid-template-columns: 1fr;
   }
 

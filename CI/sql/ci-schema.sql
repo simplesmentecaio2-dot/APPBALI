@@ -163,6 +163,26 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID('dbo.ci_ciencias', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.ci_ciencias (
+        id_ciencia INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        id_ci INT NOT NULL,
+        setor NVARCHAR(120) NOT NULL,
+        responsavel NVARCHAR(160) NOT NULL,
+        observacao NVARCHAR(500) NULL,
+        ativo BIT NOT NULL CONSTRAINT DF_ci_ciencias_ativo DEFAULT (1),
+        dt_ciencia DATETIME NOT NULL CONSTRAINT DF_ci_ciencias_dt_ciencia DEFAULT (GETDATE())
+    );
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_ciencias_ci' AND object_id = OBJECT_ID('dbo.ci_ciencias'))
+BEGIN
+    CREATE INDEX IX_ci_ciencias_ci ON dbo.ci_ciencias (id_ci, ativo, dt_ciencia DESC);
+END
+GO
+
 IF NOT EXISTS (SELECT 1 FROM dbo.ci_modelos WHERE ativo = 1)
 BEGIN
     INSERT INTO dbo.ci_modelos (nome, categoria, prioridade, assunto, corpo, providencias)
@@ -267,6 +287,68 @@ BEGIN
             OR corpo LIKE '%' + @termo + '%'
           )
     ORDER BY data_documento DESC, id_ci DESC;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_ciencia_registrar
+    @id_ci INT,
+    @setor NVARCHAR(120),
+    @responsavel NVARCHAR(160),
+    @observacao NVARCHAR(500) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SET @setor = LTRIM(RTRIM(ISNULL(@setor, '')));
+    SET @responsavel = LTRIM(RTRIM(ISNULL(@responsavel, '')));
+    SET @observacao = NULLIF(LTRIM(RTRIM(ISNULL(@observacao, ''))), '');
+
+    IF @setor = '' OR @responsavel = ''
+    BEGIN
+        RAISERROR(N'Informe setor e responsavel para registrar ciencia.', 16, 1);
+        RETURN;
+    END
+
+    IF NOT EXISTS (SELECT 1 FROM dbo.ci_comunicacoes WHERE id_ci = @id_ci)
+    BEGIN
+        RAISERROR(N'CI nao encontrada para registrar ciencia.', 16, 1);
+        RETURN;
+    END
+
+    INSERT INTO dbo.ci_ciencias (id_ci, setor, responsavel, observacao)
+    VALUES (@id_ci, @setor, @responsavel, @observacao);
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_ciencia_listar
+    @id_ci INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        id_ciencia,
+        id_ci,
+        setor,
+        responsavel,
+        ISNULL(observacao, '') AS observacao,
+        dt_ciencia
+    FROM dbo.ci_ciencias
+    WHERE id_ci = @id_ci
+      AND ativo = 1
+    ORDER BY dt_ciencia DESC, id_ciencia DESC;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_ciencia_excluir
+    @id_ciencia INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE dbo.ci_ciencias
+    SET ativo = 0
+    WHERE id_ciencia = @id_ciencia;
 END
 GO
 
