@@ -394,7 +394,11 @@ a {
 }
 
 .notes-table {
-  min-width: 820px;
+  min-width: 1060px;
+}
+
+.notes-table .is-favorite-row td {
+  background: #fffaf0;
 }
 
 .notes-editor-header {
@@ -413,7 +417,7 @@ a {
 
 .notes-form-grid {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(150px, .7fr) minmax(160px, .7fr);
+  grid-template-columns: minmax(180px, 1fr) minmax(150px, .7fr) minmax(170px, .8fr) minmax(160px, .7fr);
   gap: 12px;
 }
 
@@ -448,6 +452,15 @@ a {
   justify-content: flex-start;
   margin-top: 14px;
   margin-bottom: 0;
+}
+
+.note-usage {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .panel {

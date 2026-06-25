@@ -185,11 +185,16 @@
                                     <Columns>
                                         <asp:BoundField DataField="titulo" HeaderText="Nome" />
                                         <asp:BoundField DataField="categoria" HeaderText="Categoria" />
+                                        <asp:BoundField DataField="tags" HeaderText="Tags" />
+                                        <asp:BoundField DataField="qtde_usos" HeaderText="Usos" />
                                         <asp:BoundField DataField="resumo" HeaderText="Resumo" />
                                         <asp:BoundField DataField="dt_referencia" HeaderText="Atualizada" DataFormatString="{0:dd/MM/yyyy HH:mm}" />
                                         <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                             <ItemTemplate>
                                                 <asp:LinkButton ID="lnkAbrirAnotacao" runat="server" CssClass="table-action" CommandName="AbrirAnotacao" CommandArgument='<%# Eval("id_anotacao") %>'>Abrir</asp:LinkButton>
+                                                <asp:LinkButton ID="lnkUsarAnotacao" runat="server" CssClass="table-action" CommandName="UsarAnotacaoCI" CommandArgument='<%# Eval("id_anotacao") %>'>Usar na CI</asp:LinkButton>
+                                                <asp:LinkButton ID="lnkDuplicarAnotacao" runat="server" CssClass="table-action subtle-action" CommandName="DuplicarAnotacao" CommandArgument='<%# Eval("id_anotacao") %>'>Duplicar</asp:LinkButton>
+                                                <asp:LinkButton ID="lnkFavoritarAnotacao" runat="server" CssClass="table-action subtle-action" CommandName="FavoritarAnotacao" CommandArgument='<%# Eval("id_anotacao") %>'>Favorito</asp:LinkButton>
                                                 <asp:LinkButton ID="lnkExcluirAnotacao" runat="server" CssClass="table-action danger" CommandName="ExcluirAnotacao" CommandArgument='<%# Eval("id_anotacao") %>' OnClientClick="return confirm('Deseja excluir esta anota&ccedil;&atilde;o?');">Excluir</asp:LinkButton>
                                             </ItemTemplate>
                                         </asp:TemplateField>
@@ -215,6 +220,9 @@
                                 <label>Categoria
                                     <asp:TextBox ID="txtAnotacaoCategoria" runat="server" CssClass="text-field" MaxLength="80" placeholder="Ex.: Venda direta, Financeiro"></asp:TextBox>
                                 </label>
+                                <label>Tags
+                                    <asp:TextBox ID="txtAnotacaoTags" runat="server" CssClass="text-field" MaxLength="300" placeholder="Ex.: SIA, BYD, pagamento"></asp:TextBox>
+                                </label>
                                 <label>Criado por
                                     <asp:TextBox ID="txtAnotacaoCriadoPor" runat="server" CssClass="text-field" MaxLength="160"></asp:TextBox>
                                 </label>
@@ -225,6 +233,7 @@
                             <div class="form-actions notes-actions">
                                 <asp:Button ID="btnSalvarAnotacao" runat="server" Text="Salvar anota&ccedil;&atilde;o" CssClass="primary-button" OnClick="btnSalvarAnotacao_Click" />
                                 <asp:Button ID="btnCancelarAnotacao" runat="server" Text="Limpar bloco" CssClass="secondary-button" OnClick="btnNovaAnotacao_Click" />
+                                <asp:Literal ID="litAnotacaoUso" runat="server"></asp:Literal>
                             </div>
                         </section>
                     </div>

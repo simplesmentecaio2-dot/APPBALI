@@ -185,8 +185,12 @@ BEGIN
         id_anotacao INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
         titulo NVARCHAR(160) NOT NULL,
         categoria NVARCHAR(80) NULL,
+        tags NVARCHAR(300) NULL,
         conteudo NVARCHAR(MAX) NOT NULL,
         criado_por NVARCHAR(160) NULL,
+        favorito BIT NOT NULL CONSTRAINT DF_ci_anotacoes_favorito DEFAULT (0),
+        qtde_usos INT NOT NULL CONSTRAINT DF_ci_anotacoes_qtde_usos DEFAULT (0),
+        dt_ultimo_uso DATETIME NULL,
         ativo BIT NOT NULL CONSTRAINT DF_ci_anotacoes_ativo DEFAULT (1),
         dt_cadastro DATETIME NOT NULL CONSTRAINT DF_ci_anotacoes_dt_cadastro DEFAULT (GETDATE()),
         dt_alteracao DATETIME NULL
@@ -194,9 +198,35 @@ BEGIN
 END
 GO
 
+IF COL_LENGTH('dbo.ci_anotacoes', 'tags') IS NULL
+BEGIN
+    ALTER TABLE dbo.ci_anotacoes ADD tags NVARCHAR(300) NULL;
+END
+GO
+
+IF COL_LENGTH('dbo.ci_anotacoes', 'favorito') IS NULL
+BEGIN
+    ALTER TABLE dbo.ci_anotacoes
+        ADD favorito BIT NOT NULL CONSTRAINT DF_ci_anotacoes_favorito DEFAULT (0);
+END
+GO
+
+IF COL_LENGTH('dbo.ci_anotacoes', 'qtde_usos') IS NULL
+BEGIN
+    ALTER TABLE dbo.ci_anotacoes
+        ADD qtde_usos INT NOT NULL CONSTRAINT DF_ci_anotacoes_qtde_usos DEFAULT (0);
+END
+GO
+
+IF COL_LENGTH('dbo.ci_anotacoes', 'dt_ultimo_uso') IS NULL
+BEGIN
+    ALTER TABLE dbo.ci_anotacoes ADD dt_ultimo_uso DATETIME NULL;
+END
+GO
+
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_anotacoes_busca' AND object_id = OBJECT_ID('dbo.ci_anotacoes'))
 BEGIN
-    CREATE INDEX IX_ci_anotacoes_busca ON dbo.ci_anotacoes (ativo, categoria, titulo, dt_alteracao);
+    CREATE INDEX IX_ci_anotacoes_busca ON dbo.ci_anotacoes (ativo, favorito, categoria, titulo, dt_alteracao);
 END
 GO
 
@@ -321,8 +351,12 @@ BEGIN
         id_anotacao,
         titulo,
         ISNULL(categoria, '') AS categoria,
+        ISNULL(tags, '') AS tags,
         LEFT(REPLACE(REPLACE(conteudo, CHAR(13), ' '), CHAR(10), ' '), 220) AS resumo,
         ISNULL(criado_por, '') AS criado_por,
+        favorito,
+        qtde_usos,
+        dt_ultimo_uso,
         dt_cadastro,
         dt_alteracao,
         ISNULL(dt_alteracao, dt_cadastro) AS dt_referencia
@@ -331,12 +365,13 @@ BEGIN
       AND (@categoria IS NULL OR categoria = @categoria)
       AND (
             @termo IS NULL
-            OR titulo LIKE '%' + @termo + '%'
-            OR categoria LIKE '%' + @termo + '%'
-            OR conteudo LIKE '%' + @termo + '%'
-            OR criado_por LIKE '%' + @termo + '%'
+            OR titulo COLLATE Latin1_General_CI_AI LIKE ('%' + @termo + '%') COLLATE Latin1_General_CI_AI
+            OR categoria COLLATE Latin1_General_CI_AI LIKE ('%' + @termo + '%') COLLATE Latin1_General_CI_AI
+            OR tags COLLATE Latin1_General_CI_AI LIKE ('%' + @termo + '%') COLLATE Latin1_General_CI_AI
+            OR conteudo COLLATE Latin1_General_CI_AI LIKE ('%' + @termo + '%') COLLATE Latin1_General_CI_AI
+            OR criado_por COLLATE Latin1_General_CI_AI LIKE ('%' + @termo + '%') COLLATE Latin1_General_CI_AI
           )
-    ORDER BY ISNULL(dt_alteracao, dt_cadastro) DESC, titulo;
+    ORDER BY favorito DESC, qtde_usos DESC, ISNULL(dt_alteracao, dt_cadastro) DESC, titulo;
 END
 GO
 
@@ -363,8 +398,12 @@ BEGIN
         id_anotacao,
         titulo,
         ISNULL(categoria, '') AS categoria,
+        ISNULL(tags, '') AS tags,
         conteudo,
         ISNULL(criado_por, '') AS criado_por,
+        favorito,
+        qtde_usos,
+        dt_ultimo_uso,
         dt_cadastro,
         dt_alteracao
     FROM dbo.ci_anotacoes
@@ -377,6 +416,7 @@ CREATE OR ALTER PROCEDURE dbo.ci_anotacao_salvar
     @id_anotacao INT = NULL,
     @titulo NVARCHAR(160),
     @categoria NVARCHAR(80) = NULL,
+    @tags NVARCHAR(300) = NULL,
     @conteudo NVARCHAR(MAX),
     @criado_por NVARCHAR(160) = NULL
 AS
@@ -385,6 +425,7 @@ BEGIN
 
     SET @titulo = LTRIM(RTRIM(ISNULL(@titulo, '')));
     SET @categoria = NULLIF(LTRIM(RTRIM(ISNULL(@categoria, ''))), '');
+    SET @tags = NULLIF(LTRIM(RTRIM(ISNULL(@tags, ''))), '');
     SET @conteudo = LTRIM(RTRIM(ISNULL(@conteudo, '')));
     SET @criado_por = NULLIF(LTRIM(RTRIM(ISNULL(@criado_por, ''))), '');
 
@@ -398,8 +439,8 @@ BEGIN
 
     IF ISNULL(@id_anotacao, 0) = 0
     BEGIN
-        INSERT INTO dbo.ci_anotacoes (titulo, categoria, conteudo, criado_por)
-        VALUES (@titulo, @categoria, @conteudo, @criado_por);
+        INSERT INTO dbo.ci_anotacoes (titulo, categoria, tags, conteudo, criado_por)
+        VALUES (@titulo, @categoria, @tags, @conteudo, @criado_por);
 
         SET @id_anotacao = CONVERT(INT, SCOPE_IDENTITY());
     END
@@ -408,6 +449,7 @@ BEGIN
         UPDATE dbo.ci_anotacoes
         SET titulo = @titulo,
             categoria = @categoria,
+            tags = @tags,
             conteudo = @conteudo,
             criado_por = @criado_por,
             dt_alteracao = GETDATE()
@@ -422,6 +464,38 @@ BEGIN
             RETURN;
         END
     END
+
+    EXEC dbo.ci_anotacao_obter @id_anotacao = @id_anotacao;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_anotacao_alternar_favorito
+    @id_anotacao INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE dbo.ci_anotacoes
+    SET favorito = CASE WHEN favorito = 1 THEN 0 ELSE 1 END,
+        dt_alteracao = GETDATE()
+    WHERE id_anotacao = @id_anotacao
+      AND ativo = 1;
+
+    EXEC dbo.ci_anotacao_obter @id_anotacao = @id_anotacao;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_anotacao_registrar_uso
+    @id_anotacao INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE dbo.ci_anotacoes
+    SET qtde_usos = ISNULL(qtde_usos, 0) + 1,
+        dt_ultimo_uso = GETDATE()
+    WHERE id_anotacao = @id_anotacao
+      AND ativo = 1;
 
     EXEC dbo.ci_anotacao_obter @id_anotacao = @id_anotacao;
 END

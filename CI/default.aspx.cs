@@ -91,6 +91,7 @@ public partial class ci_default : System.Web.UI.Page
         {
             string titulo = TextoCurto(txtAnotacaoTitulo.Text);
             string categoria = TextoCurto(txtAnotacaoCategoria.Text);
+            string tags = TextoCurto(txtAnotacaoTags.Text);
             string conteudo = TextoLongoEntrada(txtAnotacaoConteudo.Text);
             string criadoPor = TextoCurto(txtAnotacaoCriadoPor.Text);
 
@@ -108,7 +109,7 @@ public partial class ci_default : System.Web.UI.Page
                 return;
             }
 
-            if (titulo.Length > 160 || categoria.Length > 80 || criadoPor.Length > 160)
+            if (titulo.Length > 160 || categoria.Length > 80 || tags.Length > 300 || criadoPor.Length > 160)
             {
                 MostrarMensagem("Revise o tamanho dos campos da anota\u00e7\u00e3o.", true);
                 AplicarTela("anotacoes");
@@ -120,6 +121,7 @@ public partial class ci_default : System.Web.UI.Page
                 Param("@id_anotacao", SqlDbType.Int, idAtual > 0 ? (object)idAtual : DBNull.Value),
                 Param("@titulo", SqlDbType.NVarChar, titulo, 160),
                 Param("@categoria", SqlDbType.NVarChar, categoria, 80),
+                Param("@tags", SqlDbType.NVarChar, tags, 300),
                 Param("@conteudo", SqlDbType.NVarChar, conteudo),
                 Param("@criado_por", SqlDbType.NVarChar, criadoPor, 160));
 
@@ -542,6 +544,26 @@ public partial class ci_default : System.Web.UI.Page
                 AplicarTela("anotacoes");
                 MostrarMensagem("Anota\u00e7\u00e3o carregada. Use o bot\u00e3o copiar texto quando precisar reutilizar.", false);
             }
+            else if (e.CommandName == "UsarAnotacaoCI")
+            {
+                UsarAnotacaoNaCI(id);
+                AplicarTela("nova");
+                MostrarMensagem("Anota\u00e7\u00e3o aplicada na nova CI como rascunho. Revise os campos antes de salvar.", false);
+            }
+            else if (e.CommandName == "DuplicarAnotacao")
+            {
+                DuplicarAnotacao(id);
+                AplicarTela("anotacoes");
+                MostrarMensagem("Anota\u00e7\u00e3o duplicada no bloco. Revise e salve como novo texto padr\u00e3o.", false);
+            }
+            else if (e.CommandName == "FavoritarAnotacao")
+            {
+                ExecutarTabela("dbo.ci_anotacao_alternar_favorito", Param("@id_anotacao", SqlDbType.Int, id));
+                CarregarCategoriasAnotacoes();
+                CarregarAnotacoes();
+                AplicarTela("anotacoes");
+                MostrarMensagem("Favorito atualizado.", false);
+            }
             else if (e.CommandName == "ExcluirAnotacao")
             {
                 ExecutarSemRetorno("dbo.ci_anotacao_excluir", Param("@id_anotacao", SqlDbType.Int, id));
@@ -568,7 +590,25 @@ public partial class ci_default : System.Web.UI.Page
     {
         if (e.Row.RowType != DataControlRowType.DataRow) return;
         AplicarRotulosMobile(gvAnotacoes, e.Row);
-        TruncarCelulaLonga(e.Row, 2, 140);
+        TruncarCelulaLonga(e.Row, 4, 140);
+
+        bool favorito = false;
+        object valorFavorito = DataBinder.Eval(e.Row.DataItem, "favorito");
+        if (valorFavorito != DBNull.Value && valorFavorito != null)
+        {
+            favorito = Convert.ToBoolean(valorFavorito);
+        }
+
+        if (favorito)
+        {
+            e.Row.CssClass = (e.Row.CssClass + " is-favorite-row").Trim();
+        }
+
+        LinkButton favoritar = e.Row.FindControl("lnkFavoritarAnotacao") as LinkButton;
+        if (favoritar != null)
+        {
+            favoritar.Text = favorito ? "Remover favorito" : "Favoritar";
+        }
     }
 
     protected void gvHistorico_RowDataBound(object sender, GridViewRowEventArgs e)
@@ -1150,14 +1190,57 @@ public partial class ci_default : System.Web.UI.Page
         PreencherAnotacao(dados.Rows[0]);
     }
 
+    private void UsarAnotacaoNaCI(int id)
+    {
+        DataTable dados = ExecutarTabela("dbo.ci_anotacao_registrar_uso", Param("@id_anotacao", SqlDbType.Int, id));
+        if (dados.Rows.Count == 0)
+        {
+            MostrarMensagem("Anota\u00e7\u00e3o n\u00e3o encontrada para usar na CI.", true);
+            return;
+        }
+
+        DataRow row = dados.Rows[0];
+        CarregarModelos();
+        LimparFormulario();
+        hfCiId.Value = "";
+        txtData.Text = DateTime.Today.ToString("yyyy-MM-dd");
+        txtAssunto.Text = row["titulo"].ToString();
+        txtCorpo.Text = row["conteudo"].ToString();
+        ddlStatusCI.SelectedValue = "Rascunho";
+        Selecionar(ddlCategoria, row["categoria"].ToString());
+        litTituloForm.Text = "Nova CI baseada em anota\u00e7\u00e3o";
+    }
+
+    private void DuplicarAnotacao(int id)
+    {
+        DataTable dados = ExecutarTabela("dbo.ci_anotacao_obter", Param("@id_anotacao", SqlDbType.Int, id));
+        if (dados.Rows.Count == 0)
+        {
+            MostrarMensagem("Anota\u00e7\u00e3o n\u00e3o encontrada para duplicar.", true);
+            return;
+        }
+
+        DataRow row = dados.Rows[0];
+        hfAnotacaoId.Value = "";
+        txtAnotacaoTitulo.Text = "C\u00f3pia de " + row["titulo"].ToString();
+        txtAnotacaoCategoria.Text = row["categoria"].ToString();
+        txtAnotacaoTags.Text = row["tags"].ToString();
+        txtAnotacaoConteudo.Text = row["conteudo"].ToString();
+        txtAnotacaoCriadoPor.Text = row["criado_por"].ToString();
+        litTituloAnotacao.Text = "Nova anota\u00e7\u00e3o baseada em " + row["titulo"].ToString();
+        litAnotacaoUso.Text = "";
+    }
+
     private void PreencherAnotacao(DataRow row)
     {
         hfAnotacaoId.Value = row["id_anotacao"].ToString();
         txtAnotacaoTitulo.Text = row["titulo"].ToString();
         txtAnotacaoCategoria.Text = row["categoria"].ToString();
+        txtAnotacaoTags.Text = row["tags"].ToString();
         txtAnotacaoConteudo.Text = row["conteudo"].ToString();
         txtAnotacaoCriadoPor.Text = row["criado_por"].ToString();
         litTituloAnotacao.Text = "Editar " + row["titulo"].ToString();
+        litAnotacaoUso.Text = MontarResumoUsoAnotacao(row);
     }
 
     private void LimparAnotacao()
@@ -1165,9 +1248,29 @@ public partial class ci_default : System.Web.UI.Page
         hfAnotacaoId.Value = "";
         txtAnotacaoTitulo.Text = "";
         txtAnotacaoCategoria.Text = "";
+        txtAnotacaoTags.Text = "";
         txtAnotacaoConteudo.Text = "";
         txtAnotacaoCriadoPor.Text = "";
         litTituloAnotacao.Text = "Nova anota\u00e7\u00e3o";
+        litAnotacaoUso.Text = "";
+    }
+
+    private string MontarResumoUsoAnotacao(DataRow row)
+    {
+        int usos = 0;
+        if (row.Table.Columns.Contains("qtde_usos") && row["qtde_usos"] != DBNull.Value)
+        {
+            Int32.TryParse(row["qtde_usos"].ToString(), out usos);
+        }
+
+        string texto = "<span class=\"note-usage\">" + usos.ToString() + " uso" + (usos == 1 ? "" : "s");
+        if (row.Table.Columns.Contains("dt_ultimo_uso") && row["dt_ultimo_uso"] != DBNull.Value)
+        {
+            texto += " | &uacute;ltimo uso em " + Convert.ToDateTime(row["dt_ultimo_uso"]).ToString("dd/MM/yyyy HH:mm");
+        }
+
+        texto += "</span>";
+        return texto;
     }
 
     private int ObterIdAnotacaoAtual()
