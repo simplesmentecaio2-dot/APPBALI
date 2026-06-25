@@ -73,6 +73,8 @@ const maintenanceSearch = document.getElementById('maintenanceSearch');
 const maintenanceListSection = document.getElementById('maintenanceListSection');
 const maintenanceNewShortcut = document.getElementById('maintenanceNewShortcut');
 const maintenanceExportShortcuts = document.getElementById('maintenanceExportShortcuts');
+const maintenanceImportShortcuts = document.getElementById('maintenanceImportShortcuts');
+const maintenanceImportFile = document.getElementById('maintenanceImportFile');
 const maintenanceResetDefaults = document.getElementById('maintenanceResetDefaults');
 const maintenanceCancelEdit = document.getElementById('maintenanceCancelEdit');
 const noticeModal = document.getElementById('noticeModal');
@@ -165,7 +167,7 @@ function setMaintenanceBusy(isBusy) {
     controls.push(...maintenanceList.querySelectorAll('button'));
   }
 
-  [maintenanceNewShortcut, maintenanceExportShortcuts, maintenanceResetDefaults, maintenanceListSection, maintenanceSearch].forEach((control) => {
+  [maintenanceNewShortcut, maintenanceExportShortcuts, maintenanceImportShortcuts, maintenanceImportFile, maintenanceResetDefaults, maintenanceListSection, maintenanceSearch].forEach((control) => {
     if (control) controls.push(control);
   });
 
@@ -840,6 +842,70 @@ function exportShortcutsBackup() {
   setMaintenanceStatus('Backup JSON gerado.', 'ok');
 }
 
+function readFileText(file) {
+  if (file && typeof file.text === 'function') {
+    return file.text();
+  }
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result || '');
+    reader.onerror = () => reject(reader.error || new Error('Falha ao ler arquivo.'));
+    reader.readAsText(file, 'utf-8');
+  });
+}
+
+function normalizeImportedShortcuts(payload) {
+  const source = Array.isArray(payload) ? payload : payload && payload.shortcuts;
+  if (!Array.isArray(source)) return [];
+
+  return source
+    .map((shortcut, index) => sanitizeShortcut(shortcut || {}, index))
+    .filter((shortcut) => shortcut.title && shortcut.url && SECTION_CONFIG[shortcut.section]);
+}
+
+async function importShortcutsBackup(event) {
+  const file = event && event.target && event.target.files ? event.target.files[0] : null;
+  if (!file) return;
+
+  try {
+    setMaintenanceStatus('Lendo backup JSON...', '');
+    const text = await readFileText(file);
+    const payload = JSON.parse(text);
+    const importedShortcuts = normalizeImportedShortcuts(payload);
+
+    if (!importedShortcuts.length) {
+      throw new Error('O arquivo não possui atalhos válidos para importar.');
+    }
+
+    const confirmed = window.confirm(`Importar ${importedShortcuts.length} atalhos do backup? A lista atual será substituída após salvar no servidor.`);
+    if (!confirmed) {
+      setMaintenanceStatus('Importação cancelada.', '');
+      return;
+    }
+
+    const previousShortcuts = shortcuts.map(cloneShortcut);
+    shortcuts = importedShortcuts;
+    setMaintenanceStatus(`Importando ${importedShortcuts.length} atalhos...`, '');
+
+    const saved = await saveShortcuts();
+    if (!saved) {
+      shortcuts = previousShortcuts;
+      renderShortcuts();
+      setMaintenanceStatus('A lista anterior foi restaurada porque o servidor não salvou a importação.', 'error');
+      return;
+    }
+
+    renderShortcuts();
+    resetMaintenanceForm();
+    setMaintenanceStatus(`${importedShortcuts.length} atalhos importados com sucesso.`, 'ok');
+  } catch (error) {
+    setMaintenanceStatus(error.message || 'Não foi possível importar o backup.', 'error');
+  } finally {
+    if (maintenanceImportFile) maintenanceImportFile.value = '';
+  }
+}
+
 function getMaintenanceFilters() {
   return {
     term: normalizeText(maintenanceSearch ? maintenanceSearch.value : ''),
@@ -1350,6 +1416,11 @@ function initializeMaintenance() {
 
   if (maintenanceExportShortcuts) {
     maintenanceExportShortcuts.addEventListener('click', exportShortcutsBackup);
+  }
+
+  if (maintenanceImportShortcuts && maintenanceImportFile) {
+    maintenanceImportShortcuts.addEventListener('click', () => maintenanceImportFile.click());
+    maintenanceImportFile.addEventListener('change', importShortcutsBackup);
   }
 
   if (maintenanceCancelEdit) {
