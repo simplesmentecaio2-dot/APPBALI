@@ -322,6 +322,11 @@ a {
   margin-bottom: 14px;
 }
 
+.log-filter {
+  grid-template-columns: minmax(220px, 360px) auto;
+  justify-content: start;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(150px, 1fr));

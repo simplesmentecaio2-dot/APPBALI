@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-textarea" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-erros" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -23,6 +23,7 @@
                 <nav class="side-nav">
                     <a href="#consulta">Consulta</a>
                     <a href="#cadastro">Nova CI</a>
+                    <a href="erros.aspx">Logs</a>
                     <a href="../Intranet/index.html">Intranet</a>
                 </nav>
             </aside>
