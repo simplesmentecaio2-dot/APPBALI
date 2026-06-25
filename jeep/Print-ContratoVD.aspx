@@ -7,6 +7,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <link href="../css/estilo.css" rel="stylesheet" />
+    <link href="../css/bali-print-contract.css?v=20260625-justify" rel="stylesheet" />
+    <script src="../js/bali-print-contract.js?v=20260625-justify"></script>
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
@@ -231,7 +233,7 @@
                         <td>OPCIONAIS:
                         </td>
                         <td colspan="5">
-                            <asp:TextBox ID="txtOpcionais" Font-Bold="True" CssClass="form-contrato" runat="server" Enabled="False"></asp:TextBox>
+                            <asp:TextBox ID="txtOpcionais" Font-Bold="True" CssClass="form-contrato contrato-texto-justificado" TextMode="MultiLine" Rows="2" runat="server" Enabled="False"></asp:TextBox>
                         </td>
                     </tr>
                 </table>
@@ -278,7 +280,7 @@
                         <td colspan="2">FORMAS DE PAGAMENTO:
                         </td>
                         <td colspan="5">
-                            <asp:TextBox ID="txtFormasPagamento" CssClass="form-contrata" runat="server" Enabled="False"></asp:TextBox>
+                            <asp:TextBox ID="txtFormasPagamento" CssClass="form-contrata contrato-texto-justificado" TextMode="MultiLine" Rows="2" runat="server" Enabled="False"></asp:TextBox>
                         </td>
                     </tr>
                     <tr>
@@ -343,14 +345,14 @@
                         <td>CORTESIAS:
                         </td>
                         <td colspan="8">
-                            <asp:TextBox ID="txtCortesias" Font-Bold="True" CssClass="form-contrato" runat="server"></asp:TextBox>
+                            <asp:TextBox ID="txtCortesias" Font-Bold="True" CssClass="form-contrato contrato-texto-justificado" TextMode="MultiLine" Rows="2" runat="server"></asp:TextBox>
                         </td>
                     </tr>
                     <tr>
                         <td>OBS:
                         </td>
                         <td colspan="8">
-                            <asp:TextBox ID="txtObs" CssClass="form-contrata" Font-Bold="True" runat="server" Enabled="False"></asp:TextBox>
+                            <asp:TextBox ID="txtObs" CssClass="form-contrata contrato-texto-justificado" Font-Bold="True" TextMode="MultiLine" Rows="2" runat="server" Enabled="False"></asp:TextBox>
                         </td>
                     </tr>
                     <tr>
@@ -634,7 +636,7 @@
                         <td>OPCIONAIS:
                         </td>
                         <td colspan="5">
-                            <asp:TextBox ID="txtOpcionais2" CssClass="form-contrato" Font-Bold="True" runat="server" Enabled="False"></asp:TextBox>
+                            <asp:TextBox ID="txtOpcionais2" CssClass="form-contrato contrato-texto-justificado" Font-Bold="True" TextMode="MultiLine" Rows="2" runat="server" Enabled="False"></asp:TextBox>
                         </td>
                     </tr>
                 </table>
@@ -681,7 +683,7 @@
                         <td colspan="2">FORMAS DE PAGAMENTO:
                         </td>
                         <td colspan="5">
-                            <asp:TextBox ID="txtFormasPagamento2" CssClass="form-contrata" runat="server" Enabled="False"></asp:TextBox>
+                            <asp:TextBox ID="txtFormasPagamento2" CssClass="form-contrata contrato-texto-justificado" TextMode="MultiLine" Rows="2" runat="server" Enabled="False"></asp:TextBox>
                         </td>
                     </tr>
                     <tr>
@@ -745,14 +747,14 @@
                         <td>CORTESIAS:
                         </td>
                         <td colspan="8">
-                            <asp:TextBox ID="txtCortesias2" CssClass="form-contrato" runat="server" Enabled="False"></asp:TextBox>
+                            <asp:TextBox ID="txtCortesias2" CssClass="form-contrato contrato-texto-justificado" TextMode="MultiLine" Rows="2" runat="server" Enabled="False"></asp:TextBox>
                         </td>
                     </tr>
                     <tr>
                         <td>OBS:
                         </td>
                         <td colspan="8">
-                            <asp:TextBox ID="txtObs2" CssClass="form-contrata" runat="server" Enabled="False"></asp:TextBox>
+                            <asp:TextBox ID="txtObs2" CssClass="form-contrata contrato-texto-justificado" TextMode="MultiLine" Rows="2" runat="server" Enabled="False"></asp:TextBox>
                         </td>
                     </tr>
                     <tr>
@@ -1030,7 +1032,7 @@
                         <td>OPCIONAIS:
                         </td>
                         <td colspan="5">
-                            <asp:TextBox ID="txtOpcionais3" CssClass="form-contrato" runat="server" Enabled="False"></asp:TextBox>
+                            <asp:TextBox ID="txtOpcionais3" CssClass="form-contrato contrato-texto-justificado" TextMode="MultiLine" Rows="2" runat="server" Enabled="False"></asp:TextBox>
                         </td>
                     </tr>
                 </table>
@@ -1077,7 +1079,7 @@
                         <td colspan="2">FORMAS DE PAGAMENTO:
                         </td>
                         <td colspan="5">
-                            <asp:TextBox ID="txtFormasPagamento3" CssClass="form-contrata" runat="server" Enabled="False"></asp:TextBox>
+                            <asp:TextBox ID="txtFormasPagamento3" CssClass="form-contrata contrato-texto-justificado" TextMode="MultiLine" Rows="2" runat="server" Enabled="False"></asp:TextBox>
                         </td>
                     </tr>
                     <tr>
@@ -1141,14 +1143,14 @@
                         <td>CORTESIAS:
                         </td>
                         <td colspan="8">
-                            <asp:TextBox ID="txtCortesias3" CssClass="form-contrato" runat="server" Enabled="False"></asp:TextBox>
+                            <asp:TextBox ID="txtCortesias3" CssClass="form-contrato contrato-texto-justificado" TextMode="MultiLine" Rows="2" runat="server" Enabled="False"></asp:TextBox>
                         </td>
                     </tr>
                     <tr>
                         <td>OBS:
                         </td>
                         <td colspan="8">
-                            <asp:TextBox ID="txtObs3" CssClass="form-contrata" runat="server" Enabled="False"></asp:TextBox>
+                            <asp:TextBox ID="txtObs3" CssClass="form-contrata contrato-texto-justificado" TextMode="MultiLine" Rows="2" runat="server" Enabled="False"></asp:TextBox>
                         </td>
                     </tr>
                     <tr>
