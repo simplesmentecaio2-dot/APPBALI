@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-table" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-form" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -130,6 +130,23 @@
 
                     <asp:HiddenField ID="hfCiId" runat="server" />
                     <div id="ciClientMessage" class="client-message" aria-live="polite"></div>
+                    <div class="ci-form-insights" aria-live="polite">
+                        <article>
+                            <span>Preenchimento</span>
+                            <strong id="ciProgressText">0 de 7 campos</strong>
+                            <div class="ci-progress"><span id="ciProgressBar"></span></div>
+                        </article>
+                        <article>
+                            <span>Pr&eacute;via r&aacute;pida</span>
+                            <strong id="ciPreviewTitle">Sem assunto informado</strong>
+                            <p id="ciPreviewMeta">Selecione a marca, data e destino.</p>
+                        </article>
+                        <article>
+                            <span>Texto</span>
+                            <strong id="ciTextCount">0 caracteres</strong>
+                            <p>Use uma comunica&ccedil;&atilde;o objetiva para facilitar a impress&atilde;o.</p>
+                        </article>
+                    </div>
                     <div class="form-grid">
                         <label>Marca
                             <asp:DropDownList ID="ddlMarca" runat="server" CssClass="select-field">
@@ -310,6 +327,37 @@
                     }
                 }
 
+                function valor(id) {
+                    var item = campo(id);
+                    return item ? item.value.trim() : '';
+                }
+
+                function atualizarPainelCI() {
+                    var preenchidos = 0;
+                    var progressoTexto = document.getElementById('ciProgressText');
+                    var progressoBarra = document.getElementById('ciProgressBar');
+                    var previaTitulo = document.getElementById('ciPreviewTitle');
+                    var previaMeta = document.getElementById('ciPreviewMeta');
+                    var contadorTexto = document.getElementById('ciTextCount');
+
+                    for (var i = 0; i < camposObrigatorios.length; i++) {
+                        if (valor(camposObrigatorios[i].id).length > 0) preenchidos++;
+                    }
+
+                    if (progressoTexto) progressoTexto.textContent = preenchidos + ' de ' + camposObrigatorios.length + ' campos';
+                    if (progressoBarra) progressoBarra.style.width = Math.round((preenchidos / camposObrigatorios.length) * 100) + '%';
+
+                    var marca = valor('<%= ddlMarca.ClientID %>') || 'Marca';
+                    var data = valor('<%= txtData.ClientID %>') || 'sem data';
+                    var destino = valor('<%= txtDestinatario.ClientID %>') || 'sem destinat\u00e1rio';
+                    var assunto = valor('<%= txtAssunto.ClientID %>');
+                    var corpo = valor('<%= txtCorpo.ClientID %>');
+
+                    if (previaTitulo) previaTitulo.textContent = assunto || 'Sem assunto informado';
+                    if (previaMeta) previaMeta.textContent = marca + ' | ' + data + ' | ' + destino;
+                    if (contadorTexto) contadorTexto.textContent = corpo.length + ' caractere' + (corpo.length === 1 ? '' : 's');
+                }
+
                 window.validarCICliente = function () {
                     limparErros();
 
@@ -323,6 +371,21 @@
 
                     return true;
                 };
+
+                var camposMonitorados = camposObrigatorios.map(function (item) { return item.id; }).concat([
+                    '<%= ddlMarca.ClientID %>',
+                    '<%= txtAssunto.ClientID %>',
+                    '<%= txtCorpo.ClientID %>'
+                ]);
+
+                for (var m = 0; m < camposMonitorados.length; m++) {
+                    var monitorado = campo(camposMonitorados[m]);
+                    if (!monitorado) continue;
+                    monitorado.addEventListener('input', atualizarPainelCI);
+                    monitorado.addEventListener('change', atualizarPainelCI);
+                }
+
+                atualizarPainelCI();
             })();
         </script>
     </form>
