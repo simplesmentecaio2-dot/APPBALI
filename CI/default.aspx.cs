@@ -277,6 +277,14 @@ public partial class ci_default : System.Web.UI.Page
                 return;
             }
 
+            string erroAnexo = ValidarAnexo();
+            if (erroAnexo.Length > 0)
+            {
+                MostrarMensagem(erroAnexo, true);
+                AplicarTela("nova");
+                return;
+            }
+
             NormalizarFormulario();
 
             DataTable salvo = ExecutarTabela("dbo.ci_comunicacao_salvar",
@@ -298,6 +306,11 @@ public partial class ci_default : System.Web.UI.Page
 
             string codigo = salvo.Rows.Count > 0 ? salvo.Rows[0]["codigo_ci"].ToString() : "CI";
             int idSalvo = salvo.Rows.Count > 0 ? Convert.ToInt32(salvo.Rows[0]["id_ci"]) : 0;
+            if (idSalvo > 0)
+            {
+                SalvarAnexoSeExistir(idSalvo);
+            }
+
             LimparAutorizacaoEdicaoCI(id);
             LimparFormulario();
             CarregarTudo();
@@ -420,6 +433,47 @@ public partial class ci_default : System.Web.UI.Page
     {
         if (e.Row.RowType != DataControlRowType.DataRow) return;
         AplicarRotulosMobile(gvHistorico, e.Row);
+    }
+
+    protected void gvAnexos_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName != "ExcluirAnexo") return;
+
+        if (!SenhaInformada())
+        {
+            MostrarMensagem("Informe a senha correta para excluir anexos da CI.", true);
+            AplicarTela("nova");
+            return;
+        }
+
+        int idAnexo;
+        if (!Int32.TryParse(Convert.ToString(e.CommandArgument), out idAnexo) || idAnexo <= 0)
+        {
+            MostrarMensagem("Anexo inv\u00e1lido para exclus\u00e3o.", true);
+            AplicarTela("nova");
+            return;
+        }
+
+        try
+        {
+            ExecutarSemRetorno("dbo.ci_anexo_excluir", Param("@id_anexo", SqlDbType.Int, idAnexo));
+            int idCi = ObterIdAtual();
+            if (idCi > 0) CarregarAnexos(idCi);
+            AplicarTela("nova");
+            MostrarMensagem("Anexo removido da CI.", false);
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("Excluir anexo de CI", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("nova");
+        }
+    }
+
+    protected void gvAnexos_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType != DataControlRowType.DataRow) return;
+        AplicarRotulosMobile(gvAnexos, e.Row);
     }
 
     protected void gvHistoricoCampos_RowDataBound(object sender, GridViewRowEventArgs e)
@@ -613,6 +667,7 @@ public partial class ci_default : System.Web.UI.Page
         txtObservacoes.Text = row["observacoes"].ToString();
         txtCriadoPor.Text = row["criado_por"].ToString();
         litTituloForm.Text = "Editar " + row["codigo_ci"].ToString();
+        CarregarAnexos(id);
         CarregarHistorico(id);
     }
 
@@ -639,6 +694,9 @@ public partial class ci_default : System.Web.UI.Page
         txtObservacoes.Text = row["observacoes"].ToString();
         txtCriadoPor.Text = row["criado_por"].ToString();
         litTituloForm.Text = "Nova CI baseada em " + row["codigo_ci"].ToString();
+        pnlAnexos.Visible = false;
+        gvAnexos.DataSource = null;
+        gvAnexos.DataBind();
         pnlHistorico.Visible = false;
         gvHistorico.DataSource = null;
         gvHistorico.DataBind();
@@ -692,6 +750,14 @@ public partial class ci_default : System.Web.UI.Page
         return true;
     }
 
+    private void CarregarAnexos(int id)
+    {
+        DataTable anexos = ExecutarTabela("dbo.ci_anexo_listar", Param("@id_ci", SqlDbType.Int, id));
+        pnlAnexos.Visible = true;
+        gvAnexos.DataSource = anexos;
+        gvAnexos.DataBind();
+    }
+
     private void LimparFormulario()
     {
         LimparAutorizacaoEdicaoCI(ObterIdAtual());
@@ -710,6 +776,10 @@ public partial class ci_default : System.Web.UI.Page
         txtProvidencias.Text = "";
         txtObservacoes.Text = "";
         txtCriadoPor.Text = "";
+        txtModeloNome.Text = "";
+        pnlAnexos.Visible = false;
+        gvAnexos.DataSource = null;
+        gvAnexos.DataBind();
         litTituloForm.Text = "Nova CI";
         pnlHistorico.Visible = false;
         gvHistorico.DataSource = null;
@@ -757,6 +827,60 @@ public partial class ci_default : System.Web.UI.Page
         }
 
         return "";
+    }
+
+    private string ValidarAnexo()
+    {
+        if (fuAnexo == null || !fuAnexo.HasFile) return "";
+
+        int tamanho = fuAnexo.PostedFile != null ? fuAnexo.PostedFile.ContentLength : 0;
+        if (tamanho <= 0) return "O anexo informado est\u00e1 vazio.";
+        if (tamanho > 8 * 1024 * 1024) return "O anexo deve ter no m\u00e1ximo 8 MB.";
+
+        string extensao = Path.GetExtension(fuAnexo.FileName ?? "").ToLowerInvariant();
+        if (!ExtensaoAnexoPermitida(extensao))
+        {
+            return "Anexe apenas arquivos PDF, imagens, Word ou Excel.";
+        }
+
+        return "";
+    }
+
+    private bool ExtensaoAnexoPermitida(string extensao)
+    {
+        return extensao == ".pdf" ||
+            extensao == ".jpg" ||
+            extensao == ".jpeg" ||
+            extensao == ".png" ||
+            extensao == ".doc" ||
+            extensao == ".docx" ||
+            extensao == ".xls" ||
+            extensao == ".xlsx";
+    }
+
+    private void SalvarAnexoSeExistir(int idCi)
+    {
+        if (fuAnexo == null || !fuAnexo.HasFile || idCi <= 0) return;
+
+        string pasta = Server.MapPath("~/CI/anexos");
+        if (!Directory.Exists(pasta))
+        {
+            Directory.CreateDirectory(pasta);
+        }
+
+        string original = TextoCurto(Path.GetFileName(fuAnexo.FileName));
+        string extensao = Path.GetExtension(original).ToLowerInvariant();
+        string nomeArquivo = "ci-" + idCi.ToString() + "-" + Guid.NewGuid().ToString("N") + extensao;
+        string caminhoFisico = Path.Combine(pasta, nomeArquivo);
+        fuAnexo.SaveAs(caminhoFisico);
+
+        ExecutarSemRetorno("dbo.ci_anexo_registrar",
+            Param("@id_ci", SqlDbType.Int, idCi),
+            Param("@nome_original", SqlDbType.NVarChar, original, 260),
+            Param("@nome_arquivo", SqlDbType.NVarChar, nomeArquivo, 260),
+            Param("@caminho_relativo", SqlDbType.NVarChar, "anexos/" + nomeArquivo, 400),
+            Param("@content_type", SqlDbType.NVarChar, fuAnexo.PostedFile.ContentType, 120),
+            Param("@tamanho_bytes", SqlDbType.BigInt, fuAnexo.PostedFile.ContentLength));
     }
 
     private void NormalizarFormulario()

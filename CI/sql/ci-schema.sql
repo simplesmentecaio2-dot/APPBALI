@@ -141,6 +141,28 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID('dbo.ci_anexos', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.ci_anexos (
+        id_anexo INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        id_ci INT NOT NULL,
+        nome_original NVARCHAR(260) NOT NULL,
+        nome_arquivo NVARCHAR(260) NOT NULL,
+        caminho_relativo NVARCHAR(400) NOT NULL,
+        content_type NVARCHAR(120) NULL,
+        tamanho_bytes BIGINT NOT NULL,
+        ativo BIT NOT NULL CONSTRAINT DF_ci_anexos_ativo DEFAULT (1),
+        dt_upload DATETIME NOT NULL CONSTRAINT DF_ci_anexos_dt_upload DEFAULT (GETDATE())
+    );
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_anexos_ci' AND object_id = OBJECT_ID('dbo.ci_anexos'))
+BEGIN
+    CREATE INDEX IX_ci_anexos_ci ON dbo.ci_anexos (id_ci, ativo, dt_upload DESC);
+END
+GO
+
 IF NOT EXISTS (SELECT 1 FROM dbo.ci_modelos WHERE ativo = 1)
 BEGIN
     INSERT INTO dbo.ci_modelos (nome, categoria, prioridade, assunto, corpo, providencias)
@@ -245,6 +267,68 @@ BEGIN
             OR corpo LIKE '%' + @termo + '%'
           )
     ORDER BY data_documento DESC, id_ci DESC;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_anexo_registrar
+    @id_ci INT,
+    @nome_original NVARCHAR(260),
+    @nome_arquivo NVARCHAR(260),
+    @caminho_relativo NVARCHAR(400),
+    @content_type NVARCHAR(120) = NULL,
+    @tamanho_bytes BIGINT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF NOT EXISTS (SELECT 1 FROM dbo.ci_comunicacoes WHERE id_ci = @id_ci)
+    BEGIN
+        RAISERROR(N'CI nao encontrada para vincular o anexo.', 16, 1);
+        RETURN;
+    END
+
+    INSERT INTO dbo.ci_anexos
+        (id_ci, nome_original, nome_arquivo, caminho_relativo, content_type, tamanho_bytes)
+    VALUES
+        (@id_ci, @nome_original, @nome_arquivo, @caminho_relativo, @content_type, @tamanho_bytes);
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_anexo_listar
+    @id_ci INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        id_anexo,
+        id_ci,
+        nome_original,
+        nome_arquivo,
+        caminho_relativo,
+        ISNULL(content_type, '') AS content_type,
+        tamanho_bytes,
+        CAST(CASE
+            WHEN tamanho_bytes >= 1048576 THEN CAST(CAST(tamanho_bytes / 1048576.0 AS DECIMAL(10,2)) AS NVARCHAR(30)) + N' MB'
+            ELSE CAST(CAST(tamanho_bytes / 1024.0 AS DECIMAL(10,2)) AS NVARCHAR(30)) + N' KB'
+        END AS NVARCHAR(40)) AS tamanho_formatado,
+        dt_upload
+    FROM dbo.ci_anexos
+    WHERE id_ci = @id_ci
+      AND ativo = 1
+    ORDER BY dt_upload DESC, id_anexo DESC;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_anexo_excluir
+    @id_anexo INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE dbo.ci_anexos
+    SET ativo = 0
+    WHERE id_anexo = @id_anexo;
 END
 GO
 
