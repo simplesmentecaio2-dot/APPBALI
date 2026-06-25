@@ -176,6 +176,12 @@
         break-inside: avoid-page;
     }
 
+    #pnlImpressao > div,
+    #pnlImpressao table {
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+    }
+
     #pnlImpressao > #Div1,
     #pnlImpressao > #Div2 {
         page-break-after: always;
@@ -202,7 +208,6 @@
         break-before: page;
     }
 
-    #pnlImpressao table,
     #Panel1 table,
     #guiadocomprador table,
     #guiadocomprador2 table {
