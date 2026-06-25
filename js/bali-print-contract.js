@@ -55,6 +55,44 @@
         campo.style.height = Math.max(campo.scrollHeight, 14) + 'px';
     }
 
+    function criarElemento(tag, classe, texto) {
+        var elemento = document.createElement(tag);
+        if (classe) elemento.className = classe;
+        if (texto) {
+            if ('textContent' in elemento) {
+                elemento.textContent = texto;
+            } else {
+                elemento.innerText = texto;
+            }
+        }
+        return elemento;
+    }
+
+    function criarBarraImpressao() {
+        if (document.getElementById('baliPrintToolbar')) return;
+
+        var barra = criarElemento('div', 'bali-print-toolbar');
+        barra.id = 'baliPrintToolbar';
+        barra.setAttribute('role', 'region');
+        barra.setAttribute('aria-label', 'Acoes da impressao do contrato');
+
+        var titulo = criarElemento('div', 'bali-print-toolbar-title');
+        titulo.appendChild(criarElemento('strong', '', 'Contrato'));
+        titulo.appendChild(criarElemento('span', '', 'Visualizacao de impressao'));
+
+        var botao = criarElemento('button', 'bali-print-button', 'Imprimir');
+        botao.type = 'button';
+        botao.onclick = function () {
+            atualizarTextos();
+            window.print();
+        };
+
+        barra.appendChild(titulo);
+        barra.appendChild(botao);
+        document.body.insertBefore(barra, document.body.firstChild);
+        adicionarClasse(document.body, 'bali-print-page');
+    }
+
     function atualizarTextos() {
         var campos = camposDeTexto();
         for (var i = 0; i < campos.length; i++) {
@@ -67,11 +105,18 @@
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', atualizarTextos);
+        document.addEventListener('DOMContentLoaded', function () {
+            criarBarraImpressao();
+            atualizarTextos();
+        });
     } else {
+        criarBarraImpressao();
         atualizarTextos();
     }
 
-    window.addEventListener('load', atualizarTextos);
+    window.addEventListener('load', function () {
+        criarBarraImpressao();
+        atualizarTextos();
+    });
     window.addEventListener('beforeprint', atualizarTextos);
 })();
