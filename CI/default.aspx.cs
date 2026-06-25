@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -43,6 +44,58 @@ public partial class ci_default : System.Web.UI.Page
         chkSomenteAtivas.Checked = true;
         gvCis.PageIndex = 0;
         CarregarLista();
+    }
+
+    protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        int tamanho;
+        if (!Int32.TryParse(ddlPageSize.SelectedValue, out tamanho) || tamanho <= 0)
+        {
+            tamanho = 12;
+        }
+
+        gvCis.PageSize = tamanho;
+        gvCis.PageIndex = 0;
+        CarregarLista();
+    }
+
+    protected void btnExportar_Click(object sender, EventArgs e)
+    {
+        DataTable dados = ObterListaFiltrada();
+        AplicarOrdenacao(dados);
+
+        Response.Clear();
+        Response.ContentType = "text/csv";
+        Response.ContentEncoding = Encoding.UTF8;
+        Response.AddHeader("Content-Disposition", "attachment; filename=cis-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".csv");
+        Response.BinaryWrite(Encoding.UTF8.GetPreamble());
+
+        Response.Write("Codigo;Data;Marca;Origem;Destino;Destinatario;Assunto;Categoria;Prioridade;Status\r\n");
+        foreach (DataRow row in dados.Rows)
+        {
+            Response.Write(Csv(row["codigo_ci"]));
+            Response.Write(";");
+            Response.Write(Csv(Convert.ToDateTime(row["data_documento"]).ToString("dd/MM/yyyy")));
+            Response.Write(";");
+            Response.Write(Csv(row["origem_marca"]));
+            Response.Write(";");
+            Response.Write(Csv(row["origem_area"]));
+            Response.Write(";");
+            Response.Write(Csv(row["destino_area"]));
+            Response.Write(";");
+            Response.Write(Csv(row["destinatario"]));
+            Response.Write(";");
+            Response.Write(Csv(row["assunto"]));
+            Response.Write(";");
+            Response.Write(Csv(row["categoria"]));
+            Response.Write(";");
+            Response.Write(Csv(row["prioridade"]));
+            Response.Write(";");
+            Response.Write(Csv(row["status"]));
+            Response.Write("\r\n");
+        }
+
+        Response.End();
     }
 
     protected void btnNova_Click(object sender, EventArgs e)
@@ -154,6 +207,18 @@ public partial class ci_default : System.Web.UI.Page
         CarregarLista();
     }
 
+    protected void gvCis_Sorting(object sender, GridViewSortEventArgs e)
+    {
+        string direcaoAtual = Convert.ToString(ViewState["CiSortDirection"]);
+        string campoAtual = Convert.ToString(ViewState["CiSortExpression"]);
+        string novaDirecao = (campoAtual == e.SortExpression && direcaoAtual == "ASC") ? "DESC" : "ASC";
+
+        ViewState["CiSortExpression"] = e.SortExpression;
+        ViewState["CiSortDirection"] = novaDirecao;
+        gvCis.PageIndex = 0;
+        CarregarLista();
+    }
+
     protected void gvCis_RowDataBound(object sender, GridViewRowEventArgs e)
     {
         if (e.Row.RowType != DataControlRowType.DataRow) return;
@@ -183,6 +248,17 @@ public partial class ci_default : System.Web.UI.Page
 
     private void CarregarLista()
     {
+        DataTable dados = ObterListaFiltrada();
+        AplicarOrdenacao(dados);
+        AjustarPaginaConsulta(dados.Rows.Count);
+        gvCis.DataSource = dados;
+        gvCis.DataBind();
+        AtualizarResumoConsulta(dados.Rows.Count, Convert.ToString(ViewState["CiAvisoConsulta"] ?? ""));
+        ViewState["CiAvisoConsulta"] = "";
+    }
+
+    private DataTable ObterListaFiltrada()
+    {
         DateTime inicio;
         DateTime fim;
         bool inicioValido = ObterData(txtFiltroInicio.Text, out inicio);
@@ -199,20 +275,37 @@ public partial class ci_default : System.Web.UI.Page
             avisoConsulta = "Per\u00edodo ajustado automaticamente: a data inicial era maior que a data final.";
         }
 
+        ViewState["CiAvisoConsulta"] = avisoConsulta;
+
         object dtInicio = inicioValido ? (object)inicio : DBNull.Value;
         object dtFim = fimValido ? (object)fim : DBNull.Value;
 
-        DataTable dados = ExecutarTabela("dbo.ci_comunicacao_listar",
+        return ExecutarTabela("dbo.ci_comunicacao_listar",
             Param("@dt_inicio", SqlDbType.Date, dtInicio),
             Param("@dt_fim", SqlDbType.Date, dtFim),
             Param("@origem_marca", SqlDbType.NVarChar, ddlFiltroMarca.SelectedValue, 40),
             Param("@termo", SqlDbType.NVarChar, txtBusca.Text.Trim(), 160),
             Param("@somente_ativas", SqlDbType.Bit, chkSomenteAtivas.Checked));
+    }
 
-        AjustarPaginaConsulta(dados.Rows.Count);
-        gvCis.DataSource = dados;
-        gvCis.DataBind();
-        AtualizarResumoConsulta(dados.Rows.Count, avisoConsulta);
+    private void AplicarOrdenacao(DataTable dados)
+    {
+        if (dados == null || dados.Rows.Count == 0) return;
+
+        string campo = Convert.ToString(ViewState["CiSortExpression"]);
+        string direcao = Convert.ToString(ViewState["CiSortDirection"]);
+        if (campo.Length == 0 || dados.Columns.IndexOf(campo) < 0) return;
+        if (direcao != "ASC" && direcao != "DESC") direcao = "ASC";
+
+        DataView view = dados.DefaultView;
+        view.Sort = campo + " " + direcao;
+        DataTable ordenado = view.ToTable();
+
+        dados.Clear();
+        foreach (DataRow row in ordenado.Rows)
+        {
+            dados.ImportRow(row);
+        }
     }
 
     private void AjustarPaginaConsulta(int total)
@@ -361,6 +454,13 @@ public partial class ci_default : System.Web.UI.Page
         SqlParameter parametro = tamanho > 0 ? new SqlParameter(nome, tipo, tamanho) : new SqlParameter(nome, tipo);
         parametro.Value = valor == null ? DBNull.Value : valor;
         return parametro;
+    }
+
+    private string Csv(object valor)
+    {
+        string texto = Convert.ToString(valor ?? "");
+        texto = texto.Replace("\"", "\"\"");
+        return "\"" + texto + "\"";
     }
 
     private DataTable ExecutarTabela(string procedure, params SqlParameter[] parametros)

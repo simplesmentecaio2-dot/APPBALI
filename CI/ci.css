@@ -275,6 +275,22 @@ a {
   margin-bottom: 16px;
 }
 
+.panel-tools {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.compact-label {
+  min-width: 86px;
+}
+
+.compact-select {
+  width: 86px;
+}
+
 .filter-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(140px, 1fr)) 130px auto;
@@ -480,6 +496,15 @@ label {
   font-size: 12px;
   text-align: left;
   text-transform: uppercase;
+}
+
+.ci-table th a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ci-table th a:hover {
+  color: var(--brand-strong);
 }
 
 .ci-table td {
@@ -761,6 +786,7 @@ label {
   .hero,
   .panel-header,
   .form-actions,
+  .panel-tools,
   .hero-side,
   .sidebar {
     align-items: stretch;

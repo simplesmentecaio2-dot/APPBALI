@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-filter" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-consulta" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -70,7 +70,17 @@
                             <h2>Localizar CIs</h2>
                             <p class="panel-subtitle"><asp:Literal ID="litResultadoConsulta" runat="server" Text="Use os filtros para localizar documentos internos."></asp:Literal></p>
                         </div>
-                        <asp:Button ID="btnLimpar" runat="server" Text="Limpar filtros" CssClass="secondary-button" OnClick="btnLimpar_Click" />
+                        <div class="panel-tools">
+                            <label class="compact-label">Linhas
+                                <asp:DropDownList ID="ddlPageSize" runat="server" CssClass="select-field compact-select" AutoPostBack="true" OnSelectedIndexChanged="ddlPageSize_SelectedIndexChanged">
+                                    <asp:ListItem Value="12">12</asp:ListItem>
+                                    <asp:ListItem Value="25">25</asp:ListItem>
+                                    <asp:ListItem Value="50">50</asp:ListItem>
+                                </asp:DropDownList>
+                            </label>
+                            <asp:Button ID="btnExportar" runat="server" Text="Exportar CSV" CssClass="secondary-button" OnClick="btnExportar_Click" />
+                            <asp:Button ID="btnLimpar" runat="server" Text="Limpar filtros" CssClass="secondary-button" OnClick="btnLimpar_Click" />
+                        </div>
                     </div>
 
                     <div class="filter-grid">
@@ -105,14 +115,14 @@
                     </div>
 
                     <div class="table-wrap">
-                        <asp:GridView ID="gvCis" runat="server" CssClass="ci-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma CI encontrada." AllowPaging="true" PageSize="12" PagerStyle-CssClass="ci-pager" OnPageIndexChanging="gvCis_PageIndexChanging" OnRowCommand="gvCis_RowCommand" OnRowDataBound="gvCis_RowDataBound">
+                        <asp:GridView ID="gvCis" runat="server" CssClass="ci-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma CI encontrada." AllowPaging="true" AllowSorting="true" PageSize="12" PagerStyle-CssClass="ci-pager" OnPageIndexChanging="gvCis_PageIndexChanging" OnSorting="gvCis_Sorting" OnRowCommand="gvCis_RowCommand" OnRowDataBound="gvCis_RowDataBound">
                             <Columns>
-                                <asp:BoundField DataField="codigo_ci" HeaderText="C&oacute;digo" />
-                                <asp:BoundField DataField="data_documento" HeaderText="Data" DataFormatString="{0:dd/MM/yyyy}" />
-                                <asp:BoundField DataField="origem_marca" HeaderText="Marca" />
-                                <asp:BoundField DataField="destinatario" HeaderText="Destinat&aacute;rio" />
-                                <asp:BoundField DataField="assunto" HeaderText="Assunto" />
-                                <asp:BoundField DataField="status" HeaderText="Status" />
+                                <asp:BoundField DataField="codigo_ci" HeaderText="C&oacute;digo" SortExpression="codigo_ci" />
+                                <asp:BoundField DataField="data_documento" HeaderText="Data" DataFormatString="{0:dd/MM/yyyy}" SortExpression="data_documento" />
+                                <asp:BoundField DataField="origem_marca" HeaderText="Marca" SortExpression="origem_marca" />
+                                <asp:BoundField DataField="destinatario" HeaderText="Destinat&aacute;rio" SortExpression="destinatario" />
+                                <asp:BoundField DataField="assunto" HeaderText="Assunto" SortExpression="assunto" />
+                                <asp:BoundField DataField="status" HeaderText="Status" SortExpression="status" />
                                 <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                     <ItemTemplate>
                                         <a class="table-action" href='print.aspx?id=<%# Eval("id_ci") %>' target="_blank">Imprimir</a>
