@@ -3278,6 +3278,12 @@
     });
   }
 
+  function notifyLookupAction(message, type) {
+    if (window.BaliContractToast) {
+      window.BaliContractToast(message, type || 'info');
+    }
+  }
+
   function enhanceLookupSummary(table) {
     var wrapper = closestClass(table, 'dataTables_wrapper') || table.parentNode;
     if (!wrapper) return;
@@ -3310,18 +3316,24 @@
     copyButton.addEventListener('click', function () {
       var ids = lookupVisibleIds(table);
       if (!ids.length) {
-        if (info) info.textContent = 'Nenhum ID visível para copiar.';
+        var emptyCopyMessage = 'Nenhum ID visível para copiar.';
+        if (info) info.textContent = emptyCopyMessage;
+        notifyLookupAction(emptyCopyMessage, 'warning');
         return;
       }
 
       copyText(ids.join('\n'), function (ok) {
-        if (info) info.textContent = ok ? ids.length + ' ID(s) copiado(s).' : 'Não foi possível copiar os IDs automaticamente.';
+        var copyMessage = ok ? ids.length + ' ID(s) copiado(s).' : 'Não foi possível copiar os IDs automaticamente.';
+        if (info) info.textContent = copyMessage;
+        notifyLookupAction(copyMessage, ok ? 'info' : 'warning');
       });
     });
 
     exportButton.addEventListener('click', function () {
       var total = exportLookupCsv(table, label);
-      if (info) info.textContent = total ? total + ' contrato(s) exportado(s).' : 'Nenhum contrato visível para exportar.';
+      var exportMessage = total ? total + ' contrato(s) exportado(s).' : 'Nenhum contrato visível para exportar.';
+      if (info) info.textContent = exportMessage;
+      notifyLookupAction(exportMessage, total ? 'info' : 'warning');
     });
   }
 
