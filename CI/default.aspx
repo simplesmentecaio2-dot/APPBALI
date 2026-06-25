@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-acoes" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-autosave" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -327,6 +327,7 @@
                 var textoSenhaCI = document.getElementById('textoSenhaCI');
                 var salvandoCI = false;
                 var formularioAlterado = false;
+                var temporizadorRascunhoCI = null;
 
                 function executarPostbackCI() {
                     if (!postbackCIPendente) return;
@@ -534,6 +535,38 @@
                     };
                 }
 
+                function rascunhoTemConteudoCI(dados) {
+                    var campos = dados || camposRascunhoCI();
+                    return [
+                        campos.origemArea,
+                        campos.origemResponsavel,
+                        campos.destinoArea,
+                        campos.destinatario,
+                        campos.assunto,
+                        campos.corpo,
+                        campos.providencias,
+                        campos.observacoes,
+                        campos.criadoPor
+                    ].join('').trim().length > 0;
+                }
+
+                function agendarRascunhoAutomaticoCI() {
+                    if (salvandoCI) return;
+                    window.clearTimeout(temporizadorRascunhoCI);
+                    temporizadorRascunhoCI = window.setTimeout(function () {
+                        try {
+                            var dados = camposRascunhoCI();
+                            if (!rascunhoTemConteudoCI(dados)) return;
+                            localStorage.setItem('bali-ci-rascunho', JSON.stringify(dados));
+                            var agora = new Date();
+                            var horario = String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
+                            statusRascunhoCI('Rascunho salvo automaticamente \u00e0s ' + horario + '.');
+                        } catch (erro) {
+                            statusRascunhoCI('N\u00e3o foi poss\u00edvel salvar o rascunho automaticamente.');
+                        }
+                    }, 1200);
+                }
+
                 function preencherCampoCI(id, valorCampo) {
                     var item = campo(id);
                     if (item) item.value = valorCampo || '';
@@ -702,6 +735,8 @@
                     monitorado.addEventListener('input', function () { ajustarTextareaCI(this); });
                     monitorado.addEventListener('input', function () { formularioAlterado = true; });
                     monitorado.addEventListener('change', function () { formularioAlterado = true; });
+                    monitorado.addEventListener('input', agendarRascunhoAutomaticoCI);
+                    monitorado.addEventListener('change', agendarRascunhoAutomaticoCI);
                 }
 
                 window.addEventListener('beforeunload', function (event) {
