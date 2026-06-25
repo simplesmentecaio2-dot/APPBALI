@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -18,6 +19,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     private const int DiasMaximosConsulta = 370;
     private const int TimeoutConsultaSegundos = 60;
     private const int LimiteLinhasConsulta = 750;
+    private const int MilissegundosConsultaLenta = 2500;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -959,6 +961,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
         List<ContratoBIItem> contratos = new List<ContratoBIItem>();
         Veiculos vec = new Veiculos();
+        Stopwatch relogioBI = Stopwatch.StartNew();
 
         try
         {
@@ -1001,6 +1004,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
         finally
         {
             vec.FecharConexao();
+        }
+
+        if (relogioBI.ElapsedMilliseconds > MilissegundosConsultaLenta)
+        {
+            RegistrarContratoOperacao("BI_LENTO", "Inicio=" + inicio.ToString("dd/MM/yyyy") + "; Fim=" + fim.ToString("dd/MM/yyyy") + "; Linhas=" + contratos.Count.ToString(CulturaBrasil) + "; Ms=" + relogioBI.ElapsedMilliseconds.ToString(CulturaBrasil));
         }
 
         HttpRuntime.Cache.Insert(cacheKey, contratos, null, DateTime.Now.AddMinutes(2), System.Web.Caching.Cache.NoSlidingExpiration);
@@ -1854,7 +1862,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void select_Tab_ConsultaPeriodo(string paginaImpressao, string tipo, DateTime dtInicio, DateTime dtFim, out string tabelaHtml)
     {
-        string cacheKey = "contrato-consulta:" + MarcaContrato + ":" + CacheVersaoContrato("consulta") + ":" + tipo + ":" + dtInicio.ToString("yyyyMMdd") + ":" + dtFim.ToString("yyyyMMdd");
+        string cacheKey = "contrato-consulta:" + MarcaContrato + ":" + CacheVersaoContrato("consulta") + ":" + tipo + ":" + dtInicio.ToString("yyyyMMdd") + ":" + dtFim.ToString("yyyyMMdd") + ":limite:" + LimiteLinhasConsulta.ToString(CulturaBrasil);
         string tabelaCache = HttpRuntime.Cache[cacheKey] as string;
         if (!String.IsNullOrEmpty(tabelaCache))
         {
@@ -1886,6 +1894,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                         </thead><tbody>");
 
         Veiculos vec = new Veiculos();
+        Stopwatch relogioConsulta = Stopwatch.StartNew();
         try
         {
             vec.Conexao();
@@ -1957,6 +1966,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
                         .Append(LimiteLinhasConsulta.ToString(CulturaBrasil))
                         .Append(" contratos mais recentes deste filtro.</strong><small>Para ver resultados mais específicos, reduza o período ou use o filtro da tabela por cliente, CPF/CNPJ ou vendedor.</small></td></tr>");
                     RegistrarContratoOperacao("CONSULTA_LIMITE_RESULTADO", "Tipo=" + tipo + "; Inicio=" + dtInicio.ToString("dd/MM/yyyy") + "; Fim=" + dtFim.ToString("dd/MM/yyyy") + "; Limite=" + LimiteLinhasConsulta.ToString(CulturaBrasil));
+                }
+
+                if (relogioConsulta.ElapsedMilliseconds > MilissegundosConsultaLenta)
+                {
+                    RegistrarContratoOperacao("CONSULTA_LENTA", "Tipo=" + tipo + "; Inicio=" + dtInicio.ToString("dd/MM/yyyy") + "; Fim=" + dtFim.ToString("dd/MM/yyyy") + "; Linhas=" + totalLinhas.ToString(CulturaBrasil) + "; LimiteExcedido=" + limiteExcedido.ToString() + "; Ms=" + relogioConsulta.ElapsedMilliseconds.ToString(CulturaBrasil));
                 }
             }
         }
