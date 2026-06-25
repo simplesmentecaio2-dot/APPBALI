@@ -40,7 +40,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
         {
             CarregarBI();
         }
-        auditoriaHtml = MontarHtmlAuditoriaContrato();
+        auditoriaHtml = DeveMontarAuditoriaContrato()
+            ? MontarHtmlAuditoriaContrato()
+            : "<div class='contract-audit-empty'>Auditoria preservada para a aba BI. Abra o BI ou consulte um histórico para atualizar os indicadores.</div>";
         if (String.IsNullOrEmpty(historicoHtml))
         {
             historicoHtml = "<div class='contract-audit-empty'>Informe o ID de um contrato para consultar o histórico de alterações e ocorrências.</div>";
@@ -72,6 +74,19 @@ public partial class veiculos_contrato : System.Web.UI.Page
         string texto = HttpUtility.JavaScriptStringEncode(mensagem);
         string script = "(window.BaliContractToast ? window.BaliContractToast('" + texto + "', 'warning') : alert('" + texto + "'));";
         ScriptManager.RegisterStartupScript(this, this.GetType(), Guid.NewGuid().ToString("N"), script, true);
+    }
+
+    private bool PostbackDoControle(Control controle)
+    {
+        return controle != null && Request.Form[controle.UniqueID] != null;
+    }
+
+    private bool DeveMontarAuditoriaContrato()
+    {
+        return !IsPostBack
+            || TabContainerProcesso.ActiveTabIndex == 0
+            || PostbackDoControle(btnAtualizarBI)
+            || PostbackDoControle(btnConsultarHistoricoContrato);
     }
 
     private string UsuarioAtual()
