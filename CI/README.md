@@ -28,7 +28,7 @@ O script versionado fica em `sql/ci-schema.sql`.
 
 ## Seguranca operacional
 
-- Edicao e cancelamento exigem senha simples: `@ci*2026`.
+- Edicao, cancelamento e logs exigem senha simples: `@bali2025`.
 - A senha fica validada no servidor em `default.aspx.cs`.
 - O ViewState e vinculado a sessao do usuario.
 - CIs canceladas nao exibem acoes de editar/cancelar na listagem.

@@ -8,7 +8,7 @@ using System.Web.UI.WebControls;
 
 public partial class ci_erros : System.Web.UI.Page
 {
-    private const string SenhaLogs = "@ci*2026";
+    private const string SenhaLogs = "@bali2025";
     private const int LimiteLinhas = 200;
 
     protected void Page_Init(object sender, EventArgs e)

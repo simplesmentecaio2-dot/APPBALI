@@ -11,7 +11,7 @@ using System.Web.UI.WebControls;
 
 public partial class ci_default : System.Web.UI.Page
 {
-    private const string SenhaEdicao = "@ci*2026";
+    private const string SenhaEdicao = "@bali2025";
     private const int TimeoutSqlSegundos = 60;
 
     private string ConnectionString
