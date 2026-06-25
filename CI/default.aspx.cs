@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.UI;
@@ -160,6 +161,7 @@ public partial class ci_default : System.Web.UI.Page
         }
         catch (Exception ex)
         {
+            RegistrarErro("Salvar CI", ex);
             MostrarMensagem(FormatarErro(ex), true);
         }
     }
@@ -205,6 +207,7 @@ public partial class ci_default : System.Web.UI.Page
         }
         catch (Exception ex)
         {
+            RegistrarErro("A\u00e7\u00e3o na lista de CI", ex);
             MostrarMensagem(FormatarErro(ex), true);
         }
     }
@@ -632,6 +635,34 @@ public partial class ci_default : System.Web.UI.Page
         pnlMensagem.Visible = true;
         pnlMensagem.CssClass = erro ? "form-message error" : "form-message success";
         litMensagem.Text = Server.HtmlEncode(mensagem);
+    }
+
+    private void RegistrarErro(string origem, Exception ex)
+    {
+        try
+        {
+            string pasta = Server.MapPath("~/App_Data");
+            if (!Directory.Exists(pasta))
+            {
+                Directory.CreateDirectory(pasta);
+            }
+
+            string usuario = Context != null && Context.User != null && Context.User.Identity != null && Context.User.Identity.IsAuthenticated
+                ? Context.User.Identity.Name
+                : "anonimo";
+
+            string linha = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
+                " | " + origem +
+                " | usuario=" + usuario +
+                " | url=" + Request.RawUrl +
+                " | erro=" + (ex.Message ?? "").Replace("\r", " ").Replace("\n", " ") +
+                Environment.NewLine;
+
+            File.AppendAllText(Path.Combine(pasta, "ci-erros.log"), linha, Encoding.UTF8);
+        }
+        catch
+        {
+        }
     }
 
     private string FormatarErro(Exception ex)
