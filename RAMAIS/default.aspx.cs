@@ -2,6 +2,7 @@ using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
@@ -152,6 +153,7 @@ public partial class ramais_default : System.Web.UI.Page
         }
         catch (Exception ex)
         {
+            RegistrarErro("Salvar ramal", ex);
             MostrarMensagem(FormatarErro(ex), true);
             AplicarTela("ramais");
         }
@@ -201,6 +203,7 @@ public partial class ramais_default : System.Web.UI.Page
         }
         catch (Exception ex)
         {
+            RegistrarErro("A\u00e7\u00e3o em ramal", ex);
             MostrarMensagem(FormatarErro(ex), true);
             AplicarTela("ramais");
         }
@@ -316,6 +319,7 @@ public partial class ramais_default : System.Web.UI.Page
         }
         catch (Exception ex)
         {
+            RegistrarErro("Salvar loja", ex);
             MostrarMensagem(FormatarErro(ex), true);
             AplicarTela("lojas");
         }
@@ -358,6 +362,7 @@ public partial class ramais_default : System.Web.UI.Page
         }
         catch (Exception ex)
         {
+            RegistrarErro("A\u00e7\u00e3o em loja", ex);
             MostrarMensagem(FormatarErro(ex), true);
             AplicarTela("lojas");
         }
@@ -395,6 +400,7 @@ public partial class ramais_default : System.Web.UI.Page
         }
         catch (Exception ex)
         {
+            RegistrarErro("Salvar setor", ex);
             MostrarMensagem(FormatarErro(ex), true);
             AplicarTela("setores");
         }
@@ -437,6 +443,7 @@ public partial class ramais_default : System.Web.UI.Page
         }
         catch (Exception ex)
         {
+            RegistrarErro("A\u00e7\u00e3o em setor", ex);
             MostrarMensagem(FormatarErro(ex), true);
             AplicarTela("setores");
         }
@@ -826,6 +833,34 @@ public partial class ramais_default : System.Web.UI.Page
         pnlMensagem.Visible = true;
         pnlMensagem.CssClass = erro ? "form-message error" : "form-message success";
         litMensagem.Text = Server.HtmlEncode(mensagem);
+    }
+
+    private void RegistrarErro(string origem, Exception ex)
+    {
+        try
+        {
+            string pasta = Server.MapPath("~/App_Data");
+            if (!Directory.Exists(pasta))
+            {
+                Directory.CreateDirectory(pasta);
+            }
+
+            string usuario = Context != null && Context.User != null && Context.User.Identity != null && Context.User.Identity.IsAuthenticated
+                ? Context.User.Identity.Name
+                : "anonimo";
+
+            string linha = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
+                " | " + origem +
+                " | usuario=" + usuario +
+                " | url=" + Request.RawUrl +
+                " | erro=" + (ex.Message ?? "").Replace("\r", " ").Replace("\n", " ") +
+                Environment.NewLine;
+
+            File.AppendAllText(Path.Combine(pasta, "ramais-erros.log"), linha, Encoding.UTF8);
+        }
+        catch
+        {
+        }
     }
 
     private string FormatarErro(Exception ex)
