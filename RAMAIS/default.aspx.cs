@@ -205,6 +205,41 @@ public partial class ramais_default : System.Web.UI.Page
         }
     }
 
+    protected void Grid_Sorting(object sender, GridViewSortEventArgs e)
+    {
+        GridView grid = sender as GridView;
+        if (grid == null) return;
+
+        string campoAtual = Convert.ToString(ViewState[grid.ID + "_SortExpression"]);
+        string direcaoAtual = Convert.ToString(ViewState[grid.ID + "_SortDirection"]);
+        string novaDirecao = (campoAtual == e.SortExpression && direcaoAtual == "ASC") ? "DESC" : "ASC";
+
+        ViewState[grid.ID + "_SortExpression"] = e.SortExpression;
+        ViewState[grid.ID + "_SortDirection"] = novaDirecao;
+        grid.PageIndex = 0;
+
+        if (grid == gvConsulta)
+        {
+            CarregarRamais();
+            AplicarTela("consulta");
+        }
+        else if (grid == gvRamais)
+        {
+            CarregarRamais();
+            AplicarTela("ramais");
+        }
+        else if (grid == gvLojas)
+        {
+            CarregarLojas();
+            AplicarTela("lojas");
+        }
+        else if (grid == gvSetores)
+        {
+            CarregarSetores();
+            AplicarTela("setores");
+        }
+    }
+
     protected void btnSalvarLoja_Click(object sender, EventArgs e)
     {
         try
@@ -432,23 +467,39 @@ public partial class ramais_default : System.Web.UI.Page
             Param("@termo", SqlDbType.NVarChar, txtBusca.Text.Trim(), 160),
             Param("@somente_ativos", SqlDbType.Bit, chkSomenteAtivos.Checked));
 
-        gvConsulta.DataSource = ramais;
+        gvConsulta.DataSource = OrdenarTabela(ramais.Copy(), gvConsulta);
         gvConsulta.DataBind();
 
-        gvRamais.DataSource = ramais;
+        gvRamais.DataSource = OrdenarTabela(ramais.Copy(), gvRamais);
         gvRamais.DataBind();
     }
 
     private void CarregarLojas()
     {
-        gvLojas.DataSource = ExecutarTabela("dbo.ramais_loja_listar", Param("@somente_ativas", SqlDbType.Bit, false));
+        DataTable lojas = ExecutarTabela("dbo.ramais_loja_listar", Param("@somente_ativas", SqlDbType.Bit, false));
+        gvLojas.DataSource = OrdenarTabela(lojas, gvLojas);
         gvLojas.DataBind();
     }
 
     private void CarregarSetores()
     {
-        gvSetores.DataSource = ExecutarTabela("dbo.ramais_setor_listar", Param("@somente_ativos", SqlDbType.Bit, false));
+        DataTable setores = ExecutarTabela("dbo.ramais_setor_listar", Param("@somente_ativos", SqlDbType.Bit, false));
+        gvSetores.DataSource = OrdenarTabela(setores, gvSetores);
         gvSetores.DataBind();
+    }
+
+    private DataTable OrdenarTabela(DataTable dados, GridView grid)
+    {
+        if (dados == null || dados.Rows.Count == 0 || grid == null) return dados;
+
+        string campo = Convert.ToString(ViewState[grid.ID + "_SortExpression"]);
+        string direcao = Convert.ToString(ViewState[grid.ID + "_SortDirection"]);
+        if (campo.Length == 0 || dados.Columns.IndexOf(campo) < 0) return dados;
+        if (direcao != "ASC" && direcao != "DESC") direcao = "ASC";
+
+        DataView view = dados.DefaultView;
+        view.Sort = campo + " " + direcao;
+        return view.ToTable();
     }
 
     private void CarregarImpressao()

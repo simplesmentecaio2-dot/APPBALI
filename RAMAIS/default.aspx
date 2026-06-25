@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sistema de Ramais</title>
-    <link href="ramais.css?v=20260625-paging" rel="stylesheet" />
+    <link href="ramais.css?v=20260625-sort" rel="stylesheet" />
 </head>
 <body class="ramais-page">
     <form id="form1" runat="server">
@@ -121,13 +121,13 @@
                     </div>
 
                     <div class="table-wrap">
-                        <asp:GridView ID="gvConsulta" runat="server" CssClass="ramais-table" AutoGenerateColumns="false" EmptyDataText="Nenhum ramal encontrado para os filtros informados." AllowPaging="true" PageSize="15" PagerStyle-CssClass="ramais-pager" OnPageIndexChanging="Grid_PageIndexChanging" OnRowCommand="gvRamais_RowCommand" OnRowDataBound="Grid_RowDataBound">
+                        <asp:GridView ID="gvConsulta" runat="server" CssClass="ramais-table" AutoGenerateColumns="false" EmptyDataText="Nenhum ramal encontrado para os filtros informados." AllowPaging="true" AllowSorting="true" PageSize="15" PagerStyle-CssClass="ramais-pager" OnPageIndexChanging="Grid_PageIndexChanging" OnSorting="Grid_Sorting" OnRowCommand="gvRamais_RowCommand" OnRowDataBound="Grid_RowDataBound">
                             <Columns>
-                                <asp:BoundField DataField="nome" HeaderText="Nome" />
-                                <asp:BoundField DataField="ramal" HeaderText="Ramal" />
-                                <asp:BoundField DataField="loja" HeaderText="Loja" />
-                                <asp:BoundField DataField="setor" HeaderText="Setor" />
-                                <asp:BoundField DataField="status" HeaderText="Status" />
+                                <asp:BoundField DataField="nome" HeaderText="Nome" SortExpression="nome" />
+                                <asp:BoundField DataField="ramal" HeaderText="Ramal" SortExpression="ramal" />
+                                <asp:BoundField DataField="loja" HeaderText="Loja" SortExpression="loja" />
+                                <asp:BoundField DataField="setor" HeaderText="Setor" SortExpression="setor" />
+                                <asp:BoundField DataField="status" HeaderText="Status" SortExpression="status" />
                                 <asp:TemplateField HeaderText="A&ccedil;&atilde;o">
                                     <ItemTemplate>
                                         <asp:LinkButton ID="lnkEditarConsulta" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return solicitarSenhaRamal('editar', this);">Editar</asp:LinkButton>
@@ -170,13 +170,13 @@
                     </div>
 
                     <div class="table-wrap">
-                        <asp:GridView ID="gvRamais" runat="server" CssClass="ramais-table" AutoGenerateColumns="false" EmptyDataText="Nenhum ramal cadastrado." AllowPaging="true" PageSize="15" PagerStyle-CssClass="ramais-pager" OnPageIndexChanging="Grid_PageIndexChanging" OnRowCommand="gvRamais_RowCommand" OnRowDataBound="Grid_RowDataBound">
+                        <asp:GridView ID="gvRamais" runat="server" CssClass="ramais-table" AutoGenerateColumns="false" EmptyDataText="Nenhum ramal cadastrado." AllowPaging="true" AllowSorting="true" PageSize="15" PagerStyle-CssClass="ramais-pager" OnPageIndexChanging="Grid_PageIndexChanging" OnSorting="Grid_Sorting" OnRowCommand="gvRamais_RowCommand" OnRowDataBound="Grid_RowDataBound">
                             <Columns>
-                                <asp:BoundField DataField="nome" HeaderText="Nome" />
-                                <asp:BoundField DataField="ramal" HeaderText="Ramal" />
-                                <asp:BoundField DataField="loja" HeaderText="Loja" />
-                                <asp:BoundField DataField="setor" HeaderText="Setor" />
-                                <asp:BoundField DataField="status" HeaderText="Status" />
+                                <asp:BoundField DataField="nome" HeaderText="Nome" SortExpression="nome" />
+                                <asp:BoundField DataField="ramal" HeaderText="Ramal" SortExpression="ramal" />
+                                <asp:BoundField DataField="loja" HeaderText="Loja" SortExpression="loja" />
+                                <asp:BoundField DataField="setor" HeaderText="Setor" SortExpression="setor" />
+                                <asp:BoundField DataField="status" HeaderText="Status" SortExpression="status" />
                                 <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                     <ItemTemplate>
                                         <asp:LinkButton ID="lnkEditarRamal" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return solicitarSenhaRamal('editar', this);">Editar</asp:LinkButton>
@@ -212,10 +212,10 @@
                         </div>
 
                         <div class="table-wrap">
-                            <asp:GridView ID="gvLojas" runat="server" CssClass="ramais-table compact" AutoGenerateColumns="false" EmptyDataText="Nenhuma loja cadastrada." AllowPaging="true" PageSize="10" PagerStyle-CssClass="ramais-pager" OnPageIndexChanging="Grid_PageIndexChanging" OnRowCommand="gvLojas_RowCommand" OnRowDataBound="Grid_RowDataBound">
+                            <asp:GridView ID="gvLojas" runat="server" CssClass="ramais-table compact" AutoGenerateColumns="false" EmptyDataText="Nenhuma loja cadastrada." AllowPaging="true" AllowSorting="true" PageSize="10" PagerStyle-CssClass="ramais-pager" OnPageIndexChanging="Grid_PageIndexChanging" OnSorting="Grid_Sorting" OnRowCommand="gvLojas_RowCommand" OnRowDataBound="Grid_RowDataBound">
                                 <Columns>
-                                    <asp:BoundField DataField="nome" HeaderText="Loja" />
-                                    <asp:BoundField DataField="status" HeaderText="Status" />
+                                    <asp:BoundField DataField="nome" HeaderText="Loja" SortExpression="nome" />
+                                    <asp:BoundField DataField="status" HeaderText="Status" SortExpression="status" />
                                     <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                         <ItemTemplate>
                                             <asp:LinkButton ID="lnkEditarLoja" runat="server" CssClass="table-action" CommandName="EditarLoja" CommandArgument='<%# Eval("id_loja") %>'>Editar</asp:LinkButton>
@@ -250,10 +250,10 @@
                         </div>
 
                         <div class="table-wrap">
-                            <asp:GridView ID="gvSetores" runat="server" CssClass="ramais-table compact" AutoGenerateColumns="false" EmptyDataText="Nenhum setor cadastrado." AllowPaging="true" PageSize="10" PagerStyle-CssClass="ramais-pager" OnPageIndexChanging="Grid_PageIndexChanging" OnRowCommand="gvSetores_RowCommand" OnRowDataBound="Grid_RowDataBound">
+                            <asp:GridView ID="gvSetores" runat="server" CssClass="ramais-table compact" AutoGenerateColumns="false" EmptyDataText="Nenhum setor cadastrado." AllowPaging="true" AllowSorting="true" PageSize="10" PagerStyle-CssClass="ramais-pager" OnPageIndexChanging="Grid_PageIndexChanging" OnSorting="Grid_Sorting" OnRowCommand="gvSetores_RowCommand" OnRowDataBound="Grid_RowDataBound">
                                 <Columns>
-                                    <asp:BoundField DataField="nome" HeaderText="Setor" />
-                                    <asp:BoundField DataField="status" HeaderText="Status" />
+                                    <asp:BoundField DataField="nome" HeaderText="Setor" SortExpression="nome" />
+                                    <asp:BoundField DataField="status" HeaderText="Status" SortExpression="status" />
                                     <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                         <ItemTemplate>
                                             <asp:LinkButton ID="lnkEditarSetor" runat="server" CssClass="table-action" CommandName="EditarSetor" CommandArgument='<%# Eval("id_setor") %>'>Editar</asp:LinkButton>

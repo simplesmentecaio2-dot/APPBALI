@@ -390,6 +390,15 @@ label {
   text-transform: uppercase;
 }
 
+.ramais-table th a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ramais-table th a:hover {
+  color: var(--brand-strong);
+}
+
 .ramais-table td {
   border-top: 1px solid var(--line);
   padding: 12px;
