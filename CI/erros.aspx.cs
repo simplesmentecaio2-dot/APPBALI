@@ -52,6 +52,51 @@ public partial class ci_erros : System.Web.UI.Page
         CarregarLogs();
     }
 
+    protected void btnFiltrarLogs_Click(object sender, EventArgs e)
+    {
+        gvErros.PageIndex = 0;
+        CarregarLogs();
+    }
+
+    protected void btnLimparLogs_Click(object sender, EventArgs e)
+    {
+        txtBuscaLogs.Text = "";
+        gvErros.PageIndex = 0;
+        CarregarLogs();
+    }
+
+    protected void ddlLogsPageSize_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        int tamanho;
+        if (!Int32.TryParse(ddlLogsPageSize.SelectedValue, out tamanho) || tamanho <= 0)
+        {
+            tamanho = 20;
+        }
+
+        gvErros.PageSize = tamanho;
+        gvErros.PageIndex = 0;
+        CarregarLogs();
+    }
+
+    protected void gvErros_PageIndexChanging(object sender, GridViewPageEventArgs e)
+    {
+        gvErros.PageIndex = e.NewPageIndex;
+        CarregarLogs();
+    }
+
+    protected void gvErros_Sorting(object sender, GridViewSortEventArgs e)
+    {
+        string direcaoAtual = Convert.ToString(ViewState["LogSortDirection"]);
+        string campoAtual = Convert.ToString(ViewState["LogSortExpression"]);
+        string novaDirecao = String.Equals(campoAtual, e.SortExpression, StringComparison.OrdinalIgnoreCase) &&
+            String.Equals(direcaoAtual, "ASC", StringComparison.OrdinalIgnoreCase) ? "DESC" : "ASC";
+
+        ViewState["LogSortExpression"] = e.SortExpression;
+        ViewState["LogSortDirection"] = novaDirecao;
+        gvErros.PageIndex = 0;
+        CarregarLogs();
+    }
+
     protected void gvErros_RowDataBound(object sender, GridViewRowEventArgs e)
     {
         if (e.Row.RowType != DataControlRowType.DataRow) return;
@@ -78,6 +123,8 @@ public partial class ci_erros : System.Web.UI.Page
 
     private void CarregarLogs()
     {
+        AjustarTamanhoPaginaLogs();
+
         DataTable tabela = CriarTabela();
         string caminho = Server.MapPath("~/App_Data/ci-erros.log");
 
@@ -90,9 +137,13 @@ public partial class ci_erros : System.Web.UI.Page
             }
         }
 
-        gvErros.DataSource = tabela;
+        DataTable filtrada = FiltrarLogs(tabela);
+        DataTable ordenada = OrdenarLogs(filtrada);
+        AjustarPaginaGrid(ordenada.Rows.Count);
+
+        gvErros.DataSource = ordenada;
         gvErros.DataBind();
-        litResumo.Text = tabela.Rows.Count.ToString() + " ocorr" + (tabela.Rows.Count == 1 ? "\u00eancia" : "\u00eancias") + " exibida" + (tabela.Rows.Count == 1 ? "." : "s.");
+        litResumo.Text = MontarResumoLogs(tabela.Rows.Count, ordenada.Rows.Count);
     }
 
     private DataTable CriarTabela()
@@ -116,6 +167,80 @@ public partial class ci_erros : System.Web.UI.Page
         row["url"] = ExtrairValor(partes, "url=");
         row["erro"] = ExtrairValor(partes, "erro=");
         tabela.Rows.Add(row);
+    }
+
+    private DataTable FiltrarLogs(DataTable tabela)
+    {
+        string busca = (txtBuscaLogs.Text ?? "").Trim();
+        if (busca.Length == 0) return tabela;
+
+        DataTable filtrada = tabela.Clone();
+        foreach (DataRow row in tabela.Rows)
+        {
+            foreach (DataColumn coluna in tabela.Columns)
+            {
+                string valor = Convert.ToString(row[coluna]) ?? "";
+                if (valor.IndexOf(busca, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    filtrada.ImportRow(row);
+                    break;
+                }
+            }
+        }
+
+        return filtrada;
+    }
+
+    private DataTable OrdenarLogs(DataTable tabela)
+    {
+        string campo = Convert.ToString(ViewState["LogSortExpression"]);
+        if (String.IsNullOrWhiteSpace(campo) || !tabela.Columns.Contains(campo))
+        {
+            return tabela;
+        }
+
+        string direcao = String.Equals(Convert.ToString(ViewState["LogSortDirection"]), "DESC", StringComparison.OrdinalIgnoreCase) ? "DESC" : "ASC";
+        DataView view = tabela.DefaultView;
+        view.Sort = campo + " " + direcao;
+        return view.ToTable();
+    }
+
+    private void AjustarTamanhoPaginaLogs()
+    {
+        int tamanho;
+        if (!Int32.TryParse(ddlLogsPageSize.SelectedValue, out tamanho) || tamanho <= 0)
+        {
+            tamanho = 20;
+        }
+
+        gvErros.PageSize = tamanho;
+    }
+
+    private void AjustarPaginaGrid(int total)
+    {
+        if (total <= 0)
+        {
+            gvErros.PageIndex = 0;
+            return;
+        }
+
+        int ultimaPagina = (total - 1) / gvErros.PageSize;
+        if (gvErros.PageIndex > ultimaPagina)
+        {
+            gvErros.PageIndex = ultimaPagina;
+        }
+    }
+
+    private string MontarResumoLogs(int total, int exibidos)
+    {
+        string resumo = exibidos.ToString() + " ocorr" + (exibidos == 1 ? "\u00eancia" : "\u00eancias") + " exibida" + (exibidos == 1 ? "" : "s");
+        if (exibidos != total)
+        {
+            resumo += " de " + total.ToString() + " registro" + (total == 1 ? "" : "s") + " lido" + (total == 1 ? "" : "s");
+        }
+
+        resumo += ".";
+        return resumo;
     }
 
     private string ExtrairValor(string[] partes, string prefixo)

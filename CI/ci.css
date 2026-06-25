@@ -333,6 +333,12 @@ a {
   justify-content: start;
 }
 
+.log-search {
+  grid-template-columns: minmax(260px, 1fr) auto auto;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(150px, 1fr));

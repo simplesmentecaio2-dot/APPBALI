@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Logs da CI</title>
-    <link href="ci.css?v=20260625-ci-logs-nav" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-logs-grid" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -65,16 +65,32 @@
                             <h2>Ocorr&ecirc;ncias registradas</h2>
                             <p class="panel-subtitle"><asp:Literal ID="litResumo" runat="server"></asp:Literal></p>
                         </div>
-                        <asp:Button ID="btnAtualizar" runat="server" Text="Atualizar" CssClass="secondary-button" OnClick="btnAtualizar_Click" />
+                        <div class="panel-tools">
+                            <label class="compact-label">Linhas
+                                <asp:DropDownList ID="ddlLogsPageSize" runat="server" CssClass="select-field compact-select" AutoPostBack="true" OnSelectedIndexChanged="ddlLogsPageSize_SelectedIndexChanged">
+                                    <asp:ListItem Value="20">20</asp:ListItem>
+                                    <asp:ListItem Value="50">50</asp:ListItem>
+                                    <asp:ListItem Value="100">100</asp:ListItem>
+                                </asp:DropDownList>
+                            </label>
+                            <asp:Button ID="btnAtualizar" runat="server" Text="Atualizar" CssClass="secondary-button" OnClick="btnAtualizar_Click" />
+                        </div>
+                    </div>
+                    <div class="filter-grid log-search">
+                        <label>Buscar nos logs
+                            <asp:TextBox ID="txtBuscaLogs" runat="server" CssClass="text-field" MaxLength="120" placeholder="Origem, usu&aacute;rio, URL ou erro"></asp:TextBox>
+                        </label>
+                        <asp:Button ID="btnFiltrarLogs" runat="server" Text="Filtrar" CssClass="primary-button" OnClick="btnFiltrarLogs_Click" />
+                        <asp:Button ID="btnLimparLogs" runat="server" Text="Limpar" CssClass="secondary-button" OnClick="btnLimparLogs_Click" />
                     </div>
                     <div class="table-wrap">
-                        <asp:GridView ID="gvErros" runat="server" CssClass="ci-table compact-table" AutoGenerateColumns="false" EmptyDataText="Nenhum erro registrado." OnRowDataBound="gvErros_RowDataBound">
+                        <asp:GridView ID="gvErros" runat="server" CssClass="ci-table compact-table" AutoGenerateColumns="false" EmptyDataText="Nenhum erro registrado." AllowPaging="true" AllowSorting="true" PageSize="20" PagerStyle-CssClass="ci-pager" OnPageIndexChanging="gvErros_PageIndexChanging" OnSorting="gvErros_Sorting" OnRowDataBound="gvErros_RowDataBound">
                             <Columns>
-                                <asp:BoundField DataField="data_hora" HeaderText="Data/hora" />
-                                <asp:BoundField DataField="origem" HeaderText="Origem" />
-                                <asp:BoundField DataField="usuario" HeaderText="Usu&aacute;rio" />
-                                <asp:BoundField DataField="url" HeaderText="URL" />
-                                <asp:BoundField DataField="erro" HeaderText="Erro" />
+                                <asp:BoundField DataField="data_hora" HeaderText="Data/hora" SortExpression="data_hora" />
+                                <asp:BoundField DataField="origem" HeaderText="Origem" SortExpression="origem" />
+                                <asp:BoundField DataField="usuario" HeaderText="Usu&aacute;rio" SortExpression="usuario" />
+                                <asp:BoundField DataField="url" HeaderText="URL" SortExpression="url" />
+                                <asp:BoundField DataField="erro" HeaderText="Erro" SortExpression="erro" />
                             </Columns>
                         </asp:GridView>
                     </div>
