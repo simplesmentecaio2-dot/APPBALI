@@ -361,6 +361,15 @@ public partial class ci_default : System.Web.UI.Page
         txtObservacoes.Text = row["observacoes"].ToString();
         txtCriadoPor.Text = row["criado_por"].ToString();
         litTituloForm.Text = "Editar " + row["codigo_ci"].ToString();
+        CarregarHistorico(id);
+    }
+
+    private void CarregarHistorico(int id)
+    {
+        DataTable historico = ExecutarTabela("dbo.ci_comunicacao_historico_listar", Param("@id_ci", SqlDbType.Int, id));
+        pnlHistorico.Visible = true;
+        gvHistorico.DataSource = historico;
+        gvHistorico.DataBind();
     }
 
     private void LimparFormulario()
@@ -381,6 +390,9 @@ public partial class ci_default : System.Web.UI.Page
         txtObservacoes.Text = "";
         txtCriadoPor.Text = "";
         litTituloForm.Text = "Nova CI";
+        pnlHistorico.Visible = false;
+        gvHistorico.DataSource = null;
+        gvHistorico.DataBind();
     }
 
     private string ValidarCampos()

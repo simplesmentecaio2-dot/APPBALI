@@ -33,6 +33,39 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID('dbo.ci_comunicacoes_historico', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.ci_comunicacoes_historico (
+        id_historico INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        id_ci INT NOT NULL,
+        acao NVARCHAR(40) NOT NULL,
+        ano INT NULL,
+        numero INT NULL,
+        data_documento DATE NULL,
+        origem_marca NVARCHAR(40) NULL,
+        origem_area NVARCHAR(120) NULL,
+        origem_responsavel NVARCHAR(160) NULL,
+        destino_area NVARCHAR(120) NULL,
+        destinatario NVARCHAR(160) NULL,
+        assunto NVARCHAR(200) NULL,
+        categoria NVARCHAR(60) NULL,
+        prioridade NVARCHAR(20) NULL,
+        corpo NVARCHAR(MAX) NULL,
+        providencias NVARCHAR(MAX) NULL,
+        observacoes NVARCHAR(MAX) NULL,
+        criado_por NVARCHAR(160) NULL,
+        ativo BIT NULL,
+        dt_evento DATETIME NOT NULL CONSTRAINT DF_ci_comunicacoes_historico_dt_evento DEFAULT (GETDATE())
+    );
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_comunicacoes_historico_ci' AND object_id = OBJECT_ID('dbo.ci_comunicacoes_historico'))
+BEGIN
+    CREATE INDEX IX_ci_comunicacoes_historico_ci ON dbo.ci_comunicacoes_historico (id_ci, dt_evento DESC);
+END
+GO
+
 CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_resumo
 AS
 BEGIN
@@ -192,6 +225,20 @@ BEGIN
     END
     ELSE
     BEGIN
+        INSERT INTO dbo.ci_comunicacoes_historico
+        (
+            id_ci, acao, ano, numero, data_documento, origem_marca, origem_area,
+            origem_responsavel, destino_area, destinatario, assunto, categoria,
+            prioridade, corpo, providencias, observacoes, criado_por, ativo
+        )
+        SELECT
+            id_ci, N'Alteração', ano, numero, data_documento, origem_marca, origem_area,
+            origem_responsavel, destino_area, destinatario, assunto, categoria,
+            prioridade, corpo, providencias, observacoes, criado_por, ativo
+        FROM dbo.ci_comunicacoes
+        WHERE id_ci = @id_ci
+          AND ativo = 1;
+
         UPDATE dbo.ci_comunicacoes
         SET data_documento = @data_documento,
             origem_marca = @origem_marca,
@@ -215,11 +262,48 @@ BEGIN
 END
 GO
 
+CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_historico_listar
+    @id_ci INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT TOP 50
+        id_historico,
+        id_ci,
+        acao,
+        'CI-' + CAST(ano AS VARCHAR(4)) + '-' + RIGHT('0000' + CAST(numero AS VARCHAR(10)), 4) AS codigo_ci,
+        data_documento,
+        origem_marca,
+        assunto,
+        criado_por,
+        ativo,
+        dt_evento
+    FROM dbo.ci_comunicacoes_historico
+    WHERE id_ci = @id_ci
+    ORDER BY dt_evento DESC, id_historico DESC;
+END
+GO
+
 CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_cancelar
     @id_ci INT
 AS
 BEGIN
     SET NOCOUNT ON;
+
+    INSERT INTO dbo.ci_comunicacoes_historico
+    (
+        id_ci, acao, ano, numero, data_documento, origem_marca, origem_area,
+        origem_responsavel, destino_area, destinatario, assunto, categoria,
+        prioridade, corpo, providencias, observacoes, criado_por, ativo
+    )
+    SELECT
+        id_ci, N'Cancelamento', ano, numero, data_documento, origem_marca, origem_area,
+        origem_responsavel, destino_area, destinatario, assunto, categoria,
+        prioridade, corpo, providencias, observacoes, criado_por, ativo
+    FROM dbo.ci_comunicacoes
+    WHERE id_ci = @id_ci
+      AND ativo = 1;
 
     UPDATE dbo.ci_comunicacoes
     SET ativo = 0,

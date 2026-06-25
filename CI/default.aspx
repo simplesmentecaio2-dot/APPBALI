@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-printux" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-historico" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -239,6 +239,27 @@
                         <asp:Button ID="btnSalvar" runat="server" Text="Salvar CI" CssClass="primary-button" OnClick="btnSalvar_Click" OnClientClick="return validarCICliente();" />
                         <a class="secondary-link" href="#consulta">Voltar para consulta</a>
                     </div>
+
+                    <asp:Panel ID="pnlHistorico" runat="server" CssClass="history-panel" Visible="false">
+                        <div class="panel-header compact-header">
+                            <div>
+                                <span class="eyebrow">Auditoria</span>
+                                <h3>Hist&oacute;rico da CI</h3>
+                                <p class="panel-subtitle">Registros anteriores de altera&ccedil;&atilde;o e cancelamento.</p>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <asp:GridView ID="gvHistorico" runat="server" CssClass="ci-table compact-table" AutoGenerateColumns="false" EmptyDataText="Nenhum hist&oacute;rico registrado para esta CI.">
+                                <Columns>
+                                    <asp:BoundField DataField="dt_evento" HeaderText="Data/hora" DataFormatString="{0:dd/MM/yyyy HH:mm}" />
+                                    <asp:BoundField DataField="acao" HeaderText="A&ccedil;&atilde;o" />
+                                    <asp:BoundField DataField="origem_marca" HeaderText="Marca" />
+                                    <asp:BoundField DataField="assunto" HeaderText="Assunto anterior" />
+                                    <asp:BoundField DataField="criado_por" HeaderText="Criado por" />
+                                </Columns>
+                            </asp:GridView>
+                        </div>
+                    </asp:Panel>
                 </section>
             </main>
         </div>

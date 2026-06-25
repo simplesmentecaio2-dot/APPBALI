@@ -565,6 +565,32 @@ label {
   font-size: 14px;
 }
 
+.compact-header {
+  margin-bottom: 10px;
+}
+
+.compact-header h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 18px;
+}
+
+.history-panel {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
+.compact-table {
+  min-width: 760px;
+}
+
+.compact-table th,
+.compact-table td {
+  padding: 10px;
+  font-size: 12px;
+}
+
 .ci-table tr:nth-child(even) td {
   background: #fafcff;
 }
