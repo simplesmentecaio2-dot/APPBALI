@@ -106,6 +106,8 @@ public partial class ramais_default : System.Web.UI.Page
                 return;
             }
 
+            NormalizarFormularioRamal();
+
             if (txtNome.Text.Trim().Length == 0)
             {
                 MostrarMensagem("Informe o nome do colaborador.", true);
@@ -120,6 +122,13 @@ public partial class ramais_default : System.Web.UI.Page
                 return;
             }
 
+            if (txtNome.Text.Trim().Length > 160 || txtRamal.Text.Trim().Length > 30)
+            {
+                MostrarMensagem("Revise nome e ramal: o nome deve ter at\u00e9 160 caracteres e o ramal at\u00e9 30.", true);
+                AplicarTela("ramais");
+                return;
+            }
+
             if (ddlRamalLoja.SelectedValue == "0" || ddlRamalSetor.SelectedValue == "0")
             {
                 MostrarMensagem("Selecione loja e setor para salvar o ramal.", true);
@@ -129,8 +138,8 @@ public partial class ramais_default : System.Web.UI.Page
 
             ExecutarTabela("dbo.ramais_ramal_salvar",
                 Param("@id_ramal", SqlDbType.Int, idAtual > 0 ? (object)idAtual : DBNull.Value),
-                Param("@nome", SqlDbType.NVarChar, txtNome.Text.Trim(), 160),
-                Param("@ramal", SqlDbType.NVarChar, txtRamal.Text.Trim(), 30),
+                Param("@nome", SqlDbType.NVarChar, txtNome.Text, 160),
+                Param("@ramal", SqlDbType.NVarChar, txtRamal.Text, 30),
                 Param("@id_loja", SqlDbType.Int, Convert.ToInt32(ddlRamalLoja.SelectedValue)),
                 Param("@id_setor", SqlDbType.Int, Convert.ToInt32(ddlRamalSetor.SelectedValue)),
                 Param("@ativo", SqlDbType.Bit, chkRamalAtivo.Checked));
@@ -279,9 +288,18 @@ public partial class ramais_default : System.Web.UI.Page
     {
         try
         {
+            txtLojaNome.Text = TextoCurto(txtLojaNome.Text);
+
             if (txtLojaNome.Text.Trim().Length == 0)
             {
                 MostrarMensagem("Informe o nome da loja.", true);
+                AplicarTela("lojas");
+                return;
+            }
+
+            if (txtLojaNome.Text.Trim().Length > 120)
+            {
+                MostrarMensagem("O nome da loja deve ter at\u00e9 120 caracteres.", true);
                 AplicarTela("lojas");
                 return;
             }
@@ -349,9 +367,18 @@ public partial class ramais_default : System.Web.UI.Page
     {
         try
         {
+            txtSetorNome.Text = TextoCurto(txtSetorNome.Text);
+
             if (txtSetorNome.Text.Trim().Length == 0)
             {
                 MostrarMensagem("Informe o nome do setor.", true);
+                AplicarTela("setores");
+                return;
+            }
+
+            if (txtSetorNome.Text.Trim().Length > 120)
+            {
+                MostrarMensagem("O nome do setor deve ter at\u00e9 120 caracteres.", true);
                 AplicarTela("setores");
                 return;
             }
@@ -723,6 +750,19 @@ public partial class ramais_default : System.Web.UI.Page
         chkSetorAtivo.Checked = true;
     }
 
+    private void NormalizarFormularioRamal()
+    {
+        txtNome.Text = TextoCurto(txtNome.Text);
+        txtRamal.Text = TextoCurto(txtRamal.Text);
+    }
+
+    private string TextoCurto(string valor)
+    {
+        string texto = (valor ?? "").Trim();
+        if (texto.Length == 0) return "";
+        return String.Join(" ", texto.Split((char[])null, StringSplitOptions.RemoveEmptyEntries));
+    }
+
     private SqlParameter Param(string nome, SqlDbType tipo, object valor, int tamanho = 0)
     {
         SqlParameter parametro = tamanho > 0 ? new SqlParameter(nome, tipo, tamanho) : new SqlParameter(nome, tipo);
@@ -782,7 +822,7 @@ public partial class ramais_default : System.Web.UI.Page
 
     private string FormatarErro(Exception ex)
     {
-        string mensagem = ex.Message;
+        string mensagem = CorrigirAcentosQuebrados(ex.Message);
         mensagem = mensagem.Replace("Ja ", "J\u00e1 ");
         mensagem = mensagem.Replace("Nao ", "N\u00e3o ");
         mensagem = mensagem.Replace("nao ", "n\u00e3o ");
@@ -794,5 +834,35 @@ public partial class ramais_default : System.Web.UI.Page
         mensagem = mensagem.Replace("informacao", "informa\u00e7\u00e3o");
         mensagem = mensagem.Replace("exclusao", "exclus\u00e3o");
         return mensagem;
+    }
+
+    private string CorrigirAcentosQuebrados(string mensagem)
+    {
+        return (mensagem ?? "")
+            .Replace("\u00c3\u00a1", "\u00e1")
+            .Replace("\u00c3\u00a0", "\u00e0")
+            .Replace("\u00c3\u00a2", "\u00e2")
+            .Replace("\u00c3\u00a3", "\u00e3")
+            .Replace("\u00c3\u00a9", "\u00e9")
+            .Replace("\u00c3\u00aa", "\u00ea")
+            .Replace("\u00c3\u00ad", "\u00ed")
+            .Replace("\u00c3\u00b3", "\u00f3")
+            .Replace("\u00c3\u00b4", "\u00f4")
+            .Replace("\u00c3\u00b5", "\u00f5")
+            .Replace("\u00c3\u00ba", "\u00fa")
+            .Replace("\u00c3\u00a7", "\u00e7")
+            .Replace("\u00c3\u0081", "\u00c1")
+            .Replace("\u00c3\u0080", "\u00c0")
+            .Replace("\u00c3\u0082", "\u00c2")
+            .Replace("\u00c3\u0083", "\u00c3")
+            .Replace("\u00c3\u0089", "\u00c9")
+            .Replace("\u00c3\u008a", "\u00ca")
+            .Replace("\u00c3\u008d", "\u00cd")
+            .Replace("\u00c3\u0093", "\u00d3")
+            .Replace("\u00c3\u0094", "\u00d4")
+            .Replace("\u00c3\u0095", "\u00d5")
+            .Replace("\u00c3\u009a", "\u00da")
+            .Replace("\u00c3\u0087", "\u00c7")
+            .Replace("\u00c2", "");
     }
 }
