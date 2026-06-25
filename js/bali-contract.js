@@ -1,6 +1,7 @@
 (function () {
   var ajaxHooked = false;
   var dirtyHooked = false;
+  var lifecycleHooked = false;
   var contractDirty = false;
   var contractAllowUnload = false;
   var draftTimer = null;
@@ -2393,6 +2394,12 @@
     });
   }
 
+  function resetTransientLoadingState() {
+    setLoadingVisible(false);
+    resetProcessingButtons();
+    resetSubmittingButtons();
+  }
+
   function setLoadingVisible(visible) {
     var indicator = document.getElementById('ag');
     if (!indicator) return;
@@ -2431,6 +2438,17 @@
           return true;
         });
       });
+    });
+  }
+
+  function bindLifecycleReset() {
+    if (lifecycleHooked) return;
+    lifecycleHooked = true;
+
+    window.addEventListener('pageshow', resetTransientLoadingState);
+    window.addEventListener('focus', resetTransientLoadingState);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) resetTransientLoadingState();
     });
   }
 
@@ -3657,6 +3675,7 @@
     updateIdentityContext();
     bindSubmitButtons();
     bindProcessingButtons();
+    bindLifecycleReset();
     prepareMoneyFields(false);
     updateQualityPanel();
     bindAjaxEndRequest();
