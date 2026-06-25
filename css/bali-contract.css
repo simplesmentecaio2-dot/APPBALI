@@ -2970,6 +2970,13 @@ body.bali-contract-page *::after {
 }
 
 @media (max-width: 640px) {
+  html,
+  body.bali-contract-page {
+    min-height: 100%;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .bali-contract-page,
   .bali-contract-page #form1,
   .bali-contract-page #Cont,
@@ -2982,6 +2989,20 @@ body.bali-contract-page *::after {
   .bali-contract-page #Cont {
     padding-right: 10px;
     padding-left: 10px;
+  }
+
+  .bali-contract-page .ajax__tab_header {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .bali-contract-page .ajax__tab_tab {
+    min-height: 36px;
+    padding-right: 10px !important;
+    padding-left: 10px !important;
+    font-size: 12px !important;
   }
 
   .bali-contract-page .contract-dirty-notice {
@@ -3026,6 +3047,9 @@ body.bali-contract-page *::after {
     position: sticky;
     bottom: 8px;
     z-index: 30;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid #d9e2ec;
+    border-radius: 10px;
     box-shadow: 0 14px 30px rgba(15, 23, 42, .16);
   }
 
