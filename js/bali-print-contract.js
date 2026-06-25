@@ -21,6 +21,12 @@
         }
     }
 
+    function removerClasse(elemento, classe) {
+        if (elemento && temClasse(elemento, classe)) {
+            elemento.className = normalizarClasse((' ' + elemento.className + ' ').replace(' ' + classe + ' ', ' '));
+        }
+    }
+
     function proximoElemento(campo) {
         var elemento = campo.nextSibling;
         while (elemento && elemento.nodeType !== 1) {
@@ -93,6 +99,14 @@
         adicionarClasse(document.body, 'bali-print-page');
     }
 
+    function removerBarraImpressao() {
+        var barra = document.getElementById('baliPrintToolbar');
+        if (barra && barra.parentNode) {
+            barra.parentNode.removeChild(barra);
+        }
+        removerClasse(document.body, 'bali-print-page');
+    }
+
     function atualizarTextos() {
         var campos = camposDeTexto();
         for (var i = 0; i < campos.length; i++) {
@@ -118,5 +132,9 @@
         criarBarraImpressao();
         atualizarTextos();
     });
-    window.addEventListener('beforeprint', atualizarTextos);
+    window.addEventListener('beforeprint', function () {
+        atualizarTextos();
+        removerBarraImpressao();
+    });
+    window.addEventListener('afterprint', criarBarraImpressao);
 })();
