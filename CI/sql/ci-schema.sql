@@ -20,6 +20,7 @@ BEGIN
         providencias NVARCHAR(MAX) NULL,
         observacoes NVARCHAR(MAX) NULL,
         criado_por NVARCHAR(160) NULL,
+        status_ci NVARCHAR(20) NOT NULL CONSTRAINT DF_ci_comunicacoes_status_ci DEFAULT ('Emitida'),
         ativo BIT NOT NULL CONSTRAINT DF_ci_comunicacoes_ativo DEFAULT (1),
         dt_cadastro DATETIME NOT NULL CONSTRAINT DF_ci_comunicacoes_dt_cadastro DEFAULT (GETDATE()),
         dt_alteracao DATETIME NULL
@@ -27,9 +28,30 @@ BEGIN
 END
 GO
 
+IF COL_LENGTH('dbo.ci_comunicacoes', 'status_ci') IS NULL
+BEGIN
+    ALTER TABLE dbo.ci_comunicacoes
+        ADD status_ci NVARCHAR(20) NOT NULL
+            CONSTRAINT DF_ci_comunicacoes_status_ci DEFAULT ('Emitida');
+END
+GO
+
+UPDATE dbo.ci_comunicacoes
+SET status_ci = CASE WHEN ativo = 0 THEN 'Cancelada' ELSE ISNULL(NULLIF(status_ci, ''), 'Emitida') END
+WHERE status_ci IS NULL
+   OR status_ci = ''
+   OR (ativo = 0 AND status_ci <> 'Cancelada');
+GO
+
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_comunicacoes_filtros' AND object_id = OBJECT_ID('dbo.ci_comunicacoes'))
 BEGIN
     CREATE INDEX IX_ci_comunicacoes_filtros ON dbo.ci_comunicacoes (ativo, data_documento, origem_marca, ano, numero);
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_comunicacoes_status' AND object_id = OBJECT_ID('dbo.ci_comunicacoes'))
+BEGIN
+    CREATE INDEX IX_ci_comunicacoes_status ON dbo.ci_comunicacoes (status_ci, categoria, prioridade, data_documento);
 END
 GO
 
@@ -54,9 +76,17 @@ BEGIN
         providencias NVARCHAR(MAX) NULL,
         observacoes NVARCHAR(MAX) NULL,
         criado_por NVARCHAR(160) NULL,
+        status_ci NVARCHAR(20) NULL,
         ativo BIT NULL,
         dt_evento DATETIME NOT NULL CONSTRAINT DF_ci_comunicacoes_historico_dt_evento DEFAULT (GETDATE())
     );
+END
+GO
+
+IF COL_LENGTH('dbo.ci_comunicacoes_historico', 'status_ci') IS NULL
+BEGIN
+    ALTER TABLE dbo.ci_comunicacoes_historico
+        ADD status_ci NVARCHAR(20) NULL;
 END
 GO
 
@@ -75,6 +105,9 @@ BEGIN
         COUNT(1) AS total_cis,
         SUM(CASE WHEN ativo = 1 THEN 1 ELSE 0 END) AS cis_ativas,
         SUM(CASE WHEN ativo = 0 THEN 1 ELSE 0 END) AS cis_canceladas,
+        SUM(CASE WHEN ativo = 1 AND status_ci = 'Rascunho' THEN 1 ELSE 0 END) AS cis_rascunho,
+        SUM(CASE WHEN ativo = 1 AND status_ci = 'Emitida' THEN 1 ELSE 0 END) AS cis_emitidas,
+        SUM(CASE WHEN ativo = 1 AND status_ci = 'Revisada' THEN 1 ELSE 0 END) AS cis_revisadas,
         SUM(CASE WHEN data_documento >= DATEADD(DAY, -30, CAST(GETDATE() AS DATE)) AND ativo = 1 THEN 1 ELSE 0 END) AS ultimos_30_dias,
         SUM(CASE WHEN data_documento >= DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) AND ativo = 1 THEN 1 ELSE 0 END) AS mes_atual,
         SUM(CASE WHEN origem_marca LIKE '%Fiat%' AND ativo = 1 THEN 1 ELSE 0 END) AS fiat_ativas,
@@ -88,6 +121,12 @@ CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_listar
     @dt_inicio DATE = NULL,
     @dt_fim DATE = NULL,
     @origem_marca NVARCHAR(40) = NULL,
+    @categoria NVARCHAR(60) = NULL,
+    @prioridade NVARCHAR(20) = NULL,
+    @status_ci NVARCHAR(20) = NULL,
+    @origem_area NVARCHAR(120) = NULL,
+    @destino_area NVARCHAR(120) = NULL,
+    @criado_por NVARCHAR(160) = NULL,
     @termo NVARCHAR(160) = NULL,
     @somente_ativas BIT = 1
 AS
@@ -95,6 +134,12 @@ BEGIN
     SET NOCOUNT ON;
 
     SET @origem_marca = NULLIF(LTRIM(RTRIM(ISNULL(@origem_marca, ''))), '');
+    SET @categoria = NULLIF(LTRIM(RTRIM(ISNULL(@categoria, ''))), '');
+    SET @prioridade = NULLIF(LTRIM(RTRIM(ISNULL(@prioridade, ''))), '');
+    SET @status_ci = NULLIF(LTRIM(RTRIM(ISNULL(@status_ci, ''))), '');
+    SET @origem_area = NULLIF(LTRIM(RTRIM(ISNULL(@origem_area, ''))), '');
+    SET @destino_area = NULLIF(LTRIM(RTRIM(ISNULL(@destino_area, ''))), '');
+    SET @criado_por = NULLIF(LTRIM(RTRIM(ISNULL(@criado_por, ''))), '');
     SET @termo = NULLIF(LTRIM(RTRIM(ISNULL(@termo, ''))), '');
 
     SELECT TOP 300
@@ -110,13 +155,20 @@ BEGIN
         assunto,
         categoria,
         prioridade,
-        CASE WHEN ativo = 1 THEN 'Ativa' ELSE 'Cancelada' END AS status,
+        CASE WHEN ativo = 0 THEN 'Cancelada' ELSE ISNULL(NULLIF(status_ci, ''), 'Emitida') END AS status,
+        ISNULL(NULLIF(status_ci, ''), CASE WHEN ativo = 1 THEN 'Emitida' ELSE 'Cancelada' END) AS status_ci,
         ativo,
         dt_cadastro
     FROM dbo.ci_comunicacoes
     WHERE (@dt_inicio IS NULL OR data_documento >= @dt_inicio)
       AND (@dt_fim IS NULL OR data_documento <= @dt_fim)
       AND (@origem_marca IS NULL OR origem_marca = @origem_marca)
+      AND (@categoria IS NULL OR categoria = @categoria)
+      AND (@prioridade IS NULL OR prioridade = @prioridade)
+      AND (@status_ci IS NULL OR (CASE WHEN ativo = 0 THEN 'Cancelada' ELSE ISNULL(NULLIF(status_ci, ''), 'Emitida') END) = @status_ci)
+      AND (@origem_area IS NULL OR origem_area LIKE '%' + @origem_area + '%')
+      AND (@destino_area IS NULL OR destino_area LIKE '%' + @destino_area + '%')
+      AND (@criado_por IS NULL OR criado_por LIKE '%' + @criado_por + '%')
       AND (@somente_ativas = 0 OR ativo = 1)
       AND (
             @termo IS NULL
@@ -159,8 +211,9 @@ BEGIN
         ISNULL(providencias, '') AS providencias,
         ISNULL(observacoes, '') AS observacoes,
         ISNULL(criado_por, '') AS criado_por,
+        ISNULL(NULLIF(status_ci, ''), CASE WHEN ativo = 1 THEN 'Emitida' ELSE 'Cancelada' END) AS status_ci,
         ativo,
-        CASE WHEN ativo = 1 THEN 'Ativa' ELSE 'Cancelada' END AS status,
+        CASE WHEN ativo = 0 THEN 'Cancelada' ELSE ISNULL(NULLIF(status_ci, ''), 'Emitida') END AS status,
         dt_cadastro,
         dt_alteracao
     FROM dbo.ci_comunicacoes
@@ -179,6 +232,7 @@ CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_salvar
     @assunto NVARCHAR(200),
     @categoria NVARCHAR(60),
     @prioridade NVARCHAR(20),
+    @status_ci NVARCHAR(20) = 'Emitida',
     @corpo NVARCHAR(MAX),
     @providencias NVARCHAR(MAX) = NULL,
     @observacoes NVARCHAR(MAX) = NULL,
@@ -195,6 +249,7 @@ BEGIN
     SET @assunto = LTRIM(RTRIM(ISNULL(@assunto, '')));
     SET @categoria = LTRIM(RTRIM(ISNULL(@categoria, '')));
     SET @prioridade = LTRIM(RTRIM(ISNULL(@prioridade, '')));
+    SET @status_ci = LTRIM(RTRIM(ISNULL(@status_ci, 'Emitida')));
     SET @corpo = LTRIM(RTRIM(ISNULL(@corpo, '')));
 
     DECLARE @erro_obrigatorios NVARCHAR(200);
@@ -206,6 +261,11 @@ BEGIN
     BEGIN
         RAISERROR(@erro_obrigatorios, 16, 1);
         RETURN;
+    END
+
+    IF @status_ci NOT IN ('Rascunho', 'Emitida', 'Revisada')
+    BEGIN
+        SET @status_ci = 'Emitida';
     END
 
     IF ISNULL(@id_ci, 0) = 0
@@ -223,13 +283,13 @@ BEGIN
         (
             ano, numero, data_documento, origem_marca, origem_area,
             origem_responsavel, destino_area, destinatario, assunto,
-            categoria, prioridade, corpo, providencias, observacoes, criado_por
+            categoria, prioridade, status_ci, corpo, providencias, observacoes, criado_por
         )
         VALUES
         (
             @ano, @numero, @data_documento, @origem_marca, @origem_area,
             @origem_responsavel, @destino_area, @destinatario, @assunto,
-            @categoria, @prioridade, @corpo, NULLIF(@providencias, ''),
+            @categoria, @prioridade, @status_ci, @corpo, NULLIF(@providencias, ''),
             NULLIF(@observacoes, ''), NULLIF(@criado_por, '')
         );
 
@@ -242,12 +302,12 @@ BEGIN
         (
             id_ci, acao, ano, numero, data_documento, origem_marca, origem_area,
             origem_responsavel, destino_area, destinatario, assunto, categoria,
-            prioridade, corpo, providencias, observacoes, criado_por, ativo
+            prioridade, corpo, providencias, observacoes, criado_por, status_ci, ativo
         )
         SELECT
             id_ci, N'Altera' + NCHAR(231) + NCHAR(227) + N'o', ano, numero, data_documento, origem_marca, origem_area,
             origem_responsavel, destino_area, destinatario, assunto, categoria,
-            prioridade, corpo, providencias, observacoes, criado_por, ativo
+            prioridade, corpo, providencias, observacoes, criado_por, status_ci, ativo
         FROM dbo.ci_comunicacoes
         WHERE id_ci = @id_ci
           AND ativo = 1;
@@ -262,6 +322,7 @@ BEGIN
             assunto = @assunto,
             categoria = @categoria,
             prioridade = @prioridade,
+            status_ci = @status_ci,
             corpo = @corpo,
             providencias = NULLIF(@providencias, ''),
             observacoes = NULLIF(@observacoes, ''),
@@ -298,6 +359,7 @@ BEGIN
         origem_marca,
         assunto,
         criado_por,
+        status_ci,
         ativo,
         dt_evento
     FROM dbo.ci_comunicacoes_historico
@@ -316,18 +378,19 @@ BEGIN
     (
         id_ci, acao, ano, numero, data_documento, origem_marca, origem_area,
         origem_responsavel, destino_area, destinatario, assunto, categoria,
-        prioridade, corpo, providencias, observacoes, criado_por, ativo
+        prioridade, corpo, providencias, observacoes, criado_por, status_ci, ativo
     )
     SELECT
         id_ci, N'Cancelamento', ano, numero, data_documento, origem_marca, origem_area,
         origem_responsavel, destino_area, destinatario, assunto, categoria,
-        prioridade, corpo, providencias, observacoes, criado_por, ativo
+        prioridade, corpo, providencias, observacoes, criado_por, status_ci, ativo
     FROM dbo.ci_comunicacoes
     WHERE id_ci = @id_ci
       AND ativo = 1;
 
     UPDATE dbo.ci_comunicacoes
     SET ativo = 0,
+        status_ci = 'Cancelada',
         dt_alteracao = GETDATE()
     WHERE id_ci = @id_ci;
 END

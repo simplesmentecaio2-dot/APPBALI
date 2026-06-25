@@ -51,6 +51,12 @@ public partial class ci_default : System.Web.UI.Page
         txtFiltroInicio.Text = "";
         txtFiltroFim.Text = "";
         ddlFiltroMarca.SelectedValue = "";
+        ddlFiltroStatus.SelectedValue = "";
+        ddlFiltroCategoria.SelectedValue = "";
+        ddlFiltroPrioridade.SelectedValue = "";
+        txtFiltroOrigem.Text = "";
+        txtFiltroDestino.Text = "";
+        txtFiltroCriadoPor.Text = "";
         txtBusca.Text = "";
         chkSomenteAtivas.Checked = true;
         gvCis.PageIndex = 0;
@@ -163,6 +169,7 @@ public partial class ci_default : System.Web.UI.Page
                 Param("@assunto", SqlDbType.NVarChar, TextoCurto(txtAssunto.Text), 200),
                 Param("@categoria", SqlDbType.NVarChar, ddlCategoria.SelectedValue, 60),
                 Param("@prioridade", SqlDbType.NVarChar, ddlPrioridade.SelectedValue, 20),
+                Param("@status_ci", SqlDbType.NVarChar, ddlStatusCI.SelectedValue, 20),
                 Param("@corpo", SqlDbType.NVarChar, TextoLongoEntrada(txtCorpo.Text)),
                 Param("@providencias", SqlDbType.NVarChar, TextoLongoEntrada(txtProvidencias.Text)),
                 Param("@observacoes", SqlDbType.NVarChar, TextoLongoEntrada(txtObservacoes.Text)),
@@ -272,7 +279,11 @@ public partial class ci_default : System.Web.UI.Page
         string status = Convert.ToString(DataBinder.Eval(e.Row.DataItem, "status"));
         if (e.Row.Cells.Count > 5)
         {
-            e.Row.Cells[5].CssClass = status.Equals("Cancelada", StringComparison.OrdinalIgnoreCase) ? "ci-status-canceled" : "ci-status-active";
+            string classe = "ci-status-active";
+            if (status.Equals("Cancelada", StringComparison.OrdinalIgnoreCase)) classe = "ci-status-canceled";
+            else if (status.Equals("Rascunho", StringComparison.OrdinalIgnoreCase)) classe = "ci-status-draft";
+            else if (status.Equals("Revisada", StringComparison.OrdinalIgnoreCase)) classe = "ci-status-reviewed";
+            e.Row.Cells[5].CssClass = classe;
         }
 
         if (status.Equals("Cancelada", StringComparison.OrdinalIgnoreCase))
@@ -330,6 +341,8 @@ public partial class ci_default : System.Web.UI.Page
         litRecentes.Text = resumo.Rows[0]["ultimos_30_dias"].ToString();
         litMesAtual.Text = ValorResumo(resumo.Rows[0], "mes_atual");
         litCanceladas.Text = ValorResumo(resumo.Rows[0], "cis_canceladas");
+        litRascunhos.Text = ValorResumo(resumo.Rows[0], "cis_rascunho");
+        litRevisadas.Text = ValorResumo(resumo.Rows[0], "cis_revisadas");
         litFiat.Text = ValorResumo(resumo.Rows[0], "fiat_ativas");
         litJeep.Text = ValorResumo(resumo.Rows[0], "jeep_ativas");
         litByd.Text = ValorResumo(resumo.Rows[0], "byd_ativas");
@@ -379,6 +392,12 @@ public partial class ci_default : System.Web.UI.Page
             Param("@dt_inicio", SqlDbType.Date, dtInicio),
             Param("@dt_fim", SqlDbType.Date, dtFim),
             Param("@origem_marca", SqlDbType.NVarChar, ddlFiltroMarca.SelectedValue, 40),
+            Param("@categoria", SqlDbType.NVarChar, ddlFiltroCategoria.SelectedValue, 60),
+            Param("@prioridade", SqlDbType.NVarChar, ddlFiltroPrioridade.SelectedValue, 20),
+            Param("@status_ci", SqlDbType.NVarChar, ddlFiltroStatus.SelectedValue, 20),
+            Param("@origem_area", SqlDbType.NVarChar, TextoCurto(txtFiltroOrigem.Text), 120),
+            Param("@destino_area", SqlDbType.NVarChar, TextoCurto(txtFiltroDestino.Text), 120),
+            Param("@criado_por", SqlDbType.NVarChar, TextoCurto(txtFiltroCriadoPor.Text), 160),
             Param("@termo", SqlDbType.NVarChar, txtBusca.Text.Trim(), 160),
             Param("@somente_ativas", SqlDbType.Bit, chkSomenteAtivas.Checked));
     }
@@ -458,6 +477,7 @@ public partial class ci_default : System.Web.UI.Page
         txtAssunto.Text = row["assunto"].ToString();
         Selecionar(ddlCategoria, row["categoria"].ToString());
         Selecionar(ddlPrioridade, row["prioridade"].ToString());
+        Selecionar(ddlStatusCI, row["status_ci"].ToString());
         txtCorpo.Text = row["corpo"].ToString();
         txtProvidencias.Text = row["providencias"].ToString();
         txtObservacoes.Text = row["observacoes"].ToString();
@@ -483,6 +503,7 @@ public partial class ci_default : System.Web.UI.Page
         txtAssunto.Text = row["assunto"].ToString();
         Selecionar(ddlCategoria, row["categoria"].ToString());
         Selecionar(ddlPrioridade, row["prioridade"].ToString());
+        ddlStatusCI.SelectedValue = "Rascunho";
         txtCorpo.Text = row["corpo"].ToString();
         txtProvidencias.Text = row["providencias"].ToString();
         txtObservacoes.Text = row["observacoes"].ToString();
@@ -514,6 +535,7 @@ public partial class ci_default : System.Web.UI.Page
         txtAssunto.Text = "";
         ddlCategoria.SelectedValue = "Comunicado";
         ddlPrioridade.SelectedValue = "Normal";
+        ddlStatusCI.SelectedValue = "Emitida";
         txtCorpo.Text = "";
         txtProvidencias.Text = "";
         txtObservacoes.Text = "";
@@ -529,6 +551,7 @@ public partial class ci_default : System.Web.UI.Page
         if (!ValorPermitido(ddlMarca, ddlMarca.SelectedValue)) return "Selecione uma marca v\u00e1lida.";
         if (!ValorPermitido(ddlCategoria, ddlCategoria.SelectedValue)) return "Selecione uma categoria v\u00e1lida.";
         if (!ValorPermitido(ddlPrioridade, ddlPrioridade.SelectedValue)) return "Selecione uma prioridade v\u00e1lida.";
+        if (!ValorPermitido(ddlStatusCI, ddlStatusCI.SelectedValue)) return "Selecione um status v\u00e1lido para a CI.";
         if (TextoCurto(txtOrigemArea.Text).Length == 0) return "Informe a \u00e1rea de origem.";
         if (TextoCurto(txtOrigemResponsavel.Text).Length == 0) return "Informe o respons\u00e1vel pela origem.";
         if (TextoCurto(txtDestinoArea.Text).Length == 0) return "Informe a \u00e1rea de destino.";

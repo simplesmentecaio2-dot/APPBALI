@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-savefix" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-status" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -72,6 +72,14 @@
                         <strong><asp:Literal ID="litCanceladas" runat="server" Text="0"></asp:Literal></strong>
                     </article>
                     <article>
+                        <span>Rascunhos</span>
+                        <strong><asp:Literal ID="litRascunhos" runat="server" Text="0"></asp:Literal></strong>
+                    </article>
+                    <article>
+                        <span>Revisadas</span>
+                        <strong><asp:Literal ID="litRevisadas" runat="server" Text="0"></asp:Literal></strong>
+                    </article>
+                    <article>
                         <span>Fiat ativas</span>
                         <strong><asp:Literal ID="litFiat" runat="server" Text="0"></asp:Literal></strong>
                     </article>
@@ -119,6 +127,43 @@
                                 <asp:ListItem>Bali Jeep</asp:ListItem>
                                 <asp:ListItem>Bali BYD</asp:ListItem>
                             </asp:DropDownList>
+                        </label>
+                        <label>Status
+                            <asp:DropDownList ID="ddlFiltroStatus" runat="server" CssClass="select-field">
+                                <asp:ListItem Value="">Todos</asp:ListItem>
+                                <asp:ListItem>Rascunho</asp:ListItem>
+                                <asp:ListItem>Emitida</asp:ListItem>
+                                <asp:ListItem>Revisada</asp:ListItem>
+                                <asp:ListItem>Cancelada</asp:ListItem>
+                            </asp:DropDownList>
+                        </label>
+                        <label>Categoria
+                            <asp:DropDownList ID="ddlFiltroCategoria" runat="server" CssClass="select-field">
+                                <asp:ListItem Value="">Todas</asp:ListItem>
+                                <asp:ListItem>Comunicado</asp:ListItem>
+                                <asp:ListItem>Solicita&ccedil;&atilde;o</asp:ListItem>
+                                <asp:ListItem>Autoriza&ccedil;&atilde;o</asp:ListItem>
+                                <asp:ListItem>Procedimento</asp:ListItem>
+                                <asp:ListItem>Financeiro</asp:ListItem>
+                                <asp:ListItem>Administrativo</asp:ListItem>
+                            </asp:DropDownList>
+                        </label>
+                        <label>Prioridade
+                            <asp:DropDownList ID="ddlFiltroPrioridade" runat="server" CssClass="select-field">
+                                <asp:ListItem Value="">Todas</asp:ListItem>
+                                <asp:ListItem>Normal</asp:ListItem>
+                                <asp:ListItem>Alta</asp:ListItem>
+                                <asp:ListItem>Urgente</asp:ListItem>
+                            </asp:DropDownList>
+                        </label>
+                        <label>Origem
+                            <asp:TextBox ID="txtFiltroOrigem" runat="server" CssClass="text-field" MaxLength="120" placeholder="&Aacute;rea de origem"></asp:TextBox>
+                        </label>
+                        <label>Destino
+                            <asp:TextBox ID="txtFiltroDestino" runat="server" CssClass="text-field" MaxLength="120" placeholder="&Aacute;rea de destino"></asp:TextBox>
+                        </label>
+                        <label>Criado por
+                            <asp:TextBox ID="txtFiltroCriadoPor" runat="server" CssClass="text-field" MaxLength="160" placeholder="Respons&aacute;vel pelo cadastro"></asp:TextBox>
                         </label>
                         <label>Busca
                             <asp:TextBox ID="txtBusca" runat="server" CssClass="text-field" placeholder="Assunto, &aacute;rea, destinat&aacute;rio ou texto"></asp:TextBox>
@@ -227,6 +272,13 @@
                                 <asp:ListItem>Normal</asp:ListItem>
                                 <asp:ListItem>Alta</asp:ListItem>
                                 <asp:ListItem>Urgente</asp:ListItem>
+                            </asp:DropDownList>
+                        </label>
+                        <label>Status da CI
+                            <asp:DropDownList ID="ddlStatusCI" runat="server" CssClass="select-field">
+                                <asp:ListItem>Emitida</asp:ListItem>
+                                <asp:ListItem>Rascunho</asp:ListItem>
+                                <asp:ListItem>Revisada</asp:ListItem>
                             </asp:DropDownList>
                         </label>
                         <label>&Aacute;rea de origem
@@ -499,13 +551,14 @@
                     if (progressoBarra) progressoBarra.style.width = Math.round((preenchidos / camposObrigatorios.length) * 100) + '%';
 
                     var marca = valor('<%= ddlMarca.ClientID %>') || 'Marca';
+                    var status = valor('<%= ddlStatusCI.ClientID %>') || 'Emitida';
                     var data = valor('<%= txtData.ClientID %>') || 'sem data';
                     var destino = valor('<%= txtDestinatario.ClientID %>') || 'sem destinat\u00e1rio';
                     var assunto = valor('<%= txtAssunto.ClientID %>');
                     var corpo = valor('<%= txtCorpo.ClientID %>');
 
                     if (previaTitulo) previaTitulo.textContent = assunto || 'Sem assunto informado';
-                    if (previaMeta) previaMeta.textContent = marca + ' | ' + data + ' | ' + destino;
+                    if (previaMeta) previaMeta.textContent = marca + ' | ' + status + ' | ' + data + ' | ' + destino;
                     if (contadorTexto) {
                         contadorTexto.textContent = corpo.length + ' caractere' + (corpo.length === 1 ? '' : 's');
                         if (cardTexto) cardTexto.classList.toggle('is-warning', corpo.length > 3000);
@@ -523,6 +576,7 @@
                         data: valor('<%= txtData.ClientID %>'),
                         categoria: valor('<%= ddlCategoria.ClientID %>'),
                         prioridade: valor('<%= ddlPrioridade.ClientID %>'),
+                        status: valor('<%= ddlStatusCI.ClientID %>'),
                         origemArea: valor('<%= txtOrigemArea.ClientID %>'),
                         origemResponsavel: valor('<%= txtOrigemResponsavel.ClientID %>'),
                         destinoArea: valor('<%= txtDestinoArea.ClientID %>'),
@@ -590,6 +644,7 @@
                     preencherCampoCI('<%= txtData.ClientID %>', dados.data);
                     preencherCampoCI('<%= ddlCategoria.ClientID %>', dados.categoria);
                     preencherCampoCI('<%= ddlPrioridade.ClientID %>', dados.prioridade);
+                    preencherCampoCI('<%= ddlStatusCI.ClientID %>', dados.status || 'Emitida');
                     preencherCampoCI('<%= txtOrigemArea.ClientID %>', dados.origemArea);
                     preencherCampoCI('<%= txtOrigemResponsavel.ClientID %>', dados.origemResponsavel);
                     preencherCampoCI('<%= txtDestinoArea.ClientID %>', dados.destinoArea);
@@ -724,6 +779,7 @@
                 for (var c = 0; c < camposObrigatorios.length; c++) adicionarMonitorado(camposObrigatorios[c].id);
                 for (var t = 0; t < limitesTextoCI.length; t++) adicionarMonitorado(limitesTextoCI[t].id);
                 adicionarMonitorado('<%= ddlMarca.ClientID %>');
+                adicionarMonitorado('<%= ddlStatusCI.ClientID %>');
                 adicionarMonitorado('<%= txtAssunto.ClientID %>');
                 adicionarMonitorado('<%= txtCorpo.ClientID %>');
 

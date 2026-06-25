@@ -322,7 +322,7 @@ a {
 
 .filter-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(140px, 1fr)) 130px auto;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
   gap: 12px;
   align-items: end;
   margin-bottom: 14px;
@@ -652,13 +652,23 @@ label {
 }
 
 .ci-status-active,
-.ci-status-canceled {
+.ci-status-canceled,
+.ci-status-draft,
+.ci-status-reviewed {
   color: var(--success);
   font-weight: 900;
 }
 
 .ci-status-canceled {
   color: var(--danger);
+}
+
+.ci-status-draft {
+  color: #8a5a00;
+}
+
+.ci-status-reviewed {
+  color: #175cd3;
 }
 
 .table-action {
