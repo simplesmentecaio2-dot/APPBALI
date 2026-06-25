@@ -5,6 +5,7 @@ const FAVORITES_KEY = 'centralBaliShortcutFavorites';
 const RECENT_KEY = 'centralBaliRecentShortcuts';
 const SECTION_STATE_KEY = 'centralBaliOpenSections';
 const MAX_RECENT_SHORTCUTS = 12;
+const SHORTCUTS_FETCH_TIMEOUT = 10000;
 const MAINTENANCE_PASSWORD = '@bali2025';
 const DEFAULT_NOTICE_IMAGE = 'resources/imagens/AVISOIMPORTANTE2.jpg';
 const NOTICE_FILE_LIMIT = 8 * 1024 * 1024;
@@ -197,6 +198,21 @@ function writeShortcutCache(shortcutList, notice) {
   }
 }
 
+async function fetchWithTimeout(url, options = {}, timeoutMs = SHORTCUTS_FETCH_TIMEOUT) {
+  if (typeof AbortController === 'undefined') {
+    return fetch(url, options);
+  }
+
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, Object.assign({}, options, { signal: controller.signal }));
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
 function readFavoriteShortcuts() {
   try {
     const raw = window.localStorage.getItem(FAVORITES_KEY);
@@ -343,7 +359,7 @@ function sanitizeShortcut(raw, index) {
 async function loadShortcuts() {
   try {
     setShortcutLoadStatus('Atualizando atalhos salvos...', '');
-    const response = await fetch(`${SHORTCUTS_API}&v=${Date.now()}`, {
+    const response = await fetchWithTimeout(`${SHORTCUTS_API}&v=${Date.now()}`, {
       cache: 'no-store',
       credentials: 'same-origin'
     });
@@ -535,6 +551,7 @@ function buildShortcutCard(shortcut) {
     image.src = shortcut.image;
     image.alt = '';
     image.loading = 'lazy';
+    image.decoding = 'async';
     image.addEventListener('error', () => {
       image.classList.add('d-none');
       fallback.classList.remove('d-none');
@@ -850,6 +867,7 @@ function renderMaintenanceList() {
       image.src = shortcut.image;
       image.alt = '';
       image.loading = 'lazy';
+      image.decoding = 'async';
       image.addEventListener('error', () => {
         image.remove();
         itemIcon.innerHTML = `<i class="bi ${sanitizeIcon(shortcut.icon) || 'bi-grid-1x2-fill'}"></i>`;
@@ -1145,6 +1163,7 @@ function updateMaintenanceIconPreview() {
       image.src = imagePath;
       image.alt = '';
       image.loading = 'lazy';
+      image.decoding = 'async';
       image.addEventListener('error', () => {
         image.remove();
         const fallback = document.createElement('i');

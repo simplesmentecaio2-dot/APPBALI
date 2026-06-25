@@ -23,6 +23,9 @@ public class IntranetManutencaoLinks : IHttpHandler
         context.Response.ContentType = "application/json";
         context.Response.ContentEncoding = Utf8SemBom;
         context.Response.TrySkipIisCustomErrors = true;
+        context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+        context.Response.Cache.SetNoStore();
+        context.Response.Cache.SetExpires(DateTime.UtcNow.AddMinutes(-1));
 
         try
         {
