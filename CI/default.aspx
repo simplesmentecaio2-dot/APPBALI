@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-autosave" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-savefix" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -709,8 +709,8 @@
                     if (botaoSalvar) {
                         botaoSalvar.dataset.textoOriginal = botaoSalvar.value;
                         botaoSalvar.value = 'Salvando...';
-                        botaoSalvar.disabled = true;
                         botaoSalvar.classList.add('is-loading');
+                        botaoSalvar.setAttribute('aria-busy', 'true');
                     }
 
                     return true;
