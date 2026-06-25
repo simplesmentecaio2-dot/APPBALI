@@ -427,6 +427,12 @@ label {
   background: #fff1f0;
 }
 
+.form-message a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .client-message {
   display: none;
   margin: -2px 0 14px;

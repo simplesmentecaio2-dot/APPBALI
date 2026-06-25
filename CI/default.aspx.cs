@@ -162,10 +162,18 @@ public partial class ci_default : System.Web.UI.Page
                 Param("@criado_por", SqlDbType.NVarChar, TextoCurto(txtCriadoPor.Text), 160));
 
             string codigo = salvo.Rows.Count > 0 ? salvo.Rows[0]["codigo_ci"].ToString() : "CI";
+            int idSalvo = salvo.Rows.Count > 0 ? Convert.ToInt32(salvo.Rows[0]["id_ci"]) : 0;
             LimparAutorizacaoEdicaoCI(id);
             LimparFormulario();
             CarregarTudo();
-            MostrarMensagem(codigo + " salva com sucesso.", false);
+            if (idSalvo > 0)
+            {
+                MostrarMensagemHtml(Server.HtmlEncode(codigo) + " salva com sucesso. <a href=\"print.aspx?id=" + idSalvo.ToString() + "\" target=\"_blank\">Imprimir agora</a>.", false);
+            }
+            else
+            {
+                MostrarMensagem(codigo + " salva com sucesso.", false);
+            }
         }
         catch (Exception ex)
         {
@@ -643,6 +651,13 @@ public partial class ci_default : System.Web.UI.Page
         pnlMensagem.Visible = true;
         pnlMensagem.CssClass = erro ? "form-message error" : "form-message success";
         litMensagem.Text = Server.HtmlEncode(mensagem);
+    }
+
+    private void MostrarMensagemHtml(string html, bool erro)
+    {
+        pnlMensagem.Visible = true;
+        pnlMensagem.CssClass = erro ? "form-message error" : "form-message success";
+        litMensagem.Text = html;
     }
 
     private void RegistrarErro(string origem, Exception ex)
