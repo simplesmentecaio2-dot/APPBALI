@@ -665,9 +665,9 @@
     var start = parseDate(startText);
     var end = parseDate(endText);
     if (!start || !end) return 'Use datas no formato dd/mm/aaaa.';
-    if (start.getTime() > end.getTime()) return 'A data inicial não pode ser maior que a data final.';
+    if (start.getTime() > end.getTime()) return 'A data inicial n\u00e3o pode ser maior que a data final.';
     if (Math.floor((end.getTime() - start.getTime()) / 86400000) > 370) {
-      return 'Selecione um período de até 12 meses para manter a consulta rápida.';
+      return 'Selecione um per\u00edodo de at\u00e9 12 meses para manter a consulta r\u00e1pida.';
     }
 
     return '';
@@ -685,7 +685,7 @@
     var end = parseDate(endText);
     var days = Math.floor((end.getTime() - start.getTime()) / 86400000) + 1;
     return {
-      message: 'Período selecionado: ' + days + ' dia(s), de ' + startText + ' até ' + endText + '.',
+      message: 'Per\u00edodo selecionado: ' + days + ' dia(s), de ' + startText + ' at\u00e9 ' + endText + '.',
       kind: 'is-info'
     };
   }
@@ -697,9 +697,9 @@
 
   function periodShortcutHtml() {
     return [
-      { type: 'currentMonth', label: 'Este mês' },
-      { type: 'previousMonth', label: 'Mês anterior' },
-      { type: 'last7', label: 'Últimos 7 dias' },
+      { type: 'currentMonth', label: 'Este m\u00eas' },
+      { type: 'previousMonth', label: 'M\u00eas anterior' },
+      { type: 'last7', label: '\u00daltimos 7 dias' },
       { type: 'today', label: 'Hoje' },
       { type: 'clear', label: 'Limpar' }
     ].map(function (item) {
