@@ -1225,7 +1225,20 @@ public partial class veiculos_contrato : System.Web.UI.Page
         double areaLargura = largura - margemEsquerda - margemDireita;
         double areaAltura = altura - margemTopo - margemBaixo;
         int totalPontos = dados.Count;
-        int passoLabel = Math.Max(1, Convert.ToInt32(Math.Ceiling(totalPontos / 8.0)));
+        int maximoLabels = Math.Min(totalPontos, 7);
+        HashSet<int> indicesLabels = new HashSet<int>();
+        if (maximoLabels == 1)
+        {
+            indicesLabels.Add(0);
+        }
+        else
+        {
+            for (int i = 0; i < maximoLabels; i++)
+            {
+                int indiceLabel = Convert.ToInt32(Math.Round(i * (totalPontos - 1.0) / (maximoLabels - 1.0), MidpointRounding.AwayFromZero));
+                indicesLabels.Add(indiceLabel);
+            }
+        }
         int indice = 0;
         double xAnterior = 0;
         double yAnterior = 0;
@@ -1296,11 +1309,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
             pontos.Append(x.ToString("0.##", CultureInfo.InvariantCulture));
             pontos.Append("' cy='");
             pontos.Append(y.ToString("0.##", CultureInfo.InvariantCulture));
-            pontos.Append("' r='4'><title>");
+            pontos.Append("' r='3.2'><title>");
             pontos.Append(HttpUtility.HtmlEncode(item.Key.ToString("dd/MM/yyyy") + " - " + item.Value + " contrato(s)"));
             pontos.Append("</title></circle>");
 
-            if (indice == 0 || indice == totalPontos - 1 || indice % passoLabel == 0)
+            if (indicesLabels.Contains(indice))
             {
                 labels.Append("<text class='contract-bi-line-x' x='");
                 labels.Append(x.ToString("0.##", CultureInfo.InvariantCulture));

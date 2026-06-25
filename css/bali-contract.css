@@ -2618,8 +2618,8 @@ body.bali-contract-page *::after {
 .bali-contract-page .contract-bi-line-y,
 .bali-contract-page .contract-bi-line-x {
   fill: var(--contract-muted);
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 750;
 }
 
 .bali-contract-page .contract-bi-line-y {
@@ -2633,16 +2633,17 @@ body.bali-contract-page *::after {
 .bali-contract-page .contract-bi-line-path {
   fill: none;
   stroke: var(--contract-brand);
-  stroke-width: 3;
+  stroke-width: 2.25;
   stroke-linecap: round;
   stroke-linejoin: round;
+  opacity: .96;
 }
 
 .bali-contract-page .contract-bi-line-point {
   fill: var(--contract-brand);
   stroke: #fff;
-  stroke-width: 3;
-  filter: drop-shadow(0 4px 8px var(--contract-brand-ring));
+  stroke-width: 2.25;
+  filter: drop-shadow(0 3px 6px var(--contract-brand-ring));
 }
 
 .bali-contract-page .contract-bi-empty {
