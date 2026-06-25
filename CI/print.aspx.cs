@@ -43,6 +43,7 @@ public partial class ci_print : System.Web.UI.Page
         string prioridade = row["prioridade"].ToString();
         CodigoCI = row["codigo_ci"].ToString();
         MarcaClasse = ClasseMarca(marca) + " " + ClasseCategoria(categoria) + " " + ClassePrioridade(prioridade);
+        MarcaClasse += ClasseTamanhoDocumento(row);
         if (status.Equals("Cancelada", StringComparison.OrdinalIgnoreCase))
         {
             MarcaClasse += " ci-cancelada";
@@ -139,6 +140,19 @@ public partial class ci_print : System.Web.UI.Page
         return "print-prioridade-normal";
     }
 
+    private string ClasseTamanhoDocumento(DataRow row)
+    {
+        int tamanho =
+            row["assunto"].ToString().Length +
+            row["corpo"].ToString().Length +
+            row["providencias"].ToString().Length +
+            row["observacoes"].ToString().Length;
+
+        if (tamanho > 5200) return " ci-print-muito-longa";
+        if (tamanho > 3200) return " ci-print-longa";
+        return "";
+    }
+
     private DataTable ObterCI(int id)
     {
         using (SqlConnection con = new SqlConnection(ConnectionString))
@@ -182,24 +196,24 @@ public partial class ci_print : System.Web.UI.Page
         if (dados.Rows.Count == 0) return "";
 
         StringBuilder html = new StringBuilder();
-        html.Append("<ul class=\"print-list\">");
+        html.Append("<table class=\"print-ack-table\"><thead><tr><th>Setor</th><th>Respons&aacute;vel</th><th>Data/hora</th><th>Observa&ccedil;&atilde;o</th></tr></thead><tbody>");
         foreach (DataRow row in dados.Rows)
         {
-            html.Append("<li><strong>");
+            html.Append("<tr><td>");
             html.Append(Html(row["setor"].ToString()));
-            html.Append(" - ");
+            html.Append("</td><td>");
             html.Append(Html(row["responsavel"].ToString()));
-            html.Append("</strong><small>");
+            html.Append("</td><td>");
             html.Append(Convert.ToDateTime(row["dt_ciencia"]).ToString("dd/MM/yyyy HH:mm"));
+            html.Append("</td><td>");
             string observacao = row["observacao"].ToString();
             if (observacao.Trim().Length > 0)
             {
-                html.Append(" | ");
                 html.Append(Html(observacao));
             }
-            html.Append("</small></li>");
+            html.Append("</td></tr>");
         }
-        html.Append("</ul>");
+        html.Append("</tbody></table>");
         return html.ToString();
     }
 

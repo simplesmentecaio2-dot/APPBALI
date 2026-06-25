@@ -1244,6 +1244,89 @@ label {
   text-align: right;
 }
 
+.print-ack-table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.print-ack-table th,
+.print-ack-table td {
+  border-top: 1px solid #e4ebf5;
+  padding: 7px 6px;
+  color: #243044;
+  font-size: 12px;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.print-ack-table th {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.print-ack-table th:nth-child(1) {
+  width: 24%;
+}
+
+.print-ack-table th:nth-child(2) {
+  width: 28%;
+}
+
+.print-ack-table th:nth-child(3) {
+  width: 20%;
+}
+
+.ci-print-longa .print-sheet {
+  padding: 12mm;
+}
+
+.ci-print-longa .print-block {
+  margin-top: 9px;
+  padding: 8px;
+}
+
+.ci-print-longa .print-block p {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.ci-print-muito-longa .print-sheet {
+  padding: 10mm;
+}
+
+.ci-print-muito-longa .print-header {
+  padding-bottom: 8px;
+}
+
+.ci-print-muito-longa .print-meta,
+.ci-print-muito-longa .print-grid {
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.ci-print-muito-longa .print-meta div,
+.ci-print-muito-longa .print-grid div,
+.ci-print-muito-longa .print-block {
+  border-radius: 6px;
+  padding: 7px;
+}
+
+.ci-print-muito-longa .print-block {
+  margin-top: 8px;
+}
+
+.ci-print-muito-longa .print-block p {
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.28;
+}
+
 .print-tipo-solicitacao .print-sheet {
   border-top-color: #175cd3;
 }
@@ -1517,6 +1600,12 @@ label {
     background: var(--brand) !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  .ci-print-longa .print-block,
+  .ci-print-muito-longa .print-block {
+    break-inside: auto;
+    page-break-inside: auto;
   }
 
   .print-block p {
