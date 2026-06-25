@@ -177,7 +177,7 @@ public partial class ci_default : System.Web.UI.Page
             AplicarTela("consulta");
             if (idSalvo > 0)
             {
-                MostrarMensagemHtml(Server.HtmlEncode(codigo) + " salva com sucesso. <a href=\"print.aspx?id=" + idSalvo.ToString() + "\" target=\"_blank\">Imprimir agora</a>.", false);
+                MostrarMensagemHtml(Server.HtmlEncode(codigo) + " salva com sucesso. <a href=\"print.aspx?id=" + idSalvo.ToString() + "\" target=\"_blank\" rel=\"noopener\">Imprimir agora</a>.", false);
             }
             else
             {

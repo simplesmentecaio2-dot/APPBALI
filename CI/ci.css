@@ -113,8 +113,14 @@ a {
   font-weight: 700;
 }
 
-.side-nav a:hover {
+.side-nav a:hover,
+.side-nav a.is-active {
   background: rgba(255, 255, 255, 0.1);
+}
+
+.side-nav a.is-active {
+  color: #fff;
+  box-shadow: inset 3px 0 0 rgba(255, 255, 255, 0.82);
 }
 
 .content {

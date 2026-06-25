@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-views" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-nav" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -20,10 +20,10 @@
                         <small>Grupo Bali</small>
                     </span>
                 </a>
-                <nav class="side-nav">
-                    <a href="default.aspx?view=consulta">Consulta</a>
-                    <a href="default.aspx?view=nova">Nova CI</a>
-                    <a href="erros.aspx">Logs</a>
+                <nav class="side-nav" aria-label="Navega&ccedil;&atilde;o da CI">
+                    <a href="default.aspx?view=consulta" data-nav-view="consulta">Consulta</a>
+                    <a href="default.aspx?view=nova" data-nav-view="nova">Nova CI</a>
+                    <a href="erros.aspx" data-nav-view="logs">Logs</a>
                     <a href="../Intranet/index.html">Intranet</a>
                 </nav>
             </aside>
@@ -147,7 +147,7 @@
                                 <asp:BoundField DataField="status" HeaderText="Status" SortExpression="status" />
                                 <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                     <ItemTemplate>
-                                        <a class="table-action" href='print.aspx?id=<%# Eval("id_ci") %>' target="_blank">Imprimir</a>
+                                        <a class="table-action" href='print.aspx?id=<%# Eval("id_ci") %>' target="_blank" rel="noopener">Imprimir</a>
                                         <asp:LinkButton ID="lnkDuplicar" runat="server" CssClass="table-action" CommandName="DuplicarCI" CommandArgument='<%# Eval("id_ci") %>'>Duplicar</asp:LinkButton>
                                         <asp:LinkButton ID="lnkEditar" runat="server" CssClass="table-action" CommandName="EditarCI" CommandArgument='<%# Eval("id_ci") %>' OnClientClick="return solicitarSenhaCI('editar', this);">Editar</asp:LinkButton>
                                         <asp:LinkButton ID="lnkCancelar" runat="server" CssClass="table-action danger" CommandName="CancelarCI" CommandArgument='<%# Eval("id_ci") %>' OnClientClick="return confirmarCancelamentoCI(this);">Cancelar</asp:LinkButton>
@@ -304,6 +304,23 @@
 
         <script>
             (function () {
+                function marcarNavegacaoAtivaCI() {
+                    var parametros = new URLSearchParams(window.location.search || '');
+                    var tela = parametros.get('view') || 'consulta';
+                    var caminho = (window.location.pathname || '').toLowerCase();
+                    if (caminho.indexOf('/ci/erros.aspx') >= 0) tela = 'logs';
+
+                    var links = document.querySelectorAll('.side-nav a[data-nav-view]');
+                    for (var i = 0; i < links.length; i++) {
+                        var ativo = links[i].getAttribute('data-nav-view') === tela;
+                        links[i].classList.toggle('is-active', ativo);
+                        if (ativo) links[i].setAttribute('aria-current', 'page');
+                        else links[i].removeAttribute('aria-current');
+                    }
+                }
+
+                marcarNavegacaoAtivaCI();
+
                 var postbackCIPendente = null;
                 var modalSenhaCI = document.getElementById('modalSenhaCI');
                 var campoSenhaCI = document.getElementById('txtSenhaCICliente');
