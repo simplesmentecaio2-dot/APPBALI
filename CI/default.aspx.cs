@@ -66,6 +66,82 @@ public partial class ci_default : System.Web.UI.Page
         AplicarTela("consulta");
     }
 
+    protected void btnFiltrarAnotacoes_Click(object sender, EventArgs e)
+    {
+        CarregarAnotacoes();
+        AplicarTela("anotacoes");
+    }
+
+    protected void btnLimparAnotacoes_Click(object sender, EventArgs e)
+    {
+        txtAnotacaoBusca.Text = "";
+        ddlAnotacaoCategoriaFiltro.SelectedValue = "";
+        CarregarAnotacoes();
+        AplicarTela("anotacoes");
+    }
+
+    protected void btnNovaAnotacao_Click(object sender, EventArgs e)
+    {
+        LimparAnotacao();
+        AplicarTela("anotacoes");
+    }
+
+    protected void btnSalvarAnotacao_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            string titulo = TextoCurto(txtAnotacaoTitulo.Text);
+            string categoria = TextoCurto(txtAnotacaoCategoria.Text);
+            string conteudo = TextoLongoEntrada(txtAnotacaoConteudo.Text);
+            string criadoPor = TextoCurto(txtAnotacaoCriadoPor.Text);
+
+            if (titulo.Length == 0)
+            {
+                MostrarMensagem("Informe o nome do texto padr\u00e3o.", true);
+                AplicarTela("anotacoes");
+                return;
+            }
+
+            if (conteudo.Length == 0)
+            {
+                MostrarMensagem("Informe o conte\u00fado da anota\u00e7\u00e3o.", true);
+                AplicarTela("anotacoes");
+                return;
+            }
+
+            if (titulo.Length > 160 || categoria.Length > 80 || criadoPor.Length > 160)
+            {
+                MostrarMensagem("Revise o tamanho dos campos da anota\u00e7\u00e3o.", true);
+                AplicarTela("anotacoes");
+                return;
+            }
+
+            int idAtual = ObterIdAnotacaoAtual();
+            DataTable salvo = ExecutarTabela("dbo.ci_anotacao_salvar",
+                Param("@id_anotacao", SqlDbType.Int, idAtual > 0 ? (object)idAtual : DBNull.Value),
+                Param("@titulo", SqlDbType.NVarChar, titulo, 160),
+                Param("@categoria", SqlDbType.NVarChar, categoria, 80),
+                Param("@conteudo", SqlDbType.NVarChar, conteudo),
+                Param("@criado_por", SqlDbType.NVarChar, criadoPor, 160));
+
+            CarregarCategoriasAnotacoes();
+            CarregarAnotacoes();
+            if (salvo.Rows.Count > 0)
+            {
+                PreencherAnotacao(salvo.Rows[0]);
+            }
+
+            MostrarMensagem("Anota\u00e7\u00e3o salva com sucesso.", false);
+            AplicarTela("anotacoes");
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("Salvar anota\u00e7\u00e3o de CI", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("anotacoes");
+        }
+    }
+
     protected void btnLimpar_Click(object sender, EventArgs e)
     {
         txtFiltroInicio.Text = "";
@@ -467,6 +543,48 @@ public partial class ci_default : System.Web.UI.Page
         }
     }
 
+    protected void gvAnotacoes_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        int id;
+        if (!Int32.TryParse(Convert.ToString(e.CommandArgument), out id) || id <= 0) return;
+
+        try
+        {
+            if (e.CommandName == "AbrirAnotacao")
+            {
+                CarregarAnotacao(id);
+                AplicarTela("anotacoes");
+                MostrarMensagem("Anota\u00e7\u00e3o carregada. Use o bot\u00e3o copiar texto quando precisar reutilizar.", false);
+            }
+            else if (e.CommandName == "ExcluirAnotacao")
+            {
+                ExecutarSemRetorno("dbo.ci_anotacao_excluir", Param("@id_anotacao", SqlDbType.Int, id));
+                if (ObterIdAnotacaoAtual() == id)
+                {
+                    LimparAnotacao();
+                }
+
+                CarregarCategoriasAnotacoes();
+                CarregarAnotacoes();
+                AplicarTela("anotacoes");
+                MostrarMensagem("Anota\u00e7\u00e3o exclu\u00edda com sucesso.", false);
+            }
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("A\u00e7\u00e3o em anota\u00e7\u00f5es de CI", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("anotacoes");
+        }
+    }
+
+    protected void gvAnotacoes_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType != DataControlRowType.DataRow) return;
+        AplicarRotulosMobile(gvAnotacoes, e.Row);
+        TruncarCelulaLonga(e.Row, 2, 140);
+    }
+
     protected void gvHistorico_RowDataBound(object sender, GridViewRowEventArgs e)
     {
         if (e.Row.RowType != DataControlRowType.DataRow) return;
@@ -610,6 +728,8 @@ public partial class ci_default : System.Web.UI.Page
         CarregarResumo();
         CarregarLista();
         CarregarModelos();
+        CarregarCategoriasAnotacoes();
+        CarregarAnotacoes();
     }
 
     private string ObterTelaAtual()
@@ -617,6 +737,7 @@ public partial class ci_default : System.Web.UI.Page
         string tela = (Request.QueryString["view"] ?? "").Trim().ToLowerInvariant();
         if (tela == "nova" || tela == "cadastro") return "nova";
         if (tela == "bi") return "bi";
+        if (tela == "anotacoes" || tela == "anotacao") return "anotacoes";
         return "consulta";
     }
 
@@ -633,11 +754,14 @@ public partial class ci_default : System.Web.UI.Page
         bool mostrarCadastro = String.Equals(tela, "nova", StringComparison.OrdinalIgnoreCase) ||
             String.Equals(tela, "cadastro", StringComparison.OrdinalIgnoreCase);
         bool mostrarBi = String.Equals(tela, "bi", StringComparison.OrdinalIgnoreCase);
+        bool mostrarAnotacoes = String.Equals(tela, "anotacoes", StringComparison.OrdinalIgnoreCase) ||
+            String.Equals(tela, "anotacao", StringComparison.OrdinalIgnoreCase);
 
         pnlBi.Visible = mostrarBi;
-        pnlConsulta.Visible = !mostrarCadastro && !mostrarBi;
+        pnlAnotacoes.Visible = mostrarAnotacoes;
+        pnlConsulta.Visible = !mostrarCadastro && !mostrarBi && !mostrarAnotacoes;
         pnlCadastro.Visible = mostrarCadastro;
-        ViewState["CiTela"] = mostrarCadastro ? "nova" : (mostrarBi ? "bi" : "consulta");
+        ViewState["CiTela"] = mostrarCadastro ? "nova" : (mostrarBi ? "bi" : (mostrarAnotacoes ? "anotacoes" : "consulta"));
     }
 
     private void CarregarResumo()
@@ -1011,6 +1135,89 @@ public partial class ci_default : System.Web.UI.Page
         pnlCiencia.Visible = true;
         gvCiencias.DataSource = ciencias;
         gvCiencias.DataBind();
+    }
+
+    private void CarregarCategoriasAnotacoes()
+    {
+        string categoriaAtual = ddlAnotacaoCategoriaFiltro.SelectedValue;
+        DataTable categorias = ExecutarTabela("dbo.ci_anotacao_categorias");
+        ddlAnotacaoCategoriaFiltro.Items.Clear();
+        ddlAnotacaoCategoriaFiltro.Items.Add(new ListItem("Todas", ""));
+        foreach (DataRow row in categorias.Rows)
+        {
+            string categoria = Convert.ToString(row["categoria"]);
+            if (categoria.Length > 0)
+            {
+                ddlAnotacaoCategoriaFiltro.Items.Add(new ListItem(categoria, categoria));
+            }
+        }
+
+        if (ddlAnotacaoCategoriaFiltro.Items.FindByValue(categoriaAtual) != null)
+        {
+            ddlAnotacaoCategoriaFiltro.SelectedValue = categoriaAtual;
+        }
+    }
+
+    private void CarregarAnotacoes()
+    {
+        DataTable anotacoes = ExecutarTabela("dbo.ci_anotacao_listar",
+            Param("@termo", SqlDbType.NVarChar, TextoCurto(txtAnotacaoBusca.Text), 160),
+            Param("@categoria", SqlDbType.NVarChar, ddlAnotacaoCategoriaFiltro.SelectedValue, 80));
+
+        gvAnotacoes.DataSource = anotacoes;
+        gvAnotacoes.DataBind();
+        AtualizarResumoAnotacoes(anotacoes.Rows.Count);
+    }
+
+    private void AtualizarResumoAnotacoes(int total)
+    {
+        if (total == 0)
+        {
+            litResultadoAnotacoes.Text = "Nenhuma anota\u00e7\u00e3o encontrada. Cadastre um texto padr\u00e3o para reutilizar nas CIs.";
+            return;
+        }
+
+        litResultadoAnotacoes.Text = total == 1
+            ? "1 anota\u00e7\u00e3o dispon\u00edvel."
+            : total.ToString() + " anota\u00e7\u00f5es dispon\u00edveis.";
+    }
+
+    private void CarregarAnotacao(int id)
+    {
+        DataTable dados = ExecutarTabela("dbo.ci_anotacao_obter", Param("@id_anotacao", SqlDbType.Int, id));
+        if (dados.Rows.Count == 0)
+        {
+            MostrarMensagem("Anota\u00e7\u00e3o n\u00e3o encontrada.", true);
+            return;
+        }
+
+        PreencherAnotacao(dados.Rows[0]);
+    }
+
+    private void PreencherAnotacao(DataRow row)
+    {
+        hfAnotacaoId.Value = row["id_anotacao"].ToString();
+        txtAnotacaoTitulo.Text = row["titulo"].ToString();
+        txtAnotacaoCategoria.Text = row["categoria"].ToString();
+        txtAnotacaoConteudo.Text = row["conteudo"].ToString();
+        txtAnotacaoCriadoPor.Text = row["criado_por"].ToString();
+        litTituloAnotacao.Text = "Editar " + row["titulo"].ToString();
+    }
+
+    private void LimparAnotacao()
+    {
+        hfAnotacaoId.Value = "";
+        txtAnotacaoTitulo.Text = "";
+        txtAnotacaoCategoria.Text = "";
+        txtAnotacaoConteudo.Text = "";
+        txtAnotacaoCriadoPor.Text = "";
+        litTituloAnotacao.Text = "Nova anota\u00e7\u00e3o";
+    }
+
+    private int ObterIdAnotacaoAtual()
+    {
+        int id;
+        return Int32.TryParse(hfAnotacaoId.Value, out id) ? id : 0;
     }
 
     private void LimparFormulario()

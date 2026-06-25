@@ -183,6 +183,27 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID('dbo.ci_anotacoes', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.ci_anotacoes (
+        id_anotacao INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        titulo NVARCHAR(160) NOT NULL,
+        categoria NVARCHAR(80) NULL,
+        conteudo NVARCHAR(MAX) NOT NULL,
+        criado_por NVARCHAR(160) NULL,
+        ativo BIT NOT NULL CONSTRAINT DF_ci_anotacoes_ativo DEFAULT (1),
+        dt_cadastro DATETIME NOT NULL CONSTRAINT DF_ci_anotacoes_dt_cadastro DEFAULT (GETDATE()),
+        dt_alteracao DATETIME NULL
+    );
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_anotacoes_busca' AND object_id = OBJECT_ID('dbo.ci_anotacoes'))
+BEGIN
+    CREATE INDEX IX_ci_anotacoes_busca ON dbo.ci_anotacoes (ativo, categoria, titulo, dt_alteracao);
+END
+GO
+
 IF NOT EXISTS (SELECT 1 FROM dbo.ci_modelos WHERE ativo = 1)
 BEGIN
     INSERT INTO dbo.ci_modelos (nome, categoria, prioridade, assunto, corpo, providencias)
@@ -287,6 +308,129 @@ BEGIN
             OR corpo LIKE '%' + @termo + '%'
           )
     ORDER BY data_documento DESC, id_ci DESC;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_anotacao_listar
+    @termo NVARCHAR(160) = NULL,
+    @categoria NVARCHAR(80) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SET @termo = NULLIF(LTRIM(RTRIM(ISNULL(@termo, ''))), '');
+    SET @categoria = NULLIF(LTRIM(RTRIM(ISNULL(@categoria, ''))), '');
+
+    SELECT TOP 300
+        id_anotacao,
+        titulo,
+        ISNULL(categoria, '') AS categoria,
+        LEFT(REPLACE(REPLACE(conteudo, CHAR(13), ' '), CHAR(10), ' '), 220) AS resumo,
+        ISNULL(criado_por, '') AS criado_por,
+        dt_cadastro,
+        dt_alteracao,
+        ISNULL(dt_alteracao, dt_cadastro) AS dt_referencia
+    FROM dbo.ci_anotacoes
+    WHERE ativo = 1
+      AND (@categoria IS NULL OR categoria = @categoria)
+      AND (
+            @termo IS NULL
+            OR titulo LIKE '%' + @termo + '%'
+            OR categoria LIKE '%' + @termo + '%'
+            OR conteudo LIKE '%' + @termo + '%'
+            OR criado_por LIKE '%' + @termo + '%'
+          )
+    ORDER BY ISNULL(dt_alteracao, dt_cadastro) DESC, titulo;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_anotacao_categorias
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT DISTINCT categoria
+    FROM dbo.ci_anotacoes
+    WHERE ativo = 1
+      AND NULLIF(LTRIM(RTRIM(ISNULL(categoria, ''))), '') IS NOT NULL
+    ORDER BY categoria;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_anotacao_obter
+    @id_anotacao INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        id_anotacao,
+        titulo,
+        ISNULL(categoria, '') AS categoria,
+        conteudo,
+        ISNULL(criado_por, '') AS criado_por,
+        dt_cadastro,
+        dt_alteracao
+    FROM dbo.ci_anotacoes
+    WHERE id_anotacao = @id_anotacao
+      AND ativo = 1;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_anotacao_salvar
+    @id_anotacao INT = NULL,
+    @titulo NVARCHAR(160),
+    @categoria NVARCHAR(80) = NULL,
+    @conteudo NVARCHAR(MAX),
+    @criado_por NVARCHAR(160) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SET @titulo = LTRIM(RTRIM(ISNULL(@titulo, '')));
+    SET @categoria = NULLIF(LTRIM(RTRIM(ISNULL(@categoria, ''))), '');
+    SET @conteudo = LTRIM(RTRIM(ISNULL(@conteudo, '')));
+    SET @criado_por = NULLIF(LTRIM(RTRIM(ISNULL(@criado_por, ''))), '');
+
+    IF @titulo = '' OR @conteudo = ''
+    BEGIN
+        RAISERROR(N'Informe o nome da anotação e o texto padrão.', 16, 1);
+        RETURN;
+    END
+
+    IF ISNULL(@id_anotacao, 0) = 0
+    BEGIN
+        INSERT INTO dbo.ci_anotacoes (titulo, categoria, conteudo, criado_por)
+        VALUES (@titulo, @categoria, @conteudo, @criado_por);
+
+        SET @id_anotacao = CONVERT(INT, SCOPE_IDENTITY());
+    END
+    ELSE
+    BEGIN
+        UPDATE dbo.ci_anotacoes
+        SET titulo = @titulo,
+            categoria = @categoria,
+            conteudo = @conteudo,
+            criado_por = @criado_por,
+            dt_alteracao = GETDATE()
+        WHERE id_anotacao = @id_anotacao
+          AND ativo = 1;
+    END
+
+    EXEC dbo.ci_anotacao_obter @id_anotacao = @id_anotacao;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_anotacao_excluir
+    @id_anotacao INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE dbo.ci_anotacoes
+    SET ativo = 0,
+        dt_alteracao = GETDATE()
+    WHERE id_anotacao = @id_anotacao;
 END
 GO
 

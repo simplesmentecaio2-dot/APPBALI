@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-assistant-layout" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-anotacoes" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server" enctype="multipart/form-data">
@@ -24,6 +24,7 @@
                     <a href="default.aspx?view=bi" data-nav-view="bi">BI</a>
                     <a href="default.aspx?view=consulta" data-nav-view="consulta">Consulta</a>
                     <a href="default.aspx?view=nova" data-nav-view="nova">Nova CI</a>
+                    <a href="default.aspx?view=anotacoes" data-nav-view="anotacoes">Anota&ccedil;&otilde;es</a>
                     <a href="erros.aspx" data-nav-view="logs">Logs</a>
                     <a href="../Intranet/index.html">Intranet</a>
                 </nav>
@@ -153,6 +154,80 @@
                             <h3>Criado por</h3>
                             <asp:Literal ID="litBiCriadores" runat="server"></asp:Literal>
                         </article>
+                    </div>
+                </asp:Panel>
+
+                <asp:Panel ID="pnlAnotacoes" runat="server" CssClass="panel notes-panel">
+                    <div class="panel-header">
+                        <div>
+                            <span class="eyebrow">Textos padr&atilde;o</span>
+                            <h2>Anota&ccedil;&otilde;es</h2>
+                            <p class="panel-subtitle"><asp:Literal ID="litResultadoAnotacoes" runat="server" Text="Cadastre textos para consultar, copiar e reutilizar nas CIs."></asp:Literal></p>
+                        </div>
+                        <asp:Button ID="btnNovaAnotacao" runat="server" Text="Nova anota&ccedil;&atilde;o" CssClass="secondary-button" OnClick="btnNovaAnotacao_Click" />
+                    </div>
+
+                    <div class="notes-layout">
+                        <section class="notes-list">
+                            <div class="notes-filter">
+                                <label>Buscar
+                                    <asp:TextBox ID="txtAnotacaoBusca" runat="server" CssClass="text-field" MaxLength="160" placeholder="Nome, categoria ou trecho do texto"></asp:TextBox>
+                                </label>
+                                <label>Categoria
+                                    <asp:DropDownList ID="ddlAnotacaoCategoriaFiltro" runat="server" CssClass="select-field"></asp:DropDownList>
+                                </label>
+                                <div class="notes-filter-actions">
+                                    <asp:Button ID="btnFiltrarAnotacoes" runat="server" Text="Filtrar" CssClass="primary-button" OnClick="btnFiltrarAnotacoes_Click" />
+                                    <asp:Button ID="btnLimparAnotacoes" runat="server" Text="Limpar" CssClass="secondary-button" OnClick="btnLimparAnotacoes_Click" />
+                                </div>
+                            </div>
+                            <div class="table-wrap">
+                                <asp:GridView ID="gvAnotacoes" runat="server" CssClass="ci-table notes-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma anota&ccedil;&atilde;o encontrada." OnRowCommand="gvAnotacoes_RowCommand" OnRowDataBound="gvAnotacoes_RowDataBound">
+                                    <Columns>
+                                        <asp:BoundField DataField="titulo" HeaderText="Nome" />
+                                        <asp:BoundField DataField="categoria" HeaderText="Categoria" />
+                                        <asp:BoundField DataField="resumo" HeaderText="Resumo" />
+                                        <asp:BoundField DataField="dt_referencia" HeaderText="Atualizada" DataFormatString="{0:dd/MM/yyyy HH:mm}" />
+                                        <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
+                                            <ItemTemplate>
+                                                <asp:LinkButton ID="lnkAbrirAnotacao" runat="server" CssClass="table-action" CommandName="AbrirAnotacao" CommandArgument='<%# Eval("id_anotacao") %>'>Abrir</asp:LinkButton>
+                                                <asp:LinkButton ID="lnkExcluirAnotacao" runat="server" CssClass="table-action danger" CommandName="ExcluirAnotacao" CommandArgument='<%# Eval("id_anotacao") %>' OnClientClick="return confirm('Deseja excluir esta anota&ccedil;&atilde;o?');">Excluir</asp:LinkButton>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                    </Columns>
+                                </asp:GridView>
+                            </div>
+                        </section>
+
+                        <section class="notes-editor">
+                            <asp:HiddenField ID="hfAnotacaoId" runat="server" />
+                            <div class="notes-editor-header">
+                                <div>
+                                    <span class="eyebrow">Bloco de notas</span>
+                                    <h3><asp:Literal ID="litTituloAnotacao" runat="server" Text="Nova anota&ccedil;&atilde;o"></asp:Literal></h3>
+                                </div>
+                                <button type="button" class="secondary-button" onclick="copiarAnotacaoCI()">Copiar texto</button>
+                            </div>
+                            <div id="ciNotesCopyStatus" class="copy-status" aria-live="polite"></div>
+                            <div class="notes-form-grid">
+                                <label>Nome do texto
+                                    <asp:TextBox ID="txtAnotacaoTitulo" runat="server" CssClass="text-field" MaxLength="160" placeholder="Ex.: Venda direta SIA"></asp:TextBox>
+                                </label>
+                                <label>Categoria
+                                    <asp:TextBox ID="txtAnotacaoCategoria" runat="server" CssClass="text-field" MaxLength="80" placeholder="Ex.: Venda direta, Financeiro"></asp:TextBox>
+                                </label>
+                                <label>Criado por
+                                    <asp:TextBox ID="txtAnotacaoCriadoPor" runat="server" CssClass="text-field" MaxLength="160"></asp:TextBox>
+                                </label>
+                                <label class="wide">Texto padr&atilde;o
+                                    <asp:TextBox ID="txtAnotacaoConteudo" runat="server" CssClass="textarea-field notes-textarea" TextMode="MultiLine" Rows="16" placeholder="Cole ou digite aqui o texto padr&atilde;o que ser&aacute; consultado depois."></asp:TextBox>
+                                </label>
+                            </div>
+                            <div class="form-actions notes-actions">
+                                <asp:Button ID="btnSalvarAnotacao" runat="server" Text="Salvar anota&ccedil;&atilde;o" CssClass="primary-button" OnClick="btnSalvarAnotacao_Click" />
+                                <asp:Button ID="btnCancelarAnotacao" runat="server" Text="Limpar bloco" CssClass="secondary-button" OnClick="btnNovaAnotacao_Click" />
+                            </div>
+                        </section>
                     </div>
                 </asp:Panel>
 
@@ -586,6 +661,38 @@
                     if (campoServidor && campoSenhaCI) campoServidor.value = campoSenhaCI.value;
                     if (modalSenhaCI) modalSenhaCI.classList.remove('is-open');
                     executarPostbackCI();
+                };
+
+                window.copiarAnotacaoCI = function () {
+                    var campoTexto = document.getElementById('<%= txtAnotacaoConteudo.ClientID %>');
+                    var status = document.getElementById('ciNotesCopyStatus');
+                    if (!campoTexto || campoTexto.value.trim().length === 0) {
+                        if (status) {
+                            status.textContent = 'Abra ou preencha uma anota\u00e7\u00e3o antes de copiar.';
+                            status.classList.add('is-visible');
+                        }
+                        return;
+                    }
+
+                    function avisar(texto) {
+                        if (!status) return;
+                        status.textContent = texto;
+                        status.classList.add('is-visible');
+                    }
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(campoTexto.value).then(function () {
+                            avisar('Texto copiado para a \u00e1rea de transfer\u00eancia.');
+                        }).catch(function () {
+                            campoTexto.focus();
+                            campoTexto.select();
+                            avisar('Texto selecionado. Use Ctrl+C para copiar.');
+                        });
+                    } else {
+                        campoTexto.focus();
+                        campoTexto.select();
+                        avisar('Texto selecionado. Use Ctrl+C para copiar.');
+                    }
                 };
 
                 document.addEventListener('keydown', function (event) {
