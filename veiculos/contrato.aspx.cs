@@ -68,7 +68,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void ExibirAlerta(string mensagem)
     {
-        string script = "alert('" + HttpUtility.JavaScriptStringEncode(mensagem) + "');";
+        string texto = HttpUtility.JavaScriptStringEncode(mensagem);
+        string script = "(window.BaliContractToast ? window.BaliContractToast('" + texto + "', 'warning') : alert('" + texto + "'));";
         ScriptManager.RegisterStartupScript(this, this.GetType(), Guid.NewGuid().ToString("N"), script, true);
     }
 

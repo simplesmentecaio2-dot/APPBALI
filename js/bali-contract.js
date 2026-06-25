@@ -55,6 +55,43 @@
     }
   ];
 
+  window.BaliContractToast = function (message, type) {
+    var host = document.getElementById('contractToastHost');
+    if (!host) {
+      host = document.createElement('div');
+      host.id = 'contractToastHost';
+      host.className = 'contract-toast-host';
+      host.setAttribute('aria-live', 'polite');
+      host.setAttribute('aria-atomic', 'false');
+      document.body.appendChild(host);
+    }
+
+    var toast = document.createElement('div');
+    toast.className = 'contract-toast is-' + (type || 'info');
+    toast.setAttribute('role', 'status');
+
+    var text = document.createElement('div');
+    text.className = 'contract-toast-text';
+    text.textContent = message || 'Revise as informações do contrato.';
+
+    var close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'contract-toast-close';
+    close.setAttribute('aria-label', 'Fechar mensagem');
+    close.textContent = '×';
+    close.onclick = function () {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    };
+
+    toast.appendChild(text);
+    toast.appendChild(close);
+    host.appendChild(toast);
+
+    window.setTimeout(function () {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 12000);
+  };
+
   var requiredNewFields = [
     { id: 'txtCliente', label: 'Cliente' },
     { id: 'txtCPFCNPJ', label: 'CPF/CNPJ' },
