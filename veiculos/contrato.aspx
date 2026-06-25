@@ -7,6 +7,9 @@
                 "bJQueryUI": false,
                 "sPaginationType": "full_numbers",
                 "iDisplayLength": 10,
+                "bAutoWidth": false,
+                "bDeferRender": true,
+                "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
                 "oLanguage": {
                     "sLengthMenu": "Mostrar _MENU_ contratos",
                     "sZeroRecords": "Nenhum contrato encontrado",
@@ -30,6 +33,9 @@
                 "bJQueryUI": false,
                 "sPaginationType": "full_numbers",
                 "iDisplayLength": 10,
+                "bAutoWidth": false,
+                "bDeferRender": true,
+                "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
                 "oLanguage": {
                     "sLengthMenu": "Mostrar _MENU_ contratos",
                     "sZeroRecords": "Nenhum contrato encontrado",
