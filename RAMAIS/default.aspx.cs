@@ -10,6 +10,7 @@ using System.Web.UI.WebControls;
 public partial class ramais_default : System.Web.UI.Page
 {
     private const string SenhaManutencaoRamais = "@bali2025";
+    private const string ViewStateCookieName = "BaliViewStateKey";
     private const int TimeoutSqlSegundos = 60;
 
     private string ConnectionString
@@ -19,10 +20,7 @@ public partial class ramais_default : System.Web.UI.Page
 
     protected void Page_Init(object sender, EventArgs e)
     {
-        if (Session != null)
-        {
-            ViewStateUserKey = Session.SessionID;
-        }
+        ViewStateUserKey = ObterChaveViewState();
     }
 
     protected void Page_Load(object sender, EventArgs e)
@@ -31,6 +29,7 @@ public partial class ramais_default : System.Web.UI.Page
         {
             CarregarTudo();
             AplicarTela(ObterTelaAtual());
+            MostrarAvisoViewStateExpirado();
         }
     }
 
@@ -470,6 +469,14 @@ public partial class ramais_default : System.Web.UI.Page
         return "consulta";
     }
 
+    private void MostrarAvisoViewStateExpirado()
+    {
+        if (String.Equals(Request.QueryString["viewstate"], "expired", StringComparison.OrdinalIgnoreCase))
+        {
+            MostrarMensagem("A tela foi atualizada porque o formul\u00e1rio anterior expirou. Preencha novamente e salve.", true);
+        }
+    }
+
     private void AplicarTela(string tela)
     {
         tela = (tela ?? "consulta").ToLowerInvariant();
@@ -715,6 +722,37 @@ public partial class ramais_default : System.Web.UI.Page
         }
 
         return autorizada;
+    }
+
+    private string ObterChaveViewState()
+    {
+        HttpCookie cookie = Request.Cookies[ViewStateCookieName];
+        string chave = cookie != null ? (cookie.Value ?? "").Trim() : "";
+        if (!ChaveViewStateValida(chave))
+        {
+            chave = Guid.NewGuid().ToString("N");
+        }
+
+        HttpCookie resposta = new HttpCookie(ViewStateCookieName, chave);
+        resposta.HttpOnly = true;
+        resposta.Secure = Request.IsSecureConnection;
+        resposta.Path = "/";
+        resposta.Expires = DateTime.UtcNow.AddYears(2);
+        Response.Cookies.Set(resposta);
+        return chave;
+    }
+
+    private bool ChaveViewStateValida(string chave)
+    {
+        if (chave == null || chave.Length != 32) return false;
+        for (int i = 0; i < chave.Length; i++)
+        {
+            char c = chave[i];
+            bool hexadecimal = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+            if (!hexadecimal) return false;
+        }
+
+        return true;
     }
 
     private string ChaveEdicaoRamal(int id)

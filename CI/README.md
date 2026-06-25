@@ -35,6 +35,8 @@ O script versionado fica em `sql/ci-schema.sql`.
 - A procedure de salvar bloqueia alteracao de CI inexistente ou cancelada.
 - O cadastro bloqueia trechos de modelo nao revisados, como `[data]` ou `[descreva...]`.
 - Campos longos possuem limites no navegador e no servidor para evitar impressao ruim.
+- O ViewState usa `machineKey` fixo no `Web.config` e cookie HttpOnly `BaliViewStateKey`, evitando falha de MAC quando a sessao do usuario muda.
+- Posts com ViewState antigo em CI sao redirecionados para a mesma tela com aviso amigavel.
 
 ## UX implementada
 

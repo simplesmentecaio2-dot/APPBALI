@@ -3,20 +3,19 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
 public partial class ci_erros : System.Web.UI.Page
 {
     private const string SenhaLogs = "@bali2025";
+    private const string ViewStateCookieName = "BaliViewStateKey";
     private const int LimiteLinhas = 200;
 
     protected void Page_Init(object sender, EventArgs e)
     {
-        if (Session != null)
-        {
-            ViewStateUserKey = Session.SessionID;
-        }
+        ViewStateUserKey = ObterChaveViewState();
     }
 
     protected void Page_Load(object sender, EventArgs e)
@@ -261,5 +260,36 @@ public partial class ci_erros : System.Web.UI.Page
     {
         pnlMensagem.Visible = true;
         litMensagem.Text = Server.HtmlEncode(mensagem);
+    }
+
+    private string ObterChaveViewState()
+    {
+        HttpCookie cookie = Request.Cookies[ViewStateCookieName];
+        string chave = cookie != null ? (cookie.Value ?? "").Trim() : "";
+        if (!ChaveViewStateValida(chave))
+        {
+            chave = Guid.NewGuid().ToString("N");
+        }
+
+        HttpCookie resposta = new HttpCookie(ViewStateCookieName, chave);
+        resposta.HttpOnly = true;
+        resposta.Secure = Request.IsSecureConnection;
+        resposta.Path = "/";
+        resposta.Expires = DateTime.UtcNow.AddYears(2);
+        Response.Cookies.Set(resposta);
+        return chave;
+    }
+
+    private bool ChaveViewStateValida(string chave)
+    {
+        if (chave == null || chave.Length != 32) return false;
+        for (int i = 0; i < chave.Length; i++)
+        {
+            char c = chave[i];
+            bool hexadecimal = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+            if (!hexadecimal) return false;
+        }
+
+        return true;
     }
 }

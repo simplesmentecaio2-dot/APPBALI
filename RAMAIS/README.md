@@ -36,6 +36,8 @@ O script versionado fica em `sql/ramais-schema.sql`.
 - Lojas e setores nao podem ser excluidos se houver ramal ativo vinculado.
 - A impressao mostra somente ramais ativos.
 - A grade de impressao deve sair em retrato para aproveitar melhor o papel.
+- O ViewState usa `machineKey` fixo no `Web.config` e cookie HttpOnly `BaliViewStateKey`, evitando falha de MAC quando a sessao do usuario muda.
+- Posts com ViewState antigo em Ramais sao redirecionados para a mesma tela com aviso amigavel.
 
 ## UX implementada
 
