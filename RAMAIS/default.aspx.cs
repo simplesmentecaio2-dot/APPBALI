@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using System.Web;
 using System.Web.UI.WebControls;
 
 public partial class ramais_default : System.Web.UI.Page
@@ -51,6 +52,40 @@ public partial class ramais_default : System.Web.UI.Page
         chkSomenteAtivos.Checked = true;
         CarregarRamais();
         AplicarTela("consulta");
+    }
+
+    protected void btnExportar_Click(object sender, EventArgs e)
+    {
+        DataTable ramais = ExecutarTabela("dbo.ramais_ramal_listar",
+            Param("@id_loja", SqlDbType.Int, ValorCombo(ddlFiltroLoja)),
+            Param("@id_setor", SqlDbType.Int, ValorCombo(ddlFiltroSetor)),
+            Param("@termo", SqlDbType.NVarChar, txtBusca.Text.Trim(), 160),
+            Param("@somente_ativos", SqlDbType.Bit, chkSomenteAtivos.Checked));
+
+        ramais = OrdenarTabela(ramais, gvConsulta);
+
+        Response.Clear();
+        Response.ContentType = "text/csv";
+        Response.ContentEncoding = Encoding.UTF8;
+        Response.AddHeader("Content-Disposition", "attachment; filename=ramais-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".csv");
+        Response.BinaryWrite(Encoding.UTF8.GetPreamble());
+        Response.Write("Nome;Ramal;Loja;Setor;Status\r\n");
+
+        foreach (DataRow row in ramais.Rows)
+        {
+            Response.Write(Csv(row["nome"]));
+            Response.Write(";");
+            Response.Write(Csv(row["ramal"]));
+            Response.Write(";");
+            Response.Write(Csv(row["loja"]));
+            Response.Write(";");
+            Response.Write(Csv(row["setor"]));
+            Response.Write(";");
+            Response.Write(Csv(row["status"]));
+            Response.Write("\r\n");
+        }
+
+        HttpContext.Current.ApplicationInstance.CompleteRequest();
     }
 
     protected void btnGerarImpressao_Click(object sender, EventArgs e)
@@ -693,6 +728,13 @@ public partial class ramais_default : System.Web.UI.Page
         SqlParameter parametro = tamanho > 0 ? new SqlParameter(nome, tipo, tamanho) : new SqlParameter(nome, tipo);
         parametro.Value = valor == null ? DBNull.Value : valor;
         return parametro;
+    }
+
+    private string Csv(object valor)
+    {
+        string texto = Convert.ToString(valor ?? "");
+        texto = texto.Replace("\"", "\"\"");
+        return "\"" + texto + "\"";
     }
 
     private DataTable ExecutarTabela(string procedure, params SqlParameter[] parametros)

@@ -270,6 +270,14 @@ a {
   margin-bottom: 16px;
 }
 
+.panel-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .filter-grid,
 .form-grid {
   display: grid;
@@ -714,6 +722,7 @@ label {
 
   .hero,
   .panel-header,
+  .panel-tools,
   .sidebar {
     align-items: stretch;
     flex-direction: column;
