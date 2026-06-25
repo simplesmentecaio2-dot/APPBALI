@@ -192,11 +192,14 @@ BEGIN
     SET @prioridade = LTRIM(RTRIM(ISNULL(@prioridade, '')));
     SET @corpo = LTRIM(RTRIM(ISNULL(@corpo, '')));
 
+    DECLARE @erro_obrigatorios NVARCHAR(200);
+    SET @erro_obrigatorios = N'Preencha todos os campos obrigat' + NCHAR(243) + N'rios da CI.';
+
     IF @data_documento IS NULL OR @origem_marca = '' OR @origem_area = '' OR @origem_responsavel = ''
         OR @destino_area = '' OR @destinatario = '' OR @assunto = '' OR @categoria = ''
         OR @prioridade = '' OR @corpo = ''
     BEGIN
-        RAISERROR(N'Preencha todos os campos obrigatórios da CI.', 16, 1);
+        RAISERROR(@erro_obrigatorios, 16, 1);
         RETURN;
     END
 
@@ -237,7 +240,7 @@ BEGIN
             prioridade, corpo, providencias, observacoes, criado_por, ativo
         )
         SELECT
-            id_ci, N'Alteração', ano, numero, data_documento, origem_marca, origem_area,
+            id_ci, N'Altera' + NCHAR(231) + NCHAR(227) + N'o', ano, numero, data_documento, origem_marca, origem_area,
             origem_responsavel, destino_area, destinatario, assunto, categoria,
             prioridade, corpo, providencias, observacoes, criado_por, ativo
         FROM dbo.ci_comunicacoes
@@ -261,6 +264,14 @@ BEGIN
             dt_alteracao = GETDATE()
         WHERE id_ci = @id_ci
           AND ativo = 1;
+
+        IF @@ROWCOUNT = 0
+        BEGIN
+            DECLARE @erro_cancelada NVARCHAR(200);
+            SET @erro_cancelada = N'N' + NCHAR(227) + N'o foi poss' + NCHAR(237) + N'vel salvar: CI inexistente ou cancelada.';
+            RAISERROR(@erro_cancelada, 16, 1);
+            RETURN;
+        END
     END
 
     EXEC dbo.ci_comunicacao_obter @id_ci = @id_ci;
