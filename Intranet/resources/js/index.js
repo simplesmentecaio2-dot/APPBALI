@@ -2,7 +2,9 @@ const SHORTCUTS_API = 'manutencao-links.ashx?AspxAutoDetectCookieSupport=1';
 const SESSION_KEY = 'centralBaliMaintenanceUnlocked';
 const SHORTCUT_CACHE_KEY = 'centralBaliShortcutsCache';
 const FAVORITES_KEY = 'centralBaliShortcutFavorites';
+const RECENT_KEY = 'centralBaliRecentShortcuts';
 const SECTION_STATE_KEY = 'centralBaliOpenSections';
+const MAX_RECENT_SHORTCUTS = 12;
 const MAINTENANCE_PASSWORD = '@bali2025';
 const DEFAULT_NOTICE_IMAGE = 'resources/imagens/AVISOIMPORTANTE2.jpg';
 const NOTICE_FILE_LIMIT = 8 * 1024 * 1024;
@@ -91,6 +93,7 @@ let noticeConfig = { image: DEFAULT_NOTICE_IMAGE, autoOpen: false };
 let filterTimer = 0;
 let maintenanceBusy = false;
 let favoriteShortcuts = new Set();
+let recentShortcuts = [];
 let restoringSections = false;
 
 function normalizeText(value) {
@@ -207,6 +210,23 @@ function readFavoriteShortcuts() {
 function writeFavoriteShortcuts() {
   try {
     window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favoriteShortcuts)));
+  } catch (error) {
+    return;
+  }
+}
+
+function readRecentShortcuts() {
+  try {
+    const items = JSON.parse(window.localStorage.getItem(RECENT_KEY) || '[]');
+    return Array.isArray(items) ? items.map(safeTrim).filter(Boolean).slice(0, MAX_RECENT_SHORTCUTS) : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function writeRecentShortcuts() {
+  try {
+    window.localStorage.setItem(RECENT_KEY, JSON.stringify(recentShortcuts.slice(0, MAX_RECENT_SHORTCUTS)));
   } catch (error) {
     return;
   }
@@ -563,6 +583,9 @@ function buildShortcutCard(shortcut) {
 
   link.appendChild(label);
   link.appendChild(linkIcon);
+  if (shortcut.url) {
+    link.addEventListener('click', () => rememberRecentShortcut(shortcut.id));
+  }
 
   article.appendChild(icon);
   article.appendChild(content);
@@ -576,6 +599,7 @@ function updateDashboardTotals() {
   const total = shortcuts.length;
   const validIds = new Set(shortcuts.map((shortcut) => shortcut.id));
   const favoriteCount = Array.from(favoriteShortcuts).filter((id) => validIds.has(id)).length;
+  const recentCount = recentShortcuts.filter((id) => validIds.has(id)).length;
   const usedSections = Object.keys(SECTION_CONFIG).filter((section) => shortcuts.some((shortcut) => shortcut.section === section)).length;
   const metricValues = document.querySelectorAll('.metric-grid strong');
 
@@ -591,7 +615,9 @@ function updateDashboardTotals() {
       ? total
       : section === 'favorites'
         ? favoriteCount
-        : shortcuts.filter((shortcut) => shortcut.section === section).length;
+        : section === 'recent'
+          ? recentCount
+          : shortcuts.filter((shortcut) => shortcut.section === section).length;
     counter.textContent = count;
   });
 }
@@ -620,6 +646,22 @@ function pruneFavoriteShortcuts() {
   }
 }
 
+function pruneRecentShortcuts() {
+  const validIds = new Set(shortcuts.map((shortcut) => shortcut.id));
+  const previous = recentShortcuts.join('|');
+  recentShortcuts = recentShortcuts.filter((id, index, list) => validIds.has(id) && list.indexOf(id) === index).slice(0, MAX_RECENT_SHORTCUTS);
+  if (recentShortcuts.join('|') !== previous) {
+    writeRecentShortcuts();
+  }
+}
+
+function rememberRecentShortcut(id) {
+  if (!id) return;
+  recentShortcuts = [id].concat(recentShortcuts.filter((item) => item !== id)).slice(0, MAX_RECENT_SHORTCUTS);
+  writeRecentShortcuts();
+  updateDashboardTotals();
+}
+
 function toggleFavorite(id) {
   if (!id) return;
   if (favoriteShortcuts.has(id)) {
@@ -635,6 +677,7 @@ function toggleFavorite(id) {
 function renderShortcuts() {
   sections = getShortcutSections();
   pruneFavoriteShortcuts();
+  pruneRecentShortcuts();
 
   sections.forEach((section) => {
     const grid = section.querySelector('.shortcut-grid');
@@ -662,6 +705,7 @@ function applyFilters() {
     const matchesText = !term || haystack.includes(term);
     const matchesSection = activeSection === 'all'
       || (activeSection === 'favorites' && favoriteShortcuts.has(card.dataset.id))
+      || (activeSection === 'recent' && recentShortcuts.includes(card.dataset.id))
       || card.dataset.section === activeSection;
     const visible = matchesText && matchesSection;
 
@@ -1370,6 +1414,7 @@ document.addEventListener('keydown', (event) => {
 async function initializePage() {
   defaultShortcuts = extractDefaultShortcuts();
   favoriteShortcuts = readFavoriteShortcuts();
+  recentShortcuts = readRecentShortcuts();
   const cached = readShortcutCache();
   if (cached) {
     shortcuts = cached.shortcuts.map(sanitizeShortcut).filter((shortcut) => shortcut.title && shortcut.section);
