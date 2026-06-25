@@ -28,7 +28,8 @@
     selectedIcon: 'default',
     filter: '',
     filterFrame: 0,
-    saving: false
+    saving: false,
+    searchTouched: false
   };
 
   var elements = {};
@@ -169,6 +170,10 @@
     return document.body.getAttribute('data-brand-name') || 'Central';
   }
 
+  function uniqueSearchName() {
+    return 'central_filtro_' + normalize(getBrandName()).replace(/[^a-z0-9]+/g, '_') + '_' + Date.now().toString(36);
+  }
+
   function createShortcutTools() {
     var cardPanel = document.querySelector('.central-card-panel');
     var grid = document.querySelector('.central-link-grid');
@@ -181,7 +186,7 @@
     tools.setAttribute('data-central-tools', 'true');
     tools.innerHTML =
       '<div class="central-search-box">' +
-        '<input type="search" data-shortcut-search aria-label="Buscar atalhos" placeholder="Buscar atalho, &aacute;rea ou link" />' +
+        '<input type="search" data-shortcut-search aria-label="Buscar atalhos" placeholder="Buscar atalho, &aacute;rea ou link" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-form-type="other" />' +
         '<button type="button" data-clear-shortcut-search aria-label="Limpar busca" hidden>&times;</button>' +
       '</div>' +
       '<span class="central-status-chip" data-shortcut-status>Carregando atalhos...</span>';
@@ -193,6 +198,40 @@
     empty.setAttribute('data-shortcut-empty', 'true');
     empty.textContent = 'Nenhum atalho encontrado para este filtro.';
     cardPanel.insertBefore(empty, grid.nextSibling);
+  }
+
+  function clearSearchIfAutofilled() {
+    if (!elements.search || state.searchTouched || !elements.search.value) {
+      return;
+    }
+
+    elements.search.value = '';
+    state.filter = '';
+    applyShortcutFilter();
+  }
+
+  function hardenSearchAutocomplete() {
+    if (!elements.search) {
+      return;
+    }
+
+    var fieldName = uniqueSearchName();
+    elements.search.setAttribute('name', fieldName);
+    elements.search.setAttribute('id', fieldName);
+    elements.search.setAttribute('autocomplete', 'off');
+    elements.search.setAttribute('autocorrect', 'off');
+    elements.search.setAttribute('autocapitalize', 'none');
+    elements.search.setAttribute('spellcheck', 'false');
+    elements.search.setAttribute('data-lpignore', 'true');
+    elements.search.setAttribute('data-form-type', 'other');
+    elements.search.setAttribute('aria-autocomplete', 'none');
+    elements.search.value = '';
+
+    window.setTimeout(clearSearchIfAutofilled, 0);
+    window.setTimeout(clearSearchIfAutofilled, 120);
+    window.setTimeout(clearSearchIfAutofilled, 600);
+    window.setTimeout(clearSearchIfAutofilled, 1400);
+    window.addEventListener('pageshow', clearSearchIfAutofilled);
   }
 
   function updateHeroSummary(total) {
@@ -751,12 +790,22 @@
     }
 
     if (elements.search) {
+      elements.search.addEventListener('keydown', function () {
+        state.searchTouched = true;
+      });
+      elements.search.addEventListener('paste', function () {
+        state.searchTouched = true;
+      });
+      elements.search.addEventListener('compositionstart', function () {
+        state.searchTouched = true;
+      });
       elements.search.addEventListener('input', scheduleShortcutFilter);
     }
 
     if (elements.clearSearch) {
       elements.clearSearch.addEventListener('click', function () {
         if (elements.search) {
+          state.searchTouched = false;
           elements.search.value = '';
           elements.search.focus();
         }
@@ -781,6 +830,7 @@
     createShortcutTools();
     createMaintenancePanel();
     cacheElements();
+    hardenSearchAutocomplete();
     bindEvents();
 
     state.shortcuts = await loadShortcuts();
