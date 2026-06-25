@@ -47,7 +47,7 @@ public partial class ramais_default : System.Web.UI.Page
             int idAtual = ObterIdNumerico(hfRamalId.Value);
             if (idAtual > 0 && !EdicaoRamalAutorizada(idAtual))
             {
-                MostrarMensagem("Para salvar alteração em ramal existente, clique em Editar e informe a senha de manutenção.", true);
+                MostrarMensagem("Para salvar altera\u00e7\u00e3o em ramal existente, clique em Editar e informe a senha de manuten\u00e7\u00e3o.", true);
                 return;
             }
 
@@ -106,7 +106,7 @@ public partial class ramais_default : System.Web.UI.Page
 
                 AutorizarEdicaoRamal(id);
                 CarregarRamal(id);
-                MostrarMensagem("Ramal carregado para edição.", false);
+                MostrarMensagem("Ramal carregado para edi\u00e7\u00e3o.", false);
             }
             else if (e.CommandName == "ExcluirRamal")
             {
@@ -171,7 +171,7 @@ public partial class ramais_default : System.Web.UI.Page
                     hfLojaId.Value = row["id_loja"].ToString();
                     txtLojaNome.Text = row["nome"].ToString();
                     chkLojaAtiva.Checked = Convert.ToBoolean(row["ativo"]);
-                    MostrarMensagem("Loja carregada para edição.", false);
+                    MostrarMensagem("Loja carregada para edi\u00e7\u00e3o.", false);
                 }
             }
             else if (e.CommandName == "ExcluirLoja")
@@ -234,7 +234,7 @@ public partial class ramais_default : System.Web.UI.Page
                     hfSetorId.Value = row["id_setor"].ToString();
                     txtSetorNome.Text = row["nome"].ToString();
                     chkSetorAtivo.Checked = Convert.ToBoolean(row["ativo"]);
-                    MostrarMensagem("Setor carregado para edição.", false);
+                    MostrarMensagem("Setor carregado para edi\u00e7\u00e3o.", false);
                 }
             }
             else if (e.CommandName == "ExcluirSetor")
@@ -385,7 +385,7 @@ public partial class ramais_default : System.Web.UI.Page
 
         if (!autorizada)
         {
-            MostrarMensagem("Senha incorreta. Para editar ou excluir ramais, informe a senha de manutenção.", true);
+            MostrarMensagem("Senha incorreta. Para editar ou excluir ramais, informe a senha de manuten\u00e7\u00e3o.", true);
         }
 
         return autorizada;
@@ -490,16 +490,16 @@ public partial class ramais_default : System.Web.UI.Page
     private string FormatarErro(Exception ex)
     {
         string mensagem = ex.Message;
-        mensagem = mensagem.Replace("Ja ", "Já ");
-        mensagem = mensagem.Replace("Nao ", "Não ");
-        mensagem = mensagem.Replace("nao ", "não ");
-        mensagem = mensagem.Replace("possivel", "possível");
-        mensagem = mensagem.Replace("numero", "número");
-        mensagem = mensagem.Replace("obrigatorios", "obrigatórios");
-        mensagem = mensagem.Replace("obrigatorio", "obrigatório");
-        mensagem = mensagem.Replace("alteracao", "alteração");
-        mensagem = mensagem.Replace("informacao", "informação");
-        mensagem = mensagem.Replace("exclusao", "exclusão");
+        mensagem = mensagem.Replace("Ja ", "J\u00e1 ");
+        mensagem = mensagem.Replace("Nao ", "N\u00e3o ");
+        mensagem = mensagem.Replace("nao ", "n\u00e3o ");
+        mensagem = mensagem.Replace("possivel", "poss\u00edvel");
+        mensagem = mensagem.Replace("numero", "n\u00famero");
+        mensagem = mensagem.Replace("obrigatorios", "obrigat\u00f3rios");
+        mensagem = mensagem.Replace("obrigatorio", "obrigat\u00f3rio");
+        mensagem = mensagem.Replace("alteracao", "altera\u00e7\u00e3o");
+        mensagem = mensagem.Replace("informacao", "informa\u00e7\u00e3o");
+        mensagem = mensagem.Replace("exclusao", "exclus\u00e3o");
         return mensagem;
     }
 }

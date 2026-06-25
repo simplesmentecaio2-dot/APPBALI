@@ -19,7 +19,7 @@ public partial class ci_print : System.Web.UI.Page
         int id;
         if (!Int32.TryParse(Request.QueryString["id"], out id) || id <= 0)
         {
-            Response.Write("CI não informada.");
+            Response.Write("CI n&atilde;o informada.");
             Response.End();
             return;
         }
@@ -27,7 +27,7 @@ public partial class ci_print : System.Web.UI.Page
         DataTable dados = ObterCI(id);
         if (dados.Rows.Count == 0)
         {
-            Response.Write("CI não encontrada.");
+            Response.Write("CI n&atilde;o encontrada.");
             Response.End();
             return;
         }

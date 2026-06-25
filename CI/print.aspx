@@ -5,7 +5,7 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title><%=CodigoCI%> - Impressão</title>
+    <title><%=CodigoCI%> - Impress&atilde;o</title>
     <link href="ci.css?v=20260624-ci-ramais2" rel="stylesheet" />
 </head>
 <body class="ci-print-page <%=MarcaClasse%>">
@@ -17,7 +17,7 @@
                     <asp:Literal ID="litLogoTexto" runat="server"></asp:Literal>
                 </div>
                 <div class="print-title">
-                    <span>Comunicação Interna</span>
+                    <span>Comunica&ccedil;&atilde;o Interna</span>
                     <h1><asp:Literal ID="litCodigo" runat="server"></asp:Literal></h1>
                 </div>
             </header>
@@ -48,17 +48,17 @@
             </section>
 
             <section class="print-block">
-                <span>Comunicação</span>
+                <span>Comunica&ccedil;&atilde;o</span>
                 <asp:Literal ID="litCorpo" runat="server"></asp:Literal>
             </section>
 
             <section class="print-block" id="secProvidencias" runat="server">
-                <span>Providências solicitadas</span>
+                <span>Provid&ecirc;ncias solicitadas</span>
                 <asp:Literal ID="litProvidencias" runat="server"></asp:Literal>
             </section>
 
             <section class="print-block" id="secObservacoes" runat="server">
-                <span>Observações</span>
+                <span>Observa&ccedil;&otilde;es</span>
                 <asp:Literal ID="litObservacoes" runat="server"></asp:Literal>
             </section>
 
@@ -68,7 +68,7 @@
                     <strong><asp:Literal ID="litCriadoPor" runat="server"></asp:Literal></strong>
                 </div>
                 <div class="signature">
-                    <span>Assinatura / ciência</span>
+                    <span>Assinatura / ci&ecirc;ncia</span>
                 </div>
             </footer>
         </main>

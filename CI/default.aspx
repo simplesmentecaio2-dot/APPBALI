@@ -5,7 +5,7 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Comunicação Interna - CI</title>
+    <title>Comunica&ccedil;&atilde;o Interna - CI</title>
     <link href="ci.css?v=20260624-ci-ramais2" rel="stylesheet" />
 </head>
 <body class="ci-page">
@@ -15,7 +15,7 @@
                 <a class="brand" href="default.aspx">
                     <span class="brand-mark">CI</span>
                     <span>
-                        <strong>Comunicação Interna</strong>
+                        <strong>Comunica&ccedil;&atilde;o Interna</strong>
                         <small>Grupo Bali</small>
                     </span>
                 </a>
@@ -30,8 +30,8 @@
                 <header class="hero">
                     <div>
                         <span class="eyebrow">Documento interno</span>
-                        <h1>Comunicação Interna</h1>
-                        <p>Cadastre, consulte e imprima comunicações internas padronizadas por marca.</p>
+                        <h1>Comunica&ccedil;&atilde;o Interna</h1>
+                        <p>Cadastre, consulte e imprima comunica&ccedil;&otilde;es internas padronizadas por marca.</p>
                     </div>
                     <div class="hero-side">
                         <div class="brand-strip" aria-label="Marcas atendidas">
@@ -57,7 +57,7 @@
                         <strong><asp:Literal ID="litAtivas" runat="server" Text="0"></asp:Literal></strong>
                     </article>
                     <article>
-                        <span>Últimos 30 dias</span>
+                        <span>&Uacute;ltimos 30 dias</span>
                         <strong><asp:Literal ID="litRecentes" runat="server" Text="0"></asp:Literal></strong>
                     </article>
                 </section>
@@ -87,7 +87,7 @@
                             </asp:DropDownList>
                         </label>
                         <label>Busca
-                            <asp:TextBox ID="txtBusca" runat="server" CssClass="text-field" placeholder="Assunto, área, destinatário ou texto"></asp:TextBox>
+                            <asp:TextBox ID="txtBusca" runat="server" CssClass="text-field" placeholder="Assunto, &aacute;rea, destinat&aacute;rio ou texto"></asp:TextBox>
                         </label>
                         <label class="checkbox-row">
                             <asp:CheckBox ID="chkSomenteAtivas" runat="server" Checked="true" />
@@ -100,19 +100,19 @@
                         <label>Senha para editar ou cancelar
                             <asp:TextBox ID="txtSenhaEdicao" runat="server" CssClass="text-field" TextMode="Password" autocomplete="current-password"></asp:TextBox>
                         </label>
-                        <small>Informe a senha para editar ou cancelar uma CI. Depois da liberação, você pode salvar a alteração nessa mesma sessão.</small>
+                        <small>Informe a senha para editar ou cancelar uma CI. Depois da libera&ccedil;&atilde;o, voc&ecirc; pode salvar a altera&ccedil;&atilde;o nessa mesma sess&atilde;o.</small>
                     </div>
 
                     <div class="table-wrap">
                         <asp:GridView ID="gvCis" runat="server" CssClass="ci-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma CI encontrada." OnRowCommand="gvCis_RowCommand">
                             <Columns>
-                                <asp:BoundField DataField="codigo_ci" HeaderText="Código" />
+                                <asp:BoundField DataField="codigo_ci" HeaderText="C&oacute;digo" />
                                 <asp:BoundField DataField="data_documento" HeaderText="Data" DataFormatString="{0:dd/MM/yyyy}" />
                                 <asp:BoundField DataField="origem_marca" HeaderText="Marca" />
-                                <asp:BoundField DataField="destinatario" HeaderText="Destinatário" />
+                                <asp:BoundField DataField="destinatario" HeaderText="Destinat&aacute;rio" />
                                 <asp:BoundField DataField="assunto" HeaderText="Assunto" />
                                 <asp:BoundField DataField="status" HeaderText="Status" />
-                                <asp:TemplateField HeaderText="Ações">
+                                <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                     <ItemTemplate>
                                         <a class="table-action" href='print.aspx?id=<%# Eval("id_ci") %>' target="_blank">Imprimir</a>
                                         <asp:LinkButton ID="lnkEditar" runat="server" CssClass="table-action" CommandName="EditarCI" CommandArgument='<%# Eval("id_ci") %>'>Editar</asp:LinkButton>
@@ -149,8 +149,8 @@
                         <label>Categoria
                             <asp:DropDownList ID="ddlCategoria" runat="server" CssClass="select-field">
                                 <asp:ListItem>Comunicado</asp:ListItem>
-                                <asp:ListItem>Solicitação</asp:ListItem>
-                                <asp:ListItem>Autorização</asp:ListItem>
+                                <asp:ListItem>Solicita&ccedil;&atilde;o</asp:ListItem>
+                                <asp:ListItem>Autoriza&ccedil;&atilde;o</asp:ListItem>
                                 <asp:ListItem>Procedimento</asp:ListItem>
                                 <asp:ListItem>Financeiro</asp:ListItem>
                                 <asp:ListItem>Administrativo</asp:ListItem>
@@ -163,28 +163,28 @@
                                 <asp:ListItem>Urgente</asp:ListItem>
                             </asp:DropDownList>
                         </label>
-                        <label>Área de origem
+                        <label>&Aacute;rea de origem
                             <asp:TextBox ID="txtOrigemArea" runat="server" CssClass="text-field" MaxLength="120"></asp:TextBox>
                         </label>
-                        <label>Responsável
+                        <label>Respons&aacute;vel
                             <asp:TextBox ID="txtOrigemResponsavel" runat="server" CssClass="text-field" MaxLength="160"></asp:TextBox>
                         </label>
-                        <label>Área de destino
+                        <label>&Aacute;rea de destino
                             <asp:TextBox ID="txtDestinoArea" runat="server" CssClass="text-field" MaxLength="120"></asp:TextBox>
                         </label>
-                        <label>Destinatário
+                        <label>Destinat&aacute;rio
                             <asp:TextBox ID="txtDestinatario" runat="server" CssClass="text-field" MaxLength="160"></asp:TextBox>
                         </label>
                         <label class="wide">Assunto
                             <asp:TextBox ID="txtAssunto" runat="server" CssClass="text-field" MaxLength="200"></asp:TextBox>
                         </label>
-                        <label class="wide">Texto da comunicação
+                        <label class="wide">Texto da comunica&ccedil;&atilde;o
                             <asp:TextBox ID="txtCorpo" runat="server" CssClass="textarea-field" TextMode="MultiLine" Rows="9"></asp:TextBox>
                         </label>
-                        <label class="wide">Providências solicitadas
+                        <label class="wide">Provid&ecirc;ncias solicitadas
                             <asp:TextBox ID="txtProvidencias" runat="server" CssClass="textarea-field" TextMode="MultiLine" Rows="4"></asp:TextBox>
                         </label>
-                        <label class="wide">Observações
+                        <label class="wide">Observa&ccedil;&otilde;es
                             <asp:TextBox ID="txtObservacoes" runat="server" CssClass="textarea-field" TextMode="MultiLine" Rows="3"></asp:TextBox>
                         </label>
                         <label>Criado por
@@ -203,12 +203,12 @@
             (function () {
                 var camposObrigatorios = [
                     { id: '<%= txtData.ClientID %>', mensagem: 'Informe a data da CI.' },
-                    { id: '<%= txtOrigemArea.ClientID %>', mensagem: 'Informe a área de origem.' },
-                    { id: '<%= txtOrigemResponsavel.ClientID %>', mensagem: 'Informe o responsável pela origem.' },
-                    { id: '<%= txtDestinoArea.ClientID %>', mensagem: 'Informe a área de destino.' },
-                    { id: '<%= txtDestinatario.ClientID %>', mensagem: 'Informe o destinatário.' },
+                    { id: '<%= txtOrigemArea.ClientID %>', mensagem: 'Informe a \u00e1rea de origem.' },
+                    { id: '<%= txtOrigemResponsavel.ClientID %>', mensagem: 'Informe o respons\u00e1vel pela origem.' },
+                    { id: '<%= txtDestinoArea.ClientID %>', mensagem: 'Informe a \u00e1rea de destino.' },
+                    { id: '<%= txtDestinatario.ClientID %>', mensagem: 'Informe o destinat\u00e1rio.' },
                     { id: '<%= txtAssunto.ClientID %>', mensagem: 'Informe o assunto.' },
-                    { id: '<%= txtCorpo.ClientID %>', mensagem: 'Informe o texto da comunicação.' }
+                    { id: '<%= txtCorpo.ClientID %>', mensagem: 'Informe o texto da comunica\u00e7\u00e3o.' }
                 ];
 
                 function campo(id) {

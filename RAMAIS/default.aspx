@@ -37,9 +37,9 @@
             <main class="content">
                 <header class="hero">
                     <div>
-                        <span class="eyebrow">Comunicação interna</span>
+                        <span class="eyebrow">Comunica&ccedil;&atilde;o interna</span>
                         <h1>Sistema de Ramais</h1>
-                        <p>Consulta e manutenção dos contatos por loja, setor e colaborador.</p>
+                        <p>Consulta e manuten&ccedil;&atilde;o dos contatos por loja, setor e colaborador.</p>
                     </div>
                     <div class="hero-actions">
                         <div class="brand-strip" aria-label="Marcas atendidas">
@@ -105,7 +105,7 @@
                                 <asp:BoundField DataField="loja" HeaderText="Loja" />
                                 <asp:BoundField DataField="setor" HeaderText="Setor" />
                                 <asp:BoundField DataField="status" HeaderText="Status" />
-                                <asp:TemplateField HeaderText="Ação">
+                                <asp:TemplateField HeaderText="A&ccedil;&atilde;o">
                                     <ItemTemplate>
                                         <asp:LinkButton ID="lnkEditarConsulta" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return solicitarSenhaRamal('editar', this);">Editar</asp:LinkButton>
                                     </ItemTemplate>
@@ -154,7 +154,7 @@
                                 <asp:BoundField DataField="loja" HeaderText="Loja" />
                                 <asp:BoundField DataField="setor" HeaderText="Setor" />
                                 <asp:BoundField DataField="status" HeaderText="Status" />
-                                <asp:TemplateField HeaderText="Ações">
+                                <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                     <ItemTemplate>
                                         <asp:LinkButton ID="lnkEditarRamal" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return solicitarSenhaRamal('editar', this);">Editar</asp:LinkButton>
                                         <asp:LinkButton ID="lnkExcluirRamal" runat="server" CssClass="table-action danger" CommandName="ExcluirRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return confirmarExclusaoRamal(this);">Excluir</asp:LinkButton>
@@ -193,7 +193,7 @@
                                 <Columns>
                                     <asp:BoundField DataField="nome" HeaderText="Loja" />
                                     <asp:BoundField DataField="status" HeaderText="Status" />
-                                    <asp:TemplateField HeaderText="Ações">
+                                    <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                         <ItemTemplate>
                                             <asp:LinkButton ID="lnkEditarLoja" runat="server" CssClass="table-action" CommandName="EditarLoja" CommandArgument='<%# Eval("id_loja") %>'>Editar</asp:LinkButton>
                                             <asp:LinkButton ID="lnkExcluirLoja" runat="server" CssClass="table-action danger" CommandName="ExcluirLoja" CommandArgument='<%# Eval("id_loja") %>' OnClientClick="return confirm('Deseja inativar esta loja?');">Excluir</asp:LinkButton>
@@ -231,7 +231,7 @@
                                 <Columns>
                                     <asp:BoundField DataField="nome" HeaderText="Setor" />
                                     <asp:BoundField DataField="status" HeaderText="Status" />
-                                    <asp:TemplateField HeaderText="Ações">
+                                    <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                         <ItemTemplate>
                                             <asp:LinkButton ID="lnkEditarSetor" runat="server" CssClass="table-action" CommandName="EditarSetor" CommandArgument='<%# Eval("id_setor") %>'>Editar</asp:LinkButton>
                                             <asp:LinkButton ID="lnkExcluirSetor" runat="server" CssClass="table-action danger" CommandName="ExcluirSetor" CommandArgument='<%# Eval("id_setor") %>' OnClientClick="return confirm('Deseja inativar este setor?');">Excluir</asp:LinkButton>
@@ -247,8 +247,8 @@
 
         <div class="password-modal" id="modalSenhaRamal" aria-hidden="true">
             <div class="password-dialog" role="dialog" aria-modal="true" aria-labelledby="tituloSenhaRamal">
-                <span class="eyebrow">Manutenção protegida</span>
-                <h3 id="tituloSenhaRamal">Confirmar ação no ramal</h3>
+                <span class="eyebrow">Manuten&ccedil;&atilde;o protegida</span>
+                <h3 id="tituloSenhaRamal">Confirmar a&ccedil;&atilde;o no ramal</h3>
                 <p id="textoSenhaRamal">Informe a senha para continuar.</p>
                 <label>Senha
                     <input id="txtSenhaRamalCliente" class="text-field" type="password" autocomplete="current-password" />
@@ -286,7 +286,7 @@
 
                 window.solicitarSenhaRamal = function (acao, link) {
                     postbackPendente = link ? link.href : null;
-                    if (textoSenha) textoSenha.textContent = 'Informe a senha de manutenção para ' + (acao || 'alterar') + ' este ramal.';
+                    if (textoSenha) textoSenha.textContent = 'Informe a senha de manuten\u00e7\u00e3o para ' + (acao || 'alterar') + ' este ramal.';
                     if (campoSenha) campoSenha.value = '';
                     if (modal) modal.classList.add('is-open');
                     if (campoSenha) window.setTimeout(function () { campoSenha.focus(); }, 80);
@@ -383,7 +383,7 @@
                     }
 
                     if (!ramal || ramal.value.trim().length === 0) {
-                        mostrarErroCliente('ramalClientMessage', 'Informe o número do ramal.', ramal);
+                        mostrarErroCliente('ramalClientMessage', 'Informe o n\u00famero do ramal.', ramal);
                         return false;
                     }
 

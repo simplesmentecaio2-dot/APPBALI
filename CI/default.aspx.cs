@@ -121,7 +121,7 @@ public partial class ci_default : System.Web.UI.Page
 
                 AutorizarEdicaoCI(id);
                 CarregarCI(id);
-                MostrarMensagem("CI carregada para edição.", false);
+                MostrarMensagem("CI carregada para edi\u00e7\u00e3o.", false);
             }
             else if (e.CommandName == "CancelarCI")
             {
@@ -224,12 +224,12 @@ public partial class ci_default : System.Web.UI.Page
 
     private string ValidarCampos()
     {
-        if (txtOrigemArea.Text.Trim().Length == 0) return "Informe a área de origem.";
-        if (txtOrigemResponsavel.Text.Trim().Length == 0) return "Informe o responsável pela origem.";
-        if (txtDestinoArea.Text.Trim().Length == 0) return "Informe a área de destino.";
-        if (txtDestinatario.Text.Trim().Length == 0) return "Informe o destinatário.";
+        if (txtOrigemArea.Text.Trim().Length == 0) return "Informe a \u00e1rea de origem.";
+        if (txtOrigemResponsavel.Text.Trim().Length == 0) return "Informe o respons\u00e1vel pela origem.";
+        if (txtDestinoArea.Text.Trim().Length == 0) return "Informe a \u00e1rea de destino.";
+        if (txtDestinatario.Text.Trim().Length == 0) return "Informe o destinat\u00e1rio.";
         if (txtAssunto.Text.Trim().Length == 0) return "Informe o assunto.";
-        if (txtCorpo.Text.Trim().Length == 0) return "Informe o texto da comunicação.";
+        if (txtCorpo.Text.Trim().Length == 0) return "Informe o texto da comunica\u00e7\u00e3o.";
         return "";
     }
 
@@ -339,17 +339,17 @@ public partial class ci_default : System.Web.UI.Page
     private string FormatarErro(Exception ex)
     {
         string mensagem = ex.Message;
-        mensagem = mensagem.Replace("Ja ", "Já ");
-        mensagem = mensagem.Replace("Nao ", "Não ");
-        mensagem = mensagem.Replace("nao ", "não ");
-        mensagem = mensagem.Replace("possivel", "possível");
-        mensagem = mensagem.Replace("numero", "número");
-        mensagem = mensagem.Replace("obrigatorios", "obrigatórios");
-        mensagem = mensagem.Replace("obrigatorio", "obrigatório");
-        mensagem = mensagem.Replace("alteracao", "alteração");
-        mensagem = mensagem.Replace("informacao", "informação");
-        mensagem = mensagem.Replace("comunicacao", "comunicação");
-        mensagem = mensagem.Replace("exclusao", "exclusão");
+        mensagem = mensagem.Replace("Ja ", "J\u00e1 ");
+        mensagem = mensagem.Replace("Nao ", "N\u00e3o ");
+        mensagem = mensagem.Replace("nao ", "n\u00e3o ");
+        mensagem = mensagem.Replace("possivel", "poss\u00edvel");
+        mensagem = mensagem.Replace("numero", "n\u00famero");
+        mensagem = mensagem.Replace("obrigatorios", "obrigat\u00f3rios");
+        mensagem = mensagem.Replace("obrigatorio", "obrigat\u00f3rio");
+        mensagem = mensagem.Replace("alteracao", "altera\u00e7\u00e3o");
+        mensagem = mensagem.Replace("informacao", "informa\u00e7\u00e3o");
+        mensagem = mensagem.Replace("comunicacao", "comunica\u00e7\u00e3o");
+        mensagem = mensagem.Replace("exclusao", "exclus\u00e3o");
         return mensagem;
     }
 }
