@@ -158,7 +158,7 @@ BEGIN
         OR @destino_area = '' OR @destinatario = '' OR @assunto = '' OR @categoria = ''
         OR @prioridade = '' OR @corpo = ''
     BEGIN
-        RAISERROR('Preencha todos os campos obrigatórios da CI.', 16, 1);
+        RAISERROR(N'Preencha todos os campos obrigatórios da CI.', 16, 1);
         RETURN;
     END
 

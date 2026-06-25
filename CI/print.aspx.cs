@@ -8,6 +8,7 @@ public partial class ci_print : System.Web.UI.Page
 {
     public string CodigoCI = "CI";
     public string MarcaClasse = "marca-fiat";
+    private const int TimeoutSqlSegundos = 60;
 
     private string ConnectionString
     {
@@ -108,6 +109,7 @@ public partial class ci_print : System.Web.UI.Page
         using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
         {
             cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
             cmd.Parameters.Add("@id_ci", SqlDbType.Int).Value = id;
             DataTable tabela = new DataTable();
             adapter.Fill(tabela);

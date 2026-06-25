@@ -9,6 +9,7 @@ using System.Web.UI.WebControls;
 public partial class ci_default : System.Web.UI.Page
 {
     private const string SenhaEdicao = "@ci*2026";
+    private const int TimeoutSqlSegundos = 60;
 
     private string ConnectionString
     {
@@ -369,6 +370,7 @@ public partial class ci_default : System.Web.UI.Page
         using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
         {
             cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
             if (parametros != null)
             {
                 cmd.Parameters.AddRange(parametros);
@@ -386,6 +388,7 @@ public partial class ci_default : System.Web.UI.Page
         using (SqlCommand cmd = new SqlCommand(procedure, con))
         {
             cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
             if (parametros != null)
             {
                 cmd.Parameters.AddRange(parametros);
@@ -405,7 +408,7 @@ public partial class ci_default : System.Web.UI.Page
 
     private string FormatarErro(Exception ex)
     {
-        string mensagem = ex.Message;
+        string mensagem = CorrigirAcentosQuebrados(ex.Message);
         mensagem = mensagem.Replace("Ja ", "J\u00e1 ");
         mensagem = mensagem.Replace("Nao ", "N\u00e3o ");
         mensagem = mensagem.Replace("nao ", "n\u00e3o ");
@@ -418,5 +421,35 @@ public partial class ci_default : System.Web.UI.Page
         mensagem = mensagem.Replace("comunicacao", "comunica\u00e7\u00e3o");
         mensagem = mensagem.Replace("exclusao", "exclus\u00e3o");
         return mensagem;
+    }
+
+    private string CorrigirAcentosQuebrados(string mensagem)
+    {
+        return (mensagem ?? "")
+            .Replace("\u00c3\u00a1", "\u00e1")
+            .Replace("\u00c3\u00a0", "\u00e0")
+            .Replace("\u00c3\u00a2", "\u00e2")
+            .Replace("\u00c3\u00a3", "\u00e3")
+            .Replace("\u00c3\u00a9", "\u00e9")
+            .Replace("\u00c3\u00aa", "\u00ea")
+            .Replace("\u00c3\u00ad", "\u00ed")
+            .Replace("\u00c3\u00b3", "\u00f3")
+            .Replace("\u00c3\u00b4", "\u00f4")
+            .Replace("\u00c3\u00b5", "\u00f5")
+            .Replace("\u00c3\u00ba", "\u00fa")
+            .Replace("\u00c3\u00a7", "\u00e7")
+            .Replace("\u00c3\u0081", "\u00c1")
+            .Replace("\u00c3\u0080", "\u00c0")
+            .Replace("\u00c3\u0082", "\u00c2")
+            .Replace("\u00c3\u0083", "\u00c3")
+            .Replace("\u00c3\u0089", "\u00c9")
+            .Replace("\u00c3\u008a", "\u00ca")
+            .Replace("\u00c3\u008d", "\u00cd")
+            .Replace("\u00c3\u0093", "\u00d3")
+            .Replace("\u00c3\u0094", "\u00d4")
+            .Replace("\u00c3\u0095", "\u00d5")
+            .Replace("\u00c3\u009a", "\u00da")
+            .Replace("\u00c3\u0087", "\u00c7")
+            .Replace("\u00c2", "");
     }
 }
