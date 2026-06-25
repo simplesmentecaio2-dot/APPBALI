@@ -8,10 +8,19 @@ using System.Web.UI.WebControls;
 public partial class ramais_default : System.Web.UI.Page
 {
     private const string SenhaManutencaoRamais = "@bali2025";
+    private const int TimeoutSqlSegundos = 60;
 
     private string ConnectionString
     {
         get { return ConfigurationManager.ConnectionStrings["APPWFConnectionString"].ConnectionString; }
+    }
+
+    protected void Page_Init(object sender, EventArgs e)
+    {
+        if (Session != null)
+        {
+            ViewStateUserKey = Session.SessionID;
+        }
     }
 
     protected void Page_Load(object sender, EventArgs e)
@@ -599,6 +608,7 @@ public partial class ramais_default : System.Web.UI.Page
         using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
         {
             cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
             if (parametros != null)
             {
                 cmd.Parameters.AddRange(parametros);
@@ -616,6 +626,7 @@ public partial class ramais_default : System.Web.UI.Page
         using (SqlCommand cmd = new SqlCommand(procedure, con))
         {
             cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
             if (parametros != null)
             {
                 cmd.Parameters.AddRange(parametros);

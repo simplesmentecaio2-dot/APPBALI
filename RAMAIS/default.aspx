@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sistema de Ramais</title>
-    <link href="ramais.css?v=20260625-print" rel="stylesheet" />
+    <link href="ramais.css?v=20260625-safe" rel="stylesheet" />
 </head>
 <body class="ramais-page">
     <form id="form1" runat="server">
@@ -295,20 +295,25 @@
 
                     var href = postbackPendente;
                     postbackPendente = null;
+                    href = href.replace(/&#39;/g, "'").replace(/&quot;/g, '"');
 
                     if (href.indexOf('javascript:') === 0) {
-                        href = href.replace(/^javascript:/, '');
+                        href = href.replace(/^javascript:/i, '');
                     }
 
-                    if (href) {
+                    var postback = href.match(/__doPostBack\('([^']*)','([^']*)'\)/);
+                    if (postback && typeof window.__doPostBack === 'function') {
                         window.setTimeout(function () {
-                            eval(href);
+                            window.__doPostBack(postback[1], postback[2] || '');
                         }, 0);
+                        return;
                     }
+
+                    window.alert('N\u00e3o foi poss\u00edvel processar esta a\u00e7\u00e3o agora. Atualize a p\u00e1gina e tente novamente.');
                 }
 
                 window.solicitarSenhaRamal = function (acao, link) {
-                    postbackPendente = link ? link.href : null;
+                    postbackPendente = link ? link.getAttribute('href') : null;
                     if (textoSenha) textoSenha.textContent = 'Informe a senha de manuten\u00e7\u00e3o para ' + (acao || 'alterar') + ' este ramal.';
                     if (campoSenha) campoSenha.value = '';
                     if (modal) modal.classList.add('is-open');
