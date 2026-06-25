@@ -72,6 +72,7 @@ const maintenanceListSummary = document.getElementById('maintenanceListSummary')
 const maintenanceSearch = document.getElementById('maintenanceSearch');
 const maintenanceListSection = document.getElementById('maintenanceListSection');
 const maintenanceNewShortcut = document.getElementById('maintenanceNewShortcut');
+const maintenanceExportShortcuts = document.getElementById('maintenanceExportShortcuts');
 const maintenanceResetDefaults = document.getElementById('maintenanceResetDefaults');
 const maintenanceCancelEdit = document.getElementById('maintenanceCancelEdit');
 const noticeModal = document.getElementById('noticeModal');
@@ -164,7 +165,7 @@ function setMaintenanceBusy(isBusy) {
     controls.push(...maintenanceList.querySelectorAll('button'));
   }
 
-  [maintenanceNewShortcut, maintenanceResetDefaults, maintenanceListSection, maintenanceSearch].forEach((control) => {
+  [maintenanceNewShortcut, maintenanceExportShortcuts, maintenanceResetDefaults, maintenanceListSection, maintenanceSearch].forEach((control) => {
     if (control) controls.push(control);
   });
 
@@ -818,6 +819,27 @@ function resetMaintenanceForm() {
   maintenanceTitle.focus();
 }
 
+function exportShortcutsBackup() {
+  const payload = {
+    ok: true,
+    exportedAt: new Date().toISOString(),
+    shortcuts: shortcuts.map(cloneShortcut),
+    notice: sanitizeNoticeConfig(noticeConfig)
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0, 10);
+
+  link.href = url;
+  link.download = `intranet-atalhos-${stamp}.json`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  setMaintenanceStatus('Backup JSON gerado.', 'ok');
+}
+
 function getMaintenanceFilters() {
   return {
     term: normalizeText(maintenanceSearch ? maintenanceSearch.value : ''),
@@ -1324,6 +1346,10 @@ function initializeMaintenance() {
 
   if (maintenanceNewShortcut) {
     maintenanceNewShortcut.addEventListener('click', resetMaintenanceForm);
+  }
+
+  if (maintenanceExportShortcuts) {
+    maintenanceExportShortcuts.addEventListener('click', exportShortcutsBackup);
   }
 
   if (maintenanceCancelEdit) {
