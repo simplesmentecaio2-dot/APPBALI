@@ -133,21 +133,23 @@ public partial class ci_default : System.Web.UI.Page
                 return;
             }
 
+            NormalizarFormulario();
+
             DataTable salvo = ExecutarTabela("dbo.ci_comunicacao_salvar",
                 Param("@id_ci", SqlDbType.Int, id > 0 ? (object)id : DBNull.Value),
                 Param("@data_documento", SqlDbType.Date, dataDocumento),
-                Param("@origem_marca", SqlDbType.NVarChar, ddlMarca.SelectedValue, 40),
-                Param("@origem_area", SqlDbType.NVarChar, txtOrigemArea.Text.Trim(), 120),
-                Param("@origem_responsavel", SqlDbType.NVarChar, txtOrigemResponsavel.Text.Trim(), 160),
-                Param("@destino_area", SqlDbType.NVarChar, txtDestinoArea.Text.Trim(), 120),
-                Param("@destinatario", SqlDbType.NVarChar, txtDestinatario.Text.Trim(), 160),
-                Param("@assunto", SqlDbType.NVarChar, txtAssunto.Text.Trim(), 200),
+                Param("@origem_marca", SqlDbType.NVarChar, TextoCurto(ddlMarca.SelectedValue), 40),
+                Param("@origem_area", SqlDbType.NVarChar, TextoCurto(txtOrigemArea.Text), 120),
+                Param("@origem_responsavel", SqlDbType.NVarChar, TextoCurto(txtOrigemResponsavel.Text), 160),
+                Param("@destino_area", SqlDbType.NVarChar, TextoCurto(txtDestinoArea.Text), 120),
+                Param("@destinatario", SqlDbType.NVarChar, TextoCurto(txtDestinatario.Text), 160),
+                Param("@assunto", SqlDbType.NVarChar, TextoCurto(txtAssunto.Text), 200),
                 Param("@categoria", SqlDbType.NVarChar, ddlCategoria.SelectedValue, 60),
                 Param("@prioridade", SqlDbType.NVarChar, ddlPrioridade.SelectedValue, 20),
-                Param("@corpo", SqlDbType.NVarChar, txtCorpo.Text.Trim()),
-                Param("@providencias", SqlDbType.NVarChar, txtProvidencias.Text.Trim()),
-                Param("@observacoes", SqlDbType.NVarChar, txtObservacoes.Text.Trim()),
-                Param("@criado_por", SqlDbType.NVarChar, txtCriadoPor.Text.Trim(), 160));
+                Param("@corpo", SqlDbType.NVarChar, TextoLongoEntrada(txtCorpo.Text)),
+                Param("@providencias", SqlDbType.NVarChar, TextoLongoEntrada(txtProvidencias.Text)),
+                Param("@observacoes", SqlDbType.NVarChar, TextoLongoEntrada(txtObservacoes.Text)),
+                Param("@criado_por", SqlDbType.NVarChar, TextoCurto(txtCriadoPor.Text), 160));
 
             string codigo = salvo.Rows.Count > 0 ? salvo.Rows[0]["codigo_ci"].ToString() : "CI";
             LimparAutorizacaoEdicaoCI(id);
@@ -383,13 +385,35 @@ public partial class ci_default : System.Web.UI.Page
 
     private string ValidarCampos()
     {
-        if (txtOrigemArea.Text.Trim().Length == 0) return "Informe a \u00e1rea de origem.";
-        if (txtOrigemResponsavel.Text.Trim().Length == 0) return "Informe o respons\u00e1vel pela origem.";
-        if (txtDestinoArea.Text.Trim().Length == 0) return "Informe a \u00e1rea de destino.";
-        if (txtDestinatario.Text.Trim().Length == 0) return "Informe o destinat\u00e1rio.";
-        if (txtAssunto.Text.Trim().Length == 0) return "Informe o assunto.";
-        if (txtCorpo.Text.Trim().Length == 0) return "Informe o texto da comunica\u00e7\u00e3o.";
+        if (!ValorPermitido(ddlMarca, ddlMarca.SelectedValue)) return "Selecione uma marca v\u00e1lida.";
+        if (!ValorPermitido(ddlCategoria, ddlCategoria.SelectedValue)) return "Selecione uma categoria v\u00e1lida.";
+        if (!ValorPermitido(ddlPrioridade, ddlPrioridade.SelectedValue)) return "Selecione uma prioridade v\u00e1lida.";
+        if (TextoCurto(txtOrigemArea.Text).Length == 0) return "Informe a \u00e1rea de origem.";
+        if (TextoCurto(txtOrigemResponsavel.Text).Length == 0) return "Informe o respons\u00e1vel pela origem.";
+        if (TextoCurto(txtDestinoArea.Text).Length == 0) return "Informe a \u00e1rea de destino.";
+        if (TextoCurto(txtDestinatario.Text).Length == 0) return "Informe o destinat\u00e1rio.";
+        if (TextoCurto(txtAssunto.Text).Length == 0) return "Informe o assunto.";
+        if (TextoLongoEntrada(txtCorpo.Text).Length == 0) return "Informe o texto da comunica\u00e7\u00e3o.";
+        if (TextoCurto(txtOrigemArea.Text).Length > 120) return "A \u00e1rea de origem deve ter at\u00e9 120 caracteres.";
+        if (TextoCurto(txtOrigemResponsavel.Text).Length > 160) return "O respons\u00e1vel deve ter at\u00e9 160 caracteres.";
+        if (TextoCurto(txtDestinoArea.Text).Length > 120) return "A \u00e1rea de destino deve ter at\u00e9 120 caracteres.";
+        if (TextoCurto(txtDestinatario.Text).Length > 160) return "O destinat\u00e1rio deve ter at\u00e9 160 caracteres.";
+        if (TextoCurto(txtAssunto.Text).Length > 200) return "O assunto deve ter at\u00e9 200 caracteres.";
+        if (TextoCurto(txtCriadoPor.Text).Length > 160) return "O campo criado por deve ter at\u00e9 160 caracteres.";
         return "";
+    }
+
+    private void NormalizarFormulario()
+    {
+        txtOrigemArea.Text = TextoCurto(txtOrigemArea.Text);
+        txtOrigemResponsavel.Text = TextoCurto(txtOrigemResponsavel.Text);
+        txtDestinoArea.Text = TextoCurto(txtDestinoArea.Text);
+        txtDestinatario.Text = TextoCurto(txtDestinatario.Text);
+        txtAssunto.Text = TextoCurto(txtAssunto.Text);
+        txtCorpo.Text = TextoLongoEntrada(txtCorpo.Text);
+        txtProvidencias.Text = TextoLongoEntrada(txtProvidencias.Text);
+        txtObservacoes.Text = TextoLongoEntrada(txtObservacoes.Text);
+        txtCriadoPor.Text = TextoCurto(txtCriadoPor.Text);
     }
 
     private int ObterIdAtual()
@@ -447,6 +471,29 @@ public partial class ci_default : System.Web.UI.Page
         {
             combo.SelectedValue = valor;
         }
+    }
+
+    private bool ValorPermitido(DropDownList combo, string valor)
+    {
+        return combo.Items.FindByValue(valor) != null;
+    }
+
+    private string TextoCurto(string valor)
+    {
+        string texto = (valor ?? "").Trim();
+        if (texto.Length == 0) return "";
+        return String.Join(" ", texto.Split((char[])null, StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    private string TextoLongoEntrada(string valor)
+    {
+        string texto = (valor ?? "").Replace("\r\n", "\n").Replace("\r", "\n").Trim();
+        while (texto.Contains("\n\n\n"))
+        {
+            texto = texto.Replace("\n\n\n", "\n\n");
+        }
+
+        return texto.Replace("\n", "\r\n");
     }
 
     private SqlParameter Param(string nome, SqlDbType tipo, object valor, int tamanho = 0)
