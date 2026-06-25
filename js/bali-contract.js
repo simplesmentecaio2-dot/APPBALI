@@ -2,6 +2,7 @@
   var ajaxHooked = false;
   var dirtyHooked = false;
   var lifecycleHooked = false;
+  var enterGuardHooked = false;
   var contractDirty = false;
   var contractAllowUnload = false;
   var draftTimer = null;
@@ -2456,6 +2457,39 @@
     });
   }
 
+  function focusNextContractField(current) {
+    var fields = Array.prototype.slice.call(document.querySelectorAll('input.form-contrato, select.form-contrato'))
+      .filter(function (field) {
+        var type = String(field.type || '').toLowerCase();
+        return type !== 'hidden' && !field.disabled && field.offsetParent !== null;
+      });
+    var index = fields.indexOf(current);
+    for (var i = index + 1; i < fields.length; i++) {
+      if (fields[i] && fields[i].focus) {
+        fields[i].focus();
+        if (fields[i].select && String(fields[i].type || '').toLowerCase() === 'text') fields[i].select();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function bindEnterKeyGuard() {
+    if (enterGuardHooked) return;
+    enterGuardHooked = true;
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Enter') return;
+      var target = event.target;
+      if (!target || !target.tagName || target.tagName.toLowerCase() !== 'input') return;
+      if ((' ' + String(target.className || '') + ' ').indexOf(' form-contrato ') < 0) return;
+      var type = String(target.type || '').toLowerCase();
+      if (type && type !== 'text') return;
+      event.preventDefault();
+      focusNextContractField(target);
+    });
+  }
+
   function ensureDirtyNotice() {
     var notice = document.getElementById('contractDirtyNotice');
     if (notice) return notice;
@@ -3692,6 +3726,7 @@
     bindSubmitButtons();
     bindProcessingButtons();
     bindLifecycleReset();
+    bindEnterKeyGuard();
     prepareMoneyFields(false);
     updateQualityPanel();
     bindAjaxEndRequest();
