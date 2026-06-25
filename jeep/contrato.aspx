@@ -17,7 +17,7 @@
 
     <script src="../tables/js/jquery.dataTables.min.js"></script>
     <link href="../tables/estilo/table.css" rel="stylesheet" />
-    <link href="../css/bali-contract.css?v=20260624-contratos90" rel="stylesheet" />
+    <link href="../css/bali-contract.css?v=20260624-contratos91" rel="stylesheet" />
 
     <script type="text/javascript">
         $(document).ready(function () {
