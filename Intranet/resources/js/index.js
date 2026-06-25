@@ -1,5 +1,6 @@
 const SHORTCUTS_API = 'manutencao-links.ashx?AspxAutoDetectCookieSupport=1';
 const SESSION_KEY = 'centralBaliMaintenanceUnlocked';
+const SHORTCUT_CACHE_KEY = 'centralBaliShortcutsCache';
 const MAINTENANCE_PASSWORD = '@bali2025';
 const DEFAULT_NOTICE_IMAGE = 'resources/imagens/AVISOIMPORTANTE2.jpg';
 const NOTICE_FILE_LIMIT = 8 * 1024 * 1024;
@@ -34,6 +35,7 @@ const SECTION_CONFIG = {
 const searchInput = document.getElementById('shortcutSearch');
 const clearButton = document.getElementById('clearSearch');
 const focusSearchButton = document.getElementById('focusSearch');
+const shortcutLoadStatus = document.getElementById('shortcutLoadStatus');
 const emptyState = document.getElementById('emptyState');
 const filterButtons = Array.from(document.querySelectorAll('[data-filter-section]'));
 const navbarCollapse = document.getElementById('mainMenu');
@@ -83,6 +85,7 @@ let cards = [];
 let defaultShortcuts = [];
 let shortcuts = [];
 let noticeConfig = { image: DEFAULT_NOTICE_IMAGE, autoOpen: false };
+let filterTimer = 0;
 
 function normalizeText(value) {
   return (value || '')
@@ -115,6 +118,38 @@ function createShortcutId() {
 
 function safeTrim(value) {
   return (value || '').toString().trim();
+}
+
+function setShortcutLoadStatus(message, type) {
+  if (!shortcutLoadStatus) return;
+  shortcutLoadStatus.textContent = message || '';
+  shortcutLoadStatus.classList.toggle('is-ok', type === 'ok');
+  shortcutLoadStatus.classList.toggle('is-error', type === 'error');
+}
+
+function readShortcutCache() {
+  try {
+    const raw = window.localStorage.getItem(SHORTCUT_CACHE_KEY);
+    if (!raw) return null;
+
+    const cached = JSON.parse(raw);
+    if (!cached || !Array.isArray(cached.shortcuts) || !cached.shortcuts.length) return null;
+    return cached;
+  } catch (error) {
+    return null;
+  }
+}
+
+function writeShortcutCache(shortcutList, notice) {
+  try {
+    window.localStorage.setItem(SHORTCUT_CACHE_KEY, JSON.stringify({
+      shortcuts: shortcutList.map(cloneShortcut),
+      notice: sanitizeNoticeConfig(notice || noticeConfig),
+      savedAt: new Date().toISOString()
+    }));
+  } catch (error) {
+    return;
+  }
 }
 
 function sanitizeNoticeConfig(raw) {
@@ -207,12 +242,15 @@ function sanitizeShortcut(raw, index) {
 
 async function loadShortcuts() {
   try {
+    setShortcutLoadStatus('Atualizando atalhos salvos...', '');
     const response = await fetch(`${SHORTCUTS_API}&v=${Date.now()}`, {
       cache: 'no-store',
       credentials: 'same-origin'
     });
 
-    if (!response.ok) return defaultShortcuts.map(cloneShortcut);
+    if (!response.ok) {
+      throw new Error('Falha ao carregar atalhos.');
+    }
 
     const payload = await response.json();
     const source = Array.isArray(payload) ? payload : payload.shortcuts;
@@ -221,12 +259,17 @@ async function loadShortcuts() {
     }
 
     if (!Array.isArray(source) || !source.length) {
+      setShortcutLoadStatus('Usando atalhos padrão da página.', '');
       return defaultShortcuts.map(cloneShortcut);
     }
 
-    return source.map(sanitizeShortcut).filter((shortcut) => shortcut.title && shortcut.section);
+    const loaded = source.map(sanitizeShortcut).filter((shortcut) => shortcut.title && shortcut.section);
+    writeShortcutCache(loaded, Array.isArray(payload) ? noticeConfig : payload.notice);
+    setShortcutLoadStatus('Atalhos atualizados.', 'ok');
+    return loaded;
   } catch (error) {
-    return defaultShortcuts.map(cloneShortcut);
+    setShortcutLoadStatus('Não foi possível atualizar agora. Exibindo última lista carregada.', 'error');
+    return shortcuts.length ? shortcuts.map(cloneShortcut) : defaultShortcuts.map(cloneShortcut);
   }
 }
 
@@ -292,9 +335,12 @@ async function saveShortcuts() {
       throw new Error(payload.message || 'Falha ao salvar.');
     }
 
+    writeShortcutCache(shortcuts, noticeConfig);
+    setShortcutLoadStatus('Atalhos salvos com sucesso.', 'ok');
     return true;
   } catch (error) {
-    alert('Nao foi possivel salvar os atalhos no servidor.');
+    setShortcutLoadStatus('Não foi possível salvar os atalhos no servidor.', 'error');
+    alert('Não foi possível salvar os atalhos no servidor.');
     return false;
   }
 }
@@ -344,6 +390,8 @@ function buildShortcutCard(shortcut) {
   article.dataset.section = shortcut.section;
   article.dataset.title = normalizeText(shortcut.title);
   article.dataset.badge = normalizeText(shortcut.badge);
+  const sectionLabel = SECTION_CONFIG[shortcut.section] ? SECTION_CONFIG[shortcut.section].label : shortcut.section;
+  article.dataset.search = normalizeText(`${shortcut.title} ${shortcut.badge} ${shortcut.section} ${sectionLabel} ${shortcut.url} ${shortcut.icon}`);
 
   const icon = document.createElement('div');
   icon.className = 'shortcut-icon';
@@ -382,8 +430,12 @@ function buildShortcutCard(shortcut) {
   const link = document.createElement('a');
   link.className = shortcut.url ? 'shortcut-link' : 'shortcut-link disabled';
   link.href = shortcut.url || '#';
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
+  if (shortcut.url) {
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+  } else {
+    link.setAttribute('aria-disabled', 'true');
+  }
   link.setAttribute('aria-label', `Abrir ${shortcut.title}`);
 
   const label = document.createElement('span');
@@ -461,7 +513,7 @@ function applyFilters() {
   let visibleCards = 0;
 
   cards.forEach((card) => {
-    const haystack = normalizeText(`${card.dataset.title} ${card.dataset.badge} ${card.dataset.section} ${card.textContent}`);
+    const haystack = card.dataset.search || normalizeText(`${card.dataset.title} ${card.dataset.badge} ${card.dataset.section} ${card.textContent}`);
     const matchesText = !term || haystack.includes(term);
     const matchesSection = activeSection === 'all' || card.dataset.section === activeSection;
     const visible = matchesText && matchesSection;
@@ -473,6 +525,9 @@ function applyFilters() {
   sections.forEach((section) => {
     const hasVisibleCard = Boolean(section.querySelector('.shortcut-card:not(.is-hidden)'));
     section.classList.toggle('is-hidden', !hasVisibleCard);
+    if (hasVisibleCard && (term || activeSection !== 'all')) {
+      setSectionOpen(section, true);
+    }
   });
 
   if (emptyState) {
@@ -481,6 +536,11 @@ function applyFilters() {
 
   updateSectionCounts();
   setClearButtonState();
+}
+
+function scheduleApplyFilters() {
+  window.clearTimeout(filterTimer);
+  filterTimer = window.setTimeout(applyFilters, 80);
 }
 
 function closeMobileMenu() {
@@ -1074,10 +1134,11 @@ function initializeMaintenance() {
 }
 
 if (searchInput) {
-  searchInput.addEventListener('input', applyFilters);
+  searchInput.addEventListener('input', scheduleApplyFilters);
   searchInput.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       searchInput.value = '';
+      window.clearTimeout(filterTimer);
       applyFilters();
     }
   });
@@ -1132,7 +1193,18 @@ document.addEventListener('keydown', (event) => {
 
 async function initializePage() {
   defaultShortcuts = extractDefaultShortcuts();
-  shortcuts = defaultShortcuts.map(cloneShortcut);
+  const cached = readShortcutCache();
+  if (cached) {
+    shortcuts = cached.shortcuts.map(sanitizeShortcut).filter((shortcut) => shortcut.title && shortcut.section);
+    if (!shortcuts.length) {
+      shortcuts = defaultShortcuts.map(cloneShortcut);
+    }
+    applyNoticeConfig(cached.notice);
+    setShortcutLoadStatus('Última lista salva carregada. Atualizando em segundo plano...', '');
+  } else {
+    shortcuts = defaultShortcuts.map(cloneShortcut);
+  }
+
   initializeSectionToggles();
   initializeMaintenance();
   renderShortcuts();

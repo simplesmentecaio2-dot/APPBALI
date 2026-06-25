@@ -252,6 +252,28 @@ img {
   box-shadow: 0 14px 36px rgba(15, 23, 42, .07);
 }
 
+.toolbar-search {
+  display: grid;
+  gap: .32rem;
+  align-content: start;
+}
+
+.toolbar-status {
+  min-height: 1.05rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: .76rem;
+  font-weight: 750;
+}
+
+.toolbar-status.is-ok {
+  color: #0f7a43;
+}
+
+.toolbar-status.is-error {
+  color: #b42318;
+}
+
 .search-box {
   display: grid;
   grid-template-columns: auto 1fr auto;
