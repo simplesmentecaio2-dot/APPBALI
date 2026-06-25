@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Logs da CI</title>
-    <link href="ci.css?v=20260625-ci-printlink" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-logs-nav" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -20,10 +20,10 @@
                         <small>Logs</small>
                     </span>
                 </a>
-                <nav class="side-nav">
-                    <a href="default.aspx#consulta">Consulta</a>
-                    <a href="default.aspx#cadastro">Nova CI</a>
-                    <a href="erros.aspx">Logs</a>
+                <nav class="side-nav" aria-label="Navega&ccedil;&atilde;o da CI">
+                    <a href="default.aspx?view=consulta" data-nav-view="consulta">Consulta</a>
+                    <a href="default.aspx?view=nova" data-nav-view="nova">Nova CI</a>
+                    <a href="erros.aspx" data-nav-view="logs" class="is-active" aria-current="page">Logs</a>
                     <a href="../Intranet/index.html">Intranet</a>
                 </nav>
             </aside>
