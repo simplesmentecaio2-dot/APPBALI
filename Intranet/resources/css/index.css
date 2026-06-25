@@ -588,7 +588,7 @@ img {
   grid-template-rows: 1fr auto;
   gap: .8rem;
   min-height: 132px;
-  padding: .8rem;
+  padding: .8rem 2.55rem .8rem .8rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
@@ -602,6 +602,35 @@ img {
   border-color: color-mix(in srgb, var(--section-accent) 34%, var(--border));
   box-shadow: var(--shadow);
   transform: translateY(-2px);
+}
+
+.shortcut-favorite {
+  position: absolute;
+  top: .55rem;
+  right: .55rem;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--muted);
+  transition: color .16s ease, border-color .16s ease, background .16s ease, transform .16s ease;
+}
+
+.shortcut-favorite:hover,
+.shortcut-favorite:focus {
+  border-color: var(--section-accent);
+  color: var(--section-accent);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.shortcut-favorite[aria-pressed="true"] {
+  border-color: rgba(250, 204, 21, .55);
+  background: #fffbeb;
+  color: #b45309;
 }
 
 .shortcut-icon {
@@ -1468,7 +1497,7 @@ img {
   .shortcut-card {
     grid-template-columns: 1fr;
     min-height: 178px;
-    padding: .72rem;
+    padding: .72rem 2.45rem .72rem .72rem;
   }
 
   .shortcut-icon {
@@ -1523,6 +1552,7 @@ img {
   .shortcut-card {
     grid-template-columns: auto 1fr;
     min-height: 132px;
+    padding: .72rem 2.45rem .72rem .72rem;
   }
 
   .shortcut-icon {

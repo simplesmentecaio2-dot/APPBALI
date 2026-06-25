@@ -1,6 +1,8 @@
 const SHORTCUTS_API = 'manutencao-links.ashx?AspxAutoDetectCookieSupport=1';
 const SESSION_KEY = 'centralBaliMaintenanceUnlocked';
 const SHORTCUT_CACHE_KEY = 'centralBaliShortcutsCache';
+const FAVORITES_KEY = 'centralBaliShortcutFavorites';
+const SECTION_STATE_KEY = 'centralBaliOpenSections';
 const MAINTENANCE_PASSWORD = '@bali2025';
 const DEFAULT_NOTICE_IMAGE = 'resources/imagens/AVISOIMPORTANTE2.jpg';
 const NOTICE_FILE_LIMIT = 8 * 1024 * 1024;
@@ -88,6 +90,8 @@ let shortcuts = [];
 let noticeConfig = { image: DEFAULT_NOTICE_IMAGE, autoOpen: false };
 let filterTimer = 0;
 let maintenanceBusy = false;
+let favoriteShortcuts = new Set();
+let restoringSections = false;
 
 function normalizeText(value) {
   return (value || '')
@@ -185,6 +189,44 @@ function writeShortcutCache(shortcutList, notice) {
       notice: sanitizeNoticeConfig(notice || noticeConfig),
       savedAt: new Date().toISOString()
     }));
+  } catch (error) {
+    return;
+  }
+}
+
+function readFavoriteShortcuts() {
+  try {
+    const raw = window.localStorage.getItem(FAVORITES_KEY);
+    const items = JSON.parse(raw || '[]');
+    return new Set(Array.isArray(items) ? items.map(safeTrim).filter(Boolean) : []);
+  } catch (error) {
+    return new Set();
+  }
+}
+
+function writeFavoriteShortcuts() {
+  try {
+    window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favoriteShortcuts)));
+  } catch (error) {
+    return;
+  }
+}
+
+function readOpenSections() {
+  try {
+    const items = JSON.parse(window.localStorage.getItem(SECTION_STATE_KEY) || '[]');
+    return new Set(Array.isArray(items) ? items.map(safeTrim).filter(Boolean) : []);
+  } catch (error) {
+    return new Set();
+  }
+}
+
+function writeOpenSections() {
+  try {
+    const openIds = allSections
+      .filter((section) => section.classList.contains('is-open') && section.id)
+      .map((section) => section.id);
+    window.localStorage.setItem(SECTION_STATE_KEY, JSON.stringify(openIds));
   } catch (error) {
     return;
   }
@@ -414,7 +456,7 @@ function isMaintenanceUnlocked() {
   }
 }
 
-function setSectionOpen(section, isOpen) {
+function setSectionOpen(section, isOpen, options = {}) {
   if (!section) return;
   const heading = section.querySelector('.section-heading');
   const grid = section.querySelector('.shortcut-grid');
@@ -425,10 +467,24 @@ function setSectionOpen(section, isOpen) {
   if (grid) {
     grid.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
   }
+  if (options.persist && !restoringSections) {
+    writeOpenSections();
+  }
 }
 
 function toggleSection(section) {
-  setSectionOpen(section, !section.classList.contains('is-open'));
+  setSectionOpen(section, !section.classList.contains('is-open'), { persist: true });
+}
+
+function restoreOpenSections() {
+  const openIds = readOpenSections();
+  if (!openIds.size) return;
+
+  restoringSections = true;
+  allSections.forEach((section) => {
+    setSectionOpen(section, openIds.has(section.id));
+  });
+  restoringSections = false;
 }
 
 function setClearButtonState() {
@@ -445,6 +501,7 @@ function buildShortcutCard(shortcut) {
   article.dataset.badge = normalizeText(shortcut.badge);
   const sectionLabel = SECTION_CONFIG[shortcut.section] ? SECTION_CONFIG[shortcut.section].label : shortcut.section;
   article.dataset.search = normalizeText(`${shortcut.title} ${shortcut.badge} ${shortcut.section} ${sectionLabel} ${shortcut.url} ${shortcut.icon}`);
+  article.classList.toggle('is-favorite', favoriteShortcuts.has(shortcut.id));
 
   const icon = document.createElement('div');
   icon.className = 'shortcut-icon';
@@ -469,6 +526,14 @@ function buildShortcutCard(shortcut) {
 
   const content = document.createElement('div');
   content.className = 'shortcut-content';
+
+  const favoriteButton = document.createElement('button');
+  favoriteButton.type = 'button';
+  favoriteButton.className = 'shortcut-favorite';
+  favoriteButton.setAttribute('aria-label', favoriteShortcuts.has(shortcut.id) ? `Remover ${shortcut.title} dos favoritos` : `Favoritar ${shortcut.title}`);
+  favoriteButton.setAttribute('aria-pressed', favoriteShortcuts.has(shortcut.id) ? 'true' : 'false');
+  favoriteButton.innerHTML = `<i class="bi ${favoriteShortcuts.has(shortcut.id) ? 'bi-star-fill' : 'bi-star'}"></i>`;
+  favoriteButton.addEventListener('click', () => toggleFavorite(shortcut.id));
 
   const badge = document.createElement('span');
   badge.className = 'shortcut-badge';
@@ -501,6 +566,7 @@ function buildShortcutCard(shortcut) {
 
   article.appendChild(icon);
   article.appendChild(content);
+  article.appendChild(favoriteButton);
   article.appendChild(link);
 
   return article;
@@ -508,6 +574,8 @@ function buildShortcutCard(shortcut) {
 
 function updateDashboardTotals() {
   const total = shortcuts.length;
+  const validIds = new Set(shortcuts.map((shortcut) => shortcut.id));
+  const favoriteCount = Array.from(favoriteShortcuts).filter((id) => validIds.has(id)).length;
   const usedSections = Object.keys(SECTION_CONFIG).filter((section) => shortcuts.some((shortcut) => shortcut.section === section)).length;
   const metricValues = document.querySelectorAll('.metric-grid strong');
 
@@ -521,7 +589,9 @@ function updateDashboardTotals() {
 
     const count = section === 'all'
       ? total
-      : shortcuts.filter((shortcut) => shortcut.section === section).length;
+      : section === 'favorites'
+        ? favoriteCount
+        : shortcuts.filter((shortcut) => shortcut.section === section).length;
     counter.textContent = count;
   });
 }
@@ -541,8 +611,30 @@ function bindDisabledLinks() {
   });
 }
 
+function pruneFavoriteShortcuts() {
+  const validIds = new Set(shortcuts.map((shortcut) => shortcut.id));
+  const previousSize = favoriteShortcuts.size;
+  favoriteShortcuts = new Set(Array.from(favoriteShortcuts).filter((id) => validIds.has(id)));
+  if (favoriteShortcuts.size !== previousSize) {
+    writeFavoriteShortcuts();
+  }
+}
+
+function toggleFavorite(id) {
+  if (!id) return;
+  if (favoriteShortcuts.has(id)) {
+    favoriteShortcuts.delete(id);
+  } else {
+    favoriteShortcuts.add(id);
+  }
+
+  writeFavoriteShortcuts();
+  renderShortcuts();
+}
+
 function renderShortcuts() {
   sections = getShortcutSections();
+  pruneFavoriteShortcuts();
 
   sections.forEach((section) => {
     const grid = section.querySelector('.shortcut-grid');
@@ -568,7 +660,9 @@ function applyFilters() {
   cards.forEach((card) => {
     const haystack = card.dataset.search || normalizeText(`${card.dataset.title} ${card.dataset.badge} ${card.dataset.section} ${card.textContent}`);
     const matchesText = !term || haystack.includes(term);
-    const matchesSection = activeSection === 'all' || card.dataset.section === activeSection;
+    const matchesSection = activeSection === 'all'
+      || (activeSection === 'favorites' && favoriteShortcuts.has(card.dataset.id))
+      || card.dataset.section === activeSection;
     const visible = matchesText && matchesSection;
 
     card.classList.toggle('is-hidden', !visible);
@@ -1275,6 +1369,7 @@ document.addEventListener('keydown', (event) => {
 
 async function initializePage() {
   defaultShortcuts = extractDefaultShortcuts();
+  favoriteShortcuts = readFavoriteShortcuts();
   const cached = readShortcutCache();
   if (cached) {
     shortcuts = cached.shortcuts.map(sanitizeShortcut).filter((shortcut) => shortcut.title && shortcut.section);
@@ -1288,6 +1383,7 @@ async function initializePage() {
   }
 
   initializeSectionToggles();
+  restoreOpenSections();
   initializeMaintenance();
   renderShortcuts();
 
