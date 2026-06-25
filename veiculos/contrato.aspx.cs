@@ -921,8 +921,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
             List<ContratoBIItem> contratos = BuscarContratosBI(inicio, fim);
             biHtml = MontarHtmlBI(contratos, inicio, fim);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            RegistrarContratoOperacao("ERRO_BI", "Inicio=" + inicio.ToString("dd/MM/yyyy") + "; Fim=" + fim.ToString("dd/MM/yyyy") + "; Erro=" + ex.Message);
             biHtml = "<div class='contract-bi-empty'>Não foi possível carregar o BI agora. Tente novamente ou reduza o período pesquisado.</div>";
         }
     }
