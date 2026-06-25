@@ -310,6 +310,32 @@ label {
   color: var(--ink);
 }
 
+.filter-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.filter-shortcuts button {
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0 13px;
+  color: var(--ink);
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.filter-shortcuts button:hover,
+.filter-shortcuts button:focus {
+  border-color: var(--brand);
+  color: var(--brand-strong);
+  outline: 0;
+}
+
 .text-field,
 .select-field,
 .textarea-field {

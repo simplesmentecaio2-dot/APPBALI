@@ -184,9 +184,22 @@ public partial class ci_default : System.Web.UI.Page
     {
         DateTime inicio;
         DateTime fim;
+        bool inicioValido = ObterData(txtFiltroInicio.Text, out inicio);
+        bool fimValido = ObterData(txtFiltroFim.Text, out fim);
+        string avisoConsulta = "";
 
-        object dtInicio = ObterData(txtFiltroInicio.Text, out inicio) ? (object)inicio : DBNull.Value;
-        object dtFim = ObterData(txtFiltroFim.Text, out fim) ? (object)fim : DBNull.Value;
+        if (inicioValido && fimValido && inicio > fim)
+        {
+            DateTime troca = inicio;
+            inicio = fim;
+            fim = troca;
+            txtFiltroInicio.Text = inicio.ToString("yyyy-MM-dd");
+            txtFiltroFim.Text = fim.ToString("yyyy-MM-dd");
+            avisoConsulta = "Per\u00edodo ajustado automaticamente: a data inicial era maior que a data final.";
+        }
+
+        object dtInicio = inicioValido ? (object)inicio : DBNull.Value;
+        object dtFim = fimValido ? (object)fim : DBNull.Value;
 
         DataTable dados = ExecutarTabela("dbo.ci_comunicacao_listar",
             Param("@dt_inicio", SqlDbType.Date, dtInicio),
@@ -198,7 +211,7 @@ public partial class ci_default : System.Web.UI.Page
         AjustarPaginaConsulta(dados.Rows.Count);
         gvCis.DataSource = dados;
         gvCis.DataBind();
-        AtualizarResumoConsulta(dados.Rows.Count);
+        AtualizarResumoConsulta(dados.Rows.Count, avisoConsulta);
     }
 
     private void AjustarPaginaConsulta(int total)
@@ -216,17 +229,19 @@ public partial class ci_default : System.Web.UI.Page
         }
     }
 
-    private void AtualizarResumoConsulta(int total)
+    private void AtualizarResumoConsulta(int total, string aviso = "")
     {
+        string prefixo = aviso.Length > 0 ? aviso + " " : "";
+
         if (total == 0)
         {
-            litResultadoConsulta.Text = "Nenhuma CI encontrada para os filtros selecionados.";
+            litResultadoConsulta.Text = prefixo + "Nenhuma CI encontrada para os filtros selecionados.";
             return;
         }
 
         int primeira = total == 0 ? 0 : (gvCis.PageIndex * gvCis.PageSize) + 1;
         int ultima = Math.Min(total, primeira + gvCis.PageSize - 1);
-        litResultadoConsulta.Text = "Exibindo " + primeira.ToString() + " a " + ultima.ToString() + " de " + total.ToString() + " CI" + (total == 1 ? "." : "s.");
+        litResultadoConsulta.Text = prefixo + "Exibindo " + primeira.ToString() + " a " + ultima.ToString() + " de " + total.ToString() + " CI" + (total == 1 ? "." : "s.");
     }
 
     private void CarregarCI(int id)

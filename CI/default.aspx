@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-print" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-filter" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -96,6 +96,12 @@
                             Somente ativas
                         </label>
                         <asp:Button ID="btnFiltrar" runat="server" Text="Filtrar" CssClass="primary-button" OnClick="btnFiltrar_Click" />
+                    </div>
+                    <div class="filter-shortcuts" aria-label="Atalhos de per&iacute;odo">
+                        <button type="button" onclick="aplicarPeriodoCI('mes')">Este m&ecirc;s</button>
+                        <button type="button" onclick="aplicarPeriodoCI('30')">&Uacute;ltimos 30 dias</button>
+                        <button type="button" onclick="aplicarPeriodoCI('hoje')">Hoje</button>
+                        <button type="button" onclick="aplicarPeriodoCI('limpar')">Limpar per&iacute;odo</button>
                     </div>
 
                     <div class="table-wrap">
@@ -306,6 +312,40 @@
                 function campo(id) {
                     return document.getElementById(id);
                 }
+
+                function formatarDataCI(data) {
+                    var ano = data.getFullYear();
+                    var mes = String(data.getMonth() + 1).padStart(2, '0');
+                    var dia = String(data.getDate()).padStart(2, '0');
+                    return ano + '-' + mes + '-' + dia;
+                }
+
+                window.aplicarPeriodoCI = function (tipo) {
+                    var inicio = campo('<%= txtFiltroInicio.ClientID %>');
+                    var fim = campo('<%= txtFiltroFim.ClientID %>');
+                    if (!inicio || !fim) return;
+
+                    var hoje = new Date();
+                    var dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+                    var dataFim = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+
+                    if (tipo === 'limpar') {
+                        inicio.value = '';
+                        fim.value = '';
+                        return;
+                    }
+
+                    if (tipo === 'mes') {
+                        dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+                    } else if (tipo === '30') {
+                        dataInicio.setDate(dataInicio.getDate() - 30);
+                    }
+
+                    inicio.value = formatarDataCI(dataInicio);
+                    fim.value = formatarDataCI(dataFim);
+                    var botaoFiltro = campo('<%= btnFiltrar.ClientID %>');
+                    if (botaoFiltro) botaoFiltro.focus();
+                };
 
                 function limparErros() {
                     var aviso = document.getElementById('ciClientMessage');
