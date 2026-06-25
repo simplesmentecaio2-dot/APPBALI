@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-cancelada" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-textarea" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -501,6 +501,18 @@
                     if (item) item.value = valorCampo || '';
                 }
 
+                function ajustarTextareaCI(item) {
+                    if (!item || item.tagName !== 'TEXTAREA') return;
+                    item.style.height = 'auto';
+                    item.style.height = Math.max(item.scrollHeight, 92) + 'px';
+                }
+
+                function ajustarTextareasCI() {
+                    ajustarTextareaCI(campo('<%= txtCorpo.ClientID %>'));
+                    ajustarTextareaCI(campo('<%= txtProvidencias.ClientID %>'));
+                    ajustarTextareaCI(campo('<%= txtObservacoes.ClientID %>'));
+                }
+
                 function preencherRascunhoCI(dados) {
                     if (!dados) return;
                     preencherCampoCI('<%= ddlMarca.ClientID %>', dados.marca);
@@ -517,6 +529,7 @@
                     preencherCampoCI('<%= txtObservacoes.ClientID %>', dados.observacoes);
                     preencherCampoCI('<%= txtCriadoPor.ClientID %>', dados.criadoPor);
                     atualizarPainelCI();
+                    ajustarTextareasCI();
                 }
 
                 window.salvarRascunhoCI = function () {
@@ -587,6 +600,7 @@
                     preencherCampoCI('<%= txtCorpo.ClientID %>', modelo.corpo);
                     preencherCampoCI('<%= txtProvidencias.ClientID %>', modelo.providencias);
                     atualizarPainelCI();
+                    ajustarTextareasCI();
                     statusRascunhoCI('Modelo aplicado. Personalize os trechos entre colchetes antes de salvar.');
                 };
 
@@ -629,6 +643,7 @@
                     if (!monitorado) continue;
                     monitorado.addEventListener('input', atualizarPainelCI);
                     monitorado.addEventListener('change', atualizarPainelCI);
+                    monitorado.addEventListener('input', function () { ajustarTextareaCI(this); });
                     monitorado.addEventListener('input', function () { formularioAlterado = true; });
                     monitorado.addEventListener('change', function () { formularioAlterado = true; });
                 }
@@ -640,6 +655,7 @@
                 });
 
                 atualizarPainelCI();
+                ajustarTextareasCI();
             })();
         </script>
     </form>

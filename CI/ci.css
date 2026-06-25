@@ -395,6 +395,7 @@ label {
 .textarea-field {
   min-height: 92px;
   padding: 12px;
+  overflow: hidden;
   resize: vertical;
 }
 
