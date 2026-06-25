@@ -219,7 +219,7 @@
         var length = lettersNumbersOnly(value).length;
         return length >= 7;
       },
-      message: 'Placa ou chassi deve ter pelo menos 7 letras/números.'
+      message: 'Placa ou chassi deve ter pelo menos 7 letras/n\u00fameros.'
     },
     {
       ids: ['txtPlacaVU', 'txtEdPlacaUSADO'],
@@ -230,7 +230,7 @@
       validate: function (value) {
         return lettersNumbersOnly(value).length >= 7;
       },
-      message: 'Placa do usado deve ter pelo menos 7 letras/números quando preenchida.'
+      message: 'Placa do usado deve ter pelo menos 7 letras/n\u00fameros quando preenchida.'
     },
     {
       ids: ['txtCEP', 'txtEdCep'],
@@ -292,7 +292,7 @@
         return digitsOnly(value).slice(0, 3);
       },
       validate: validInstallments,
-      message: 'Quantidade de parcelas deve ser um número entre 1 e 120.'
+      message: 'Quantidade de parcelas deve ser um n\u00famero entre 1 e 120.'
     },
     {
       ids: ['txtTelREsidencial', 'txtTelCom', 'txtCelular', 'txtEdTelRes', 'txtEdComercial', 'txtEdCelular'],
