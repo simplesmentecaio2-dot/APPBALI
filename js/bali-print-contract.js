@@ -57,8 +57,10 @@
             render.innerText = texto;
         }
 
-        campo.style.height = 'auto';
-        campo.style.height = Math.max(campo.scrollHeight, 14) + 'px';
+        campo.style.height = '0px';
+        campo.style.minHeight = '0px';
+        campo.style.maxHeight = '0px';
+        campo.setAttribute('aria-hidden', 'true');
     }
 
     function criarElemento(tag, classe, texto) {

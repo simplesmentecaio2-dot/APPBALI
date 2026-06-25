@@ -221,7 +221,7 @@
     -webkit-text-fill-color: #000;
     opacity: 1;
     background: transparent !important;
-    line-height: 1.25;
+    line-height: 1.05;
     text-align: justify;
     text-align-last: left;
     white-space: pre-wrap;
@@ -231,21 +231,21 @@
 
 textarea.contrato-texto-justificado {
     display: block;
-    min-height: 14px;
-    height: auto;
+    min-height: 0;
+    height: 0;
     padding: 0;
 }
 
 .contrato-texto-renderizado {
     display: block;
     width: 100%;
-    min-height: 14px;
+    min-height: 0;
     margin: 0;
     padding: 0;
     color: #000;
     font: inherit;
     font-weight: inherit;
-    line-height: 1.25;
+    line-height: 1.05;
     text-align: justify;
     text-align-last: left;
     white-space: pre-wrap;
@@ -253,7 +253,7 @@ textarea.contrato-texto-justificado {
 }
 
 .contrato-texto-renderizado:empty::before {
-    content: "\00a0";
+    content: "";
 }
 
 body.contrato-texto-renderizado-ativo textarea.contrato-texto-justificado {
@@ -261,8 +261,24 @@ body.contrato-texto-renderizado-ativo textarea.contrato-texto-justificado {
 }
 
 @media print {
+    textarea.contrato-texto-justificado,
+    body.contrato-texto-renderizado-ativo textarea.contrato-texto-justificado {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        max-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        line-height: 0 !important;
+        overflow: hidden !important;
+    }
+
     .contrato-texto-renderizado {
         color: #000 !important;
+        min-height: 0 !important;
+        line-height: 1.05 !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }

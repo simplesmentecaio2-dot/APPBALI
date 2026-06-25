@@ -7,8 +7,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <link href="../css/estilo.css" rel="stylesheet" />
-    <link href="../css/bali-print-contract.css?v=20260625-promissoria" rel="stylesheet" />
-    <script src="../js/bali-print-contract.js?v=20260625-promissoria"></script>
+    <link href="../css/bali-print-contract.css?v=20260625-compacttext" rel="stylesheet" />
+    <script src="../js/bali-print-contract.js?v=20260625-compacttext"></script>
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
