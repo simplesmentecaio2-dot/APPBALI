@@ -417,9 +417,13 @@ function isMaintenanceUnlocked() {
 function setSectionOpen(section, isOpen) {
   if (!section) return;
   const heading = section.querySelector('.section-heading');
+  const grid = section.querySelector('.shortcut-grid');
   section.classList.toggle('is-open', isOpen);
   if (heading) {
     heading.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+  if (grid) {
+    grid.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
   }
 }
 
@@ -612,11 +616,19 @@ function initializeSectionToggles() {
   allSections.forEach((section) => {
     const heading = section.querySelector('.section-heading');
     if (!heading || heading.dataset.toggleReady === 'true') return;
+    const grid = section.querySelector('.shortcut-grid');
+    if (grid && !grid.id && section.id) {
+      grid.id = `${section.id}-atalhos`;
+    }
 
     heading.dataset.toggleReady = 'true';
     heading.setAttribute('role', 'button');
     heading.setAttribute('tabindex', '0');
     heading.setAttribute('aria-expanded', 'false');
+    if (grid && grid.id) {
+      heading.setAttribute('aria-controls', grid.id);
+      grid.setAttribute('aria-hidden', 'true');
+    }
 
     heading.addEventListener('click', () => {
       toggleSection(section);
