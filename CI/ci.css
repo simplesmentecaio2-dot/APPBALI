@@ -290,6 +290,78 @@ a {
   line-height: 1;
 }
 
+.bi-filter-grid {
+  grid-template-columns: repeat(3, minmax(160px, 1fr)) auto;
+}
+
+.bi-summary {
+  margin: 4px 0 18px;
+}
+
+.bi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.bi-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  background: #fff;
+}
+
+.bi-card h3 {
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.bar-list {
+  display: grid;
+  gap: 11px;
+}
+
+.bar-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 5px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.bar-meta span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar-track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7edf6;
+}
+
+.bar-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--brand), var(--brand-strong));
+}
+
+.empty-bi {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .panel {
   margin-bottom: 18px;
   padding: 20px;
@@ -1051,7 +1123,9 @@ label {
 
   .filter-grid,
   .form-grid,
-  .ci-form-insights {
+  .ci-form-insights,
+  .bi-filter-grid,
+  .bi-grid {
     grid-template-columns: 1fr;
   }
 

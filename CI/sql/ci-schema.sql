@@ -414,6 +414,76 @@ BEGIN
 END
 GO
 
+CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_bi
+    @dt_inicio DATE = NULL,
+    @dt_fim DATE = NULL,
+    @origem_marca NVARCHAR(40) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SET @origem_marca = NULLIF(LTRIM(RTRIM(ISNULL(@origem_marca, ''))), '');
+
+    SELECT
+        id_ci,
+        data_documento,
+        origem_marca,
+        origem_area,
+        destino_area,
+        categoria,
+        prioridade,
+        criado_por,
+        CASE WHEN ativo = 0 THEN 'Cancelada' ELSE ISNULL(NULLIF(status_ci, ''), 'Emitida') END AS status
+    INTO #ci_bi_base
+    FROM dbo.ci_comunicacoes
+    WHERE (@dt_inicio IS NULL OR data_documento >= @dt_inicio)
+      AND (@dt_fim IS NULL OR data_documento <= @dt_fim)
+      AND (@origem_marca IS NULL OR origem_marca = @origem_marca);
+
+    SELECT
+        COUNT(1) AS total_cis,
+        SUM(CASE WHEN status = 'Emitida' THEN 1 ELSE 0 END) AS emitidas,
+        SUM(CASE WHEN status = 'Rascunho' THEN 1 ELSE 0 END) AS rascunhos,
+        SUM(CASE WHEN status = 'Revisada' THEN 1 ELSE 0 END) AS revisadas,
+        SUM(CASE WHEN status = 'Cancelada' THEN 1 ELSE 0 END) AS canceladas,
+        (SELECT COUNT(1) FROM dbo.ci_anexos a INNER JOIN #ci_bi_base b ON b.id_ci = a.id_ci WHERE a.ativo = 1) AS anexos,
+        (SELECT COUNT(1) FROM dbo.ci_ciencias c INNER JOIN #ci_bi_base b ON b.id_ci = c.id_ci WHERE c.ativo = 1) AS ciencias
+    FROM #ci_bi_base;
+
+    SELECT TOP 12 origem_marca AS rotulo, COUNT(1) AS total
+    FROM #ci_bi_base
+    GROUP BY origem_marca
+    ORDER BY total DESC, origem_marca;
+
+    SELECT TOP 12 categoria AS rotulo, COUNT(1) AS total
+    FROM #ci_bi_base
+    GROUP BY categoria
+    ORDER BY total DESC, categoria;
+
+    SELECT TOP 12 prioridade AS rotulo, COUNT(1) AS total
+    FROM #ci_bi_base
+    GROUP BY prioridade
+    ORDER BY total DESC, prioridade;
+
+    SELECT CONVERT(VARCHAR(10), data_documento, 103) AS rotulo, COUNT(1) AS total
+    FROM #ci_bi_base
+    GROUP BY data_documento
+    ORDER BY data_documento;
+
+    SELECT TOP 10 destino_area AS rotulo, COUNT(1) AS total
+    FROM #ci_bi_base
+    GROUP BY destino_area
+    ORDER BY total DESC, destino_area;
+
+    SELECT TOP 10 ISNULL(NULLIF(criado_por, ''), 'Não informado') AS rotulo, COUNT(1) AS total
+    FROM #ci_bi_base
+    GROUP BY ISNULL(NULLIF(criado_por, ''), 'Não informado')
+    ORDER BY total DESC, rotulo;
+
+    DROP TABLE #ci_bi_base;
+END
+GO
+
 CREATE OR ALTER PROCEDURE dbo.ci_modelo_listar
 AS
 BEGIN

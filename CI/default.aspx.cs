@@ -30,12 +30,32 @@ public partial class ci_default : System.Web.UI.Page
         if (!IsPostBack)
         {
             DateTime hoje = DateTime.Today;
+            DateTime inicioMes = new DateTime(hoje.Year, hoje.Month, 1);
             txtFiltroInicio.Text = hoje.AddDays(-30).ToString("yyyy-MM-dd");
             txtFiltroFim.Text = hoje.ToString("yyyy-MM-dd");
+            txtBiInicio.Text = inicioMes.ToString("yyyy-MM-dd");
+            txtBiFim.Text = hoje.ToString("yyyy-MM-dd");
             txtData.Text = hoje.ToString("yyyy-MM-dd");
+            string tela = ObterTelaAtual();
             CarregarTudo();
-            AplicarTela(ObterTelaAtual());
+            if (tela == "bi") CarregarBi();
+            AplicarTela(tela);
             MostrarAvisoViewStateExpirado();
+        }
+    }
+
+    protected void btnAtualizarBi_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            CarregarBi();
+            AplicarTela("bi");
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("Atualizar BI da CI", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("bi");
         }
     }
 
@@ -577,7 +597,9 @@ public partial class ci_default : System.Web.UI.Page
     private string ObterTelaAtual()
     {
         string tela = (Request.QueryString["view"] ?? "").Trim().ToLowerInvariant();
-        return tela == "nova" || tela == "cadastro" ? "nova" : "consulta";
+        if (tela == "nova" || tela == "cadastro") return "nova";
+        if (tela == "bi") return "bi";
+        return "consulta";
     }
 
     private void MostrarAvisoViewStateExpirado()
@@ -592,10 +614,12 @@ public partial class ci_default : System.Web.UI.Page
     {
         bool mostrarCadastro = String.Equals(tela, "nova", StringComparison.OrdinalIgnoreCase) ||
             String.Equals(tela, "cadastro", StringComparison.OrdinalIgnoreCase);
+        bool mostrarBi = String.Equals(tela, "bi", StringComparison.OrdinalIgnoreCase);
 
-        pnlConsulta.Visible = !mostrarCadastro;
+        pnlBi.Visible = mostrarBi;
+        pnlConsulta.Visible = !mostrarCadastro && !mostrarBi;
         pnlCadastro.Visible = mostrarCadastro;
-        ViewState["CiTela"] = mostrarCadastro ? "nova" : "consulta";
+        ViewState["CiTela"] = mostrarCadastro ? "nova" : (mostrarBi ? "bi" : "consulta");
     }
 
     private void CarregarResumo()
@@ -613,6 +637,124 @@ public partial class ci_default : System.Web.UI.Page
         litFiat.Text = ValorResumo(resumo.Rows[0], "fiat_ativas");
         litJeep.Text = ValorResumo(resumo.Rows[0], "jeep_ativas");
         litByd.Text = ValorResumo(resumo.Rows[0], "byd_ativas");
+    }
+
+    private void CarregarBi()
+    {
+        DateTime inicio;
+        DateTime fim;
+        bool inicioValido = ObterData(txtBiInicio.Text, out inicio);
+        bool fimValido = ObterData(txtBiFim.Text, out fim);
+
+        if (inicioValido && fimValido && inicio > fim)
+        {
+            DateTime troca = inicio;
+            inicio = fim;
+            fim = troca;
+            txtBiInicio.Text = inicio.ToString("yyyy-MM-dd");
+            txtBiFim.Text = fim.ToString("yyyy-MM-dd");
+        }
+
+        object dtInicio = inicioValido ? (object)inicio : DBNull.Value;
+        object dtFim = fimValido ? (object)fim : DBNull.Value;
+
+        DataSet dados = ExecutarDataSet("dbo.ci_comunicacao_bi",
+            Param("@dt_inicio", SqlDbType.Date, dtInicio),
+            Param("@dt_fim", SqlDbType.Date, dtFim),
+            Param("@origem_marca", SqlDbType.NVarChar, ddlBiMarca.SelectedValue, 40));
+
+        if (dados.Tables.Count == 0 || dados.Tables[0].Rows.Count == 0)
+        {
+            LimparBi();
+            return;
+        }
+
+        DataRow resumo = dados.Tables[0].Rows[0];
+        litBiTotal.Text = ValorResumo(resumo, "total_cis");
+        litBiEmitidas.Text = ValorResumo(resumo, "emitidas");
+        litBiRascunhos.Text = ValorResumo(resumo, "rascunhos");
+        litBiRevisadas.Text = ValorResumo(resumo, "revisadas");
+        litBiCanceladas.Text = ValorResumo(resumo, "canceladas");
+        litBiAnexos.Text = ValorResumo(resumo, "anexos");
+        litBiCiencias.Text = ValorResumo(resumo, "ciencias");
+
+        litBiMarcas.Text = RenderizarBarrasBi(TabelaBi(dados, 1));
+        litBiCategorias.Text = RenderizarBarrasBi(TabelaBi(dados, 2));
+        litBiPrioridades.Text = RenderizarBarrasBi(TabelaBi(dados, 3));
+        litBiDias.Text = RenderizarBarrasBi(TabelaBi(dados, 4));
+        litBiDestinos.Text = RenderizarBarrasBi(TabelaBi(dados, 5));
+        litBiCriadores.Text = RenderizarBarrasBi(TabelaBi(dados, 6));
+
+        string marca = ddlBiMarca.SelectedValue.Length > 0 ? " | " + ddlBiMarca.SelectedValue : "";
+        string periodo = (inicioValido ? inicio.ToString("dd/MM/yyyy") : "sem in\u00edcio") +
+            " a " +
+            (fimValido ? fim.ToString("dd/MM/yyyy") : "sem fim") +
+            marca;
+        litBiPeriodo.Text = "Per\u00edodo analisado: " + Server.HtmlEncode(periodo) + ".";
+    }
+
+    private DataTable TabelaBi(DataSet dados, int indice)
+    {
+        return dados.Tables.Count > indice ? dados.Tables[indice] : new DataTable();
+    }
+
+    private void LimparBi()
+    {
+        litBiTotal.Text = "0";
+        litBiEmitidas.Text = "0";
+        litBiRascunhos.Text = "0";
+        litBiRevisadas.Text = "0";
+        litBiCanceladas.Text = "0";
+        litBiAnexos.Text = "0";
+        litBiCiencias.Text = "0";
+        string vazio = "<p class=\"empty-bi\">Nenhum dado encontrado no per&iacute;odo.</p>";
+        litBiMarcas.Text = vazio;
+        litBiCategorias.Text = vazio;
+        litBiPrioridades.Text = vazio;
+        litBiDias.Text = vazio;
+        litBiDestinos.Text = vazio;
+        litBiCriadores.Text = vazio;
+    }
+
+    private string RenderizarBarrasBi(DataTable dados)
+    {
+        if (dados == null || dados.Rows.Count == 0)
+        {
+            return "<p class=\"empty-bi\">Nenhum dado encontrado.</p>";
+        }
+
+        int maior = 0;
+        foreach (DataRow row in dados.Rows)
+        {
+            int total;
+            if (Int32.TryParse(Convert.ToString(row["total"]), out total) && total > maior)
+            {
+                maior = total;
+            }
+        }
+
+        if (maior <= 0) maior = 1;
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class=\"bar-list\">");
+        foreach (DataRow row in dados.Rows)
+        {
+            string rotulo = Server.HtmlEncode(Convert.ToString(row["rotulo"] ?? ""));
+            int total;
+            if (!Int32.TryParse(Convert.ToString(row["total"]), out total)) total = 0;
+            int largura = Math.Max(4, (int)Math.Round((total * 100.0) / maior));
+
+            html.Append("<div class=\"bar-row\">");
+            html.Append("<div class=\"bar-meta\"><span>");
+            html.Append(rotulo.Length > 0 ? rotulo : "N\u00e3o informado");
+            html.Append("</span><strong>");
+            html.Append(total.ToString());
+            html.Append("</strong></div><div class=\"bar-track\"><span style=\"width:");
+            html.Append(largura.ToString(CultureInfo.InvariantCulture));
+            html.Append("%\"></span></div></div>");
+        }
+        html.Append("</div>");
+        return html.ToString();
     }
 
     private string ValorResumo(DataRow row, string coluna)
@@ -1146,6 +1288,25 @@ public partial class ci_default : System.Web.UI.Page
             DataTable tabela = new DataTable();
             adapter.Fill(tabela);
             return tabela;
+        }
+    }
+
+    private DataSet ExecutarDataSet(string procedure, params SqlParameter[] parametros)
+    {
+        using (SqlConnection con = new SqlConnection(ConnectionString))
+        using (SqlCommand cmd = new SqlCommand(procedure, con))
+        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
+            if (parametros != null)
+            {
+                cmd.Parameters.AddRange(parametros);
+            }
+
+            DataSet dados = new DataSet();
+            adapter.Fill(dados);
+            return dados;
         }
     }
 

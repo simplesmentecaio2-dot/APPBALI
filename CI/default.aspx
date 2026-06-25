@@ -21,6 +21,7 @@
                     </span>
                 </a>
                 <nav class="side-nav" aria-label="Navega&ccedil;&atilde;o da CI">
+                    <a href="default.aspx?view=bi" data-nav-view="bi">BI</a>
                     <a href="default.aspx?view=consulta" data-nav-view="consulta">Consulta</a>
                     <a href="default.aspx?view=nova" data-nav-view="nova">Nova CI</a>
                     <a href="erros.aspx" data-nav-view="logs">Logs</a>
@@ -92,6 +93,68 @@
                         <strong><asp:Literal ID="litByd" runat="server" Text="0"></asp:Literal></strong>
                     </article>
                 </section>
+
+                <asp:Panel ID="pnlBi" runat="server" CssClass="panel bi-panel">
+                    <div class="panel-header">
+                        <div>
+                            <span class="eyebrow">BI</span>
+                            <h2>Indicadores de CI</h2>
+                            <p class="panel-subtitle"><asp:Literal ID="litBiPeriodo" runat="server" Text="Selecione o per&iacute;odo para analisar as comunica&ccedil;&otilde;es."></asp:Literal></p>
+                        </div>
+                    </div>
+                    <div class="filter-grid bi-filter-grid">
+                        <label>Data inicial
+                            <asp:TextBox ID="txtBiInicio" runat="server" CssClass="text-field" TextMode="Date"></asp:TextBox>
+                        </label>
+                        <label>Data final
+                            <asp:TextBox ID="txtBiFim" runat="server" CssClass="text-field" TextMode="Date"></asp:TextBox>
+                        </label>
+                        <label>Marca
+                            <asp:DropDownList ID="ddlBiMarca" runat="server" CssClass="select-field">
+                                <asp:ListItem Value="">Todas</asp:ListItem>
+                                <asp:ListItem>Bali Fiat</asp:ListItem>
+                                <asp:ListItem>Bali Jeep</asp:ListItem>
+                                <asp:ListItem>Bali BYD</asp:ListItem>
+                            </asp:DropDownList>
+                        </label>
+                        <asp:Button ID="btnAtualizarBi" runat="server" Text="Atualizar BI" CssClass="primary-button" OnClick="btnAtualizarBi_Click" />
+                    </div>
+                    <section class="summary-grid bi-summary">
+                        <article><span>Total</span><strong><asp:Literal ID="litBiTotal" runat="server" Text="0"></asp:Literal></strong></article>
+                        <article><span>Emitidas</span><strong><asp:Literal ID="litBiEmitidas" runat="server" Text="0"></asp:Literal></strong></article>
+                        <article><span>Rascunhos</span><strong><asp:Literal ID="litBiRascunhos" runat="server" Text="0"></asp:Literal></strong></article>
+                        <article><span>Revisadas</span><strong><asp:Literal ID="litBiRevisadas" runat="server" Text="0"></asp:Literal></strong></article>
+                        <article><span>Canceladas</span><strong><asp:Literal ID="litBiCanceladas" runat="server" Text="0"></asp:Literal></strong></article>
+                        <article><span>Anexos</span><strong><asp:Literal ID="litBiAnexos" runat="server" Text="0"></asp:Literal></strong></article>
+                        <article><span>Ci&ecirc;ncias</span><strong><asp:Literal ID="litBiCiencias" runat="server" Text="0"></asp:Literal></strong></article>
+                    </section>
+                    <div class="bi-grid">
+                        <article class="bi-card">
+                            <h3>Por marca</h3>
+                            <asp:Literal ID="litBiMarcas" runat="server"></asp:Literal>
+                        </article>
+                        <article class="bi-card">
+                            <h3>Por categoria</h3>
+                            <asp:Literal ID="litBiCategorias" runat="server"></asp:Literal>
+                        </article>
+                        <article class="bi-card">
+                            <h3>Por prioridade</h3>
+                            <asp:Literal ID="litBiPrioridades" runat="server"></asp:Literal>
+                        </article>
+                        <article class="bi-card">
+                            <h3>Evolu&ccedil;&atilde;o por dia</h3>
+                            <asp:Literal ID="litBiDias" runat="server"></asp:Literal>
+                        </article>
+                        <article class="bi-card">
+                            <h3>Top destinos</h3>
+                            <asp:Literal ID="litBiDestinos" runat="server"></asp:Literal>
+                        </article>
+                        <article class="bi-card">
+                            <h3>Criado por</h3>
+                            <asp:Literal ID="litBiCriadores" runat="server"></asp:Literal>
+                        </article>
+                    </div>
+                </asp:Panel>
 
                 <asp:Panel ID="pnlConsulta" runat="server" CssClass="panel">
                     <div class="panel-header">
