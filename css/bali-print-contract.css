@@ -79,6 +79,13 @@
         color: #64748b;
     }
 
+    .bali-print-toolbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
     .bali-print-button {
         min-width: 108px;
         padding: 9px 14px;
@@ -92,10 +99,21 @@
         letter-spacing: 0;
     }
 
+    .bali-print-button-secondary {
+        color: #0f172a;
+        background: #e2e8f0;
+    }
+
     .bali-print-button:hover,
     .bali-print-button:focus {
         background: #1e293b;
         outline: none;
+    }
+
+    .bali-print-button-secondary:hover,
+    .bali-print-button-secondary:focus {
+        color: #0f172a;
+        background: #cbd5e1;
     }
 }
 
