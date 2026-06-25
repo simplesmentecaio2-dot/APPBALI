@@ -183,6 +183,11 @@ public partial class ci_default : System.Web.UI.Page
                 CarregarCI(id);
                 MostrarMensagem("CI carregada para edi\u00e7\u00e3o.", false);
             }
+            else if (e.CommandName == "DuplicarCI")
+            {
+                CarregarCIDuplicada(id);
+                MostrarMensagem("CI duplicada como novo rascunho. Revise os dados antes de salvar.", false);
+            }
             else if (e.CommandName == "CancelarCI")
             {
                 if (!SenhaInformada())
@@ -399,6 +404,33 @@ public partial class ci_default : System.Web.UI.Page
         txtCriadoPor.Text = row["criado_por"].ToString();
         litTituloForm.Text = "Editar " + row["codigo_ci"].ToString();
         CarregarHistorico(id);
+    }
+
+    private void CarregarCIDuplicada(int id)
+    {
+        DataTable dados = ExecutarTabela("dbo.ci_comunicacao_obter", Param("@id_ci", SqlDbType.Int, id));
+        if (dados.Rows.Count == 0) return;
+
+        DataRow row = dados.Rows[0];
+        LimparAutorizacaoEdicaoCI(ObterIdAtual());
+        hfCiId.Value = "";
+        Selecionar(ddlMarca, row["origem_marca"].ToString());
+        txtData.Text = DateTime.Today.ToString("yyyy-MM-dd");
+        txtOrigemArea.Text = row["origem_area"].ToString();
+        txtOrigemResponsavel.Text = row["origem_responsavel"].ToString();
+        txtDestinoArea.Text = row["destino_area"].ToString();
+        txtDestinatario.Text = row["destinatario"].ToString();
+        txtAssunto.Text = row["assunto"].ToString();
+        Selecionar(ddlCategoria, row["categoria"].ToString());
+        Selecionar(ddlPrioridade, row["prioridade"].ToString());
+        txtCorpo.Text = row["corpo"].ToString();
+        txtProvidencias.Text = row["providencias"].ToString();
+        txtObservacoes.Text = row["observacoes"].ToString();
+        txtCriadoPor.Text = row["criado_por"].ToString();
+        litTituloForm.Text = "Nova CI baseada em " + row["codigo_ci"].ToString();
+        pnlHistorico.Visible = false;
+        gvHistorico.DataSource = null;
+        gvHistorico.DataBind();
     }
 
     private void CarregarHistorico(int id)
