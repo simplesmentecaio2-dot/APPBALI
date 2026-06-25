@@ -81,10 +81,10 @@
         jQuery(function ($) {
             $.mask.definitions['~'] = '[+-]';
             $('.date').mask('99/99/9999');
-            $('.phone').mask('(99) 9999-9999');
+            $('.phone').attr('inputmode', 'tel');
            
         });
-    </script><script src="../js/bali-contract.js?v=20260625-contratos99"></script></head><body class="bali-contract-page contrato-fiat"><form id="form1" style="height: 100%;" runat="server">
+    </script><script src="../js/bali-contract.js?v=20260625-phone11"></script></head><body class="bali-contract-page contrato-fiat"><form id="form1" style="height: 100%;" runat="server">
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
         <div id="topo">
             <table id="table-menu">

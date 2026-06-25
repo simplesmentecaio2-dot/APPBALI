@@ -302,6 +302,7 @@
       autocomplete: 'tel',
       numericBlank: true,
       maxLength: 15,
+      sanitize: formatPhoneTyping,
       normalize: formatPhone,
       validate: function (value) {
         var digits = digitsOnly(value);
@@ -544,6 +545,15 @@
       return '(' + digits.substr(0, 2) + ') ' + digits.substr(2, 5) + '-' + digits.substr(7, 4);
     }
     return String(value || '').trim();
+  }
+
+  function formatPhoneTyping(value) {
+    var digits = digitsOnly(value).slice(0, 11);
+    if (!digits) return '';
+    if (digits.length <= 2) return '(' + digits;
+    if (digits.length <= 6) return '(' + digits.substr(0, 2) + ') ' + digits.substr(2);
+    if (digits.length <= 10) return '(' + digits.substr(0, 2) + ') ' + digits.substr(2, 4) + '-' + digits.substr(6);
+    return '(' + digits.substr(0, 2) + ') ' + digits.substr(2, 5) + '-' + digits.substr(7);
   }
 
   function normalizePlateOrChassi(value) {
@@ -3098,6 +3108,10 @@
           });
 
           field.addEventListener('input', function () {
+            if (rule.sanitize) {
+              var sanitized = rule.sanitize(field.value);
+              if (field.value !== sanitized) field.value = sanitized;
+            }
             showFieldMessage(field, '');
             scheduleQualityPanelUpdate();
           });
