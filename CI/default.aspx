@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-printlink" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-views" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -21,8 +21,8 @@
                     </span>
                 </a>
                 <nav class="side-nav">
-                    <a href="#consulta">Consulta</a>
-                    <a href="#cadastro">Nova CI</a>
+                    <a href="default.aspx?view=consulta">Consulta</a>
+                    <a href="default.aspx?view=nova">Nova CI</a>
                     <a href="erros.aspx">Logs</a>
                     <a href="../Intranet/index.html">Intranet</a>
                 </nav>
@@ -41,7 +41,7 @@
                             <span class="brand-chip jeep"><img src="../img/logojeep.png" alt="Bali Jeep" /></span>
                             <span class="brand-chip byd"><img src="../img/bydbranco.png" alt="Bali BYD" /></span>
                         </div>
-                        <a class="primary-link" href="#cadastro">Criar CI</a>
+                        <a class="primary-link" href="default.aspx?view=nova">Criar CI</a>
                     </div>
                 </header>
 
@@ -85,7 +85,7 @@
                     </article>
                 </section>
 
-                <section class="panel" id="consulta">
+                <asp:Panel ID="pnlConsulta" runat="server" CssClass="panel">
                     <div class="panel-header">
                         <div>
                             <span class="eyebrow">Consulta</span>
@@ -156,9 +156,9 @@
                             </Columns>
                         </asp:GridView>
                     </div>
-                </section>
+                </asp:Panel>
 
-                <section class="panel" id="cadastro">
+                <asp:Panel ID="pnlCadastro" runat="server" CssClass="panel">
                     <div class="panel-header">
                         <div>
                             <span class="eyebrow">Cadastro</span>
@@ -260,7 +260,7 @@
 
                     <div class="form-actions">
                         <asp:Button ID="btnSalvar" runat="server" Text="Salvar CI" CssClass="primary-button" OnClick="btnSalvar_Click" OnClientClick="return validarCICliente();" />
-                        <a class="secondary-link" href="#consulta">Voltar para consulta</a>
+                        <a class="secondary-link" href="default.aspx?view=consulta">Voltar para consulta</a>
                     </div>
 
                     <asp:Panel ID="pnlHistorico" runat="server" CssClass="history-panel" Visible="false">
@@ -283,7 +283,7 @@
                             </asp:GridView>
                         </div>
                     </asp:Panel>
-                </section>
+                </asp:Panel>
             </main>
         </div>
 

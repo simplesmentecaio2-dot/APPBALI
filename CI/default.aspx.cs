@@ -36,6 +36,7 @@ public partial class ci_default : System.Web.UI.Page
             txtFiltroFim.Text = hoje.ToString("yyyy-MM-dd");
             txtData.Text = hoje.ToString("yyyy-MM-dd");
             CarregarTudo();
+            AplicarTela(ObterTelaAtual());
         }
     }
 
@@ -43,6 +44,7 @@ public partial class ci_default : System.Web.UI.Page
     {
         gvCis.PageIndex = 0;
         CarregarLista();
+        AplicarTela("consulta");
     }
 
     protected void btnLimpar_Click(object sender, EventArgs e)
@@ -54,6 +56,7 @@ public partial class ci_default : System.Web.UI.Page
         chkSomenteAtivas.Checked = true;
         gvCis.PageIndex = 0;
         CarregarLista();
+        AplicarTela("consulta");
     }
 
     protected void ddlPageSize_SelectedIndexChanged(object sender, EventArgs e)
@@ -67,6 +70,7 @@ public partial class ci_default : System.Web.UI.Page
         gvCis.PageSize = tamanho;
         gvCis.PageIndex = 0;
         CarregarLista();
+        AplicarTela("consulta");
     }
 
     protected void btnExportar_Click(object sender, EventArgs e)
@@ -111,6 +115,7 @@ public partial class ci_default : System.Web.UI.Page
     protected void btnNova_Click(object sender, EventArgs e)
     {
         LimparFormulario();
+        AplicarTela("nova");
     }
 
     protected void btnSalvar_Click(object sender, EventArgs e)
@@ -123,6 +128,7 @@ public partial class ci_default : System.Web.UI.Page
                 if (!SenhaInformada())
                 {
                     MostrarMensagem("Informe a senha correta para editar a CI.", true);
+                    AplicarTela("nova");
                     return;
                 }
 
@@ -133,6 +139,7 @@ public partial class ci_default : System.Web.UI.Page
             if (!ObterData(txtData.Text, out dataDocumento))
             {
                 MostrarMensagem("Informe a data da CI no formato correto.", true);
+                AplicarTela("nova");
                 return;
             }
 
@@ -140,6 +147,7 @@ public partial class ci_default : System.Web.UI.Page
             if (erro.Length > 0)
             {
                 MostrarMensagem(erro, true);
+                AplicarTela("nova");
                 return;
             }
 
@@ -166,6 +174,7 @@ public partial class ci_default : System.Web.UI.Page
             LimparAutorizacaoEdicaoCI(id);
             LimparFormulario();
             CarregarTudo();
+            AplicarTela("consulta");
             if (idSalvo > 0)
             {
                 MostrarMensagemHtml(Server.HtmlEncode(codigo) + " salva com sucesso. <a href=\"print.aspx?id=" + idSalvo.ToString() + "\" target=\"_blank\">Imprimir agora</a>.", false);
@@ -179,6 +188,7 @@ public partial class ci_default : System.Web.UI.Page
         {
             RegistrarErro("Salvar CI", ex);
             MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("nova");
         }
     }
 
@@ -194,16 +204,19 @@ public partial class ci_default : System.Web.UI.Page
                 if (!SenhaInformada())
                 {
                     MostrarMensagem("Informe a senha correta para editar a CI.", true);
+                    AplicarTela("consulta");
                     return;
                 }
 
                 AutorizarEdicaoCI(id);
                 CarregarCI(id);
+                AplicarTela("nova");
                 MostrarMensagem("CI carregada para edi\u00e7\u00e3o.", false);
             }
             else if (e.CommandName == "DuplicarCI")
             {
                 CarregarCIDuplicada(id);
+                AplicarTela("nova");
                 MostrarMensagem("CI duplicada como novo rascunho. Revise os dados antes de salvar.", false);
             }
             else if (e.CommandName == "CancelarCI")
@@ -211,6 +224,7 @@ public partial class ci_default : System.Web.UI.Page
                 if (!SenhaInformada())
                 {
                     MostrarMensagem("Informe a senha correta para cancelar a CI.", true);
+                    AplicarTela("consulta");
                     return;
                 }
 
@@ -218,6 +232,7 @@ public partial class ci_default : System.Web.UI.Page
                 LimparAutorizacaoEdicaoCI(id);
                 LimparFormulario();
                 CarregarTudo();
+                AplicarTela("consulta");
                 MostrarMensagem("CI cancelada com sucesso.", false);
             }
         }
@@ -225,6 +240,7 @@ public partial class ci_default : System.Web.UI.Page
         {
             RegistrarErro("A\u00e7\u00e3o na lista de CI", ex);
             MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("consulta");
         }
     }
 
@@ -232,6 +248,7 @@ public partial class ci_default : System.Web.UI.Page
     {
         gvCis.PageIndex = e.NewPageIndex;
         CarregarLista();
+        AplicarTela("consulta");
     }
 
     protected void gvCis_Sorting(object sender, GridViewSortEventArgs e)
@@ -244,6 +261,7 @@ public partial class ci_default : System.Web.UI.Page
         ViewState["CiSortDirection"] = novaDirecao;
         gvCis.PageIndex = 0;
         CarregarLista();
+        AplicarTela("consulta");
     }
 
     protected void gvCis_RowDataBound(object sender, GridViewRowEventArgs e)
@@ -277,6 +295,22 @@ public partial class ci_default : System.Web.UI.Page
     {
         CarregarResumo();
         CarregarLista();
+    }
+
+    private string ObterTelaAtual()
+    {
+        string tela = (Request.QueryString["view"] ?? "").Trim().ToLowerInvariant();
+        return tela == "nova" || tela == "cadastro" ? "nova" : "consulta";
+    }
+
+    private void AplicarTela(string tela)
+    {
+        bool mostrarCadastro = String.Equals(tela, "nova", StringComparison.OrdinalIgnoreCase) ||
+            String.Equals(tela, "cadastro", StringComparison.OrdinalIgnoreCase);
+
+        pnlConsulta.Visible = !mostrarCadastro;
+        pnlCadastro.Visible = mostrarCadastro;
+        ViewState["CiTela"] = mostrarCadastro ? "nova" : "consulta";
     }
 
     private void CarregarResumo()

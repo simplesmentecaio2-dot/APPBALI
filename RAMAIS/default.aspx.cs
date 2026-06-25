@@ -18,6 +18,7 @@ public partial class ramais_default : System.Web.UI.Page
         if (!IsPostBack)
         {
             CarregarTudo();
+            AplicarTela(ObterTelaAtual());
         }
     }
 
@@ -29,6 +30,7 @@ public partial class ramais_default : System.Web.UI.Page
     protected void btnFiltrar_Click(object sender, EventArgs e)
     {
         CarregarRamais();
+        AplicarTela("consulta");
     }
 
     protected void btnLimparFiltros_Click(object sender, EventArgs e)
@@ -38,6 +40,7 @@ public partial class ramais_default : System.Web.UI.Page
         txtBusca.Text = "";
         chkSomenteAtivos.Checked = true;
         CarregarRamais();
+        AplicarTela("consulta");
     }
 
     protected void btnSalvarRamal_Click(object sender, EventArgs e)
@@ -48,24 +51,28 @@ public partial class ramais_default : System.Web.UI.Page
             if (idAtual > 0 && !EdicaoRamalAutorizada(idAtual))
             {
                 MostrarMensagem("Para salvar altera\u00e7\u00e3o em ramal existente, clique em Editar e informe a senha de manuten\u00e7\u00e3o.", true);
+                AplicarTela("ramais");
                 return;
             }
 
             if (txtNome.Text.Trim().Length == 0)
             {
                 MostrarMensagem("Informe o nome do colaborador.", true);
+                AplicarTela("ramais");
                 return;
             }
 
             if (txtRamal.Text.Trim().Length == 0)
             {
                 MostrarMensagem("Informe o ramal.", true);
+                AplicarTela("ramais");
                 return;
             }
 
             if (ddlRamalLoja.SelectedValue == "0" || ddlRamalSetor.SelectedValue == "0")
             {
                 MostrarMensagem("Selecione loja e setor para salvar o ramal.", true);
+                AplicarTela("ramais");
                 return;
             }
 
@@ -81,16 +88,19 @@ public partial class ramais_default : System.Web.UI.Page
             LimparRamal();
             CarregarTudo();
             MostrarMensagem("Ramal salvo com sucesso.", false);
+            AplicarTela("ramais");
         }
         catch (Exception ex)
         {
             MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("ramais");
         }
     }
 
     protected void btnNovoRamal_Click(object sender, EventArgs e)
     {
         LimparRamal();
+        AplicarTela("ramais");
     }
 
     protected void gvRamais_RowCommand(object sender, GridViewCommandEventArgs e)
@@ -102,26 +112,37 @@ public partial class ramais_default : System.Web.UI.Page
         {
             if (e.CommandName == "EditarRamal")
             {
-                if (!SenhaManutencaoInformada()) return;
+                if (!SenhaManutencaoInformada())
+                {
+                    AplicarTela("consulta");
+                    return;
+                }
 
                 AutorizarEdicaoRamal(id);
                 CarregarRamal(id);
                 MostrarMensagem("Ramal carregado para edi\u00e7\u00e3o.", false);
+                AplicarTela("ramais");
             }
             else if (e.CommandName == "ExcluirRamal")
             {
-                if (!SenhaManutencaoInformada()) return;
+                if (!SenhaManutencaoInformada())
+                {
+                    AplicarTela("ramais");
+                    return;
+                }
 
                 ExecutarSemRetorno("dbo.ramais_ramal_excluir", Param("@id_ramal", SqlDbType.Int, id));
                 LimparAutorizacaoEdicaoRamal(id);
                 LimparRamal();
                 CarregarTudo();
                 MostrarMensagem("Ramal inativado com sucesso.", false);
+                AplicarTela("ramais");
             }
         }
         catch (Exception ex)
         {
             MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("ramais");
         }
     }
 
@@ -132,6 +153,7 @@ public partial class ramais_default : System.Web.UI.Page
             if (txtLojaNome.Text.Trim().Length == 0)
             {
                 MostrarMensagem("Informe o nome da loja.", true);
+                AplicarTela("lojas");
                 return;
             }
 
@@ -143,16 +165,19 @@ public partial class ramais_default : System.Web.UI.Page
             LimparLoja();
             CarregarTudo();
             MostrarMensagem("Loja salva com sucesso.", false);
+            AplicarTela("lojas");
         }
         catch (Exception ex)
         {
             MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("lojas");
         }
     }
 
     protected void btnNovaLoja_Click(object sender, EventArgs e)
     {
         LimparLoja();
+        AplicarTela("lojas");
     }
 
     protected void gvLojas_RowCommand(object sender, GridViewCommandEventArgs e)
@@ -172,6 +197,7 @@ public partial class ramais_default : System.Web.UI.Page
                     txtLojaNome.Text = row["nome"].ToString();
                     chkLojaAtiva.Checked = Convert.ToBoolean(row["ativo"]);
                     MostrarMensagem("Loja carregada para edi\u00e7\u00e3o.", false);
+                    AplicarTela("lojas");
                 }
             }
             else if (e.CommandName == "ExcluirLoja")
@@ -180,11 +206,13 @@ public partial class ramais_default : System.Web.UI.Page
                 LimparLoja();
                 CarregarTudo();
                 MostrarMensagem("Loja inativada com sucesso.", false);
+                AplicarTela("lojas");
             }
         }
         catch (Exception ex)
         {
             MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("lojas");
         }
     }
 
@@ -195,6 +223,7 @@ public partial class ramais_default : System.Web.UI.Page
             if (txtSetorNome.Text.Trim().Length == 0)
             {
                 MostrarMensagem("Informe o nome do setor.", true);
+                AplicarTela("setores");
                 return;
             }
 
@@ -206,16 +235,19 @@ public partial class ramais_default : System.Web.UI.Page
             LimparSetor();
             CarregarTudo();
             MostrarMensagem("Setor salvo com sucesso.", false);
+            AplicarTela("setores");
         }
         catch (Exception ex)
         {
             MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("setores");
         }
     }
 
     protected void btnNovoSetor_Click(object sender, EventArgs e)
     {
         LimparSetor();
+        AplicarTela("setores");
     }
 
     protected void gvSetores_RowCommand(object sender, GridViewCommandEventArgs e)
@@ -235,6 +267,7 @@ public partial class ramais_default : System.Web.UI.Page
                     txtSetorNome.Text = row["nome"].ToString();
                     chkSetorAtivo.Checked = Convert.ToBoolean(row["ativo"]);
                     MostrarMensagem("Setor carregado para edi\u00e7\u00e3o.", false);
+                    AplicarTela("setores");
                 }
             }
             else if (e.CommandName == "ExcluirSetor")
@@ -243,11 +276,13 @@ public partial class ramais_default : System.Web.UI.Page
                 LimparSetor();
                 CarregarTudo();
                 MostrarMensagem("Setor inativado com sucesso.", false);
+                AplicarTela("setores");
             }
         }
         catch (Exception ex)
         {
             MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("setores");
         }
     }
 
@@ -258,6 +293,31 @@ public partial class ramais_default : System.Web.UI.Page
         CarregarRamais();
         CarregarLojas();
         CarregarSetores();
+    }
+
+    private string ObterTelaAtual()
+    {
+        string tela = (Request.QueryString["view"] ?? "").Trim().ToLowerInvariant();
+        if (tela == "ramais" || tela == "lojas" || tela == "setores")
+        {
+            return tela;
+        }
+
+        return "consulta";
+    }
+
+    private void AplicarTela(string tela)
+    {
+        tela = (tela ?? "consulta").ToLowerInvariant();
+        bool ramais = tela == "ramais";
+        bool lojas = tela == "lojas";
+        bool setores = tela == "setores";
+
+        pnlConsulta.Visible = !ramais && !lojas && !setores;
+        pnlRamais.Visible = ramais;
+        pnlCadastrosAuxiliares.Visible = lojas || setores;
+        pnlLojas.Visible = lojas;
+        pnlSetores.Visible = setores;
     }
 
     private void CarregarCombos()
