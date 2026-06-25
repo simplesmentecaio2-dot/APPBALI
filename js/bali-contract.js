@@ -173,6 +173,7 @@
     novo: {
       cash: 'rBtnModPagVista',
       finance: 'rBtnModPagFinanciamento',
+      financeCompany: 'txtFinanceira',
       financeValue: 'txtVlFinanciamento',
       parcels: 'txtNrParcelas',
       parcelValue: 'txtVlParcelas'
@@ -180,6 +181,7 @@
     edicao: {
       cash: 'rbtnEdAVISTA',
       finance: 'rbtnEdAprazo',
+      financeCompany: 'txtEdFinanceira',
       financeValue: 'txtEdFinanciamento',
       parcels: 'txtEdNumeroParcelas',
       parcelValue: 'txtEdValorParcela'
@@ -1918,6 +1920,7 @@
     var rules = paymentRules[mode];
     var cash = bySuffix(rules.cash);
     var finance = bySuffix(rules.finance);
+    var financeCompany = bySuffix(rules.financeCompany);
 
     if (cash && finance && !cash.checked && !finance.checked) {
       issues.push('Selecione a modalidade de pagamento.');
@@ -1928,6 +1931,13 @@
 
     var financeValue = parseMoney(valueOf(rules.financeValue));
     if ((finance && finance.checked) || financeValue > 0) {
+      if (financeCompany && String(financeCompany.value || '').trim().length === 0) {
+        issues.push('Informe a financeira do financiamento.');
+        if (showMessages) showFieldMessage(financeCompany, 'Informe a financeira aprovada.');
+      } else if (showMessages && financeCompany) {
+        showFieldMessage(financeCompany, '');
+      }
+
       if (!validInstallments(valueOf(rules.parcels))) {
         issues.push('Quantidade de parcelas deve ser um número entre 1 e 120.');
         if (showMessages) showFieldMessage(bySuffix(rules.parcels), 'Use um número entre 1 e 120.');

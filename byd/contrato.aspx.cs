@@ -756,6 +756,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
         if (modalidadePagamento == "F")
         {
+            if (CampoVazio(txtFinanceira.Text)) erros.Add("Informe a financeira do financiamento.");
             if (CampoVazio(txtNrParcelas.Text)) erros.Add("Informe a quantidade de parcelas do financiamento.");
             else if (!NumeroParcelasValido(txtNrParcelas.Text)) erros.Add("Quantidade de parcelas deve ser um número entre 1 e 120.");
             if (valorParcela <= 0) erros.Add("Valor da parcela deve ser maior que zero para financiamento.");
@@ -803,6 +804,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
         if (modalidadePagamento == "F")
         {
+            if (CampoVazio(txtEdFinanceira.Text)) erros.Add("Informe a financeira do financiamento.");
             if (CampoVazio(txtEdNumeroParcelas.Text)) erros.Add("Informe a quantidade de parcelas do financiamento.");
             else if (!NumeroParcelasValido(txtEdNumeroParcelas.Text)) erros.Add("Quantidade de parcelas deve ser um número entre 1 e 120.");
             if (valorParcela <= 0) erros.Add("Valor da parcela deve ser maior que zero para financiamento.");
