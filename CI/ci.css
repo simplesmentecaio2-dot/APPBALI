@@ -181,6 +181,14 @@ a {
   background: #e9eef6;
 }
 
+.primary-button:disabled,
+.secondary-button:disabled,
+.primary-button.is-loading,
+.secondary-button.is-loading {
+  cursor: wait;
+  opacity: .72;
+}
+
 .hero-side {
   display: flex;
   flex-direction: column;

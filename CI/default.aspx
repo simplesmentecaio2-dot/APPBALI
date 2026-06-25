@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-form" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-flow" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -233,26 +233,32 @@
                 var modalSenhaCI = document.getElementById('modalSenhaCI');
                 var campoSenhaCI = document.getElementById('txtSenhaCICliente');
                 var textoSenhaCI = document.getElementById('textoSenhaCI');
+                var salvandoCI = false;
 
                 function executarPostbackCI() {
                     if (!postbackCIPendente) return;
 
                     var href = postbackCIPendente;
                     postbackCIPendente = null;
+                    href = href.replace(/&#39;/g, "'").replace(/&quot;/g, '"');
 
                     if (href.indexOf('javascript:') === 0) {
-                        href = href.replace(/^javascript:/, '');
+                        href = href.replace(/^javascript:/i, '');
                     }
 
-                    if (href) {
+                    var postback = href.match(/__doPostBack\('([^']*)','([^']*)'\)/);
+                    if (postback && typeof window.__doPostBack === 'function') {
                         window.setTimeout(function () {
-                            eval(href);
+                            window.__doPostBack(postback[1], postback[2] || '');
                         }, 0);
+                        return;
                     }
+
+                    window.alert('N\u00e3o foi poss\u00edvel processar esta a\u00e7\u00e3o agora. Atualize a p\u00e1gina e tente novamente.');
                 }
 
                 window.solicitarSenhaCI = function (acao, link) {
-                    postbackCIPendente = link ? link.href : null;
+                    postbackCIPendente = link ? link.getAttribute('href') : null;
                     if (textoSenhaCI) textoSenhaCI.textContent = 'Informe a senha para ' + (acao || 'continuar') + ' esta CI.';
                     if (campoSenhaCI) campoSenhaCI.value = '';
                     if (modalSenhaCI) modalSenhaCI.classList.add('is-open');
@@ -369,14 +375,28 @@
                         }
                     }
 
+                    if (salvandoCI) return false;
+                    salvandoCI = true;
+                    var botaoSalvar = campo('<%= btnSalvar.ClientID %>');
+                    if (botaoSalvar) {
+                        botaoSalvar.dataset.textoOriginal = botaoSalvar.value;
+                        botaoSalvar.value = 'Salvando...';
+                        botaoSalvar.disabled = true;
+                        botaoSalvar.classList.add('is-loading');
+                    }
+
                     return true;
                 };
 
-                var camposMonitorados = camposObrigatorios.map(function (item) { return item.id; }).concat([
-                    '<%= ddlMarca.ClientID %>',
-                    '<%= txtAssunto.ClientID %>',
-                    '<%= txtCorpo.ClientID %>'
-                ]);
+                var camposMonitorados = [];
+                function adicionarMonitorado(id) {
+                    if (camposMonitorados.indexOf(id) < 0) camposMonitorados.push(id);
+                }
+
+                for (var c = 0; c < camposObrigatorios.length; c++) adicionarMonitorado(camposObrigatorios[c].id);
+                adicionarMonitorado('<%= ddlMarca.ClientID %>');
+                adicionarMonitorado('<%= txtAssunto.ClientID %>');
+                adicionarMonitorado('<%= txtCorpo.ClientID %>');
 
                 for (var m = 0; m < camposMonitorados.length; m++) {
                     var monitorado = campo(camposMonitorados[m]);
