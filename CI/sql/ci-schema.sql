@@ -120,10 +120,15 @@ BEGIN
       AND (@somente_ativas = 0 OR ativo = 1)
       AND (
             @termo IS NULL
+            OR ('CI-' + CAST(ano AS VARCHAR(4)) + '-' + RIGHT('0000' + CAST(numero AS VARCHAR(10)), 4)) LIKE '%' + @termo + '%'
+            OR CAST(numero AS VARCHAR(10)) LIKE '%' + @termo + '%'
             OR assunto LIKE '%' + @termo + '%'
             OR origem_area LIKE '%' + @termo + '%'
+            OR origem_responsavel LIKE '%' + @termo + '%'
             OR destino_area LIKE '%' + @termo + '%'
             OR destinatario LIKE '%' + @termo + '%'
+            OR categoria LIKE '%' + @termo + '%'
+            OR criado_por LIKE '%' + @termo + '%'
             OR corpo LIKE '%' + @termo + '%'
           )
     ORDER BY data_documento DESC, id_ci DESC;
