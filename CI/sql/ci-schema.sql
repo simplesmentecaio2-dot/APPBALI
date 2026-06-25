@@ -798,6 +798,64 @@ BEGIN
 END
 GO
 
+CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_localizar
+    @termo NVARCHAR(60)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @codigo NVARCHAR(60) = UPPER(LTRIM(RTRIM(ISNULL(@termo, ''))));
+    SET @codigo = REPLACE(REPLACE(REPLACE(REPLACE(@codigo, ' ', ''), '_', '-'), '/', '-'), '.', '-');
+
+    DECLARE @codigo_sem_ci NVARCHAR(60) = @codigo;
+    IF LEFT(@codigo_sem_ci, 3) = 'CI-'
+    BEGIN
+        SET @codigo_sem_ci = SUBSTRING(@codigo_sem_ci, 4, 60);
+    END
+
+    DECLARE @numero_informado INT = NULL;
+    IF @codigo_sem_ci <> '' AND @codigo_sem_ci NOT LIKE '%[^0-9]%'
+    BEGIN
+        SET @numero_informado = CONVERT(INT, @codigo_sem_ci);
+    END
+
+    DECLARE @ano_informado INT = NULL;
+    DECLARE @sequencia_informada INT = NULL;
+    IF LEN(@codigo_sem_ci) > 5 AND SUBSTRING(@codigo_sem_ci, 5, 1) = '-'
+    BEGIN
+        DECLARE @ano_texto NVARCHAR(4) = LEFT(@codigo_sem_ci, 4);
+        DECLARE @sequencia_texto NVARCHAR(20) = SUBSTRING(@codigo_sem_ci, 6, 20);
+        IF @ano_texto NOT LIKE '%[^0-9]%' AND @sequencia_texto NOT LIKE '%[^0-9]%'
+        BEGIN
+            SET @ano_informado = CONVERT(INT, @ano_texto);
+            SET @sequencia_informada = CONVERT(INT, @sequencia_texto);
+        END
+    END
+
+    SELECT TOP 1
+        id_ci,
+        'CI-' + CAST(ano AS VARCHAR(4)) + '-' + RIGHT('0000' + CAST(numero AS VARCHAR(10)), 4) AS codigo_ci,
+        ano,
+        numero
+    FROM dbo.ci_comunicacoes
+    WHERE UPPER('CI-' + CAST(ano AS VARCHAR(4)) + '-' + RIGHT('0000' + CAST(numero AS VARCHAR(10)), 4)) = @codigo
+       OR (CAST(ano AS VARCHAR(4)) + '-' + RIGHT('0000' + CAST(numero AS VARCHAR(10)), 4)) = @codigo_sem_ci
+       OR (@ano_informado IS NOT NULL AND @sequencia_informada IS NOT NULL AND ano = @ano_informado AND numero = @sequencia_informada)
+       OR (@numero_informado IS NOT NULL AND id_ci = @numero_informado)
+       OR (@numero_informado IS NOT NULL AND numero = @numero_informado)
+    ORDER BY
+        CASE
+            WHEN UPPER('CI-' + CAST(ano AS VARCHAR(4)) + '-' + RIGHT('0000' + CAST(numero AS VARCHAR(10)), 4)) = @codigo THEN 0
+            WHEN @ano_informado IS NOT NULL AND @sequencia_informada IS NOT NULL AND ano = @ano_informado AND numero = @sequencia_informada THEN 1
+            WHEN @numero_informado IS NOT NULL AND id_ci = @numero_informado THEN 2
+            ELSE 3
+        END,
+        ano DESC,
+        numero DESC,
+        id_ci DESC;
+END
+GO
+
 CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_salvar
     @id_ci INT = NULL,
     @data_documento DATE,

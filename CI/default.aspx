@@ -259,6 +259,13 @@
                         </div>
                     </div>
 
+                    <div class="quick-open">
+                        <label>Ir direto para uma CI
+                            <asp:TextBox ID="txtCodigoRapido" runat="server" CssClass="text-field" MaxLength="60" placeholder="Ex.: CI-2026-0010, 2026-0010 ou 10"></asp:TextBox>
+                        </label>
+                        <asp:Button ID="btnAbrirCodigoRapido" runat="server" Text="Abrir CI" CssClass="primary-button" OnClick="btnAbrirCodigoRapido_Click" />
+                    </div>
+
                     <div class="filter-grid">
                         <label>Data inicial
                             <asp:TextBox ID="txtFiltroInicio" runat="server" CssClass="text-field" TextMode="Date"></asp:TextBox>

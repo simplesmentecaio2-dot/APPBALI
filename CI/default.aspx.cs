@@ -65,6 +65,41 @@ public partial class ci_default : System.Web.UI.Page
         AplicarTela("consulta");
     }
 
+    protected void btnAbrirCodigoRapido_Click(object sender, EventArgs e)
+    {
+        string termo = TextoCurto(txtCodigoRapido.Text);
+        if (termo.Length == 0)
+        {
+            MostrarMensagem("Informe o c\u00f3digo, ano/n\u00famero ou n\u00famero da CI.", true);
+            AplicarTela("consulta");
+            return;
+        }
+
+        try
+        {
+            DataTable dados = ExecutarTabela("dbo.ci_comunicacao_localizar",
+                Param("@termo", SqlDbType.NVarChar, termo, 60));
+
+            if (dados.Rows.Count == 0)
+            {
+                MostrarMensagem("Nenhuma CI encontrada para " + termo + ".", true);
+                AplicarTela("consulta");
+                return;
+            }
+
+            int id = Convert.ToInt32(dados.Rows[0]["id_ci"]);
+            CarregarCI(id);
+            AplicarTela("nova");
+            MostrarMensagem("CI localizada. Para alterar, informe a senha quando salvar.", false);
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("Abrir CI pelo c\u00f3digo", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("consulta");
+        }
+    }
+
     protected void btnFiltrarAnotacoes_Click(object sender, EventArgs e)
     {
         CarregarAnotacoes();
@@ -535,7 +570,8 @@ public partial class ci_default : System.Web.UI.Page
             if (status.Equals("Cancelada", StringComparison.OrdinalIgnoreCase)) classe = "ci-status-canceled";
             else if (status.Equals("Rascunho", StringComparison.OrdinalIgnoreCase)) classe = "ci-status-draft";
             else if (status.Equals("Revisada", StringComparison.OrdinalIgnoreCase)) classe = "ci-status-reviewed";
-            e.Row.Cells[5].CssClass = classe;
+            e.Row.Cells[5].CssClass = "status-cell";
+            e.Row.Cells[5].Text = "<span class=\"status-badge " + classe + "\">" + Server.HtmlEncode(status) + "</span>";
         }
 
         if (status.Equals("Cancelada", StringComparison.OrdinalIgnoreCase))
