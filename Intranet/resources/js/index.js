@@ -778,9 +778,7 @@ function applyFilters() {
     }
   });
 
-  if (emptyState) {
-    emptyState.classList.toggle('d-none', visibleCards !== 0);
-  }
+  updateEmptyState(visibleCards, term);
 
   updateSectionCounts();
   setClearButtonState();
@@ -789,6 +787,33 @@ function applyFilters() {
 function scheduleApplyFilters() {
   window.clearTimeout(filterTimer);
   filterTimer = window.setTimeout(applyFilters, 80);
+}
+
+function updateEmptyState(visibleCards, term) {
+  if (!emptyState) return;
+
+  const title = emptyState.querySelector('h2');
+  const description = emptyState.querySelector('p');
+  emptyState.classList.toggle('d-none', visibleCards !== 0);
+
+  if (visibleCards !== 0 || !title || !description) return;
+
+  if (activeSection === 'favorites') {
+    title.textContent = 'Nenhum favorito ainda';
+    description.textContent = 'Use a estrela nos cards para montar sua lista rápida de atalhos.';
+    return;
+  }
+
+  if (activeSection === 'recent') {
+    title.textContent = 'Nenhum atalho recente';
+    description.textContent = 'Os sistemas acessados por aqui aparecerão automaticamente nesta lista.';
+    return;
+  }
+
+  title.textContent = term ? 'Nenhum atalho encontrado' : 'Nenhum atalho disponível';
+  description.textContent = term
+    ? 'Tente buscar por outro nome ou limpar os filtros.'
+    : 'Ajuste os filtros ou revise os atalhos na manutenção.';
 }
 
 function closeMobileMenu() {
