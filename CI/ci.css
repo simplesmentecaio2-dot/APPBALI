@@ -1265,6 +1265,13 @@ label {
   font-size: 18px;
 }
 
+.print-subject {
+  color: var(--ink);
+  font-weight: 950;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
 .print-block p {
   margin: 8px 0 0;
   line-height: 1.45;

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title><%=CodigoCI%> - Impress&atilde;o</title>
-    <link href="ci.css?v=20260625-ci-print" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-subject01" rel="stylesheet" />
 </head>
 <body class="ci-print-page <%=MarcaClasse%>">
     <form id="form1" runat="server">
@@ -52,7 +52,7 @@
 
             <section class="print-block">
                 <span>Assunto</span>
-                <h2><asp:Literal ID="litAssunto" runat="server"></asp:Literal></h2>
+                <h2 class="print-subject"><asp:Literal ID="litAssunto" runat="server"></asp:Literal></h2>
             </section>
 
             <section class="print-block">

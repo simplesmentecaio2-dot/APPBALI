@@ -2,6 +2,7 @@ using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Text;
 using System.Web;
 
@@ -10,6 +11,7 @@ public partial class ci_print : System.Web.UI.Page
     public string CodigoCI = "CI";
     public string MarcaClasse = "marca-fiat";
     private const int TimeoutSqlSegundos = 60;
+    private static readonly CultureInfo CulturaBrasil = new CultureInfo("pt-BR");
 
     private string ConnectionString
     {
@@ -59,7 +61,7 @@ public partial class ci_print : System.Web.UI.Page
         litOrigemResponsavel.Text = Html(row["origem_responsavel"].ToString());
         litDestinoArea.Text = Html(row["destino_area"].ToString());
         litDestinatario.Text = Html(row["destinatario"].ToString());
-        litAssunto.Text = Html(row["assunto"].ToString());
+        litAssunto.Text = HtmlCaixaAlta(row["assunto"].ToString());
         litCorpo.Text = TextoLongo(row["corpo"].ToString());
         litProvidencias.Text = TextoLongo(row["providencias"].ToString());
         litObservacoes.Text = TextoLongo(row["observacoes"].ToString());
@@ -220,6 +222,11 @@ public partial class ci_print : System.Web.UI.Page
     private string Html(string valor)
     {
         return HttpUtility.HtmlEncode(valor);
+    }
+
+    private string HtmlCaixaAlta(string valor)
+    {
+        return HttpUtility.HtmlEncode((valor ?? "").ToUpper(CulturaBrasil));
     }
 
     private string TextoLongo(string valor)
