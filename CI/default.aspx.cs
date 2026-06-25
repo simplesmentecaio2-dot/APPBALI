@@ -19,6 +19,14 @@ public partial class ci_default : System.Web.UI.Page
         get { return ConfigurationManager.ConnectionStrings["APPWFConnectionString"].ConnectionString; }
     }
 
+    protected void Page_Init(object sender, EventArgs e)
+    {
+        if (Session != null)
+        {
+            ViewStateUserKey = Session.SessionID;
+        }
+    }
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)
