@@ -533,6 +533,15 @@ label {
   background: #fff;
 }
 
+.model-manager {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr) auto auto;
+  gap: 8px;
+  align-items: end;
+  flex: 1;
+  min-width: 0;
+}
+
 .ci-assistant strong {
   display: block;
   color: var(--ink);
@@ -563,6 +572,10 @@ label {
   cursor: pointer;
   font-size: 12px;
   font-weight: 900;
+}
+
+.danger-button {
+  color: var(--danger);
 }
 
 .assistant-actions button:hover,
@@ -1009,6 +1022,10 @@ label {
   .ci-assistant {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .model-manager {
+    grid-template-columns: 1fr;
   }
 
   .assistant-actions {

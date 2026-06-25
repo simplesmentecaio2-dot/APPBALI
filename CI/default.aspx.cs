@@ -123,6 +123,127 @@ public partial class ci_default : System.Web.UI.Page
         AplicarTela("nova");
     }
 
+    protected void btnAplicarModeloBanco_Click(object sender, EventArgs e)
+    {
+        int idModelo;
+        if (!Int32.TryParse(ddlModelosCI.SelectedValue, out idModelo) || idModelo <= 0)
+        {
+            MostrarMensagem("Selecione um modelo para aplicar.", true);
+            AplicarTela("nova");
+            return;
+        }
+
+        try
+        {
+            if (!AplicarModelo(idModelo))
+            {
+                AplicarTela("nova");
+                return;
+            }
+
+            AplicarTela("nova");
+            MostrarMensagem("Modelo aplicado. Revise os dados antes de salvar a CI.", false);
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("Aplicar modelo de CI", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("nova");
+        }
+    }
+
+    protected void lnkSalvarModelo_Click(object sender, EventArgs e)
+    {
+        if (!SenhaInformada())
+        {
+            MostrarMensagem("Informe a senha correta para salvar modelos de CI.", true);
+            AplicarTela("nova");
+            return;
+        }
+
+        try
+        {
+            string nomeModelo = TextoCurto(txtModeloNome.Text);
+            if (nomeModelo.Length == 0)
+            {
+                MostrarMensagem("Informe o nome do modelo antes de salvar.", true);
+                AplicarTela("nova");
+                return;
+            }
+
+            if (TextoCurto(txtAssunto.Text).Length == 0 || TextoLongoEntrada(txtCorpo.Text).Length == 0)
+            {
+                MostrarMensagem("Preencha assunto e texto para transformar esta CI em modelo.", true);
+                AplicarTela("nova");
+                return;
+            }
+
+            int idModelo;
+            object idParametro = Int32.TryParse(ddlModelosCI.SelectedValue, out idModelo) && idModelo > 0
+                ? (object)idModelo
+                : DBNull.Value;
+
+            DataTable modelo = ExecutarTabela("dbo.ci_modelo_salvar",
+                Param("@id_modelo", SqlDbType.Int, idParametro),
+                Param("@nome", SqlDbType.NVarChar, nomeModelo, 120),
+                Param("@origem_marca", SqlDbType.NVarChar, ddlMarca.SelectedValue, 40),
+                Param("@categoria", SqlDbType.NVarChar, ddlCategoria.SelectedValue, 60),
+                Param("@prioridade", SqlDbType.NVarChar, ddlPrioridade.SelectedValue, 20),
+                Param("@assunto", SqlDbType.NVarChar, TextoCurto(txtAssunto.Text), 200),
+                Param("@corpo", SqlDbType.NVarChar, TextoLongoEntrada(txtCorpo.Text)),
+                Param("@providencias", SqlDbType.NVarChar, TextoLongoEntrada(txtProvidencias.Text)),
+                Param("@observacoes", SqlDbType.NVarChar, TextoLongoEntrada(txtObservacoes.Text)));
+
+            CarregarModelos();
+            if (modelo.Rows.Count > 0)
+            {
+                Selecionar(ddlModelosCI, modelo.Rows[0]["id_modelo"].ToString());
+            }
+
+            AplicarTela("nova");
+            MostrarMensagem("Modelo salvo com sucesso.", false);
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("Salvar modelo de CI", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("nova");
+        }
+    }
+
+    protected void lnkExcluirModelo_Click(object sender, EventArgs e)
+    {
+        if (!SenhaInformada())
+        {
+            MostrarMensagem("Informe a senha correta para excluir modelos de CI.", true);
+            AplicarTela("nova");
+            return;
+        }
+
+        int idModelo;
+        if (!Int32.TryParse(ddlModelosCI.SelectedValue, out idModelo) || idModelo <= 0)
+        {
+            MostrarMensagem("Selecione um modelo para excluir.", true);
+            AplicarTela("nova");
+            return;
+        }
+
+        try
+        {
+            ExecutarSemRetorno("dbo.ci_modelo_excluir", Param("@id_modelo", SqlDbType.Int, idModelo));
+            txtModeloNome.Text = "";
+            CarregarModelos();
+            AplicarTela("nova");
+            MostrarMensagem("Modelo exclu\u00eddo com sucesso.", false);
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("Excluir modelo de CI", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("nova");
+        }
+    }
+
     protected void btnSalvar_Click(object sender, EventArgs e)
     {
         try
@@ -313,6 +434,7 @@ public partial class ci_default : System.Web.UI.Page
     {
         CarregarResumo();
         CarregarLista();
+        CarregarModelos();
     }
 
     private string ObterTelaAtual()
@@ -533,6 +655,41 @@ public partial class ci_default : System.Web.UI.Page
         gvHistorico.DataBind();
         gvHistoricoCampos.DataSource = historicoCampos;
         gvHistoricoCampos.DataBind();
+    }
+
+    private void CarregarModelos()
+    {
+        DataTable modelos = ExecutarTabela("dbo.ci_modelo_listar");
+        ddlModelosCI.DataSource = modelos;
+        ddlModelosCI.DataTextField = "nome";
+        ddlModelosCI.DataValueField = "id_modelo";
+        ddlModelosCI.DataBind();
+        ddlModelosCI.Items.Insert(0, new ListItem("Selecione um modelo", ""));
+    }
+
+    private bool AplicarModelo(int idModelo)
+    {
+        DataTable modelo = ExecutarTabela("dbo.ci_modelo_obter", Param("@id_modelo", SqlDbType.Int, idModelo));
+        if (modelo.Rows.Count == 0)
+        {
+            MostrarMensagem("Modelo n\u00e3o encontrado ou inativo.", true);
+            return false;
+        }
+
+        DataRow row = modelo.Rows[0];
+        if (row["origem_marca"].ToString().Length > 0)
+        {
+            Selecionar(ddlMarca, row["origem_marca"].ToString());
+        }
+
+        Selecionar(ddlCategoria, row["categoria"].ToString());
+        Selecionar(ddlPrioridade, row["prioridade"].ToString());
+        txtAssunto.Text = row["assunto"].ToString();
+        txtCorpo.Text = row["corpo"].ToString();
+        txtProvidencias.Text = row["providencias"].ToString();
+        txtObservacoes.Text = row["observacoes"].ToString();
+        txtModeloNome.Text = row["nome"].ToString();
+        return true;
     }
 
     private void LimparFormulario()

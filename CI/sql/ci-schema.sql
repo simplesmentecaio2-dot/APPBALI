@@ -116,6 +116,47 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID('dbo.ci_modelos', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.ci_modelos (
+        id_modelo INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        nome NVARCHAR(120) NOT NULL,
+        origem_marca NVARCHAR(40) NULL,
+        categoria NVARCHAR(60) NOT NULL,
+        prioridade NVARCHAR(20) NOT NULL CONSTRAINT DF_ci_modelos_prioridade DEFAULT ('Normal'),
+        assunto NVARCHAR(200) NOT NULL,
+        corpo NVARCHAR(MAX) NOT NULL,
+        providencias NVARCHAR(MAX) NULL,
+        observacoes NVARCHAR(MAX) NULL,
+        ativo BIT NOT NULL CONSTRAINT DF_ci_modelos_ativo DEFAULT (1),
+        dt_cadastro DATETIME NOT NULL CONSTRAINT DF_ci_modelos_dt_cadastro DEFAULT (GETDATE()),
+        dt_alteracao DATETIME NULL
+    );
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_modelos_ativos' AND object_id = OBJECT_ID('dbo.ci_modelos'))
+BEGIN
+    CREATE INDEX IX_ci_modelos_ativos ON dbo.ci_modelos (ativo, nome);
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM dbo.ci_modelos WHERE ativo = 1)
+BEGIN
+    INSERT INTO dbo.ci_modelos (nome, categoria, prioridade, assunto, corpo, providencias)
+    VALUES
+    (N'Comunicado interno', N'Comunicado', N'Normal', N'Comunicado interno',
+     N'Comunicamos que [descreva a informação principal], com validade a partir de [data].' + CHAR(13) + CHAR(10) + CHAR(13) + CHAR(10) + N'Solicitamos que todos os envolvidos tomem ciência e sigam as orientações descritas nesta CI.',
+     N'Divulgar aos envolvidos, registrar ciência e acompanhar o cumprimento das orientações.'),
+    (N'Solicitação interna', N'Solicitação', N'Normal', N'Solicitação interna',
+     N'Solicitamos [descreva a solicitação] para atendimento até [data ou prazo].' + CHAR(13) + CHAR(10) + CHAR(13) + CHAR(10) + N'Motivo: [descreva o motivo ou contexto].',
+     N'Avaliar a solicitação, executar as ações necessárias e retornar ao responsável.'),
+    (N'Procedimento interno', N'Procedimento', N'Normal', N'Procedimento interno',
+     N'A partir de [data], o procedimento para [tema] deverá seguir as etapas abaixo:' + CHAR(13) + CHAR(10) + CHAR(13) + CHAR(10) + N'1. [Etapa 1]' + CHAR(13) + CHAR(10) + N'2. [Etapa 2]' + CHAR(13) + CHAR(10) + N'3. [Etapa 3]' + CHAR(13) + CHAR(10) + CHAR(13) + CHAR(10) + N'Em caso de dúvida, procurar o responsável pela origem desta CI.',
+     N'Orientar a equipe, aplicar o novo procedimento e reportar eventuais inconsistências.');
+END
+GO
+
 CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_resumo
 AS
 BEGIN
@@ -204,6 +245,117 @@ BEGIN
             OR corpo LIKE '%' + @termo + '%'
           )
     ORDER BY data_documento DESC, id_ci DESC;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_modelo_listar
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        id_modelo,
+        nome,
+        ISNULL(origem_marca, '') AS origem_marca,
+        categoria,
+        prioridade,
+        assunto,
+        dt_alteracao,
+        dt_cadastro
+    FROM dbo.ci_modelos
+    WHERE ativo = 1
+    ORDER BY nome;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_modelo_obter
+    @id_modelo INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        id_modelo,
+        nome,
+        ISNULL(origem_marca, '') AS origem_marca,
+        categoria,
+        prioridade,
+        assunto,
+        corpo,
+        ISNULL(providencias, '') AS providencias,
+        ISNULL(observacoes, '') AS observacoes
+    FROM dbo.ci_modelos
+    WHERE id_modelo = @id_modelo
+      AND ativo = 1;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_modelo_salvar
+    @id_modelo INT = NULL,
+    @nome NVARCHAR(120),
+    @origem_marca NVARCHAR(40) = NULL,
+    @categoria NVARCHAR(60),
+    @prioridade NVARCHAR(20),
+    @assunto NVARCHAR(200),
+    @corpo NVARCHAR(MAX),
+    @providencias NVARCHAR(MAX) = NULL,
+    @observacoes NVARCHAR(MAX) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SET @nome = LTRIM(RTRIM(ISNULL(@nome, '')));
+    SET @origem_marca = NULLIF(LTRIM(RTRIM(ISNULL(@origem_marca, ''))), '');
+    SET @categoria = LTRIM(RTRIM(ISNULL(@categoria, '')));
+    SET @prioridade = LTRIM(RTRIM(ISNULL(@prioridade, 'Normal')));
+    SET @assunto = LTRIM(RTRIM(ISNULL(@assunto, '')));
+    SET @corpo = LTRIM(RTRIM(ISNULL(@corpo, '')));
+
+    IF @nome = '' OR @categoria = '' OR @prioridade = '' OR @assunto = '' OR @corpo = ''
+    BEGIN
+        RAISERROR(N'Informe nome, categoria, prioridade, assunto e texto para salvar o modelo.', 16, 1);
+        RETURN;
+    END
+
+    IF ISNULL(@id_modelo, 0) = 0
+    BEGIN
+        INSERT INTO dbo.ci_modelos
+            (nome, origem_marca, categoria, prioridade, assunto, corpo, providencias, observacoes)
+        VALUES
+            (@nome, @origem_marca, @categoria, @prioridade, @assunto, @corpo, NULLIF(@providencias, ''), NULLIF(@observacoes, ''));
+
+        SET @id_modelo = CONVERT(INT, SCOPE_IDENTITY());
+    END
+    ELSE
+    BEGIN
+        UPDATE dbo.ci_modelos
+        SET nome = @nome,
+            origem_marca = @origem_marca,
+            categoria = @categoria,
+            prioridade = @prioridade,
+            assunto = @assunto,
+            corpo = @corpo,
+            providencias = NULLIF(@providencias, ''),
+            observacoes = NULLIF(@observacoes, ''),
+            dt_alteracao = GETDATE()
+        WHERE id_modelo = @id_modelo
+          AND ativo = 1;
+    END
+
+    EXEC dbo.ci_modelo_obter @id_modelo = @id_modelo;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_modelo_excluir
+    @id_modelo INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE dbo.ci_modelos
+    SET ativo = 0,
+        dt_alteracao = GETDATE()
+    WHERE id_modelo = @id_modelo;
 END
 GO
 

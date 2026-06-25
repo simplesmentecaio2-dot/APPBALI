@@ -234,13 +234,21 @@
                     <div class="ci-assistant">
                         <div>
                             <span class="eyebrow">Apoio de preenchimento</span>
-                            <strong>Modelos r&aacute;pidos e rascunho local</strong>
-                            <p id="ciDraftStatus">Use os modelos como ponto de partida ou salve um rascunho neste navegador.</p>
+                            <strong>Modelos edit&aacute;veis e rascunho local</strong>
+                            <p id="ciDraftStatus">Aplique um modelo cadastrado ou salve um rascunho neste navegador.</p>
+                        </div>
+                        <div class="model-manager">
+                            <label>Modelo
+                                <asp:DropDownList ID="ddlModelosCI" runat="server" CssClass="select-field"></asp:DropDownList>
+                            </label>
+                            <asp:Button ID="btnAplicarModeloBanco" runat="server" Text="Aplicar modelo" CssClass="secondary-button" OnClick="btnAplicarModeloBanco_Click" />
+                            <label>Nome do modelo
+                                <asp:TextBox ID="txtModeloNome" runat="server" CssClass="text-field" MaxLength="120" placeholder="Ex.: comunicado de procedimento"></asp:TextBox>
+                            </label>
+                            <asp:LinkButton ID="lnkSalvarModelo" runat="server" CssClass="secondary-button" OnClick="lnkSalvarModelo_Click" OnClientClick="return solicitarSenhaCI('salvar modelo', this);">Salvar modelo</asp:LinkButton>
+                            <asp:LinkButton ID="lnkExcluirModelo" runat="server" CssClass="secondary-button danger-button" OnClick="lnkExcluirModelo_Click" OnClientClick="return solicitarSenhaCI('excluir modelo', this);">Excluir modelo</asp:LinkButton>
                         </div>
                         <div class="assistant-actions">
-                            <button type="button" onclick="aplicarModeloCI('comunicado')">Comunicado</button>
-                            <button type="button" onclick="aplicarModeloCI('solicitacao')">Solicita&ccedil;&atilde;o</button>
-                            <button type="button" onclick="aplicarModeloCI('procedimento')">Procedimento</button>
                             <button type="button" onclick="salvarRascunhoCI()">Salvar rascunho</button>
                             <button type="button" onclick="restaurarRascunhoCI()">Restaurar</button>
                             <button type="button" onclick="limparRascunhoCI()">Limpar rascunho</button>
@@ -707,45 +715,6 @@
                     } catch (erro) {
                         statusRascunhoCI('N\u00e3o foi poss\u00edvel remover o rascunho.');
                     }
-                };
-
-                window.aplicarModeloCI = function (tipo) {
-                    var corpoAtual = valor('<%= txtCorpo.ClientID %>');
-                    var assuntoAtual = valor('<%= txtAssunto.ClientID %>');
-                    if ((corpoAtual.length > 0 || assuntoAtual.length > 0) && !window.confirm('Substituir assunto e texto atuais pelo modelo selecionado?')) {
-                        return;
-                    }
-
-                    var modelos = {
-                        comunicado: {
-                            categoria: 'Comunicado',
-                            assunto: 'Comunicado interno',
-                            corpo: 'Comunicamos que [descreva a informa\u00e7\u00e3o principal], com validade a partir de [data].\n\nSolicitamos que todos os envolvidos tomem ci\u00eancia e sigam as orienta\u00e7\u00f5es descritas nesta CI.',
-                            providencias: 'Divulgar aos envolvidos, registrar ci\u00eancia e acompanhar o cumprimento das orienta\u00e7\u00f5es.'
-                        },
-                        solicitacao: {
-                            categoria: 'Solicita\u00e7\u00e3o',
-                            assunto: 'Solicita\u00e7\u00e3o interna',
-                            corpo: 'Solicitamos [descreva a solicita\u00e7\u00e3o] para atendimento at\u00e9 [data ou prazo].\n\nMotivo: [descreva o motivo ou contexto].',
-                            providencias: 'Avaliar a solicita\u00e7\u00e3o, executar as a\u00e7\u00f5es necess\u00e1rias e retornar ao respons\u00e1vel.'
-                        },
-                        procedimento: {
-                            categoria: 'Procedimento',
-                            assunto: 'Procedimento interno',
-                            corpo: 'A partir de [data], o procedimento para [tema] dever\u00e1 seguir as etapas abaixo:\n\n1. [Etapa 1]\n2. [Etapa 2]\n3. [Etapa 3]\n\nEm caso de d\u00favida, procurar o respons\u00e1vel pela origem desta CI.',
-                            providencias: 'Orientar a equipe, aplicar o novo procedimento e reportar eventuais inconsist\u00eancias.'
-                        }
-                    };
-
-                    var modelo = modelos[tipo];
-                    if (!modelo) return;
-                    preencherCampoCI('<%= ddlCategoria.ClientID %>', modelo.categoria);
-                    preencherCampoCI('<%= txtAssunto.ClientID %>', modelo.assunto);
-                    preencherCampoCI('<%= txtCorpo.ClientID %>', modelo.corpo);
-                    preencherCampoCI('<%= txtProvidencias.ClientID %>', modelo.providencias);
-                    atualizarPainelCI();
-                    ajustarTextareasCI();
-                    statusRascunhoCI('Modelo aplicado. Personalize os trechos entre colchetes antes de salvar.');
                 };
 
                 window.validarCICliente = function () {
