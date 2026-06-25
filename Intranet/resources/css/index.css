@@ -988,6 +988,10 @@ img {
   font-weight: 850;
 }
 
+.maintenance-status.full {
+  grid-column: 1 / -1;
+}
+
 .maintenance-status.is-ok {
   color: #16794c;
 }

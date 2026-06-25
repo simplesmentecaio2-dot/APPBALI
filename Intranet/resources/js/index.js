@@ -54,6 +54,7 @@ const maintenanceShortcutSection = document.getElementById('maintenanceSection')
 const maintenanceBadge = document.getElementById('maintenanceBadge');
 const maintenanceImage = document.getElementById('maintenanceImage');
 const maintenanceIcon = document.getElementById('maintenanceIcon');
+const maintenanceFormStatus = document.getElementById('maintenanceFormStatus');
 const maintenanceIconPickerOpen = document.getElementById('maintenanceIconPickerOpen');
 const maintenanceIconPicker = document.getElementById('maintenanceIconPicker');
 const maintenanceIconSearch = document.getElementById('maintenanceIconSearch');
@@ -86,6 +87,7 @@ let defaultShortcuts = [];
 let shortcuts = [];
 let noticeConfig = { image: DEFAULT_NOTICE_IMAGE, autoOpen: false };
 let filterTimer = 0;
+let maintenanceBusy = false;
 
 function normalizeText(value) {
   return (value || '')
@@ -120,11 +122,47 @@ function safeTrim(value) {
   return (value || '').toString().trim();
 }
 
+function normalizeShortcutUrl(value) {
+  const url = safeTrim(value);
+  if (!url || url === '#') return url;
+  if (/^(https?:|mailto:|tel:|\/|\.\.\/|#)/i.test(url)) return url;
+  if (/^[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(url)) return `https://${url}`;
+  return url;
+}
+
 function setShortcutLoadStatus(message, type) {
   if (!shortcutLoadStatus) return;
   shortcutLoadStatus.textContent = message || '';
   shortcutLoadStatus.classList.toggle('is-ok', type === 'ok');
   shortcutLoadStatus.classList.toggle('is-error', type === 'error');
+}
+
+function setMaintenanceStatus(message, type) {
+  if (!maintenanceFormStatus) return;
+  maintenanceFormStatus.textContent = message || '';
+  maintenanceFormStatus.classList.toggle('is-ok', type === 'ok');
+  maintenanceFormStatus.classList.toggle('is-error', type === 'error');
+}
+
+function setMaintenanceBusy(isBusy) {
+  maintenanceBusy = isBusy;
+  const controls = [];
+
+  if (maintenanceForm) {
+    controls.push(...maintenanceForm.querySelectorAll('input, select, button'));
+  }
+
+  if (maintenanceList) {
+    controls.push(...maintenanceList.querySelectorAll('button'));
+  }
+
+  [maintenanceNewShortcut, maintenanceResetDefaults, maintenanceListSection, maintenanceSearch].forEach((control) => {
+    if (control) controls.push(control);
+  });
+
+  controls.forEach((control) => {
+    control.disabled = isBusy;
+  });
 }
 
 function readShortcutCache() {
@@ -316,6 +354,14 @@ async function saveNoticeConfig(event) {
 }
 
 async function saveShortcuts() {
+  if (maintenanceBusy) {
+    setMaintenanceStatus('Aguarde o salvamento atual terminar.', 'error');
+    return false;
+  }
+
+  setMaintenanceBusy(true);
+  setMaintenanceStatus('Salvando alterações...', '');
+
   try {
     const response = await fetch(SHORTCUTS_API, {
       method: 'POST',
@@ -337,11 +383,14 @@ async function saveShortcuts() {
 
     writeShortcutCache(shortcuts, noticeConfig);
     setShortcutLoadStatus('Atalhos salvos com sucesso.', 'ok');
+    setMaintenanceStatus('Alterações salvas com sucesso.', 'ok');
     return true;
   } catch (error) {
     setShortcutLoadStatus('Não foi possível salvar os atalhos no servidor.', 'error');
-    alert('Não foi possível salvar os atalhos no servidor.');
+    setMaintenanceStatus(error.message || 'Não foi possível salvar os atalhos no servidor.', 'error');
     return false;
+  } finally {
+    setMaintenanceBusy(false);
   }
 }
 
@@ -598,6 +647,7 @@ function resetMaintenanceForm() {
   maintenanceImage.value = '';
   if (maintenanceIcon) maintenanceIcon.value = 'bi-grid-1x2-fill';
   updateMaintenanceIconPreview();
+  setMaintenanceStatus('Pronto para cadastrar um novo atalho.', '');
   maintenanceTitle.focus();
 }
 
@@ -667,7 +717,7 @@ function renderMaintenanceList() {
     strong.textContent = shortcut.title;
 
     const category = document.createElement('span');
-    category.textContent = SECTION_CONFIG[shortcut.section].label;
+    category.textContent = SECTION_CONFIG[shortcut.section] ? SECTION_CONFIG[shortcut.section].label : shortcut.section;
 
     const badge = document.createElement('span');
     badge.textContent = shortcut.badge;
@@ -740,6 +790,7 @@ function editShortcut(id) {
   maintenanceImage.value = shortcut.image;
   if (maintenanceIcon) maintenanceIcon.value = sanitizeIcon(shortcut.icon) || inferIcon(`${shortcut.title} ${shortcut.badge} ${shortcut.url}`);
   updateMaintenanceIconPreview();
+  setMaintenanceStatus(`Editando "${shortcut.title}".`, '');
 
   maintenanceForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
   maintenanceTitle.focus();
@@ -753,10 +804,14 @@ async function deleteShortcut(id) {
   if (!confirmed) return;
 
   const previousShortcuts = shortcuts.map(cloneShortcut);
+  setMaintenanceStatus(`Excluindo "${shortcut.title}"...`, '');
   shortcuts = shortcuts.filter((item) => item.id !== id);
   const saved = await saveShortcuts();
   if (!saved) {
     shortcuts = previousShortcuts;
+    setMaintenanceStatus('Exclusão cancelada porque o servidor não salvou a alteração.', 'error');
+  } else {
+    setMaintenanceStatus(`Atalho "${shortcut.title}" excluído.`, 'ok');
   }
   renderShortcuts();
 }
@@ -780,9 +835,13 @@ async function moveShortcut(id, direction) {
   shortcuts[currentIndex] = shortcuts[targetIndex];
   shortcuts[targetIndex] = moved;
 
+  setMaintenanceStatus(`Reordenando "${shortcut.title}"...`, '');
   const saved = await saveShortcuts();
   if (!saved) {
     shortcuts = previousShortcuts;
+    setMaintenanceStatus('A ordem anterior foi restaurada porque o servidor não salvou a alteração.', 'error');
+  } else {
+    setMaintenanceStatus(`Ordem de "${shortcut.title}" atualizada.`, 'ok');
   }
 
   renderShortcuts();
@@ -801,24 +860,29 @@ async function handleMaintenanceSubmit(event) {
     section: maintenanceShortcutSection.value,
     title: safeTrim(maintenanceTitle.value),
     badge: safeTrim(maintenanceBadge.value) || 'Atalho',
-    url: safeTrim(maintenanceUrl.value),
+    url: normalizeShortcutUrl(maintenanceUrl.value),
     image: safeTrim(maintenanceImage.value),
     icon: sanitizeIcon(maintenanceIcon ? maintenanceIcon.value : '') || inferIcon(`${maintenanceTitle.value} ${maintenanceBadge.value} ${maintenanceUrl.value}`)
   };
 
   if (!shortcut.title || !shortcut.url || !SECTION_CONFIG[shortcut.section]) {
-    alert('Preencha nome, link e categoria do atalho.');
+    setMaintenanceStatus('Preencha nome, link e categoria do atalho antes de salvar.', 'error');
+    if (!shortcut.title && maintenanceTitle) maintenanceTitle.focus();
+    else if (!shortcut.url && maintenanceUrl) maintenanceUrl.focus();
+    else if (maintenanceShortcutSection) maintenanceShortcutSection.focus();
     return;
   }
 
   const previousShortcuts = shortcuts.map(cloneShortcut);
   const index = shortcuts.findIndex((item) => item.id === id);
+  const isEditing = index >= 0;
   if (index >= 0) {
     shortcuts[index] = shortcut;
   } else {
     shortcuts.push(shortcut);
   }
 
+  setMaintenanceStatus(isEditing ? `Salvando alterações de "${shortcut.title}"...` : `Criando "${shortcut.title}"...`, '');
   const saved = await saveShortcuts();
   if (!saved) {
     shortcuts = previousShortcuts;
@@ -828,6 +892,7 @@ async function handleMaintenanceSubmit(event) {
 
   renderShortcuts();
   resetMaintenanceForm();
+  setMaintenanceStatus(isEditing ? `Atalho "${shortcut.title}" atualizado.` : `Atalho "${shortcut.title}" criado.`, 'ok');
 
   const targetSection = document.querySelector(`.shortcut-section[data-section-block="${shortcut.section}"]`);
   setSectionOpen(targetSection, true);
@@ -835,11 +900,12 @@ async function handleMaintenanceSubmit(event) {
 }
 
 async function restoreDefaults() {
-  const confirmed = window.confirm('Restaurar a lista padrao de atalhos? As alteracoes salvas no servidor serao substituidas.');
+  const confirmed = window.confirm('Restaurar a lista padrão de atalhos? As alterações salvas no servidor serão substituídas.');
   if (!confirmed) return;
 
   const previousShortcuts = shortcuts.map(cloneShortcut);
   shortcuts = defaultShortcuts.map(cloneShortcut);
+  setMaintenanceStatus('Restaurando lista padrão...', '');
   const saved = await saveShortcuts();
   if (!saved) {
     shortcuts = previousShortcuts;
@@ -847,6 +913,10 @@ async function restoreDefaults() {
 
   renderShortcuts();
   resetMaintenanceForm();
+  setMaintenanceStatus(
+    saved ? 'Lista padrão restaurada.' : 'A lista anterior foi restaurada porque o servidor não salvou a alteração.',
+    saved ? 'ok' : 'error'
+  );
 }
 
 function openMaintenanceIconPicker() {
