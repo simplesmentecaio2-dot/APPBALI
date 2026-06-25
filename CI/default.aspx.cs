@@ -226,6 +226,8 @@ public partial class ci_default : System.Web.UI.Page
     {
         if (e.Row.RowType != DataControlRowType.DataRow) return;
 
+        AplicarRotulosMobile(gvCis, e.Row);
+
         string status = Convert.ToString(DataBinder.Eval(e.Row.DataItem, "status"));
         if (e.Row.Cells.Count > 5)
         {
@@ -239,6 +241,12 @@ public partial class ci_default : System.Web.UI.Page
             if (editar != null) editar.Visible = false;
             if (cancelar != null) cancelar.Visible = false;
         }
+    }
+
+    protected void gvHistorico_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType != DataControlRowType.DataRow) return;
+        AplicarRotulosMobile(gvHistorico, e.Row);
     }
 
     private void CarregarTudo()
@@ -358,6 +366,15 @@ public partial class ci_default : System.Web.UI.Page
         int primeira = total == 0 ? 0 : (gvCis.PageIndex * gvCis.PageSize) + 1;
         int ultima = Math.Min(total, primeira + gvCis.PageSize - 1);
         litResultadoConsulta.Text = prefixo + "Exibindo " + primeira.ToString() + " a " + ultima.ToString() + " de " + total.ToString() + " CI" + (total == 1 ? "." : "s.");
+    }
+
+    private void AplicarRotulosMobile(GridView grid, GridViewRow row)
+    {
+        int limite = Math.Min(grid.Columns.Count, row.Cells.Count);
+        for (int i = 0; i < limite; i++)
+        {
+            row.Cells[i].Attributes["data-label"] = Server.HtmlDecode(grid.Columns[i].HeaderText);
+        }
     }
 
     private void CarregarCI(int id)

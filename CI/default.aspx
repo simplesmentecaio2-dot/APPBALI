@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-indicadores" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-mobile" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -269,7 +269,7 @@
                             </div>
                         </div>
                         <div class="table-wrap">
-                            <asp:GridView ID="gvHistorico" runat="server" CssClass="ci-table compact-table" AutoGenerateColumns="false" EmptyDataText="Nenhum hist&oacute;rico registrado para esta CI.">
+                            <asp:GridView ID="gvHistorico" runat="server" CssClass="ci-table compact-table" AutoGenerateColumns="false" EmptyDataText="Nenhum hist&oacute;rico registrado para esta CI." OnRowDataBound="gvHistorico_RowDataBound">
                                 <Columns>
                                     <asp:BoundField DataField="dt_evento" HeaderText="Data/hora" DataFormatString="{0:dd/MM/yyyy HH:mm}" />
                                     <asp:BoundField DataField="acao" HeaderText="A&ccedil;&atilde;o" />
