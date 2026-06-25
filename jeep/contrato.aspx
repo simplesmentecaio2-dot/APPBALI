@@ -21,7 +21,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            oTable = $('#tblConsultaProcesso').dataTable({ //example é o ID da tabela
+            var oTable = $('#tblConsultaProcesso').dataTable({ //example é o ID da tabela
                 "bPaginate": true,
                 "bJQueryUI": false,
                 "sPaginationType": "full_numbers",
@@ -49,7 +49,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            oTable = $('#tblConsultaProcesso2').dataTable({ //example é o ID da tabela
+            var oTable = $('#tblConsultaProcesso2').dataTable({ //example é o ID da tabela
                 "bPaginate": true,
                 "bJQueryUI": false,
                 "sPaginationType": "full_numbers",

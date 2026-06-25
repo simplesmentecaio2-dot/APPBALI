@@ -2,7 +2,7 @@
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head runat="server"><title>Contrato de Venda - Fiat</title><meta name="viewport" content="width=device-width, initial-scale=1" /><link href="../css/estilo.css" rel="stylesheet" /><script src="../js/jquery-1.10.2.js"></script><script src="../js/js.js"></script><script src="../js/jquery.maskMoney.js"></script><script src="../js/maskMin.js"></script><script src="../js/maskPhone.js"></script><script src="../tables/js/jquery.dataTables.min.js"></script><link href="../tables/estilo/table.css" rel="stylesheet" /><link href="../css/bali-contract.css?v=20260625-contratos97" rel="stylesheet" /><script type="text/javascript">
         $(document).ready(function () {
-            oTable = $('#tblConsultaProcesso').dataTable({ //example é o ID da tabela
+            var oTable = $('#tblConsultaProcesso').dataTable({ //example é o ID da tabela
                 "bPaginate": true,
                 "bJQueryUI": false,
                 "sPaginationType": "full_numbers",
@@ -28,7 +28,7 @@
         });
     </script><script type="text/javascript">
         $(document).ready(function () {
-            oTable = $('#tblConsultaProcesso2').dataTable({ //example é o ID da tabela
+            var oTable = $('#tblConsultaProcesso2').dataTable({ //example é o ID da tabela
                 "bPaginate": true,
                 "bJQueryUI": false,
                 "sPaginationType": "full_numbers",
