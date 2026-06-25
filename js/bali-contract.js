@@ -3012,6 +3012,8 @@
         field.setAttribute('inputmode', 'decimal');
         field.setAttribute('autocomplete', 'off');
         field.setAttribute('placeholder', '0,00');
+        field.setAttribute('spellcheck', 'false');
+        field.setAttribute('title', 'Use vírgula para centavos. Exemplo: 150000,00.');
         addClass(field, 'contract-money-field');
         removeLegacyPostbacks(field);
         field.addEventListener('focus', function () {
