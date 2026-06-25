@@ -2596,40 +2596,53 @@ body.bali-contract-page *::after {
   background: linear-gradient(90deg, var(--contract-brand-strong), var(--contract-brand));
 }
 
-.bali-contract-page .contract-bi-days {
-  display: flex;
-  gap: 7px;
-  align-items: end;
-  min-height: 190px;
+.bali-contract-page .contract-bi-line-chart {
+  width: 100%;
+  min-height: 260px;
   overflow-x: auto;
-  padding: 10px 4px 2px;
+  padding: 4px 2px 0;
 }
 
-.bali-contract-page .contract-bi-day {
-  display: grid;
-  grid-template-rows: minmax(130px, 1fr) auto;
-  gap: 7px;
-  flex: 0 0 34px;
-  align-items: end;
-  text-align: center;
-}
-
-.bali-contract-page .contract-bi-day span {
+.bali-contract-page .contract-bi-line-chart svg {
   display: block;
   width: 100%;
-  min-height: 2px;
-  border-radius: 7px 7px 3px 3px;
-  background: linear-gradient(180deg, var(--contract-brand), var(--contract-brand-strong));
-  box-shadow: 0 10px 20px var(--contract-brand-ring);
+  min-width: 640px;
+  height: 260px;
 }
 
-.bali-contract-page .contract-bi-day small {
-  color: var(--contract-muted);
-  font-size: 10px;
-  font-weight: 850;
-  transform: rotate(-42deg);
-  transform-origin: top center;
-  white-space: nowrap;
+.bali-contract-page .contract-bi-line-grid {
+  stroke: #edf2f7;
+  stroke-width: 1;
+}
+
+.bali-contract-page .contract-bi-line-y,
+.bali-contract-page .contract-bi-line-x {
+  fill: var(--contract-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.bali-contract-page .contract-bi-line-y {
+  text-anchor: end;
+}
+
+.bali-contract-page .contract-bi-line-x {
+  text-anchor: middle;
+}
+
+.bali-contract-page .contract-bi-line-path {
+  fill: none;
+  stroke: var(--contract-brand);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bali-contract-page .contract-bi-line-point {
+  fill: var(--contract-brand);
+  stroke: #fff;
+  stroke-width: 3;
+  filter: drop-shadow(0 4px 8px var(--contract-brand-ring));
 }
 
 .bali-contract-page .contract-bi-empty {
@@ -3279,14 +3292,13 @@ body.bali-contract-page *::after {
     padding: 12px;
   }
 
-  .bali-contract-page .contract-bi-days {
-    min-height: 160px;
-    padding-bottom: 8px;
+  .bali-contract-page .contract-bi-line-chart {
+    min-height: 220px;
   }
 
-  .bali-contract-page .contract-bi-day {
-    grid-template-rows: minmax(108px, 1fr) auto;
-    flex-basis: 30px;
+  .bali-contract-page .contract-bi-line-chart svg {
+    min-width: 560px;
+    height: 220px;
   }
 
   .bali-contract-page .contract-audit-cards {

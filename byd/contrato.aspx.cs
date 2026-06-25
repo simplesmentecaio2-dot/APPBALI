@@ -1172,25 +1172,127 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private string MontarGraficoDias(SortedDictionary<DateTime, int> dados)
     {
-        int max = dados.Count == 0 ? 0 : dados.Max(x => x.Value);
-      StringBuilder html = new StringBuilder(4096);
-        html.Append("<div class='contract-bi-days'>");
+        if (dados.Count == 0) return "<p class='contract-bi-muted'>Sem dados para exibir.</p>";
+
+        int max = Math.Max(1, dados.Max(x => x.Value));
+        const int largura = 720;
+        const int altura = 260;
+        const double margemEsquerda = 48;
+        const double margemDireita = 18;
+        const double margemTopo = 18;
+        const double margemBaixo = 42;
+        double areaLargura = largura - margemEsquerda - margemDireita;
+        double areaAltura = altura - margemTopo - margemBaixo;
+        int totalPontos = dados.Count;
+        int passoLabel = Math.Max(1, Convert.ToInt32(Math.Ceiling(totalPontos / 8.0)));
+        int indice = 0;
+        double xAnterior = 0;
+        double yAnterior = 0;
+
+        StringBuilder caminho = new StringBuilder(2048);
+        StringBuilder pontos = new StringBuilder(2048);
+        StringBuilder labels = new StringBuilder(2048);
+        StringBuilder html = new StringBuilder(8192);
+
+        html.Append("<div class='contract-bi-line-chart'><svg viewBox='0 0 ");
+        html.Append(largura.ToString(CultureInfo.InvariantCulture));
+        html.Append(" ");
+        html.Append(altura.ToString(CultureInfo.InvariantCulture));
+        html.Append("' role='img' aria-label='Evolução diária de contratos' preserveAspectRatio='none'>");
+
+        for (int i = 0; i <= 4; i++)
+        {
+            double yGrade = margemTopo + areaAltura - (areaAltura * i / 4.0);
+            int valorGrade = Convert.ToInt32(Math.Round(max * i / 4.0));
+            html.Append("<line class='contract-bi-line-grid' x1='");
+            html.Append(margemEsquerda.ToString("0.##", CultureInfo.InvariantCulture));
+            html.Append("' y1='");
+            html.Append(yGrade.ToString("0.##", CultureInfo.InvariantCulture));
+            html.Append("' x2='");
+            html.Append((largura - margemDireita).ToString("0.##", CultureInfo.InvariantCulture));
+            html.Append("' y2='");
+            html.Append(yGrade.ToString("0.##", CultureInfo.InvariantCulture));
+            html.Append("' />");
+            html.Append("<text class='contract-bi-line-y' x='40' y='");
+            html.Append((yGrade + 4).ToString("0.##", CultureInfo.InvariantCulture));
+            html.Append("'>");
+            html.Append(HttpUtility.HtmlEncode(FormatarNumeroEixo(valorGrade)));
+            html.Append("</text>");
+        }
 
         foreach (KeyValuePair<DateTime, int> item in dados)
         {
-            int altura = max == 0 ? 0 : Convert.ToInt32(Math.Round((item.Value * 100.0) / max));
-            if (item.Value > 0 && altura < 12) altura = 12;
-            html.Append("<div class='contract-bi-day' title='");
-            html.Append(HttpUtility.HtmlAttributeEncode(item.Key.ToString("dd/MM/yyyy") + " - " + item.Value + " contratos"));
-            html.Append("'><span style='height:");
-            html.Append(altura);
-            html.Append("%'></span><small>");
-            html.Append(HttpUtility.HtmlEncode(item.Key.ToString("dd/MM")));
-            html.Append("</small></div>");
+            double x = totalPontos == 1
+                ? margemEsquerda + (areaLargura / 2.0)
+                : margemEsquerda + (areaLargura * indice / (totalPontos - 1.0));
+            double y = margemTopo + areaAltura - (areaAltura * item.Value / max);
+
+            if (indice == 0)
+            {
+                caminho.Append("M ");
+                caminho.Append(x.ToString("0.##", CultureInfo.InvariantCulture));
+                caminho.Append(" ");
+                caminho.Append(y.ToString("0.##", CultureInfo.InvariantCulture));
+            }
+            else
+            {
+                double controleX = (xAnterior + x) / 2.0;
+                caminho.Append(" C ");
+                caminho.Append(controleX.ToString("0.##", CultureInfo.InvariantCulture));
+                caminho.Append(" ");
+                caminho.Append(yAnterior.ToString("0.##", CultureInfo.InvariantCulture));
+                caminho.Append(", ");
+                caminho.Append(controleX.ToString("0.##", CultureInfo.InvariantCulture));
+                caminho.Append(" ");
+                caminho.Append(y.ToString("0.##", CultureInfo.InvariantCulture));
+                caminho.Append(", ");
+                caminho.Append(x.ToString("0.##", CultureInfo.InvariantCulture));
+                caminho.Append(" ");
+                caminho.Append(y.ToString("0.##", CultureInfo.InvariantCulture));
+            }
+
+            pontos.Append("<circle class='contract-bi-line-point' cx='");
+            pontos.Append(x.ToString("0.##", CultureInfo.InvariantCulture));
+            pontos.Append("' cy='");
+            pontos.Append(y.ToString("0.##", CultureInfo.InvariantCulture));
+            pontos.Append("' r='4'><title>");
+            pontos.Append(HttpUtility.HtmlEncode(item.Key.ToString("dd/MM/yyyy") + " - " + item.Value + " contrato(s)"));
+            pontos.Append("</title></circle>");
+
+            if (indice == 0 || indice == totalPontos - 1 || indice % passoLabel == 0)
+            {
+                labels.Append("<text class='contract-bi-line-x' x='");
+                labels.Append(x.ToString("0.##", CultureInfo.InvariantCulture));
+                labels.Append("' y='238'>");
+                labels.Append(HttpUtility.HtmlEncode(item.Key.ToString("dd/MM/yyyy")));
+                labels.Append("</text>");
+            }
+
+            xAnterior = x;
+            yAnterior = y;
+            indice++;
         }
 
-        html.Append("</div>");
+        html.Append("<path class='contract-bi-line-path' d='");
+        html.Append(caminho.ToString());
+        html.Append("' />");
+        html.Append(pontos.ToString());
+        html.Append(labels.ToString());
+        html.Append("</svg></div>");
         return html.ToString();
+    }
+
+    private string FormatarNumeroEixo(int valor)
+    {
+        if (valor >= 1000)
+        {
+            decimal milhar = valor / 1000M;
+            return milhar == Decimal.Truncate(milhar)
+                ? milhar.ToString("N0", CulturaBrasil) + "k"
+                : milhar.ToString("N1", CulturaBrasil) + "k";
+        }
+
+        return valor.ToString("N0", CulturaBrasil);
     }
 
     private string NomeTipo(string tipo)
