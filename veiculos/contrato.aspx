@@ -54,8 +54,11 @@
         });
     </script><script>
         function aguarde() {
-            $("#ag").toggle();
-            //document.getElementById('ag').style.visibility = 'visible';
+            var ag = document.getElementById('ag');
+            if (ag) {
+                ag.style.display = 'inline-flex';
+            }
+            return true;
         }
 
     </script><style>
