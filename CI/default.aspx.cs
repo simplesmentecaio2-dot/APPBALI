@@ -534,6 +534,9 @@ public partial class ci_default : System.Web.UI.Page
         if (TextoCurto(txtDestinatario.Text).Length > 160) return "O destinat\u00e1rio deve ter at\u00e9 160 caracteres.";
         if (TextoCurto(txtAssunto.Text).Length > 200) return "O assunto deve ter at\u00e9 200 caracteres.";
         if (TextoCurto(txtCriadoPor.Text).Length > 160) return "O campo criado por deve ter at\u00e9 160 caracteres.";
+        if (TextoLongoEntrada(txtCorpo.Text).Length > 6000) return "Reduza o texto da comunica\u00e7\u00e3o para at\u00e9 6000 caracteres.";
+        if (TextoLongoEntrada(txtProvidencias.Text).Length > 2500) return "Reduza as provid\u00eancias solicitadas para at\u00e9 2500 caracteres.";
+        if (TextoLongoEntrada(txtObservacoes.Text).Length > 1800) return "Reduza as observa\u00e7\u00f5es para at\u00e9 1800 caracteres.";
         if (ContemMarcadorModelo(txtAssunto.Text) ||
             ContemMarcadorModelo(txtCorpo.Text) ||
             ContemMarcadorModelo(txtProvidencias.Text) ||

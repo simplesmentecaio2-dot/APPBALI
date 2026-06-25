@@ -500,6 +500,11 @@ label {
   font-weight: 700;
 }
 
+.ci-form-insights article.is-warning {
+  border-color: #f4c27a;
+  background: #fff8eb;
+}
+
 .ci-progress {
   height: 8px;
   margin-top: 10px;

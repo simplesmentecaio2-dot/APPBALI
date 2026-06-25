@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-validacao" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-limites" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -401,6 +401,11 @@
                     '<%= txtProvidencias.ClientID %>',
                     '<%= txtObservacoes.ClientID %>'
                 ];
+                var limitesTextoCI = [
+                    { id: '<%= txtCorpo.ClientID %>', nome: 'texto da comunica\u00e7\u00e3o', max: 6000 },
+                    { id: '<%= txtProvidencias.ClientID %>', nome: 'provid\u00eancias solicitadas', max: 2500 },
+                    { id: '<%= txtObservacoes.ClientID %>', nome: 'observa\u00e7\u00f5es', max: 1800 }
+                ];
 
                 function campo(id) {
                     return document.getElementById(id);
@@ -483,6 +488,7 @@
                     var previaTitulo = document.getElementById('ciPreviewTitle');
                     var previaMeta = document.getElementById('ciPreviewMeta');
                     var contadorTexto = document.getElementById('ciTextCount');
+                    var cardTexto = contadorTexto ? contadorTexto.closest('article') : null;
 
                     for (var i = 0; i < camposObrigatorios.length; i++) {
                         if (valor(camposObrigatorios[i].id).length > 0) preenchidos++;
@@ -499,7 +505,10 @@
 
                     if (previaTitulo) previaTitulo.textContent = assunto || 'Sem assunto informado';
                     if (previaMeta) previaMeta.textContent = marca + ' | ' + data + ' | ' + destino;
-                    if (contadorTexto) contadorTexto.textContent = corpo.length + ' caractere' + (corpo.length === 1 ? '' : 's');
+                    if (contadorTexto) {
+                        contadorTexto.textContent = corpo.length + ' caractere' + (corpo.length === 1 ? '' : 's');
+                        if (cardTexto) cardTexto.classList.toggle('is-warning', corpo.length > 3000);
+                    }
                 }
 
                 function statusRascunhoCI(texto) {
@@ -652,6 +661,15 @@
                         }
                     }
 
+                    for (var l = 0; l < limitesTextoCI.length; l++) {
+                        var limite = limitesTextoCI[l];
+                        var campoLimite = campo(limite.id);
+                        if (campoLimite && campoLimite.value.length > limite.max) {
+                            mostrarErro('Reduza o campo ' + limite.nome + ' para at\u00e9 ' + limite.max + ' caracteres.', campoLimite);
+                            return false;
+                        }
+                    }
+
                     if (salvandoCI) return false;
                     salvandoCI = true;
                     var botaoSalvar = campo('<%= btnSalvar.ClientID %>');
@@ -671,6 +689,7 @@
                 }
 
                 for (var c = 0; c < camposObrigatorios.length; c++) adicionarMonitorado(camposObrigatorios[c].id);
+                for (var t = 0; t < limitesTextoCI.length; t++) adicionarMonitorado(limitesTextoCI[t].id);
                 adicionarMonitorado('<%= ddlMarca.ClientID %>');
                 adicionarMonitorado('<%= txtAssunto.ClientID %>');
                 adicionarMonitorado('<%= txtCorpo.ClientID %>');
