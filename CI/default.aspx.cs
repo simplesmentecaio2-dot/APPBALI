@@ -354,8 +354,20 @@ public partial class ci_default : System.Web.UI.Page
 
     protected void gvCis_RowCommand(object sender, GridViewCommandEventArgs e)
     {
+        string argumento = Convert.ToString(e.CommandArgument);
         int id;
-        if (!Int32.TryParse(Convert.ToString(e.CommandArgument), out id)) return;
+        string marcaDuplicacao = "";
+
+        if (e.CommandName == "DuplicarMarcaCI")
+        {
+            string[] partes = argumento.Split('|');
+            if (partes.Length < 2 || !Int32.TryParse(partes[0], out id)) return;
+            marcaDuplicacao = partes[1];
+        }
+        else
+        {
+            if (!Int32.TryParse(argumento, out id)) return;
+        }
 
         try
         {
@@ -375,9 +387,15 @@ public partial class ci_default : System.Web.UI.Page
             }
             else if (e.CommandName == "DuplicarCI")
             {
-                CarregarCIDuplicada(id);
+                CarregarCIDuplicada(id, "");
                 AplicarTela("nova");
                 MostrarMensagem("CI duplicada como novo rascunho. Revise os dados antes de salvar.", false);
+            }
+            else if (e.CommandName == "DuplicarMarcaCI")
+            {
+                CarregarCIDuplicada(id, marcaDuplicacao);
+                AplicarTela("nova");
+                MostrarMensagem("CI duplicada como rascunho para " + marcaDuplicacao + ". Revise os dados antes de salvar.", false);
             }
             else if (e.CommandName == "CancelarCI")
             {
@@ -897,7 +915,7 @@ public partial class ci_default : System.Web.UI.Page
         CarregarHistorico(id);
     }
 
-    private void CarregarCIDuplicada(int id)
+    private void CarregarCIDuplicada(int id, string marcaDestino)
     {
         DataTable dados = ExecutarTabela("dbo.ci_comunicacao_obter", Param("@id_ci", SqlDbType.Int, id));
         if (dados.Rows.Count == 0) return;
@@ -905,7 +923,7 @@ public partial class ci_default : System.Web.UI.Page
         DataRow row = dados.Rows[0];
         LimparAutorizacaoEdicaoCI(ObterIdAtual());
         hfCiId.Value = "";
-        Selecionar(ddlMarca, row["origem_marca"].ToString());
+        Selecionar(ddlMarca, marcaDestino.Length > 0 ? marcaDestino : row["origem_marca"].ToString());
         txtData.Text = DateTime.Today.ToString("yyyy-MM-dd");
         txtOrigemArea.Text = row["origem_area"].ToString();
         txtOrigemResponsavel.Text = row["origem_responsavel"].ToString();

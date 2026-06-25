@@ -257,6 +257,9 @@
                                     <ItemTemplate>
                                         <a class="table-action" href='print.aspx?id=<%# Eval("id_ci") %>' target="_blank" rel="noopener">Imprimir</a>
                                         <asp:LinkButton ID="lnkDuplicar" runat="server" CssClass="table-action" CommandName="DuplicarCI" CommandArgument='<%# Eval("id_ci") %>'>Duplicar</asp:LinkButton>
+                                        <asp:LinkButton ID="lnkDuplicarFiat" runat="server" CssClass="table-action subtle-action" CommandName="DuplicarMarcaCI" CommandArgument='<%# Eval("id_ci", "{0}|Bali Fiat") %>'>Dup Fiat</asp:LinkButton>
+                                        <asp:LinkButton ID="lnkDuplicarJeep" runat="server" CssClass="table-action subtle-action" CommandName="DuplicarMarcaCI" CommandArgument='<%# Eval("id_ci", "{0}|Bali Jeep") %>'>Dup Jeep</asp:LinkButton>
+                                        <asp:LinkButton ID="lnkDuplicarByd" runat="server" CssClass="table-action subtle-action" CommandName="DuplicarMarcaCI" CommandArgument='<%# Eval("id_ci", "{0}|Bali BYD") %>'>Dup BYD</asp:LinkButton>
                                         <asp:LinkButton ID="lnkEditar" runat="server" CssClass="table-action" CommandName="EditarCI" CommandArgument='<%# Eval("id_ci") %>' OnClientClick="return solicitarSenhaCI('editar', this);">Editar</asp:LinkButton>
                                         <asp:LinkButton ID="lnkCancelar" runat="server" CssClass="table-action danger" CommandName="CancelarCI" CommandArgument='<%# Eval("id_ci") %>' OnClientClick="return confirmarCancelamentoCI(this);">Cancelar</asp:LinkButton>
                                     </ItemTemplate>

@@ -835,6 +835,11 @@ label {
   color: var(--danger);
 }
 
+.table-action.subtle-action {
+  color: #475569;
+  background: #f8fafc;
+}
+
 .table-action.danger:hover,
 .table-action.danger:focus {
   background: #fff5f4;
@@ -1043,6 +1048,57 @@ label {
 .print-block p {
   margin: 8px 0 0;
   line-height: 1.45;
+}
+
+.print-related {
+  background: #fbfdff;
+}
+
+.print-list {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.print-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #e4ebf5;
+  padding-top: 8px;
+  color: #243044;
+}
+
+.print-list small {
+  color: var(--muted);
+  font-weight: 700;
+  text-align: right;
+}
+
+.print-tipo-solicitacao .print-sheet {
+  border-top-color: #175cd3;
+}
+
+.print-tipo-autorizacao .print-sheet {
+  border-top-color: #7a2e0e;
+}
+
+.print-tipo-procedimento .print-sheet {
+  border-top-color: #067647;
+}
+
+.print-tipo-financeiro .print-sheet {
+  border-top-color: #8a5a00;
+}
+
+.print-prioridade-urgente .print-meta div:nth-child(4) strong {
+  color: var(--danger);
+}
+
+.print-prioridade-alta .print-meta div:nth-child(4) strong {
+  color: #8a5a00;
 }
 
 .print-footer {

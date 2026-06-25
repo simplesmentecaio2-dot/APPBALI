@@ -2,6 +2,7 @@ using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text;
 using System.Web;
 
 public partial class ci_print : System.Web.UI.Page
@@ -38,8 +39,10 @@ public partial class ci_print : System.Web.UI.Page
     {
         string marca = row["origem_marca"].ToString();
         string status = row["status"].ToString();
+        string categoria = row["categoria"].ToString();
+        string prioridade = row["prioridade"].ToString();
         CodigoCI = row["codigo_ci"].ToString();
-        MarcaClasse = ClasseMarca(marca);
+        MarcaClasse = ClasseMarca(marca) + " " + ClasseCategoria(categoria) + " " + ClassePrioridade(prioridade);
         if (status.Equals("Cancelada", StringComparison.OrdinalIgnoreCase))
         {
             MarcaClasse += " ci-cancelada";
@@ -48,8 +51,8 @@ public partial class ci_print : System.Web.UI.Page
         litCodigo.Text = Html(CodigoCI);
         litData.Text = Convert.ToDateTime(row["data_documento"]).ToString("dd/MM/yyyy");
         litMarca.Text = Html(marca);
-        litCategoria.Text = Html(row["categoria"].ToString());
-        litPrioridade.Text = Html(row["prioridade"].ToString());
+        litCategoria.Text = Html(categoria);
+        litPrioridade.Text = Html(prioridade);
         litStatus.Text = Html(status);
         litOrigemArea.Text = Html(row["origem_area"].ToString());
         litOrigemResponsavel.Text = Html(row["origem_responsavel"].ToString());
@@ -66,6 +69,7 @@ public partial class ci_print : System.Web.UI.Page
         secObservacoes.Visible = row["observacoes"].ToString().Trim().Length > 0;
 
         ConfigurarLogo(marca);
+        CarregarRelacionados(Convert.ToInt32(row["id_ci"]));
     }
 
     private void MostrarErro(string titulo, string mensagem)
@@ -117,6 +121,24 @@ public partial class ci_print : System.Web.UI.Page
         return "marca-fiat";
     }
 
+    private string ClasseCategoria(string categoria)
+    {
+        string valor = (categoria ?? "").ToLowerInvariant();
+        if (valor.IndexOf("solicita") >= 0) return "print-tipo-solicitacao";
+        if (valor.IndexOf("autoriza") >= 0) return "print-tipo-autorizacao";
+        if (valor.IndexOf("procedimento") >= 0) return "print-tipo-procedimento";
+        if (valor.IndexOf("financeiro") >= 0) return "print-tipo-financeiro";
+        return "print-tipo-comunicado";
+    }
+
+    private string ClassePrioridade(string prioridade)
+    {
+        string valor = (prioridade ?? "").ToLowerInvariant();
+        if (valor.IndexOf("urgente") >= 0) return "print-prioridade-urgente";
+        if (valor.IndexOf("alta") >= 0) return "print-prioridade-alta";
+        return "print-prioridade-normal";
+    }
+
     private DataTable ObterCI(int id)
     {
         using (SqlConnection con = new SqlConnection(ConnectionString))
@@ -130,6 +152,76 @@ public partial class ci_print : System.Web.UI.Page
             adapter.Fill(tabela);
             return tabela;
         }
+    }
+
+    private void CarregarRelacionados(int id)
+    {
+        DataTable anexos = ObterTabelaRelacionada("dbo.ci_anexo_listar", "@id_ci", id);
+        DataTable ciencias = ObterTabelaRelacionada("dbo.ci_ciencia_listar", "@id_ci", id);
+
+        secAnexos.Visible = anexos.Rows.Count > 0;
+        secCiencias.Visible = ciencias.Rows.Count > 0;
+        litAnexos.Text = RenderizarAnexos(anexos);
+        litCiencias.Text = RenderizarCiencias(ciencias);
+    }
+
+    private DataTable ObterTabelaRelacionada(string procedure, string parametro, int id)
+    {
+        using (SqlConnection con = new SqlConnection(ConnectionString))
+        using (SqlCommand cmd = new SqlCommand(procedure, con))
+        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
+            cmd.Parameters.Add(parametro, SqlDbType.Int).Value = id;
+            DataTable tabela = new DataTable();
+            adapter.Fill(tabela);
+            return tabela;
+        }
+    }
+
+    private string RenderizarAnexos(DataTable dados)
+    {
+        if (dados.Rows.Count == 0) return "";
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<ul class=\"print-list\">");
+        foreach (DataRow row in dados.Rows)
+        {
+            html.Append("<li><strong>");
+            html.Append(Html(row["nome_original"].ToString()));
+            html.Append("</strong><small>");
+            html.Append(Html(row["tamanho_formatado"].ToString()));
+            html.Append("</small></li>");
+        }
+        html.Append("</ul>");
+        return html.ToString();
+    }
+
+    private string RenderizarCiencias(DataTable dados)
+    {
+        if (dados.Rows.Count == 0) return "";
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<ul class=\"print-list\">");
+        foreach (DataRow row in dados.Rows)
+        {
+            html.Append("<li><strong>");
+            html.Append(Html(row["setor"].ToString()));
+            html.Append(" - ");
+            html.Append(Html(row["responsavel"].ToString()));
+            html.Append("</strong><small>");
+            html.Append(Convert.ToDateTime(row["dt_ciencia"]).ToString("dd/MM/yyyy HH:mm"));
+            string observacao = row["observacao"].ToString();
+            if (observacao.Trim().Length > 0)
+            {
+                html.Append(" | ");
+                html.Append(Html(observacao));
+            }
+            html.Append("</small></li>");
+        }
+        html.Append("</ul>");
+        return html.ToString();
     }
 
     private string Html(string valor)
