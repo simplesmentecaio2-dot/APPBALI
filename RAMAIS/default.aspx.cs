@@ -2,6 +2,7 @@ using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text;
 using System.Web.UI.WebControls;
 
 public partial class ramais_default : System.Web.UI.Page
@@ -41,6 +42,12 @@ public partial class ramais_default : System.Web.UI.Page
         chkSomenteAtivos.Checked = true;
         CarregarRamais();
         AplicarTela("consulta");
+    }
+
+    protected void btnGerarImpressao_Click(object sender, EventArgs e)
+    {
+        CarregarImpressao();
+        AplicarTela("impressao");
     }
 
     protected void btnSalvarRamal_Click(object sender, EventArgs e)
@@ -293,12 +300,13 @@ public partial class ramais_default : System.Web.UI.Page
         CarregarRamais();
         CarregarLojas();
         CarregarSetores();
+        CarregarImpressao();
     }
 
     private string ObterTelaAtual()
     {
         string tela = (Request.QueryString["view"] ?? "").Trim().ToLowerInvariant();
-        if (tela == "ramais" || tela == "lojas" || tela == "setores")
+        if (tela == "ramais" || tela == "lojas" || tela == "setores" || tela == "impressao")
         {
             return tela;
         }
@@ -312,8 +320,10 @@ public partial class ramais_default : System.Web.UI.Page
         bool ramais = tela == "ramais";
         bool lojas = tela == "lojas";
         bool setores = tela == "setores";
+        bool impressao = tela == "impressao";
 
-        pnlConsulta.Visible = !ramais && !lojas && !setores;
+        pnlConsulta.Visible = !ramais && !lojas && !setores && !impressao;
+        pnlImpressao.Visible = impressao;
         pnlRamais.Visible = ramais;
         pnlCadastrosAuxiliares.Visible = lojas || setores;
         pnlLojas.Visible = lojas;
@@ -327,6 +337,7 @@ public partial class ramais_default : System.Web.UI.Page
 
         PopularCombo(ddlFiltroLoja, lojas, "Todas as lojas", "0");
         PopularCombo(ddlRamalLoja, lojas, "Selecione a loja", "0");
+        PopularCombo(ddlImpressaoLoja, lojas, "Todas as lojas", "0");
         PopularCombo(ddlFiltroSetor, setores, "Todos os setores", "0");
         PopularCombo(ddlRamalSetor, setores, "Selecione o setor", "0");
     }
@@ -386,6 +397,81 @@ public partial class ramais_default : System.Web.UI.Page
     {
         gvSetores.DataSource = ExecutarTabela("dbo.ramais_setor_listar", Param("@somente_ativos", SqlDbType.Bit, false));
         gvSetores.DataBind();
+    }
+
+    private void CarregarImpressao()
+    {
+        DataTable ramais = ExecutarTabela("dbo.ramais_ramal_listar",
+            Param("@id_loja", SqlDbType.Int, ValorCombo(ddlImpressaoLoja)),
+            Param("@id_setor", SqlDbType.Int, DBNull.Value),
+            Param("@termo", SqlDbType.NVarChar, "", 160),
+            Param("@somente_ativos", SqlDbType.Bit, true));
+
+        string lojaSelecionada = ddlImpressaoLoja.SelectedValue == "0" ? "Todas as lojas" : ddlImpressaoLoja.SelectedItem.Text;
+        litImpressaoResumo.Text = Server.HtmlEncode(lojaSelecionada + " - " + ramais.Rows.Count.ToString() + " ramal" + (ramais.Rows.Count == 1 ? "" : "s") + " ativo" + (ramais.Rows.Count == 1 ? "" : "s") + ".");
+        litGradeImpressao.Text = MontarGradeImpressao(ramais, lojaSelecionada);
+    }
+
+    private string MontarGradeImpressao(DataTable ramais, string lojaSelecionada)
+    {
+        StringBuilder html = new StringBuilder();
+        html.Append("<section class=\"print-directory\">");
+        html.Append("<header class=\"print-directory-header\">");
+        html.Append("<div><span>Grupo Bali</span><h2>Grade de Ramais</h2>");
+        html.Append("<p>Loja: ");
+        html.Append(Server.HtmlEncode(lojaSelecionada));
+        html.Append(" | Gerado em ");
+        html.Append(DateTime.Now.ToString("dd/MM/yyyy HH:mm"));
+        html.Append("</p></div>");
+        html.Append("</header>");
+
+        if (ramais.Rows.Count == 0)
+        {
+            html.Append("<div class=\"print-empty\">Nenhum ramal ativo encontrado para o filtro selecionado.</div>");
+            html.Append("</section>");
+            return html.ToString();
+        }
+
+        string setorAtual = "";
+        bool tabelaAberta = false;
+
+        foreach (DataRow row in ramais.Rows)
+        {
+            string setor = row["setor"].ToString();
+            if (!String.Equals(setorAtual, setor, StringComparison.OrdinalIgnoreCase))
+            {
+                if (tabelaAberta)
+                {
+                    html.Append("</tbody></table></section>");
+                }
+
+                setorAtual = setor;
+                tabelaAberta = true;
+                html.Append("<section class=\"print-sector\">");
+                html.Append("<h3>");
+                html.Append(Server.HtmlEncode(setorAtual));
+                html.Append("</h3>");
+                html.Append("<table class=\"print-ramais-table\"><thead><tr>");
+                html.Append("<th>Nome</th><th>Ramal</th><th>Loja</th>");
+                html.Append("</tr></thead><tbody>");
+            }
+
+            html.Append("<tr><td>");
+            html.Append(Server.HtmlEncode(row["nome"].ToString()));
+            html.Append("</td><td class=\"ramal-number\">");
+            html.Append(Server.HtmlEncode(row["ramal"].ToString()));
+            html.Append("</td><td>");
+            html.Append(Server.HtmlEncode(row["loja"].ToString()));
+            html.Append("</td></tr>");
+        }
+
+        if (tabelaAberta)
+        {
+            html.Append("</tbody></table></section>");
+        }
+
+        html.Append("</section>");
+        return html.ToString();
     }
 
     private void CarregarRamal(int id)

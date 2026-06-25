@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sistema de Ramais</title>
-    <link href="ramais.css?v=20260625-views" rel="stylesheet" />
+    <link href="ramais.css?v=20260625-print" rel="stylesheet" />
 </head>
 <body class="ramais-page">
     <form id="form1" runat="server">
@@ -25,6 +25,7 @@
 
                 <nav class="side-nav" aria-label="Menu principal">
                     <a href="default.aspx?view=consulta">Consulta</a>
+                    <a href="default.aspx?view=impressao">Impress&atilde;o</a>
                     <a href="default.aspx?view=ramais">Ramais</a>
                     <a href="default.aspx?view=lojas">Lojas</a>
                     <a href="default.aspx?view=setores">Setores</a>
@@ -48,6 +49,7 @@
                             <span class="brand-chip byd"><img src="../img/bydbranco.png" alt="Bali BYD" /></span>
                         </div>
                         <a class="secondary-link" href="../Intranet/index.html">Voltar</a>
+                        <a class="secondary-link" href="default.aspx?view=impressao">Impress&atilde;o</a>
                         <a class="primary-link" href="default.aspx?view=ramais">Novo ramal</a>
                     </div>
                 </header>
@@ -70,6 +72,27 @@
                         <strong><asp:Literal ID="litTotalSetores" runat="server" Text="0"></asp:Literal></strong>
                     </article>
                 </section>
+
+                <asp:Panel ID="pnlImpressao" runat="server" CssClass="panel print-panel">
+                    <div class="panel-header print-screen-header">
+                        <div>
+                            <span class="eyebrow">Impress&atilde;o</span>
+                            <h2>Grade de ramais</h2>
+                            <p class="panel-subtitle">Gere uma lista para impress&atilde;o em retrato, agrupada por setor.</p>
+                        </div>
+                    </div>
+
+                    <div class="filter-grid print-controls">
+                        <label>Loja
+                            <asp:DropDownList ID="ddlImpressaoLoja" runat="server" CssClass="select-field"></asp:DropDownList>
+                        </label>
+                        <asp:Button ID="btnGerarImpressao" runat="server" Text="Atualizar grade" CssClass="primary-button" OnClick="btnGerarImpressao_Click" />
+                        <button type="button" class="secondary-button" onclick="window.print();">Imprimir</button>
+                    </div>
+
+                    <p class="print-summary"><asp:Literal ID="litImpressaoResumo" runat="server"></asp:Literal></p>
+                    <asp:Literal ID="litGradeImpressao" runat="server"></asp:Literal>
+                </asp:Panel>
 
                 <asp:Panel ID="pnlConsulta" runat="server" CssClass="panel">
                     <div class="panel-header">
