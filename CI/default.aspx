@@ -119,6 +119,7 @@
                             </asp:DropDownList>
                         </label>
                         <asp:Button ID="btnAtualizarBi" runat="server" Text="Atualizar BI" CssClass="primary-button" OnClick="btnAtualizarBi_Click" />
+                        <asp:Button ID="btnExportarBi" runat="server" Text="Exportar BI" CssClass="secondary-button" OnClick="btnExportarBi_Click" />
                     </div>
                     <section class="summary-grid bi-summary">
                         <article><span>Total</span><strong><asp:Literal ID="litBiTotal" runat="server" Text="0"></asp:Literal></strong></article>
@@ -152,6 +153,18 @@
                         <article class="bi-card">
                             <h3>Criado por</h3>
                             <asp:Literal ID="litBiCriadores" runat="server"></asp:Literal>
+                        </article>
+                        <article class="bi-card">
+                            <h3>Por status</h3>
+                            <asp:Literal ID="litBiStatus" runat="server"></asp:Literal>
+                        </article>
+                        <article class="bi-card">
+                            <h3>&Aacute;reas de origem</h3>
+                            <asp:Literal ID="litBiOrigens" runat="server"></asp:Literal>
+                        </article>
+                        <article class="bi-card">
+                            <h3>Sem ci&ecirc;ncia registrada</h3>
+                            <asp:Literal ID="litBiSemCiencia" runat="server"></asp:Literal>
                         </article>
                     </div>
                 </asp:Panel>

@@ -588,10 +588,13 @@ BEGIN
 
     SELECT
         id_ci,
+        ano,
+        numero,
         data_documento,
         origem_marca,
         origem_area,
         destino_area,
+        destinatario,
         categoria,
         prioridade,
         criado_por,
@@ -640,6 +643,29 @@ BEGIN
     FROM #ci_bi_base
     GROUP BY ISNULL(NULLIF(criado_por, ''), 'Não informado')
     ORDER BY total DESC, rotulo;
+
+    SELECT TOP 12 status AS rotulo, COUNT(1) AS total
+    FROM #ci_bi_base
+    GROUP BY status
+    ORDER BY total DESC, status;
+
+    SELECT TOP 12 origem_area AS rotulo, COUNT(1) AS total
+    FROM #ci_bi_base
+    GROUP BY origem_area
+    ORDER BY total DESC, origem_area;
+
+    SELECT TOP 12
+        'CI-' + CAST(b.ano AS VARCHAR(4)) + '-' + RIGHT('0000' + CAST(b.numero AS VARCHAR(10)), 4) + ' - ' + ISNULL(NULLIF(b.destinatario, ''), 'Sem destinatario') AS rotulo,
+        1 AS total
+    FROM #ci_bi_base b
+    WHERE b.status <> 'Cancelada'
+      AND NOT EXISTS (
+            SELECT 1
+            FROM dbo.ci_ciencias c
+            WHERE c.id_ci = b.id_ci
+              AND c.ativo = 1
+      )
+    ORDER BY b.data_documento DESC, b.id_ci DESC;
 
     DROP TABLE #ci_bi_base;
 END

@@ -58,6 +58,54 @@ public partial class ci_default : System.Web.UI.Page
         }
     }
 
+    protected void btnExportarBi_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            DateTime inicio;
+            DateTime fim;
+            bool inicioValido;
+            bool fimValido;
+            DataSet dados = ObterDadosBi(out inicio, out fim, out inicioValido, out fimValido);
+
+            Response.Clear();
+            Response.ContentType = "text/csv";
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.AddHeader("Content-Disposition", "attachment; filename=ci-bi-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".csv");
+            Response.BinaryWrite(Encoding.UTF8.GetPreamble());
+            Response.Write("Secao;Indicador;Total\r\n");
+
+            if (dados.Tables.Count > 0 && dados.Tables[0].Rows.Count > 0)
+            {
+                DataRow resumo = dados.Tables[0].Rows[0];
+                EscreverLinhaBiCsv("Resumo", "Total", ValorResumo(resumo, "total_cis"));
+                EscreverLinhaBiCsv("Resumo", "Emitidas", ValorResumo(resumo, "emitidas"));
+                EscreverLinhaBiCsv("Resumo", "Rascunhos", ValorResumo(resumo, "rascunhos"));
+                EscreverLinhaBiCsv("Resumo", "Revisadas", ValorResumo(resumo, "revisadas"));
+                EscreverLinhaBiCsv("Resumo", "Canceladas", ValorResumo(resumo, "canceladas"));
+                EscreverLinhaBiCsv("Resumo", "Ci\u00eancias", ValorResumo(resumo, "ciencias"));
+            }
+
+            EscreverTabelaBiCsv("Por marca", TabelaBi(dados, 1));
+            EscreverTabelaBiCsv("Por categoria", TabelaBi(dados, 2));
+            EscreverTabelaBiCsv("Por prioridade", TabelaBi(dados, 3));
+            EscreverTabelaBiCsv("Evolu\u00e7\u00e3o por dia", TabelaBi(dados, 4));
+            EscreverTabelaBiCsv("Top destinos", TabelaBi(dados, 5));
+            EscreverTabelaBiCsv("Criado por", TabelaBi(dados, 6));
+            EscreverTabelaBiCsv("Por status", TabelaBi(dados, 7));
+            EscreverTabelaBiCsv("\u00c1reas de origem", TabelaBi(dados, 8));
+            EscreverTabelaBiCsv("Sem ci\u00eancia registrada", TabelaBi(dados, 9));
+            Response.Flush();
+            HttpContext.Current.ApplicationInstance.CompleteRequest();
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("Exportar BI da CI", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("bi");
+        }
+    }
+
     protected void btnFiltrar_Click(object sender, EventArgs e)
     {
         gvCis.PageIndex = 0;
@@ -845,25 +893,9 @@ public partial class ci_default : System.Web.UI.Page
     {
         DateTime inicio;
         DateTime fim;
-        bool inicioValido = ObterData(txtBiInicio.Text, out inicio);
-        bool fimValido = ObterData(txtBiFim.Text, out fim);
-
-        if (inicioValido && fimValido && inicio > fim)
-        {
-            DateTime troca = inicio;
-            inicio = fim;
-            fim = troca;
-            txtBiInicio.Text = inicio.ToString("yyyy-MM-dd");
-            txtBiFim.Text = fim.ToString("yyyy-MM-dd");
-        }
-
-        object dtInicio = inicioValido ? (object)inicio : DBNull.Value;
-        object dtFim = fimValido ? (object)fim : DBNull.Value;
-
-        DataSet dados = ExecutarDataSet("dbo.ci_comunicacao_bi",
-            Param("@dt_inicio", SqlDbType.Date, dtInicio),
-            Param("@dt_fim", SqlDbType.Date, dtFim),
-            Param("@origem_marca", SqlDbType.NVarChar, ddlBiMarca.SelectedValue, 40));
+        bool inicioValido;
+        bool fimValido;
+        DataSet dados = ObterDadosBi(out inicio, out fim, out inicioValido, out fimValido);
 
         if (dados.Tables.Count == 0 || dados.Tables[0].Rows.Count == 0)
         {
@@ -885,6 +917,9 @@ public partial class ci_default : System.Web.UI.Page
         litBiDias.Text = RenderizarBarrasBi(TabelaBi(dados, 4));
         litBiDestinos.Text = RenderizarBarrasBi(TabelaBi(dados, 5));
         litBiCriadores.Text = RenderizarBarrasBi(TabelaBi(dados, 6));
+        litBiStatus.Text = RenderizarBarrasBi(TabelaBi(dados, 7));
+        litBiOrigens.Text = RenderizarBarrasBi(TabelaBi(dados, 8));
+        litBiSemCiencia.Text = RenderizarBarrasBi(TabelaBi(dados, 9));
 
         string marca = ddlBiMarca.SelectedValue.Length > 0 ? " | " + ddlBiMarca.SelectedValue : "";
         string periodo = (inicioValido ? inicio.ToString("dd/MM/yyyy") : "sem in\u00edcio") +
@@ -892,6 +927,29 @@ public partial class ci_default : System.Web.UI.Page
             (fimValido ? fim.ToString("dd/MM/yyyy") : "sem fim") +
             marca;
         litBiPeriodo.Text = "Per\u00edodo analisado: " + Server.HtmlEncode(periodo) + ".";
+    }
+
+    private DataSet ObterDadosBi(out DateTime inicio, out DateTime fim, out bool inicioValido, out bool fimValido)
+    {
+        inicioValido = ObterData(txtBiInicio.Text, out inicio);
+        fimValido = ObterData(txtBiFim.Text, out fim);
+
+        if (inicioValido && fimValido && inicio > fim)
+        {
+            DateTime troca = inicio;
+            inicio = fim;
+            fim = troca;
+            txtBiInicio.Text = inicio.ToString("yyyy-MM-dd");
+            txtBiFim.Text = fim.ToString("yyyy-MM-dd");
+        }
+
+        object dtInicio = inicioValido ? (object)inicio : DBNull.Value;
+        object dtFim = fimValido ? (object)fim : DBNull.Value;
+
+        return ExecutarDataSet("dbo.ci_comunicacao_bi",
+            Param("@dt_inicio", SqlDbType.Date, dtInicio),
+            Param("@dt_fim", SqlDbType.Date, dtFim),
+            Param("@origem_marca", SqlDbType.NVarChar, ddlBiMarca.SelectedValue, 40));
     }
 
     private DataTable TabelaBi(DataSet dados, int indice)
@@ -914,6 +972,9 @@ public partial class ci_default : System.Web.UI.Page
         litBiDias.Text = vazio;
         litBiDestinos.Text = vazio;
         litBiCriadores.Text = vazio;
+        litBiStatus.Text = vazio;
+        litBiOrigens.Text = vazio;
+        litBiSemCiencia.Text = vazio;
     }
 
     private string RenderizarBarrasBi(DataTable dados)
@@ -955,6 +1016,25 @@ public partial class ci_default : System.Web.UI.Page
         }
         html.Append("</div>");
         return html.ToString();
+    }
+
+    private void EscreverTabelaBiCsv(string secao, DataTable dados)
+    {
+        if (dados == null) return;
+        foreach (DataRow row in dados.Rows)
+        {
+            EscreverLinhaBiCsv(secao, Convert.ToString(row["rotulo"] ?? ""), Convert.ToString(row["total"] ?? "0"));
+        }
+    }
+
+    private void EscreverLinhaBiCsv(string secao, string indicador, string total)
+    {
+        Response.Write(Csv(secao));
+        Response.Write(";");
+        Response.Write(Csv(indicador));
+        Response.Write(";");
+        Response.Write(Csv(total));
+        Response.Write("\r\n");
     }
 
     private string ValorResumo(DataRow row, string coluna)
