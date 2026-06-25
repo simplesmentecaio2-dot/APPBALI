@@ -724,6 +724,10 @@
     [startField, endField].forEach(function (field) {
       if (!field || field.getAttribute('data-contract-period-manual') === 'true') return;
       field.setAttribute('data-contract-period-manual', 'true');
+      field.setAttribute('inputmode', 'numeric');
+      field.setAttribute('maxlength', '10');
+      field.setAttribute('placeholder', 'dd/mm/aaaa');
+      field.setAttribute('autocomplete', 'off');
       field.addEventListener('input', function () {
         updatePeriodShortcutState(host, '');
         updatePeriodStatus(host, startField, endField);
