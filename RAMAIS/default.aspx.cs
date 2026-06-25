@@ -162,6 +162,20 @@ public partial class ramais_default : System.Web.UI.Page
         }
     }
 
+    protected void Grid_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType != DataControlRowType.DataRow) return;
+
+        GridView grid = sender as GridView;
+        if (grid == null) return;
+
+        int limite = Math.Min(grid.Columns.Count, e.Row.Cells.Count);
+        for (int i = 0; i < limite; i++)
+        {
+            e.Row.Cells[i].Attributes["data-label"] = Server.HtmlDecode(grid.Columns[i].HeaderText);
+        }
+    }
+
     protected void btnSalvarLoja_Click(object sender, EventArgs e)
     {
         try

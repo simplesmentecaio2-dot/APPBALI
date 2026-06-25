@@ -704,6 +704,58 @@ label {
   .panel {
     padding: 16px;
   }
+
+  .table-wrap {
+    overflow: visible;
+  }
+
+  .ramais-table,
+  .ramais-table tbody,
+  .ramais-table tr,
+  .ramais-table td {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .ramais-table {
+    border: 0;
+    background: transparent;
+  }
+
+  .ramais-table thead,
+  .ramais-table th {
+    display: none;
+  }
+
+  .ramais-table tr {
+    margin-bottom: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .ramais-table td {
+    display: grid;
+    grid-template-columns: 108px minmax(0, 1fr);
+    gap: 10px;
+    border-top: 1px solid var(--line);
+    padding: 10px 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .ramais-table td:first-child {
+    border-top: 0;
+  }
+
+  .ramais-table td::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
 }
 
 @media print {
