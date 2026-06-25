@@ -658,6 +658,8 @@ label {
 
 .print-block {
   margin-top: 12px;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .print-block h2 {
@@ -754,6 +756,11 @@ label {
 }
 
 @media print {
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
   body {
     background: #fff;
   }
@@ -762,8 +769,27 @@ label {
     width: auto;
     min-height: auto;
     margin: 0;
-    padding: 10mm;
+    padding: 0;
     box-shadow: none;
+  }
+
+  .print-header,
+  .print-meta,
+  .print-grid,
+  .print-footer {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .print-logo-wrap {
+    background: var(--brand) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .print-block p {
+    orphans: 2;
+    widows: 2;
   }
 
   .print-actions {
