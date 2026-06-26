@@ -94,6 +94,19 @@ public partial class ramais_default : System.Web.UI.Page
         HttpContext.Current.ApplicationInstance.CompleteRequest();
     }
 
+    protected void btnBaixarModeloImportacao_Click(object sender, EventArgs e)
+    {
+        Response.Clear();
+        Response.ContentType = "text/csv";
+        Response.ContentEncoding = Encoding.UTF8;
+        Response.AddHeader("Content-Disposition", "attachment; filename=modelo-importacao-ramais.csv");
+        Response.BinaryWrite(Encoding.UTF8.GetPreamble());
+        Response.Write("Nome;Ramal;Loja;Setor;Ativo\r\n");
+        Response.Write("Maria Silva;1234;Bali Fiat SIA;Vendas;Sim\r\n");
+        Response.Write("Joao Souza;2345;Bali Jeep;Financeiro;Sim\r\n");
+        HttpContext.Current.ApplicationInstance.CompleteRequest();
+    }
+
     protected void btnGerarImpressao_Click(object sender, EventArgs e)
     {
         CarregarImpressao();
@@ -284,7 +297,13 @@ public partial class ramais_default : System.Web.UI.Page
         int limite = Math.Min(grid.Columns.Count, e.Row.Cells.Count);
         for (int i = 0; i < limite; i++)
         {
-            e.Row.Cells[i].Attributes["data-label"] = Server.HtmlDecode(grid.Columns[i].HeaderText);
+            string rotulo = Server.HtmlDecode(grid.Columns[i].HeaderText);
+            e.Row.Cells[i].Attributes["data-label"] = rotulo;
+
+            if (String.Equals(rotulo, "Status", StringComparison.OrdinalIgnoreCase))
+            {
+                AplicarStatusVisual(e.Row.Cells[i]);
+            }
         }
     }
 
@@ -792,6 +811,69 @@ public partial class ramais_default : System.Web.UI.Page
 
         gvRamais.DataSource = OrdenarTabela(ramais.Copy(), gvRamais);
         gvRamais.DataBind();
+        AtualizarResumoConsultaRamais(ramais);
+    }
+
+    private void AtualizarResumoConsultaRamais(DataTable ramais)
+    {
+        if (ramais == null || ramais.Rows.Count == 0)
+        {
+            litResumoConsultaRamais.Text = "";
+            return;
+        }
+
+        int ativos = 0;
+        int inativos = 0;
+        HashSet<string> lojas = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        HashSet<string> setores = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (DataRow row in ramais.Rows)
+        {
+            string status = ValorLinha(row, "status");
+            if (status.Equals("Inativo", StringComparison.OrdinalIgnoreCase)) inativos++;
+            else ativos++;
+
+            string loja = ValorLinha(row, "loja");
+            string setor = ValorLinha(row, "setor");
+            if (loja.Length > 0) lojas.Add(loja);
+            if (setor.Length > 0) setores.Add(setor);
+        }
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class=\"ramais-result-summary\" aria-label=\"Resumo da consulta de ramais\">");
+        html.Append(ResumoChip("Total", ramais.Rows.Count, "is-total"));
+        html.Append(ResumoChip("Ativos", ativos, "is-active"));
+        html.Append(ResumoChip("Inativos", inativos, "is-inactive"));
+        html.Append(ResumoChip("Lojas", lojas.Count, "is-store"));
+        html.Append(ResumoChip("Setores", setores.Count, "is-sector"));
+        html.Append("</div>");
+        litResumoConsultaRamais.Text = html.ToString();
+    }
+
+    private string ResumoChip(string rotulo, int total, string classe)
+    {
+        return "<span class=\"ramais-summary-chip " + classe + "\"><strong>" +
+            total.ToString() +
+            "</strong> " +
+            Server.HtmlEncode(rotulo) +
+            "</span>";
+    }
+
+    private void AplicarStatusVisual(TableCell celula)
+    {
+        string status = Server.HtmlDecode(celula.Text ?? "").Trim();
+        if (status.Length == 0 || status == "&nbsp;") status = "Ativo";
+        string classe = status.Equals("Inativo", StringComparison.OrdinalIgnoreCase)
+            ? "ramal-status-inactive"
+            : "ramal-status-active";
+        celula.CssClass = (celula.CssClass + " status-cell").Trim();
+        celula.Text = "<span class=\"ramal-status-badge " + classe + "\">" + Server.HtmlEncode(status) + "</span>";
+    }
+
+    private string ValorLinha(DataRow row, string coluna)
+    {
+        if (row == null || row.Table.Columns.IndexOf(coluna) < 0 || row[coluna] == DBNull.Value) return "";
+        return Convert.ToString(row[coluna]).Trim();
     }
 
     private void CarregarLojas()

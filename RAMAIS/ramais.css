@@ -457,6 +457,73 @@ label {
   background: #f8fbff;
 }
 
+.ramais-result-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -2px 0 16px;
+}
+
+.ramais-summary-chip,
+.ramal-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ramais-summary-chip {
+  gap: 6px;
+  min-height: 34px;
+  border: 1px solid #d5e1f2;
+  padding: 0 12px;
+  color: #274060;
+  background: #f8fbff;
+}
+
+.ramais-summary-chip strong {
+  color: var(--brand-strong);
+  font-size: 14px;
+}
+
+.ramais-summary-chip.is-active,
+.ramal-status-active {
+  border-color: #b7dfcc;
+  color: var(--success);
+  background: #ecfdf3;
+}
+
+.ramais-summary-chip.is-inactive,
+.ramal-status-inactive {
+  border-color: #f2b8b5;
+  color: var(--danger);
+  background: #fff1f0;
+}
+
+.ramais-summary-chip.is-store {
+  border-color: #c7d7ef;
+  color: #174ea6;
+  background: #eef5ff;
+}
+
+.ramais-summary-chip.is-sector {
+  border-color: #d9c8ff;
+  color: #57408a;
+  background: #f5f0ff;
+}
+
+.status-cell {
+  white-space: nowrap;
+}
+
+.ramal-status-badge {
+  min-height: 28px;
+  border: 1px solid;
+  padding: 4px 10px;
+}
+
 .table-action {
   display: inline-flex;
   align-items: center;
@@ -529,7 +596,7 @@ label {
 
 .import-box {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) minmax(220px, .7fr) auto;
+  grid-template-columns: minmax(260px, 1fr) minmax(220px, .7fr) auto auto;
   gap: 12px;
   align-items: end;
   margin-bottom: 16px;

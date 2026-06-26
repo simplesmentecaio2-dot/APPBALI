@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sistema de Ramais</title>
-    <link href="ramais.css?v=20260625-ux01" rel="stylesheet" />
+    <link href="ramais.css?v=20260626-ux02" rel="stylesheet" />
 </head>
 <body class="ramais-page">
     <form id="form1" runat="server">
@@ -132,6 +132,7 @@
                         </label>
                         <asp:Button ID="btnFiltrar" runat="server" Text="Filtrar" CssClass="primary-button" OnClick="btnFiltrar_Click" />
                     </div>
+                    <asp:Literal ID="litResumoConsultaRamais" runat="server"></asp:Literal>
 
                     <div class="table-wrap">
                         <asp:GridView ID="gvConsulta" runat="server" CssClass="ramais-table" AutoGenerateColumns="false" EmptyDataText="Nenhum ramal encontrado para os filtros informados." AllowPaging="true" AllowSorting="true" PageSize="15" PagerStyle-CssClass="ramais-pager" OnPageIndexChanging="Grid_PageIndexChanging" OnSorting="Grid_Sorting" OnRowCommand="gvRamais_RowCommand" OnRowDataBound="Grid_RowDataBound">
@@ -171,6 +172,7 @@
                         </div>
                         <asp:FileUpload ID="fuImportarRamais" runat="server" CssClass="file-field" />
                         <asp:Button ID="btnImportarRamais" runat="server" Text="Importar lista" CssClass="secondary-button" OnClick="btnImportarRamais_Click" />
+                        <asp:Button ID="btnBaixarModeloImportacao" runat="server" Text="Baixar modelo CSV" CssClass="secondary-button" OnClick="btnBaixarModeloImportacao_Click" />
                     </div>
                     <div class="form-grid">
                         <label>Nome
