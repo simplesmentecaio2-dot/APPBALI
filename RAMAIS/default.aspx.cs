@@ -144,11 +144,17 @@ public partial class ramais_default : System.Web.UI.Page
 
             if (resultado.Erros.Count > 0)
             {
-                MostrarMensagem("Importa\u00e7\u00e3o conclu\u00edda com " + resultado.Sucessos.ToString() + " " + TextoRamalPlural(resultado.Sucessos) + " salvo" + (resultado.Sucessos == 1 ? "" : "s") + ". Pend\u00eancias: " + String.Join(" | ", resultado.Erros.ToArray()), true);
+                string detalhe = String.Join(" | ", resultado.Erros.ToArray());
+                if (resultado.Falhas > resultado.Erros.Count)
+                {
+                    detalhe += " | +" + (resultado.Falhas - resultado.Erros.Count).ToString() + " pend\u00eancia" + (resultado.Falhas - resultado.Erros.Count == 1 ? "" : "s") + ".";
+                }
+
+                MostrarMensagem("Importa\u00e7\u00e3o conclu\u00edda: " + resultado.Processadas.ToString() + " linha" + (resultado.Processadas == 1 ? "" : "s") + " processada" + (resultado.Processadas == 1 ? "" : "s") + ", " + resultado.Sucessos.ToString() + " " + TextoRamalPlural(resultado.Sucessos) + " salvo" + (resultado.Sucessos == 1 ? "" : "s") + " e " + resultado.Falhas.ToString() + " pend\u00eancia" + (resultado.Falhas == 1 ? "" : "s") + ". " + detalhe, true);
             }
             else
             {
-                MostrarMensagem("Importa\u00e7\u00e3o conclu\u00edda: " + resultado.Sucessos.ToString() + " " + TextoRamalPlural(resultado.Sucessos) + " salvo" + (resultado.Sucessos == 1 ? "" : "s") + ".", false);
+                MostrarMensagem("Importa\u00e7\u00e3o conclu\u00edda: " + resultado.Processadas.ToString() + " linha" + (resultado.Processadas == 1 ? "" : "s") + " processada" + (resultado.Processadas == 1 ? "" : "s") + " e " + resultado.Sucessos.ToString() + " " + TextoRamalPlural(resultado.Sucessos) + " salvo" + (resultado.Sucessos == 1 ? "" : "s") + ".", false);
             }
         }
         catch (Exception ex)
@@ -549,7 +555,7 @@ public partial class ramais_default : System.Web.UI.Page
         ResultadoImportacao resultado = new ResultadoImportacao();
         if (String.IsNullOrWhiteSpace(conteudo))
         {
-            resultado.Erros.Add("arquivo vazio");
+            resultado.AdicionarErro("arquivo vazio");
             return resultado;
         }
 
@@ -572,7 +578,7 @@ public partial class ramais_default : System.Web.UI.Page
 
             if (resultado.Processadas >= 300)
             {
-                resultado.Erros.Add("limite de 300 linhas por importa\u00e7\u00e3o atingido");
+                resultado.AdicionarErro("limite de 300 linhas por importa\u00e7\u00e3o atingido");
                 break;
             }
 
@@ -1229,6 +1235,7 @@ public partial class ramais_default : System.Web.UI.Page
     {
         public int Processadas { get; set; }
         public int Sucessos { get; set; }
+        public int Falhas { get; private set; }
         public List<string> Erros { get; private set; }
 
         public ResultadoImportacao()
@@ -1238,6 +1245,7 @@ public partial class ramais_default : System.Web.UI.Page
 
         public void AdicionarErro(string erro)
         {
+            Falhas++;
             if (Erros.Count < 6)
             {
                 Erros.Add(erro);

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sistema de Ramais</title>
-    <link href="ramais.css?v=20260626-ux02" rel="stylesheet" />
+    <link href="ramais.css?v=20260626-ux03" rel="stylesheet" />
 </head>
 <body class="ramais-page">
     <form id="form1" runat="server">
@@ -132,6 +132,13 @@
                         </label>
                         <asp:Button ID="btnFiltrar" runat="server" Text="Filtrar" CssClass="primary-button" OnClick="btnFiltrar_Click" />
                     </div>
+                    <div class="filter-shortcuts" aria-label="Atalhos da consulta de ramais">
+                        <button type="button" onclick="aplicarFiltroRamal('ativos')">Somente ativos</button>
+                        <button type="button" onclick="aplicarFiltroRamal('todos')">Mostrar todos</button>
+                        <button type="button" onclick="aplicarFiltroRamal('limpar')">Limpar busca</button>
+                        <button type="button" onclick="copiarRamaisVisiveis()">Copiar lista vis&iacute;vel</button>
+                    </div>
+                    <div id="ramaisQuickFeedback" class="copy-status" aria-live="polite"></div>
                     <asp:Literal ID="litResumoConsultaRamais" runat="server"></asp:Literal>
 
                     <div class="table-wrap">
@@ -204,6 +211,7 @@
                                 <asp:BoundField DataField="status" HeaderText="Status" SortExpression="status" />
                                 <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                     <ItemTemplate>
+                                        <button type="button" class="table-action copy-action" data-ramal='<%# Atributo(Eval("ramal")) %>' data-nome='<%# Atributo(Eval("nome")) %>' onclick="copiarRamalConsulta(this)">Copiar</button>
                                         <asp:LinkButton ID="lnkEditarRamal" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return solicitarSenhaRamal('editar', this);">Editar</asp:LinkButton>
                                         <asp:LinkButton ID="lnkExcluirRamal" runat="server" CssClass="table-action danger" CommandName="ExcluirRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return confirmarExclusaoRamal(this);">Excluir</asp:LinkButton>
                                     </ItemTemplate>
@@ -425,6 +433,74 @@
                         linhas[i].style.display = termo.length > 0 && texto.indexOf(termo) < 0 ? 'none' : '';
                     }
                 }
+
+                function feedbackRapido(mensagem) {
+                    var aviso = document.getElementById('ramaisQuickFeedback');
+                    if (!aviso) return;
+                    aviso.textContent = mensagem || '';
+                    aviso.classList.toggle('is-visible', !!mensagem);
+                    if (mensagem) {
+                        window.clearTimeout(feedbackRapido.timer);
+                        feedbackRapido.timer = window.setTimeout(function () {
+                            aviso.textContent = '';
+                            aviso.classList.remove('is-visible');
+                        }, 2600);
+                    }
+                }
+
+                window.aplicarFiltroRamal = function (tipo) {
+                    var loja = campo('<%= ddlFiltroLoja.ClientID %>');
+                    var setor = campo('<%= ddlFiltroSetor.ClientID %>');
+                    var busca = campo('<%= txtBusca.ClientID %>');
+                    var ativos = campo('<%= chkSomenteAtivos.ClientID %>');
+                    var botao = campo('<%= btnFiltrar.ClientID %>');
+
+                    if (tipo === 'ativos' && ativos) ativos.checked = true;
+                    if (tipo === 'todos' && ativos) ativos.checked = false;
+                    if (tipo === 'limpar') {
+                        if (loja) loja.value = '0';
+                        if (setor) setor.value = '0';
+                        if (busca) busca.value = '';
+                        if (ativos) ativos.checked = true;
+                    }
+
+                    if (botao) botao.click();
+                };
+
+                window.copiarRamaisVisiveis = function () {
+                    var tabela = document.getElementById('<%= gvConsulta.ClientID %>');
+                    if (!tabela) return;
+
+                    var linhas = [];
+                    var trs = tabela.querySelectorAll('tr');
+                    for (var i = 0; i < trs.length; i++) {
+                        if (trs[i].querySelector('th') || trs[i].style.display === 'none') continue;
+                        var celulas = trs[i].querySelectorAll('td');
+                        if (celulas.length < 4) continue;
+                        linhas.push([
+                            celulas[0].innerText.trim(),
+                            celulas[1].innerText.trim(),
+                            celulas[2].innerText.trim(),
+                            celulas[3].innerText.trim()
+                        ].join(' | '));
+                    }
+
+                    if (linhas.length === 0) {
+                        feedbackRapido('Nenhum ramal vis\u00edvel para copiar.');
+                        return;
+                    }
+
+                    var texto = linhas.join('\n');
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(texto).then(function () {
+                            feedbackRapido(linhas.length + ' ' + (linhas.length === 1 ? 'ramal copiado.' : 'ramais copiados.'));
+                        }).catch(function () {
+                            window.prompt('Copie a lista de ramais:', texto);
+                        });
+                    } else {
+                        window.prompt('Copie a lista de ramais:', texto);
+                    }
+                };
 
                 function mostrarErroCliente(messageId, mensagem, elemento) {
                     var aviso = document.getElementById(messageId);

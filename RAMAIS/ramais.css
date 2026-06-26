@@ -464,6 +464,48 @@ label {
   margin: -2px 0 16px;
 }
 
+.filter-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -6px 0 14px;
+}
+
+.filter-shortcuts button {
+  min-height: 34px;
+  border: 1px solid #d5e1f2;
+  border-radius: 999px;
+  padding: 0 12px;
+  color: #274060;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.filter-shortcuts button:hover,
+.filter-shortcuts button:focus {
+  border-color: #abc4e6;
+  color: var(--brand-strong);
+  background: #f4f8ff;
+}
+
+.copy-status {
+  display: none;
+  margin: -2px 0 14px;
+  border: 1px solid #c7d7ef;
+  border-radius: 8px;
+  padding: 9px 11px;
+  color: var(--brand-strong);
+  background: #f4f8ff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.copy-status.is-visible {
+  display: block;
+}
+
 .ramais-summary-chip,
 .ramal-status-badge {
   display: inline-flex;
@@ -1063,30 +1105,30 @@ label {
   }
 
   .print-sector {
-    margin-top: 5px;
+    margin-top: 4px;
   }
 
   .print-sector h3 {
-    padding: 4px 6px;
-    font-size: 9px;
+    padding: 3px 5px;
+    font-size: 8px;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   .print-ramais-table th,
   .print-ramais-table td {
-    padding: 3px 5px;
-    font-size: 9px;
+    padding: 2px 4px;
+    font-size: 8px;
   }
 
   .print-ramais-table th {
-    font-size: 8px;
+    font-size: 7px;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   .ramal-number {
-    font-size: 10px !important;
+    font-size: 9px !important;
   }
 }
 
