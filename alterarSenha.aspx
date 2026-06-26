@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Alterar senha | Grupo Bali</title>
-    <link rel="stylesheet" type="text/css" href="css/bali-login.css?v=20260626-password01" />
+    <link rel="stylesheet" type="text/css" href="css/bali-login.css?v=20260626-password02" />
 </head>
 <body class="premium-login login-neutral password-page">
     <form id="form1" runat="server">

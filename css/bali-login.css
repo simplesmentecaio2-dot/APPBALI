@@ -47,11 +47,12 @@ body.premium-login.login-byd {
 }
 
 body.premium-login.login-neutral {
-  --login-brand: #374151;
-  --login-brand-rgb: 55, 65, 81;
-  --login-brand-dark: #111827;
-  --login-brand-mid: #334155;
-  --login-brand-soft: rgba(55, 65, 81, .16);
+  --login-brand: #2f6fbd;
+  --login-brand-rgb: 47, 111, 189;
+  --login-brand-dark: #0b1728;
+  --login-brand-mid: #255b95;
+  --login-brand-soft: rgba(47, 111, 189, .16);
+  --login-bg-image: url('../img/login-backgrounds/password-login-bg.jpg');
 }
 
 .premium-login .limiter {
