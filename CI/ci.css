@@ -644,6 +644,27 @@ label {
   outline: 0;
 }
 
+.status-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -2px 0 16px;
+}
+
+.status-summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  border-radius: 999px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+.status-summary-chip strong {
+  font-size: 14px;
+}
+
 .text-field,
 .select-field,
 .textarea-field {
@@ -1093,6 +1114,18 @@ label {
 .table-action.duplicate-action:focus {
   color: #fff;
   background: var(--brand-strong);
+}
+
+.table-action.copy-action {
+  border-color: #c7d7ef;
+  color: #174ea6;
+  background: #eef5ff;
+}
+
+.table-action.copy-action.is-copied {
+  border-color: #b7dfcc;
+  color: var(--success);
+  background: #ecfdf3;
 }
 
 .table-action.danger {

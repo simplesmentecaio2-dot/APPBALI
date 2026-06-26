@@ -1179,6 +1179,7 @@ public partial class ci_default : System.Web.UI.Page
 
         gvCis.DataSource = dados;
         gvCis.DataBind();
+        AtualizarResumoStatusConsulta(dados);
         AtualizarResumoConsulta(total, Convert.ToString(ViewState["CiAvisoConsulta"] ?? ""));
         AtualizarPagerConsulta(total);
         ViewState["CiAvisoConsulta"] = "";
@@ -1323,6 +1324,47 @@ public partial class ci_default : System.Web.UI.Page
         int primeira = total == 0 ? 0 : (IndicePaginaConsulta() * TamanhoPaginaConsulta()) + 1;
         int ultima = Math.Min(total, primeira + TamanhoPaginaConsulta() - 1);
         litResultadoConsulta.Text = prefixo + "Exibindo " + primeira.ToString() + " a " + ultima.ToString() + " de " + total.ToString() + " CI" + (total == 1 ? "." : "s.");
+    }
+
+    private void AtualizarResumoStatusConsulta(DataTable dados)
+    {
+        if (dados == null || dados.Rows.Count == 0 || !dados.Columns.Contains("status"))
+        {
+            litResumoStatusConsulta.Text = "";
+            return;
+        }
+
+        int emitidas = 0;
+        int rascunhos = 0;
+        int revisadas = 0;
+        int canceladas = 0;
+
+        foreach (DataRow row in dados.Rows)
+        {
+            string status = Convert.ToString(row["status"]);
+            if (status.Equals("Rascunho", StringComparison.OrdinalIgnoreCase)) rascunhos++;
+            else if (status.Equals("Revisada", StringComparison.OrdinalIgnoreCase)) revisadas++;
+            else if (status.Equals("Cancelada", StringComparison.OrdinalIgnoreCase)) canceladas++;
+            else emitidas++;
+        }
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class=\"status-summary\" aria-label=\"Resumo dos status exibidos\">");
+        html.Append(ChipStatusConsulta("Emitidas", emitidas, "ci-status-active"));
+        html.Append(ChipStatusConsulta("Rascunhos", rascunhos, "ci-status-draft"));
+        html.Append(ChipStatusConsulta("Revisadas", revisadas, "ci-status-reviewed"));
+        html.Append(ChipStatusConsulta("Canceladas", canceladas, "ci-status-canceled"));
+        html.Append("</div>");
+        litResumoStatusConsulta.Text = html.ToString();
+    }
+
+    private string ChipStatusConsulta(string rotulo, int total, string classe)
+    {
+        return "<span class=\"status-summary-chip " + classe + "\"><strong>" +
+            total.ToString() +
+            "</strong> " +
+            Server.HtmlEncode(rotulo) +
+            "</span>";
     }
 
     private int IndicePaginaConsulta()
@@ -1911,6 +1953,11 @@ public partial class ci_default : System.Web.UI.Page
         string texto = Convert.ToString(valor ?? "");
         texto = texto.Replace("\"", "\"\"");
         return "\"" + texto + "\"";
+    }
+
+    protected string Atributo(object valor)
+    {
+        return HttpUtility.HtmlAttributeEncode(Convert.ToString(valor ?? ""));
     }
 
     private DataTable ExecutarTabela(string procedure, params SqlParameter[] parametros)

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-ux01" rel="stylesheet" />
+    <link href="ci.css?v=20260626-ci-consulta01" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -338,7 +338,7 @@
                             <asp:TextBox ID="txtFiltroCriadoPor" runat="server" CssClass="text-field" MaxLength="160" placeholder="Respons&aacute;vel pelo cadastro"></asp:TextBox>
                         </label>
                         <label>Busca
-                            <asp:TextBox ID="txtBusca" runat="server" CssClass="text-field" placeholder="Assunto, &aacute;rea, destinat&aacute;rio ou texto"></asp:TextBox>
+                            <asp:TextBox ID="txtBusca" runat="server" CssClass="text-field" placeholder="Assunto, &aacute;rea, destinat&aacute;rio ou texto" autocomplete="off"></asp:TextBox>
                         </label>
                         <label class="checkbox-row">
                             <asp:CheckBox ID="chkSomenteAtivas" runat="server" Checked="true" />
@@ -355,6 +355,7 @@
                         <button type="button" onclick="aplicarFiltroRapidoCI('rascunhos')">Rascunhos</button>
                         <button type="button" onclick="aplicarPeriodoCI('limpar')">Limpar per&iacute;odo</button>
                     </div>
+                    <asp:Literal ID="litResumoStatusConsulta" runat="server"></asp:Literal>
 
                     <div class="table-wrap">
                         <asp:GridView ID="gvCis" runat="server" CssClass="ci-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma CI encontrada." AllowPaging="false" AllowSorting="true" PageSize="12" OnPageIndexChanging="gvCis_PageIndexChanging" OnSorting="gvCis_Sorting" OnRowCommand="gvCis_RowCommand" OnRowDataBound="gvCis_RowDataBound">
@@ -368,6 +369,7 @@
                                 <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                     <ItemTemplate>
                                         <a class="table-action" href='print.aspx?id=<%# Eval("id_ci") %>' target="_blank" rel="noopener">Imprimir</a>
+                                        <button type="button" class="table-action copy-action" data-ci-code='<%# Atributo(Eval("codigo_ci")) %>' onclick="copiarCodigoCI(this)">Copiar c&oacute;digo</button>
                                         <asp:LinkButton ID="lnkDuplicar" runat="server" CssClass="table-action duplicate-action" CommandName="DuplicarCI" CommandArgument='<%# Eval("id_ci") %>'>Duplicar CI</asp:LinkButton>
                                         <asp:LinkButton ID="lnkDuplicarFiat" runat="server" CssClass="table-action subtle-action" CommandName="DuplicarMarcaCI" CommandArgument='<%# Eval("id_ci", "{0}|Bali Fiat") %>'>Dup Fiat</asp:LinkButton>
                                         <asp:LinkButton ID="lnkDuplicarJeep" runat="server" CssClass="table-action subtle-action" CommandName="DuplicarMarcaCI" CommandArgument='<%# Eval("id_ci", "{0}|Bali Jeep") %>'>Dup Jeep</asp:LinkButton>
@@ -748,6 +750,29 @@
                     }
                 };
 
+                window.copiarCodigoCI = function (botao) {
+                    var codigo = botao ? (botao.getAttribute('data-ci-code') || '') : '';
+                    if (!codigo) return;
+
+                    function avisarCopiado() {
+                        var textoOriginal = botao.textContent;
+                        botao.textContent = 'Copiado';
+                        botao.classList.add('is-copied');
+                        window.setTimeout(function () {
+                            botao.textContent = textoOriginal;
+                            botao.classList.remove('is-copied');
+                        }, 1400);
+                    }
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(codigo).then(avisarCopiado).catch(function () {
+                            window.prompt('Copie o c\u00f3digo da CI:', codigo);
+                        });
+                    } else {
+                        window.prompt('Copie o c\u00f3digo da CI:', codigo);
+                    }
+                };
+
                 document.addEventListener('keydown', function (event) {
                     if (!modalSenhaCI || !modalSenhaCI.classList.contains('is-open')) return;
                     if (event.key === 'Escape') window.fecharSenhaCI();
@@ -786,6 +811,26 @@
 
                 function campo(id) {
                     return document.getElementById(id);
+                }
+
+                function lembrarCriadoPorCI() {
+                    var criadoPor = campo('<%= txtCriadoPor.ClientID %>');
+                    if (!criadoPor) return;
+
+                    try {
+                        var salvo = (localStorage.getItem('bali-ci-criado-por') || '').trim();
+                        if (criadoPor.value.trim().length === 0 && salvo.length > 0) {
+                            criadoPor.value = salvo;
+                            formularioAlterado = false;
+                            atualizarPainelCI();
+                        }
+
+                        criadoPor.addEventListener('change', function () {
+                            var nome = criadoPor.value.trim();
+                            if (nome.length > 0) localStorage.setItem('bali-ci-criado-por', nome);
+                        });
+                    } catch (erroLocalStorage) {
+                    }
                 }
 
                 function formatarDataCI(data) {
@@ -1334,6 +1379,7 @@
 
                 atualizarPainelCI();
                 ajustarTextareasCI();
+                lembrarCriadoPorCI();
             })();
         </script>
     </form>
