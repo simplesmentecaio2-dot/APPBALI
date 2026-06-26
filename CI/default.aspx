@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260626-ci-consulta01" rel="stylesheet" />
+    <link href="ci.css?v=20260626-ci-consulta02" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -350,9 +350,13 @@
                         <button type="button" onclick="aplicarPeriodoCI('mes')">Este m&ecirc;s</button>
                         <button type="button" onclick="aplicarPeriodoCI('30')">&Uacute;ltimos 30 dias</button>
                         <button type="button" onclick="aplicarPeriodoCI('hoje')">Hoje</button>
+                        <button type="button" onclick="aplicarFiltroRapidoCI('emitidas')">Emitidas</button>
                         <button type="button" onclick="aplicarFiltroRapidoCI('minhas')">Minhas CIs</button>
                         <button type="button" onclick="aplicarFiltroRapidoCI('canceladas')">Canceladas</button>
                         <button type="button" onclick="aplicarFiltroRapidoCI('rascunhos')">Rascunhos</button>
+                        <button type="button" onclick="aplicarFiltroRapidoCI('fiat')">Fiat</button>
+                        <button type="button" onclick="aplicarFiltroRapidoCI('jeep')">Jeep</button>
+                        <button type="button" onclick="aplicarFiltroRapidoCI('byd')">BYD</button>
                         <button type="button" onclick="aplicarPeriodoCI('limpar')">Limpar per&iacute;odo</button>
                     </div>
                     <asp:Literal ID="litResumoStatusConsulta" runat="server"></asp:Literal>
@@ -370,6 +374,7 @@
                                     <ItemTemplate>
                                         <a class="table-action" href='print.aspx?id=<%# Eval("id_ci") %>' target="_blank" rel="noopener">Imprimir</a>
                                         <button type="button" class="table-action copy-action" data-ci-code='<%# Atributo(Eval("codigo_ci")) %>' onclick="copiarCodigoCI(this)">Copiar c&oacute;digo</button>
+                                        <button type="button" class="table-action copy-action" data-ci-code='<%# Atributo(Eval("codigo_ci")) %>' data-ci-data='<%# Atributo(Eval("data_documento", "{0:dd/MM/yyyy}")) %>' data-ci-marca='<%# Atributo(Eval("origem_marca")) %>' data-ci-destino='<%# Atributo(Eval("destinatario")) %>' data-ci-assunto='<%# Atributo(Eval("assunto")) %>' onclick="copiarResumoCI(this)">Copiar resumo</button>
                                         <asp:LinkButton ID="lnkDuplicar" runat="server" CssClass="table-action duplicate-action" CommandName="DuplicarCI" CommandArgument='<%# Eval("id_ci") %>'>Duplicar CI</asp:LinkButton>
                                         <asp:LinkButton ID="lnkDuplicarFiat" runat="server" CssClass="table-action subtle-action" CommandName="DuplicarMarcaCI" CommandArgument='<%# Eval("id_ci", "{0}|Bali Fiat") %>'>Dup Fiat</asp:LinkButton>
                                         <asp:LinkButton ID="lnkDuplicarJeep" runat="server" CssClass="table-action subtle-action" CommandName="DuplicarMarcaCI" CommandArgument='<%# Eval("id_ci", "{0}|Bali Jeep") %>'>Dup Jeep</asp:LinkButton>
@@ -773,6 +778,41 @@
                     }
                 };
 
+                window.copiarResumoCI = function (botao) {
+                    if (!botao) return;
+
+                    var codigo = botao.getAttribute('data-ci-code') || '';
+                    var data = botao.getAttribute('data-ci-data') || '';
+                    var marca = botao.getAttribute('data-ci-marca') || '';
+                    var destino = botao.getAttribute('data-ci-destino') || '';
+                    var assunto = botao.getAttribute('data-ci-assunto') || '';
+                    var resumo = [
+                        'CI: ' + codigo,
+                        'Data: ' + data,
+                        'Marca: ' + marca,
+                        'Destino: ' + destino,
+                        'Assunto: ' + assunto
+                    ].join('\n');
+
+                    function avisarCopiado() {
+                        var textoOriginal = botao.textContent;
+                        botao.textContent = 'Resumo copiado';
+                        botao.classList.add('is-copied');
+                        window.setTimeout(function () {
+                            botao.textContent = textoOriginal;
+                            botao.classList.remove('is-copied');
+                        }, 1600);
+                    }
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(resumo).then(avisarCopiado).catch(function () {
+                            window.prompt('Copie o resumo da CI:', resumo);
+                        });
+                    } else {
+                        window.prompt('Copie o resumo da CI:', resumo);
+                    }
+                };
+
                 document.addEventListener('keydown', function (event) {
                     if (!modalSenhaCI || !modalSenhaCI.classList.contains('is-open')) return;
                     if (event.key === 'Escape') window.fecharSenhaCI();
@@ -885,7 +925,15 @@
 
                 window.aplicarFiltroRapidoCI = function (tipo) {
                     var status = '<%= ddlFiltroStatus.ClientID %>';
+                    var marca = '<%= ddlFiltroMarca.ClientID %>';
                     var somenteAtivas = campo('<%= chkSomenteAtivas.ClientID %>');
+                    if (tipo === 'emitidas') {
+                        selecionarFiltroCI(status, 'Emitida');
+                        if (somenteAtivas) somenteAtivas.checked = true;
+                        clicarBotaoFiltrarCI();
+                        return;
+                    }
+
                     if (tipo === 'canceladas') {
                         selecionarFiltroCI(status, 'Cancelada');
                         if (somenteAtivas) somenteAtivas.checked = false;
@@ -896,6 +944,17 @@
                     if (tipo === 'rascunhos') {
                         selecionarFiltroCI(status, 'Rascunho');
                         if (somenteAtivas) somenteAtivas.checked = true;
+                        clicarBotaoFiltrarCI();
+                        return;
+                    }
+
+                    if (tipo === 'fiat' || tipo === 'jeep' || tipo === 'byd') {
+                        var marcas = {
+                            fiat: 'Bali Fiat',
+                            jeep: 'Bali Jeep',
+                            byd: 'Bali BYD'
+                        };
+                        selecionarFiltroCI(marca, marcas[tipo]);
                         clicarBotaoFiltrarCI();
                         return;
                     }
