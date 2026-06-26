@@ -116,6 +116,40 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID('dbo.ci_auditoria', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.ci_auditoria (
+        id_auditoria INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        dt_evento DATETIME NOT NULL CONSTRAINT DF_ci_auditoria_dt_evento DEFAULT (GETDATE()),
+        usuario_id NVARCHAR(80) NULL,
+        usuario_nome NVARCHAR(160) NULL,
+        usuario_tipo NVARCHAR(80) NULL,
+        usuario_email NVARCHAR(180) NULL,
+        empresa NVARCHAR(120) NULL,
+        ip NVARCHAR(80) NULL,
+        url NVARCHAR(500) NULL,
+        acao NVARCHAR(80) NOT NULL,
+        id_ci INT NULL,
+        codigo_ci NVARCHAR(30) NULL,
+        detalhe NVARCHAR(MAX) NULL,
+        dados_antes NVARCHAR(MAX) NULL,
+        dados_depois NVARCHAR(MAX) NULL
+    );
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_auditoria_data' AND object_id = OBJECT_ID('dbo.ci_auditoria'))
+BEGIN
+    CREATE INDEX IX_ci_auditoria_data ON dbo.ci_auditoria (dt_evento DESC, acao, id_ci);
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_auditoria_usuario' AND object_id = OBJECT_ID('dbo.ci_auditoria'))
+BEGIN
+    CREATE INDEX IX_ci_auditoria_usuario ON dbo.ci_auditoria (usuario_nome, dt_evento DESC);
+END
+GO
+
 IF OBJECT_ID('dbo.ci_modelos', 'U') IS NULL
 BEGIN
     CREATE TABLE dbo.ci_modelos (
@@ -243,6 +277,46 @@ BEGIN
     (N'Procedimento interno', N'Procedimento', N'Normal', N'Procedimento interno',
      N'A partir de [data], o procedimento para [tema] deverá seguir as etapas abaixo:' + CHAR(13) + CHAR(10) + CHAR(13) + CHAR(10) + N'1. [Etapa 1]' + CHAR(13) + CHAR(10) + N'2. [Etapa 2]' + CHAR(13) + CHAR(10) + N'3. [Etapa 3]' + CHAR(13) + CHAR(10) + CHAR(13) + CHAR(10) + N'Em caso de dúvida, procurar o responsável pela origem desta CI.',
      N'Orientar a equipe, aplicar o novo procedimento e reportar eventuais inconsistências.');
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ci_auditoria_registrar
+    @usuario_id NVARCHAR(80) = NULL,
+    @usuario_nome NVARCHAR(160) = NULL,
+    @usuario_tipo NVARCHAR(80) = NULL,
+    @usuario_email NVARCHAR(180) = NULL,
+    @empresa NVARCHAR(120) = NULL,
+    @ip NVARCHAR(80) = NULL,
+    @url NVARCHAR(500) = NULL,
+    @acao NVARCHAR(80),
+    @id_ci INT = NULL,
+    @codigo_ci NVARCHAR(30) = NULL,
+    @detalhe NVARCHAR(MAX) = NULL,
+    @dados_antes NVARCHAR(MAX) = NULL,
+    @dados_depois NVARCHAR(MAX) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO dbo.ci_auditoria (
+        usuario_id, usuario_nome, usuario_tipo, usuario_email, empresa,
+        ip, url, acao, id_ci, codigo_ci, detalhe, dados_antes, dados_depois
+    )
+    VALUES (
+        NULLIF(LTRIM(RTRIM(ISNULL(@usuario_id, ''))), ''),
+        NULLIF(LTRIM(RTRIM(ISNULL(@usuario_nome, ''))), ''),
+        NULLIF(LTRIM(RTRIM(ISNULL(@usuario_tipo, ''))), ''),
+        NULLIF(LTRIM(RTRIM(ISNULL(@usuario_email, ''))), ''),
+        NULLIF(LTRIM(RTRIM(ISNULL(@empresa, ''))), ''),
+        NULLIF(LTRIM(RTRIM(ISNULL(@ip, ''))), ''),
+        NULLIF(LTRIM(RTRIM(ISNULL(@url, ''))), ''),
+        @acao,
+        @id_ci,
+        NULLIF(LTRIM(RTRIM(ISNULL(@codigo_ci, ''))), ''),
+        NULLIF(@detalhe, ''),
+        NULLIF(@dados_antes, ''),
+        NULLIF(@dados_depois, '')
+    );
 END
 GO
 
