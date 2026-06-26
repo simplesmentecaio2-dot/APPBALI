@@ -28,6 +28,12 @@ public partial class ramais_default : System.Web.UI.Page
     {
         form1.Enctype = "multipart/form-data";
 
+        if (!UsuarioRamaisAutenticado())
+        {
+            RedirecionarLoginRamais();
+            return;
+        }
+
         if (!IsPostBack)
         {
             CarregarTudo();
@@ -38,7 +44,21 @@ public partial class ramais_default : System.Web.UI.Page
 
     protected void btnSair_Click(object sender, EventArgs e)
     {
-        Response.Redirect("../Intranet/index.html");
+        Response.Redirect("login.aspx?sair=1");
+    }
+
+    private bool UsuarioRamaisAutenticado()
+    {
+        return Session["ramais_autenticado"] != null
+            && Session["usuario"] != null
+            && Convert.ToString(Session["usuario"]).Trim().Length > 0;
+    }
+
+    private void RedirecionarLoginRamais()
+    {
+        string destino = "login.aspx?voltar=" + Server.UrlEncode(Request.RawUrl ?? "default.aspx?view=consulta");
+        Response.Redirect(destino, false);
+        Context.ApplicationInstance.CompleteRequest();
     }
 
     protected void btnFiltrar_Click(object sender, EventArgs e)

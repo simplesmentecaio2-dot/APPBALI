@@ -33,7 +33,7 @@
                     <a href="../Intranet/index.html">Intranet</a>
                 </nav>
 
-                <asp:Button ID="btnSair" runat="server" Text="Voltar" CssClass="secondary-button" OnClick="btnSair_Click" />
+                <asp:Button ID="btnSair" runat="server" Text="Sair" CssClass="secondary-button" OnClick="btnSair_Click" />
             </aside>
 
             <main class="content" id="conteudo" tabindex="-1">
