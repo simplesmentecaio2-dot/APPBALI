@@ -405,6 +405,7 @@
                     </div>
 
                     <asp:HiddenField ID="hfCiId" runat="server" />
+                    <asp:HiddenField ID="hfDataAlteradaPeloUsuario" runat="server" />
                     <div id="ciClientMessage" class="client-message" aria-live="polite"></div>
                     <div class="ci-form-insights" aria-live="polite">
                         <article>
@@ -832,6 +833,7 @@
                     { id: '<%= txtCorpo.ClientID %>', mensagem: 'Informe o texto da comunica\u00e7\u00e3o.' },
                     { id: '<%= txtCriadoPor.ClientID %>', mensagem: 'Informe quem est\u00e1 criando a CI no campo Criado por.', sempre: true }
                 ];
+                var dataInicialCI = valor('<%= txtData.ClientID %>');
                 var camposComModelo = [
                     '<%= txtAssunto.ClientID %>',
                     '<%= txtCorpo.ClientID %>',
@@ -1193,6 +1195,24 @@
                     if (item) item.value = valorCampo || '';
                 }
 
+                function dataLocalHojeCI() {
+                    return formatarDataCI(new Date());
+                }
+
+                function sincronizarDataNovaCI() {
+                    var idCI = campo('<%= hfCiId.ClientID %>');
+                    var dataCI = campo('<%= txtData.ClientID %>');
+                    var dataAlterada = campo('<%= hfDataAlteradaPeloUsuario.ClientID %>');
+                    if (!idCI || !dataCI || !dataAlterada) return;
+                    if ((idCI.value || '').trim().length > 0) return;
+                    if (dataAlterada.value === '1') return;
+
+                    var hoje = dataLocalHojeCI();
+                    if (!dataCI.value || dataCI.value < hoje) {
+                        dataCI.value = hoje;
+                    }
+                }
+
                 function ajustarTextareaCI(item) {
                     if (!item || item.tagName !== 'TEXTAREA') return;
                     item.style.height = 'auto';
@@ -1336,6 +1356,7 @@
 
                 window.validarCICliente = function () {
                     limparErros();
+                    sincronizarDataNovaCI();
 
                     var ehRascunho = valor('<%= ddlStatusCI.ClientID %>') === 'Rascunho';
                     for (var i = 0; i < camposObrigatorios.length; i++) {
@@ -1428,6 +1449,17 @@
                     monitorado.addEventListener('change', function () { formularioAlterado = true; });
                     monitorado.addEventListener('input', agendarRascunhoAutomaticoCI);
                     monitorado.addEventListener('change', agendarRascunhoAutomaticoCI);
+                }
+
+                var campoDataCI = campo('<%= txtData.ClientID %>');
+                var marcadorDataAlteradaCI = campo('<%= hfDataAlteradaPeloUsuario.ClientID %>');
+                if (campoDataCI && marcadorDataAlteradaCI) {
+                    campoDataCI.addEventListener('input', function () {
+                        marcadorDataAlteradaCI.value = campoDataCI.value === dataInicialCI ? '' : '1';
+                    });
+                    campoDataCI.addEventListener('change', function () {
+                        marcadorDataAlteradaCI.value = campoDataCI.value === dataInicialCI ? '' : '1';
+                    });
                 }
 
                 window.addEventListener('beforeunload', function (event) {

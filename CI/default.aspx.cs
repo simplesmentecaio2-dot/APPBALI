@@ -466,6 +466,7 @@ public partial class ci_default : System.Web.UI.Page
                 AplicarTela("nova");
                 return;
             }
+            SincronizarDataNovaCISeNecessario(id, ref dataDocumento);
 
             string erro = ValidarCampos();
             if (erro.Length > 0)
@@ -1431,6 +1432,7 @@ public partial class ci_default : System.Web.UI.Page
 
         DataRow row = dados.Rows[0];
         hfCiId.Value = row["id_ci"].ToString();
+        hfDataAlteradaPeloUsuario.Value = "1";
         Selecionar(ddlMarca, row["origem_marca"].ToString());
         txtData.Text = Convert.ToDateTime(row["data_documento"]).ToString("yyyy-MM-dd");
         txtOrigemArea.Text = row["origem_area"].ToString();
@@ -1460,6 +1462,7 @@ public partial class ci_default : System.Web.UI.Page
         DataRow row = dados.Rows[0];
         LimparAutorizacaoEdicaoCI(ObterIdAtual());
         hfCiId.Value = "";
+        hfDataAlteradaPeloUsuario.Value = "";
         Selecionar(ddlMarca, marcaDestino.Length > 0 ? marcaDestino : row["origem_marca"].ToString());
         txtData.Text = DateTime.Today.ToString("yyyy-MM-dd");
         txtOrigemArea.Text = row["origem_area"].ToString();
@@ -1622,6 +1625,7 @@ public partial class ci_default : System.Web.UI.Page
         CarregarModelos();
         LimparFormulario();
         hfCiId.Value = "";
+        hfDataAlteradaPeloUsuario.Value = "";
         txtData.Text = DateTime.Today.ToString("yyyy-MM-dd");
         txtAssunto.Text = row["titulo"].ToString();
         txtCorpo.Text = row["conteudo"].ToString();
@@ -1703,6 +1707,7 @@ public partial class ci_default : System.Web.UI.Page
     {
         LimparAutorizacaoEdicaoCI(ObterIdAtual());
         hfCiId.Value = "";
+        hfDataAlteradaPeloUsuario.Value = "";
         ddlMarca.SelectedValue = "Bali Fiat";
         txtData.Text = DateTime.Today.ToString("yyyy-MM-dd");
         txtOrigemArea.Text = "";
@@ -1826,6 +1831,23 @@ public partial class ci_default : System.Web.UI.Page
     {
         int id;
         return Int32.TryParse(hfCiId.Value, out id) ? id : 0;
+    }
+
+    private bool DataAlteradaPeloUsuario()
+    {
+        return String.Equals((hfDataAlteradaPeloUsuario.Value ?? "").Trim(), "1", StringComparison.Ordinal);
+    }
+
+    private void SincronizarDataNovaCISeNecessario(int id, ref DateTime dataDocumento)
+    {
+        if (id > 0 || DataAlteradaPeloUsuario()) return;
+
+        DateTime hoje = DateTime.Today;
+        if (dataDocumento.Date < hoje.Date)
+        {
+            dataDocumento = hoje;
+            txtData.Text = hoje.ToString("yyyy-MM-dd");
+        }
     }
 
     private bool SenhaInformada()
