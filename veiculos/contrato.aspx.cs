@@ -416,6 +416,29 @@ public partial class veiculos_contrato : System.Web.UI.Page
         ViewState["ContratoSnapshot"] = MontarSnapshot(CamposEdicao());
     }
 
+    private void LimparCamposEdicaoContrato()
+    {
+        TextBox[] campos = new TextBox[] {
+            txtEdCliente, txtEdEndereco, txtEdCep, txtEdBairro, txtEdCidade, txtEdUF, txtEdCPF, txtEdRG,
+            txtEdNascimento, txtEdTelRes, txtEdComercial, txtEdCelular, txtEdEmail, txtEdMarca, txtEdModelo,
+            txtEdCorExt, txtEdChassi, txtEdAnomodelo, txtEdOpcionais, txtEdFinanceira, txtEdValorVeic,
+            txtEdTAXAS, txtEdEntrada, txtEdFormasPagamento, txtEdValorUSADO, txtEdModMarcaUSADO,
+            txtEdPlacaUSADO, txtEdAnoMOdUSADO, txtEdFinanciamento, txtEdNumeroParcelas, txtEdValorParcela,
+            txtEdPlanoFinanciamento, txtEdCortesias, txtEdObs, txtEdPrevisao, txtEdVendedor,
+            txtEdVALORUSADOAVAILACAO, txtEdQuitacao, txtEdSaldoAvaliacao
+        };
+
+        foreach (TextBox campo in campos)
+        {
+            if (campo != null) campo.Text = "";
+        }
+
+        rbtnEdAVISTA.Checked = false;
+        rbtnEdAprazo.Checked = false;
+        chkConfereEdicao.Checked = false;
+        ViewState["ContratoSnapshot"] = null;
+    }
+
     private void RegistrarHistoricoEdicao(string contrato)
     {
         Dictionary<string, string> anterior = LerSnapshot(Convert.ToString(ViewState["ContratoSnapshot"]));
@@ -1793,7 +1816,16 @@ public partial class veiculos_contrato : System.Web.UI.Page
     protected void ImageButton1_Click(object sender, ImageClickEventArgs e)
     {
 
-        string contrato = txtContrato.Text; string cliente; string endereco; string cep; string bairro; string cidade; string UF;
+        string contrato = (txtContrato.Text ?? "").Trim();
+        txtContrato.Text = contrato;
+        if (String.IsNullOrEmpty(contrato))
+        {
+            ExibirAlerta("Informe o número do contrato para consultar.");
+            txtContrato.Focus();
+            return;
+        }
+
+        string cliente; string endereco; string cep; string bairro; string cidade; string UF;
         string cpfcnpj; string RGIE; string nascimento; string tel_residencial; string tel_comercial;
         string tel_celular; string email; string marca; string modelo; string cor_ext; string chassiplaca;
         string anomodelo; string opcinonais; string modalidade_pagamento; string financeira; string valorveiculo;
@@ -1801,15 +1833,33 @@ public partial class veiculos_contrato : System.Web.UI.Page
         string palcavu; string financiamento; string qtdeparcelas; string vlparcelas; string planofinanciamento;
         string cortesias; string obs; string previsaoentrega; string vendedor; string tipo; string data; string multa; string vlutilizadoavaliacao; string vlquitacao; string vlsaldoavaliacao; string anomodeloVU;
         Veiculos vec = new Veiculos();
-        vec.select_contrato_venda2(contrato,
-        out cliente, out endereco, out cep, out bairro, out cidade
-        , out UF, out cpfcnpj, out RGIE, out nascimento, out tel_residencial
-        , out tel_comercial, out tel_celular, out email, out marca, out modelo
-        , out cor_ext, out chassiplaca, out anomodelo, out opcinonais, out modalidade_pagamento
-        , out financeira, out valorveiculo, out emp_trans, out entrada
-        , out formaspagamento, out carrousado, out modmarcavu, out palcavu, out anomodeloVU, out financiamento
-        , out qtdeparcelas, out vlparcelas, out planofinanciamento, out cortesias
-        , out obs, out previsaoentrega, out vendedor, out tipo, out data, out multa, out vlutilizadoavaliacao, out vlquitacao, out vlsaldoavaliacao);
+        try
+        {
+            vec.select_contrato_venda2(contrato,
+            out cliente, out endereco, out cep, out bairro, out cidade
+            , out UF, out cpfcnpj, out RGIE, out nascimento, out tel_residencial
+            , out tel_comercial, out tel_celular, out email, out marca, out modelo
+            , out cor_ext, out chassiplaca, out anomodelo, out opcinonais, out modalidade_pagamento
+            , out financeira, out valorveiculo, out emp_trans, out entrada
+            , out formaspagamento, out carrousado, out modmarcavu, out palcavu, out anomodeloVU, out financiamento
+            , out qtdeparcelas, out vlparcelas, out planofinanciamento, out cortesias
+            , out obs, out previsaoentrega, out vendedor, out tipo, out data, out multa, out vlutilizadoavaliacao, out vlquitacao, out vlsaldoavaliacao);
+        }
+        catch (InvalidOperationException)
+        {
+            LimparCamposEdicaoContrato();
+            RegistrarContratoOperacao("CONTRATO_EDICAO_NAO_ENCONTRADO", "Contrato=" + contrato);
+            ExibirAlerta("Contrato " + contrato + " não encontrado. Confira o número digitado e tente novamente.");
+            txtContrato.Focus();
+            return;
+        }
+        catch (Exception ex)
+        {
+            RegistrarContratoOperacao("ERRO_CONSULTA_EDICAO", "Contrato=" + contrato + "; Erro=" + ex.Message);
+            ExibirAlerta("Não foi possível consultar o contrato agora. Confira o número e tente novamente.");
+            txtContrato.Focus();
+            return;
+        }
 
         txtEdCliente.Text = cliente; txtEdEndereco.Text = endereco; txtEdCep.Text = cep; txtEdBairro.Text = bairro; txtEdCidade.Text = cidade; txtEdUF.Text = UF; txtEdCPF.Text = cpfcnpj; txtEdRG.Text = RGIE; txtEdNascimento.Text = nascimento;
         txtEdTelRes.Text = tel_residencial; txtEdComercial.Text = tel_comercial; txtEdCelular.Text = tel_celular; txtEdEmail.Text = email; txtEdMarca.Text = marca; txtEdModelo.Text = modelo; txtEdCorExt.Text = cor_ext; txtEdChassi.Text = chassiplaca;
