@@ -25,6 +25,7 @@
                     <a href="default.aspx?view=nova" data-nav-view="nova">Nova CI</a>
                     <a href="erros.aspx" data-nav-view="logs" class="is-active" aria-current="page">Logs</a>
                     <a href="../Intranet/index.html">Intranet</a>
+                    <a href="login.aspx?sair=1">Sair</a>
                 </nav>
             </aside>
 

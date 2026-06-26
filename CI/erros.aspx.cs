@@ -20,10 +20,35 @@ public partial class ci_erros : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (!UsuarioCIAutenticado())
+        {
+            RedirecionarLoginCI();
+            return;
+        }
+
         if (!IsPostBack && LogsAutorizados())
         {
             AbrirConteudo();
         }
+    }
+
+    private bool UsuarioCIAutenticado()
+    {
+        return Session["ci_autenticado"] != null
+            && Session["usuario"] != null
+            && Convert.ToString(Session["usuario"]).Trim().Length > 0;
+    }
+
+    private void RedirecionarLoginCI()
+    {
+        string voltar = Request.RawUrl ?? "erros.aspx";
+        if (voltar.StartsWith("/CI/", StringComparison.OrdinalIgnoreCase))
+        {
+            voltar = voltar.Substring(4);
+        }
+
+        Response.Redirect("login.aspx?voltar=" + HttpUtility.UrlEncode(voltar), false);
+        Context.ApplicationInstance.CompleteRequest();
     }
 
     protected void btnEntrar_Click(object sender, EventArgs e)

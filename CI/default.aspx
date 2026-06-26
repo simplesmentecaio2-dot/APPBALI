@@ -27,6 +27,7 @@
                     <a href="default.aspx?view=anotacoes" data-nav-view="anotacoes">Anota&ccedil;&otilde;es</a>
                     <a href="erros.aspx" data-nav-view="logs">Logs</a>
                     <a href="../Intranet/index.html">Intranet</a>
+                    <a href="login.aspx?sair=1">Sair</a>
                 </nav>
             </aside>
 

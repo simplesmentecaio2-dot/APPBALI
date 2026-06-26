@@ -28,6 +28,12 @@ public partial class ci_default : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (!UsuarioCIAutenticado())
+        {
+            RedirecionarLoginCI();
+            return;
+        }
+
         if (!IsPostBack)
         {
             DateTime hoje = DateTime.Today;
@@ -42,6 +48,29 @@ public partial class ci_default : System.Web.UI.Page
             AplicarTela(tela);
             MostrarAvisoViewStateExpirado();
         }
+    }
+
+    private bool UsuarioCIAutenticado()
+    {
+        return Session["ci_autenticado"] != null
+            && Session["usuario"] != null
+            && Convert.ToString(Session["usuario"]).Trim().Length > 0;
+    }
+
+    private void RedirecionarLoginCI()
+    {
+        string voltar = Request.RawUrl ?? "default.aspx?view=consulta";
+        if (voltar.StartsWith("/CI/", StringComparison.OrdinalIgnoreCase))
+        {
+            voltar = voltar.Substring(4);
+        }
+        else if (voltar.StartsWith("~/CI/", StringComparison.OrdinalIgnoreCase))
+        {
+            voltar = voltar.Substring(5);
+        }
+
+        Response.Redirect("login.aspx?voltar=" + HttpUtility.UrlEncode(voltar), false);
+        Context.ApplicationInstance.CompleteRequest();
     }
 
     protected void btnAtualizarBi_Click(object sender, EventArgs e)
