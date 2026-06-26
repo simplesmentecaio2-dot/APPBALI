@@ -54,6 +54,7 @@
                     <div class="container-login100-form-btn m-t-32">
                         <asp:Button ID="btnLogin1" runat="server" CssClass="login100-form-btn" OnClick="LinkButton1_Click" Text="Login" />
                     </div>
+                    <a class="password-change-link" href="/alterarSenha.aspx?voltar=/jeep/loginApp.aspx">Alterar senha</a>
                     <footer class="fixed-bottom bg-white">
                         <div class="container text-center mb-2 mt-2">
                             <b>&copy;TECNOLOGIA</b> | BALI Motors

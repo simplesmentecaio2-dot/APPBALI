@@ -61,6 +61,7 @@
 					<div class="container-login100-form-btn">
 						 <asp:Button ID="btnLogin1" runat="server" CssClass="login100-form-btn" OnClick="LinkButton1_Click" Text="Login" />
 					</div>
+                    <a class="password-change-link" href="/alterarSenha.aspx?voltar=/veiculos/patio/login.aspx">Alterar senha</a>
 
                 </form>
             </div>
