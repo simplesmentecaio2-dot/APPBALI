@@ -8,7 +8,7 @@
 <head runat="server">
     <link href="../css/estilo.css" rel="stylesheet" />
     <link href="../css/bali-print-contract.css?v=20260625-printstable01" rel="stylesheet" />
-    <script src="../js/bali-print-contract.js?v=20260625-printstable01"></script>
+    <script src="../js/bali-print-contract.js?v=20260626-cortesias01"></script>
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
@@ -336,7 +336,7 @@
                     <td>CORTESIAS:
                     </td>
                     <td colspan="8">
-                        <asp:TextBox ID="txtCortesias" Font-Bold="True" CssClass="form-contrato contrato-texto-justificado" TextMode="MultiLine" Rows="2" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="txtCortesias" Font-Bold="True" CssClass="form-contrato contrato-texto-justificado" TextMode="MultiLine" Rows="2" runat="server" Enabled="False"></asp:TextBox>
                     </td>
                 </tr>
                 <tr>

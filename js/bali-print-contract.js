@@ -4,7 +4,26 @@
     }
 
     function obterTexto(campo) {
-        return (campo && typeof campo.value === 'string') ? campo.value : '';
+        if (!campo) return '';
+
+        if (campo.getAttribute) {
+            var textoServidor = campo.getAttribute('data-print-text');
+            if (textoServidor) return textoServidor;
+        }
+
+        if (typeof campo.value === 'string' && campo.value) {
+            return campo.value;
+        }
+
+        if (typeof campo.defaultValue === 'string' && campo.defaultValue) {
+            return campo.defaultValue;
+        }
+
+        if (typeof campo.textContent === 'string') {
+            return campo.textContent;
+        }
+
+        return '';
     }
 
     function normalizarClasse(valor) {
