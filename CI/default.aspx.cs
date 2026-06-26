@@ -92,7 +92,6 @@ public partial class ci_default : System.Web.UI.Page
             EscreverTabelaBiCsv("Por prioridade", TabelaBi(dados, 3));
             EscreverTabelaBiCsv("Evolu\u00e7\u00e3o por dia", TabelaBi(dados, 4));
             EscreverTabelaBiCsv("Top destinos", TabelaBi(dados, 5));
-            EscreverTabelaBiCsv("Relat\u00f3rio por setor", TabelaBi(dados, 8));
             EscreverTabelaBiCsv("Criado por", TabelaBi(dados, 6));
             EscreverTabelaBiCsv("Por status", TabelaBi(dados, 7));
             EscreverTabelaBiCsv("\u00c1reas de origem", TabelaBi(dados, 8));
@@ -882,6 +881,11 @@ public partial class ci_default : System.Web.UI.Page
     {
         if (e.Row.RowType != DataControlRowType.DataRow) return;
         AplicarRotulosMobile(gvHistoricoCampos, e.Row);
+        if (e.Row.Cells.Count > 2)
+        {
+            e.Row.Cells[2].Text = Server.HtmlEncode(CorrigirRotuloHistorico(Server.HtmlDecode(e.Row.Cells[2].Text ?? "")));
+        }
+
         TruncarCelulaLonga(e.Row, 2, 160);
         TruncarCelulaLonga(e.Row, 3, 160);
     }
@@ -2047,13 +2051,30 @@ public partial class ci_default : System.Web.UI.Page
             if (partes.Length != 2) continue;
 
             string propriedade = partes[0].Trim().ToLowerInvariant();
-            string valor = NormalizarCorRich(partes[1]);
-            if (valor.Length == 0) continue;
-
             if (propriedade == "color" || propriedade == "background-color")
             {
+                string valor = NormalizarCorRich(partes[1]);
+                if (valor.Length == 0) continue;
                 if (estilo.Length > 0) estilo.Append(" ");
                 estilo.Append(propriedade).Append(":").Append(valor).Append(";");
+                continue;
+            }
+
+            if (propriedade == "font-weight")
+            {
+                string peso = NormalizarPesoRich(partes[1]);
+                if (peso.Length == 0) continue;
+                if (estilo.Length > 0) estilo.Append(" ");
+                estilo.Append("font-weight:").Append(peso).Append(";");
+                continue;
+            }
+
+            if (propriedade == "font-style")
+            {
+                string estiloFonte = NormalizarEstiloFonteRich(partes[1]);
+                if (estiloFonte.Length == 0) continue;
+                if (estilo.Length > 0) estilo.Append(" ");
+                estilo.Append("font-style:").Append(estiloFonte).Append(";");
             }
         }
 
@@ -2076,6 +2097,18 @@ public partial class ci_default : System.Web.UI.Page
         return Regex.IsMatch(cor, @"^#([0-9a-f]{3}|[0-9a-f]{6})$") ? cor : "";
     }
 
+    private string NormalizarPesoRich(string valor)
+    {
+        string peso = (valor ?? "").Trim().ToLowerInvariant();
+        return peso == "bold" || peso == "700" || peso == "800" || peso == "900" ? "bold" : "";
+    }
+
+    private string NormalizarEstiloFonteRich(string valor)
+    {
+        string estilo = (valor ?? "").Trim().ToLowerInvariant();
+        return estilo == "italic" ? "italic" : "";
+    }
+
     private string TextoLongoEntrada(string valor)
     {
         string texto = (valor ?? "").Replace("\r\n", "\n").Replace("\r", "\n").Trim();
@@ -2093,6 +2126,18 @@ public partial class ci_default : System.Web.UI.Page
         int abre = texto.IndexOf("[", StringComparison.Ordinal);
         int fecha = texto.IndexOf("]", StringComparison.Ordinal);
         return abre >= 0 && fecha > abre;
+    }
+
+    private string CorrigirRotuloHistorico(string rotulo)
+    {
+        string texto = (rotulo ?? "").Trim();
+        if (texto.Equals("Area de origem", StringComparison.OrdinalIgnoreCase)) return "\u00c1rea de origem";
+        if (texto.Equals("Area de destino", StringComparison.OrdinalIgnoreCase)) return "\u00c1rea de destino";
+        if (texto.Equals("Responsavel", StringComparison.OrdinalIgnoreCase)) return "Respons\u00e1vel";
+        if (texto.Equals("Destinatario", StringComparison.OrdinalIgnoreCase)) return "Destinat\u00e1rio";
+        if (texto.Equals("Providencias", StringComparison.OrdinalIgnoreCase)) return "Provid\u00eancias";
+        if (texto.Equals("Observacoes", StringComparison.OrdinalIgnoreCase)) return "Observa\u00e7\u00f5es";
+        return texto;
     }
 
     private SqlParameter Param(string nome, SqlDbType tipo, object valor, int tamanho = 0)
@@ -2224,6 +2269,16 @@ public partial class ci_default : System.Web.UI.Page
         mensagem = mensagem.Replace("alteracao", "altera\u00e7\u00e3o");
         mensagem = mensagem.Replace("informacao", "informa\u00e7\u00e3o");
         mensagem = mensagem.Replace("comunicacao", "comunica\u00e7\u00e3o");
+        mensagem = mensagem.Replace("Ciencia", "Ci\u00eancia");
+        mensagem = mensagem.Replace("ciencia", "ci\u00eancia");
+        mensagem = mensagem.Replace("Responsavel", "Respons\u00e1vel");
+        mensagem = mensagem.Replace("responsavel", "respons\u00e1vel");
+        mensagem = mensagem.Replace("Destinatario", "Destinat\u00e1rio");
+        mensagem = mensagem.Replace("destinatario", "destinat\u00e1rio");
+        mensagem = mensagem.Replace("Providencias", "Provid\u00eancias");
+        mensagem = mensagem.Replace("providencias", "provid\u00eancias");
+        mensagem = mensagem.Replace("Observacoes", "Observa\u00e7\u00f5es");
+        mensagem = mensagem.Replace("observacoes", "observa\u00e7\u00f5es");
         mensagem = mensagem.Replace("exclusao", "exclus\u00e3o");
         return mensagem;
     }

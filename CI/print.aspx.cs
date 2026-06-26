@@ -331,13 +331,30 @@ public partial class ci_print : System.Web.UI.Page
             if (partes.Length != 2) continue;
 
             string propriedade = partes[0].Trim().ToLowerInvariant();
-            string cor = NormalizarCorRich(partes[1]);
-            if (cor.Length == 0) continue;
-
             if (propriedade == "color" || propriedade == "background-color")
             {
+                string cor = NormalizarCorRich(partes[1]);
+                if (cor.Length == 0) continue;
                 if (estilo.Length > 0) estilo.Append(" ");
                 estilo.Append(propriedade).Append(":").Append(cor).Append(";");
+                continue;
+            }
+
+            if (propriedade == "font-weight")
+            {
+                string peso = NormalizarPesoRich(partes[1]);
+                if (peso.Length == 0) continue;
+                if (estilo.Length > 0) estilo.Append(" ");
+                estilo.Append("font-weight:").Append(peso).Append(";");
+                continue;
+            }
+
+            if (propriedade == "font-style")
+            {
+                string estiloFonte = NormalizarEstiloFonteRich(partes[1]);
+                if (estiloFonte.Length == 0) continue;
+                if (estilo.Length > 0) estilo.Append(" ");
+                estilo.Append("font-style:").Append(estiloFonte).Append(";");
             }
         }
 
@@ -358,5 +375,17 @@ public partial class ci_print : System.Web.UI.Page
         }
 
         return Regex.IsMatch(cor, @"^#([0-9a-f]{3}|[0-9a-f]{6})$") ? cor : "";
+    }
+
+    private string NormalizarPesoRich(string valor)
+    {
+        string peso = (valor ?? "").Trim().ToLowerInvariant();
+        return peso == "bold" || peso == "700" || peso == "800" || peso == "900" ? "bold" : "";
+    }
+
+    private string NormalizarEstiloFonteRich(string valor)
+    {
+        string estilo = (valor ?? "").Trim().ToLowerInvariant();
+        return estilo == "italic" ? "italic" : "";
     }
 }

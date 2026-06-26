@@ -636,13 +636,13 @@ BEGIN
 
     IF @setor = '' OR @responsavel = ''
     BEGIN
-        RAISERROR(N'Informe setor e responsavel para registrar ciencia.', 16, 1);
+        RAISERROR(N'Informe setor e responsável para registrar ciência.', 16, 1);
         RETURN;
     END
 
     IF NOT EXISTS (SELECT 1 FROM dbo.ci_comunicacoes WHERE id_ci = @id_ci)
     BEGIN
-        RAISERROR(N'CI nao encontrada para registrar ciencia.', 16, 1);
+        RAISERROR(N'CI não encontrada para registrar ciência.', 16, 1);
         RETURN;
     END
 
@@ -1103,19 +1103,19 @@ BEGIN
         FROM dbo.ci_comunicacoes
         WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(origem_marca, '') <> ISNULL(@origem_marca, '')
         UNION ALL
-        SELECT @id_ci, N'Area de origem', origem_area, @origem_area, @usuario_historico
+        SELECT @id_ci, N'Área de origem', origem_area, @origem_area, @usuario_historico
         FROM dbo.ci_comunicacoes
         WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(origem_area, '') <> ISNULL(@origem_area, '')
         UNION ALL
-        SELECT @id_ci, N'Responsavel', origem_responsavel, @origem_responsavel, @usuario_historico
+        SELECT @id_ci, N'Responsável', origem_responsavel, @origem_responsavel, @usuario_historico
         FROM dbo.ci_comunicacoes
         WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(origem_responsavel, '') <> ISNULL(@origem_responsavel, '')
         UNION ALL
-        SELECT @id_ci, N'Area de destino', destino_area, @destino_area, @usuario_historico
+        SELECT @id_ci, N'Área de destino', destino_area, @destino_area, @usuario_historico
         FROM dbo.ci_comunicacoes
         WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(destino_area, '') <> ISNULL(@destino_area, '')
         UNION ALL
-        SELECT @id_ci, N'Destinatario', destinatario, @destinatario, @usuario_historico
+        SELECT @id_ci, N'Destinatário', destinatario, @destinatario, @usuario_historico
         FROM dbo.ci_comunicacoes
         WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(destinatario, '') <> ISNULL(@destinatario, '')
         UNION ALL
@@ -1139,11 +1139,11 @@ BEGIN
         FROM dbo.ci_comunicacoes
         WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(corpo, '') <> ISNULL(@corpo, '')
         UNION ALL
-        SELECT @id_ci, N'Providencias', ISNULL(providencias, ''), ISNULL(@providencias, ''), @usuario_historico
+        SELECT @id_ci, N'Providências', ISNULL(providencias, ''), ISNULL(@providencias, ''), @usuario_historico
         FROM dbo.ci_comunicacoes
         WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(providencias, '') <> ISNULL(@providencias, '')
         UNION ALL
-        SELECT @id_ci, N'Observacoes', ISNULL(observacoes, ''), ISNULL(@observacoes, ''), @usuario_historico
+        SELECT @id_ci, N'Observações', ISNULL(observacoes, ''), ISNULL(@observacoes, ''), @usuario_historico
         FROM dbo.ci_comunicacoes
         WHERE id_ci = @id_ci AND ativo = 1 AND ISNULL(observacoes, '') <> ISNULL(@observacoes, '')
         UNION ALL

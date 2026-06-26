@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260626-ci-consulta02" rel="stylesheet" />
+    <link href="ci.css?v=20260626-ci-review01" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -867,13 +867,13 @@
 
                 var camposObrigatorios = [
                     { id: '<%= txtData.ClientID %>', mensagem: 'Informe a data da CI.' },
+                    { id: '<%= txtCriadoPor.ClientID %>', mensagem: 'Informe quem est\u00e1 criando a CI no campo Criado por.', sempre: true },
                     { id: '<%= txtOrigemArea.ClientID %>', mensagem: 'Informe a \u00e1rea de origem.' },
                     { id: '<%= txtOrigemResponsavel.ClientID %>', mensagem: 'Informe o respons\u00e1vel pela origem.' },
                     { id: '<%= txtDestinoArea.ClientID %>', mensagem: 'Informe a \u00e1rea de destino.' },
                     { id: '<%= txtDestinatario.ClientID %>', mensagem: 'Informe o destinat\u00e1rio.' },
                     { id: '<%= txtAssunto.ClientID %>', mensagem: 'Informe o assunto.' },
-                    { id: '<%= txtCorpo.ClientID %>', mensagem: 'Informe o texto da comunica\u00e7\u00e3o.' },
-                    { id: '<%= txtCriadoPor.ClientID %>', mensagem: 'Informe quem est\u00e1 criando a CI no campo Criado por.', sempre: true }
+                    { id: '<%= txtCorpo.ClientID %>', mensagem: 'Informe o texto da comunica\u00e7\u00e3o.' }
                 ];
                 var camposComModelo = [
                     '<%= txtAssunto.ClientID %>',
@@ -1159,8 +1159,12 @@
                         if (tag === 'span') {
                             var cor = (no.style && no.style.color) ? normalizarCorRichCI(no.style.color) : '';
                             var fundo = (no.style && no.style.backgroundColor) ? normalizarCorRichCI(no.style.backgroundColor) : '';
+                            var peso = (no.style && no.style.fontWeight) ? normalizarPesoRichCI(no.style.fontWeight) : '';
+                            var estiloFonte = (no.style && no.style.fontStyle) ? normalizarEstiloFonteRichCI(no.style.fontStyle) : '';
                             if (cor) novo.style.color = cor;
                             if (fundo) novo.style.backgroundColor = fundo;
+                            if (peso) novo.style.fontWeight = peso;
+                            if (estiloFonte) novo.style.fontStyle = estiloFonte;
                         }
 
                         limparFilhos(no, novo);
@@ -1179,6 +1183,17 @@
                         };
                         if (mapa[cor]) return mapa[cor];
                         return coresSeguras.test(cor) ? cor : '';
+                    }
+
+                    function normalizarPesoRichCI(peso) {
+                        peso = String(peso || '').trim().toLowerCase();
+                        if (peso === 'bold' || peso === '700' || peso === '800' || peso === '900') return 'bold';
+                        return '';
+                    }
+
+                    function normalizarEstiloFonteRichCI(estilo) {
+                        estilo = String(estilo || '').trim().toLowerCase();
+                        return estilo === 'italic' ? 'italic' : '';
                     }
 
                     var saida = document.createElement('div');
@@ -1237,14 +1252,21 @@
                             for (var b = 0; b < botoes.length; b++) {
                                 botoes[b].addEventListener('click', function () {
                                     surface.focus();
-                                    document.execCommand('styleWithCSS', false, true);
                                     var comando = this.getAttribute('data-rich-command');
                                     var cor = this.getAttribute('data-rich-color');
                                     var destaque = this.getAttribute('data-rich-highlight');
 
-                                    if (comando) document.execCommand(comando, false, null);
-                                    if (cor) document.execCommand('foreColor', false, cor);
-                                    if (destaque) document.execCommand('hiliteColor', false, destaque);
+                                    if (comando) {
+                                        document.execCommand('styleWithCSS', false, false);
+                                        document.execCommand(comando, false, null);
+                                    }
+
+                                    if (cor || destaque) {
+                                        document.execCommand('styleWithCSS', false, true);
+                                        if (cor) document.execCommand('foreColor', false, cor);
+                                        if (destaque) document.execCommand('hiliteColor', false, destaque);
+                                    }
+
                                     sincronizarEditorRichCI(editor);
                                     atualizarPainelCI();
                                 });
@@ -1517,7 +1539,7 @@
                     var marca = dados.marca || 'Grupo Bali';
                     var cor = marca.indexOf('Jeep') >= 0 ? '#287246' : (marca.indexOf('BYD') >= 0 ? '#1969b3' : '#c9333a');
                     var documento = '<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><title>Pr\u00e9via da CI</title>' +
-                        '<style>@page{size:A4;margin:10mm}body{margin:0;background:#dfe6ef;font-family:Arial,Helvetica,sans-serif;color:#172033}.sheet{width:210mm;min-height:297mm;margin:18px auto;padding:14mm;background:#fff;box-shadow:0 20px 60px rgba(15,23,42,.18)}header{display:flex;justify-content:space-between;gap:18px;border-bottom:3px solid ' + cor + ';padding-bottom:12px}.brand{display:grid;place-items:center;min-width:180px;min-height:64px;border-radius:10px;padding:12px 18px;color:#fff;background:' + cor + ';font-weight:900}.title{text-align:right}.title span,.meta>div>span,.grid>div>span,.block>span,footer span{color:#64748b;font-size:11px;font-weight:900;text-transform:uppercase}.title h1{margin:5px 0 0;color:' + cor + ';font-size:24px}.meta,.grid{display:grid;gap:10px;margin-top:14px}.meta{grid-template-columns:repeat(5,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.meta div,.grid div,.block{border:1px solid #d9e1ed;border-radius:8px;padding:10px}.meta strong,.grid strong,.grid small{display:block;margin-top:4px}.block{margin-top:12px}.block h2{margin:5px 0 0;font-size:18px}.block p{margin:8px 0 0;line-height:1.45}.block mark,.block span[style*=background-color]{border-radius:3px;padding:0 2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}footer{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}.sig{border-top:1px solid #94a3b8;padding-top:8px;text-align:center}@media print{body{background:#fff}.sheet{width:auto;min-height:auto;margin:0;padding:0;box-shadow:none}.meta{grid-template-columns:repeat(5,1fr)!important}.grid,footer{grid-template-columns:repeat(2,1fr)!important}}</style></head><body><main class="sheet">' +
+                        '<style>@page{size:A4;margin:10mm}body{margin:0;background:#dfe6ef;font-family:Arial,Helvetica,sans-serif;color:#172033}.sheet{width:210mm;min-height:297mm;margin:18px auto;padding:14mm;background:#fff;box-shadow:0 20px 60px rgba(15,23,42,.18)}header{display:flex;justify-content:space-between;gap:18px;border-bottom:3px solid ' + cor + ';padding-bottom:12px}.brand{display:grid;place-items:center;min-width:180px;min-height:64px;border-radius:10px;padding:12px 18px;color:#fff;background:' + cor + ';font-weight:900}.title{text-align:right}.title span,.meta>div>span,.grid>div>span,.block>span,footer span{color:#64748b;font-size:11px;font-weight:900;text-transform:uppercase}.title h1{margin:5px 0 0;color:' + cor + ';font-size:24px}.meta,.grid{display:grid;gap:10px;margin-top:14px}.meta{grid-template-columns:repeat(5,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.meta div,.grid div,.block{border:1px solid #d9e1ed;border-radius:8px;padding:10px}.meta strong,.grid strong,.grid small{display:block;margin-top:4px}.block{margin-top:12px}.block h2{margin:5px 0 0;font-size:18px}.block p{margin:8px 0 0;line-height:1.45}.block mark,.block span[style*="background-color"]{border-radius:3px;padding:0 2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}footer{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}.sig{border-top:1px solid #94a3b8;padding-top:8px;text-align:center}@media print{body{background:#fff}.sheet{width:auto;min-height:auto;margin:0;padding:0;box-shadow:none}.meta{grid-template-columns:repeat(5,1fr)!important}.grid,footer{grid-template-columns:repeat(2,1fr)!important}}</style></head><body><main class="sheet">' +
                         '<header><div class="brand">' + htmlSeguroCI(marca) + '</div><div class="title"><span>Comunica\u00e7\u00e3o Interna</span><h1>Pr\u00e9via</h1></div></header>' +
                         '<section class="meta"><div><span>Data</span><strong>' + htmlSeguroCI(formatarDataPreviaCI(dados.data)) + '</strong></div><div><span>Marca</span><strong>' + htmlSeguroCI(marca) + '</strong></div><div><span>Categoria</span><strong>' + htmlSeguroCI(dados.categoria) + '</strong></div><div><span>Prioridade</span><strong>' + htmlSeguroCI(dados.prioridade) + '</strong></div><div><span>Status</span><strong>' + htmlSeguroCI(dados.status) + '</strong></div></section>' +
                         '<section class="grid"><div><span>Origem</span><strong>' + htmlSeguroCI(dados.origemArea || 'A definir') + '</strong><small>' + htmlSeguroCI(dados.origemResponsavel || 'A definir') + '</small></div><div><span>Destino</span><strong>' + htmlSeguroCI(dados.destinoArea || 'A definir') + '</strong><small>' + htmlSeguroCI(dados.destinatario || 'A definir') + '</small></div></section>' +
