@@ -95,6 +95,25 @@
                             </Columns>
                         </asp:GridView>
                     </div>
+                    <div class="panel-header compact-header history-detail-title">
+                        <div>
+                            <span class="eyebrow">Auditoria</span>
+                            <h3>A&ccedil;&otilde;es dos usu&aacute;rios</h3>
+                            <p class="panel-subtitle"><asp:Literal ID="litResumoAuditoria" runat="server"></asp:Literal></p>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <asp:GridView ID="gvAuditoria" runat="server" CssClass="ci-table compact-table field-history-table" AutoGenerateColumns="false" EmptyDataText="Nenhuma auditoria registrada." OnRowDataBound="gvAuditoria_RowDataBound">
+                            <Columns>
+                                <asp:BoundField DataField="dt_evento" HeaderText="Data/hora" DataFormatString="{0:dd/MM/yyyy HH:mm:ss}" />
+                                <asp:BoundField DataField="usuario_nome" HeaderText="Usu&aacute;rio" />
+                                <asp:BoundField DataField="acao" HeaderText="A&ccedil;&atilde;o" />
+                                <asp:BoundField DataField="codigo_ci" HeaderText="CI" />
+                                <asp:BoundField DataField="detalhe" HeaderText="Detalhe" />
+                                <asp:BoundField DataField="ip" HeaderText="IP" />
+                            </Columns>
+                        </asp:GridView>
+                    </div>
                 </asp:Panel>
             </main>
         </div>

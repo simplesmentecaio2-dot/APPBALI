@@ -47,6 +47,7 @@ public partial class ci_default : System.Web.UI.Page
             CarregarTelaInicial(tela);
             AplicarTela(tela);
             MostrarAvisoViewStateExpirado();
+            RegistrarAuditoriaCI("ACESSAR_CI", null, "", "Tela=" + tela);
         }
     }
 
@@ -168,6 +169,7 @@ public partial class ci_default : System.Web.UI.Page
             int id = Convert.ToInt32(dados.Rows[0]["id_ci"]);
             CarregarCI(id);
             AplicarTela("nova");
+            RegistrarAuditoriaCI("ABRIR_CI_CODIGO", id, Convert.ToString(dados.Rows[0]["codigo_ci"]), "Busca rapida por codigo: " + termo);
             MostrarMensagem("CI localizada. Para alterar, informe a senha quando salvar.", false);
         }
         catch (Exception ex)
@@ -230,6 +232,7 @@ public partial class ci_default : System.Web.UI.Page
             }
 
             int idAtual = ObterIdAnotacaoAtual();
+            string acaoAnotacao = idAtual > 0 ? "EDITAR_ANOTACAO_CI" : "CRIAR_ANOTACAO_CI";
             DataTable salvo = ExecutarTabela("dbo.ci_anotacao_salvar",
                 Param("@id_anotacao", SqlDbType.Int, idAtual > 0 ? (object)idAtual : DBNull.Value),
                 Param("@titulo", SqlDbType.NVarChar, titulo, 160),
@@ -243,6 +246,7 @@ public partial class ci_default : System.Web.UI.Page
             if (salvo.Rows.Count > 0)
             {
                 PreencherAnotacao(salvo.Rows[0]);
+                RegistrarAuditoriaCI(acaoAnotacao, null, "", "Anotacao=" + salvo.Rows[0]["id_anotacao"] + "; Titulo=" + titulo + "; Categoria=" + categoria);
             }
 
             MostrarMensagem("Anota\u00e7\u00e3o salva com sucesso.", false);
@@ -425,6 +429,7 @@ public partial class ci_default : System.Web.UI.Page
             if (modelo.Rows.Count > 0)
             {
                 Selecionar(ddlModelosCI, modelo.Rows[0]["id_modelo"].ToString());
+                RegistrarAuditoriaCI("SALVAR_MODELO_CI", null, "", "Modelo=" + modelo.Rows[0]["id_modelo"] + "; Nome=" + nomeModelo);
             }
 
             AplicarTela("nova");
@@ -458,6 +463,7 @@ public partial class ci_default : System.Web.UI.Page
         try
         {
             ExecutarSemRetorno("dbo.ci_modelo_excluir", Param("@id_modelo", SqlDbType.Int, idModelo));
+            RegistrarAuditoriaCI("EXCLUIR_MODELO_CI", null, "", "Modelo=" + idModelo.ToString(CultureInfo.InvariantCulture));
             txtModeloNome.Text = "";
             CarregarModelos();
             AplicarTela("nova");
@@ -506,6 +512,11 @@ public partial class ci_default : System.Web.UI.Page
             }
 
             NormalizarFormulario();
+            string dadosAntes = id > 0 ? ObterResumoCIAuditoria(id) : "";
+            string dadosDepois = ResumoFormularioCIAuditoria();
+            string acaoSalvar = ddlStatusCI.SelectedValue.Equals("Rascunho", StringComparison.OrdinalIgnoreCase)
+                ? (id > 0 ? "EDITAR_RASCUNHO_CI" : "CRIAR_RASCUNHO_CI")
+                : (id > 0 ? "EDITAR_CI" : "CRIAR_CI");
 
             DataTable salvo = ExecutarTabela("dbo.ci_comunicacao_salvar",
                 Param("@id_ci", SqlDbType.Int, id > 0 ? (object)id : DBNull.Value),
@@ -526,6 +537,7 @@ public partial class ci_default : System.Web.UI.Page
 
             string codigo = salvo.Rows.Count > 0 ? salvo.Rows[0]["codigo_ci"].ToString() : "CI";
             int idSalvo = salvo.Rows.Count > 0 ? Convert.ToInt32(salvo.Rows[0]["id_ci"]) : 0;
+            RegistrarAuditoriaCI(acaoSalvar, idSalvo > 0 ? (int?)idSalvo : null, codigo, "CI salva pelo formulario.", dadosAntes, dadosDepois);
             LimparAutorizacaoEdicaoCI(id);
             LimparFormulario();
             CarregarConsultaEssencial();
@@ -594,18 +606,21 @@ public partial class ci_default : System.Web.UI.Page
                 AutorizarEdicaoCI(id);
                 CarregarCI(id);
                 AplicarTela("nova");
+                RegistrarAuditoriaCI("ABRIR_EDICAO_CI", id, "", "CI carregada para edicao.");
                 MostrarMensagem("CI carregada para edi\u00e7\u00e3o.", false);
             }
             else if (e.CommandName == "DuplicarCI")
             {
                 CarregarCIDuplicada(id, "");
                 AplicarTela("nova");
+                RegistrarAuditoriaCI("DUPLICAR_CI", id, "", "CI duplicada como novo rascunho.");
                 MostrarMensagem("CI duplicada como novo rascunho. Revise os dados antes de salvar.", false);
             }
             else if (e.CommandName == "DuplicarMarcaCI")
             {
                 CarregarCIDuplicada(id, marcaDuplicacao);
                 AplicarTela("nova");
+                RegistrarAuditoriaCI("DUPLICAR_CI_MARCA", id, "", "CI duplicada para marca " + marcaDuplicacao + ".");
                 MostrarMensagem("CI duplicada como rascunho para " + marcaDuplicacao + ". Revise os dados antes de salvar.", false);
             }
             else if (e.CommandName == "CancelarCI")
@@ -617,7 +632,9 @@ public partial class ci_default : System.Web.UI.Page
                     return;
                 }
 
+                string dadosAntesCancelamento = ObterResumoCIAuditoria(id);
                 ExecutarSemRetorno("dbo.ci_comunicacao_cancelar", Param("@id_ci", SqlDbType.Int, id));
+                RegistrarAuditoriaCI("CANCELAR_CI", id, "", "CI cancelada pela consulta.", dadosAntesCancelamento, "");
                 LimparAutorizacaoEdicaoCI(id);
                 LimparFormulario();
                 CarregarConsultaEssencial();
@@ -690,23 +707,27 @@ public partial class ci_default : System.Web.UI.Page
             {
                 CarregarAnotacao(id);
                 AplicarTela("anotacoes");
+                RegistrarAuditoriaCI("ABRIR_ANOTACAO_CI", null, "", "Anotacao=" + id.ToString(CultureInfo.InvariantCulture));
                 MostrarMensagem("Anota\u00e7\u00e3o carregada. Use o bot\u00e3o copiar texto quando precisar reutilizar.", false);
             }
             else if (e.CommandName == "UsarAnotacaoCI")
             {
                 UsarAnotacaoNaCI(id);
                 AplicarTela("nova");
+                RegistrarAuditoriaCI("USAR_ANOTACAO_CI", null, "", "Anotacao=" + id.ToString(CultureInfo.InvariantCulture));
                 MostrarMensagem("Anota\u00e7\u00e3o aplicada na nova CI como rascunho. Revise os campos antes de salvar.", false);
             }
             else if (e.CommandName == "DuplicarAnotacao")
             {
                 DuplicarAnotacao(id);
                 AplicarTela("anotacoes");
+                RegistrarAuditoriaCI("DUPLICAR_ANOTACAO_CI", null, "", "Anotacao origem=" + id.ToString(CultureInfo.InvariantCulture));
                 MostrarMensagem("Anota\u00e7\u00e3o duplicada no bloco. Revise e salve como novo texto padr\u00e3o.", false);
             }
             else if (e.CommandName == "FavoritarAnotacao")
             {
                 ExecutarTabela("dbo.ci_anotacao_alternar_favorito", Param("@id_anotacao", SqlDbType.Int, id));
+                RegistrarAuditoriaCI("FAVORITAR_ANOTACAO_CI", null, "", "Anotacao=" + id.ToString(CultureInfo.InvariantCulture));
                 CarregarCategoriasAnotacoes();
                 CarregarAnotacoes();
                 AplicarTela("anotacoes");
@@ -715,6 +736,7 @@ public partial class ci_default : System.Web.UI.Page
             else if (e.CommandName == "ExcluirAnotacao")
             {
                 ExecutarSemRetorno("dbo.ci_anotacao_excluir", Param("@id_anotacao", SqlDbType.Int, id));
+                RegistrarAuditoriaCI("EXCLUIR_ANOTACAO_CI", null, "", "Anotacao=" + id.ToString(CultureInfo.InvariantCulture));
                 if (ObterIdAnotacaoAtual() == id)
                 {
                     LimparAnotacao();
@@ -800,7 +822,7 @@ public partial class ci_default : System.Web.UI.Page
         {
             DataTable restaurada = ExecutarTabela("dbo.ci_comunicacao_restaurar_historico",
                 Param("@id_historico", SqlDbType.Int, idHistorico),
-                Param("@usuario", SqlDbType.NVarChar, TextoCurto(txtCriadoPor.Text), 160));
+                Param("@usuario", SqlDbType.NVarChar, UsuarioSessaoCI(), 160));
 
             if (restaurada.Rows.Count == 0)
             {
@@ -813,6 +835,7 @@ public partial class ci_default : System.Web.UI.Page
             AutorizarEdicaoCI(idCi);
             CarregarCI(idCi);
             AplicarTela("nova");
+            RegistrarAuditoriaCI("RESTAURAR_HISTORICO_CI", idCi, Convert.ToString(restaurada.Rows[0]["codigo_ci"]), "Historico restaurado: " + idHistorico.ToString(CultureInfo.InvariantCulture));
             MostrarMensagem("Vers\u00e3o anterior restaurada com sucesso. O estado antes da restaura\u00e7\u00e3o tamb\u00e9m ficou salvo no hist\u00f3rico.", false);
         }
         catch (Exception ex)
@@ -849,6 +872,7 @@ public partial class ci_default : System.Web.UI.Page
                 Param("@setor", SqlDbType.NVarChar, setor, 120),
                 Param("@responsavel", SqlDbType.NVarChar, responsavel, 160),
                 Param("@observacao", SqlDbType.NVarChar, TextoCurto(txtCienciaObservacao.Text), 500));
+            RegistrarAuditoriaCI("REGISTRAR_CIENCIA_CI", idCi, "", "Setor=" + setor + "; Responsavel=" + responsavel);
 
             txtCienciaSetor.Text = "";
             txtCienciaResponsavel.Text = "";
@@ -888,6 +912,7 @@ public partial class ci_default : System.Web.UI.Page
         {
             ExecutarSemRetorno("dbo.ci_ciencia_excluir", Param("@id_ciencia", SqlDbType.Int, idCiencia));
             int idCi = ObterIdAtual();
+            RegistrarAuditoriaCI("EXCLUIR_CIENCIA_CI", idCi > 0 ? (int?)idCi : null, "", "Ciencia=" + idCiencia.ToString(CultureInfo.InvariantCulture));
             if (idCi > 0) CarregarCiencias(idCi);
             AplicarTela("nova");
             MostrarMensagem("Registro de ci\u00eancia removido.", false);
@@ -2176,6 +2201,110 @@ public partial class ci_default : System.Web.UI.Page
         return parametro;
     }
 
+    private string UsuarioSessaoCI()
+    {
+        string usuario = Convert.ToString(Session["usuario"] ?? "").Trim();
+        return usuario.Length > 0 ? usuario : "sem usuario";
+    }
+
+    private string IdUsuarioSessaoCI()
+    {
+        return Convert.ToString(Session["id"] ?? "").Trim();
+    }
+
+    private string ResumoFormularioCIAuditoria()
+    {
+        StringBuilder resumo = new StringBuilder();
+        resumo.Append("Data=").Append(txtData.Text).Append("; ");
+        resumo.Append("Marca=").Append(ddlMarca.SelectedValue).Append("; ");
+        resumo.Append("Origem=").Append(TextoCurto(txtOrigemArea.Text)).Append("; ");
+        resumo.Append("Responsavel=").Append(TextoCurto(txtOrigemResponsavel.Text)).Append("; ");
+        resumo.Append("Destino=").Append(TextoCurto(txtDestinoArea.Text)).Append("; ");
+        resumo.Append("Destinatario=").Append(TextoCurto(txtDestinatario.Text)).Append("; ");
+        resumo.Append("Assunto=").Append(TextoCurto(txtAssunto.Text)).Append("; ");
+        resumo.Append("Categoria=").Append(ddlCategoria.SelectedValue).Append("; ");
+        resumo.Append("Prioridade=").Append(ddlPrioridade.SelectedValue).Append("; ");
+        resumo.Append("Status=").Append(ddlStatusCI.SelectedValue).Append("; ");
+        resumo.Append("CriadoPorCampo=").Append(TextoCurto(txtCriadoPor.Text)).Append("; ");
+        resumo.Append("Texto=").Append(TextoPlanoRich(txtCorpo.Text)).Append("; ");
+        resumo.Append("Providencias=").Append(TextoPlanoRich(txtProvidencias.Text)).Append("; ");
+        resumo.Append("Observacoes=").Append(TextoPlanoRich(txtObservacoes.Text));
+        return LimitarAuditoria(resumo.ToString());
+    }
+
+    private string ResumoLinhaCIAuditoria(DataRow row)
+    {
+        if (row == null) return "";
+        StringBuilder resumo = new StringBuilder();
+        string[] campos = new string[] {
+            "codigo_ci", "data_documento", "origem_marca", "origem_area", "origem_responsavel",
+            "destino_area", "destinatario", "assunto", "categoria", "prioridade", "status",
+            "criado_por", "corpo", "providencias", "observacoes"
+        };
+
+        foreach (string campo in campos)
+        {
+            if (!row.Table.Columns.Contains(campo)) continue;
+            string valor = Convert.ToString(row[campo] ?? "");
+            if (campo == "data_documento")
+            {
+                DateTime data;
+                if (DateTime.TryParse(valor, out data)) valor = data.ToString("dd/MM/yyyy");
+            }
+            resumo.Append(campo).Append("=").Append(TextoPlanoRich(valor)).Append("; ");
+        }
+
+        return LimitarAuditoria(resumo.ToString());
+    }
+
+    private string ObterResumoCIAuditoria(int id)
+    {
+        if (id <= 0) return "";
+        try
+        {
+            DataTable dados = ExecutarTabela("dbo.ci_comunicacao_obter", Param("@id_ci", SqlDbType.Int, id));
+            return dados.Rows.Count > 0 ? ResumoLinhaCIAuditoria(dados.Rows[0]) : "";
+        }
+        catch
+        {
+            return "";
+        }
+    }
+
+    private string LimitarAuditoria(string valor)
+    {
+        string texto = (valor ?? "").Replace("\r", " ").Replace("\n", " ").Replace("\t", " ").Trim();
+        while (texto.Contains("  "))
+        {
+            texto = texto.Replace("  ", " ");
+        }
+        return texto.Length > 12000 ? texto.Substring(0, 12000) + "...(truncado)" : texto;
+    }
+
+    private void RegistrarAuditoriaCI(string acao, int? idCi = null, string codigoCi = "", string detalhe = "", string dadosAntes = "", string dadosDepois = "")
+    {
+        try
+        {
+            ExecutarSemRetorno("dbo.ci_auditoria_registrar",
+                Param("@usuario_id", SqlDbType.NVarChar, IdUsuarioSessaoCI(), 80),
+                Param("@usuario_nome", SqlDbType.NVarChar, UsuarioSessaoCI(), 160),
+                Param("@usuario_tipo", SqlDbType.NVarChar, Convert.ToString(Session["tipo"] ?? ""), 80),
+                Param("@usuario_email", SqlDbType.NVarChar, Convert.ToString(Session["email"] ?? ""), 180),
+                Param("@empresa", SqlDbType.NVarChar, Convert.ToString(Session["empresa"] ?? ""), 120),
+                Param("@ip", SqlDbType.NVarChar, Request.UserHostAddress ?? "", 80),
+                Param("@url", SqlDbType.NVarChar, Request.RawUrl ?? "", 500),
+                Param("@acao", SqlDbType.NVarChar, acao, 80),
+                Param("@id_ci", SqlDbType.Int, idCi.HasValue ? (object)idCi.Value : DBNull.Value),
+                Param("@codigo_ci", SqlDbType.NVarChar, codigoCi, 30),
+                Param("@detalhe", SqlDbType.NVarChar, LimitarAuditoria(detalhe)),
+                Param("@dados_antes", SqlDbType.NVarChar, LimitarAuditoria(dadosAntes)),
+                Param("@dados_depois", SqlDbType.NVarChar, LimitarAuditoria(dadosDepois)));
+        }
+        catch
+        {
+        }
+    }
+
     private string Csv(object valor)
     {
         string texto = Convert.ToString(valor ?? "");
@@ -2267,9 +2396,7 @@ public partial class ci_default : System.Web.UI.Page
                 Directory.CreateDirectory(pasta);
             }
 
-            string usuario = Context != null && Context.User != null && Context.User.Identity != null && Context.User.Identity.IsAuthenticated
-                ? Context.User.Identity.Name
-                : "anonimo";
+            string usuario = UsuarioSessaoCI();
 
             string linha = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
                 " | " + origem +
@@ -2279,6 +2406,7 @@ public partial class ci_default : System.Web.UI.Page
                 Environment.NewLine;
 
             File.AppendAllText(Path.Combine(pasta, "ci-erros.log"), linha, Encoding.UTF8);
+            RegistrarAuditoriaCI("ERRO_CI", null, "", origem + ": " + (ex.Message ?? "").Replace("\r", " ").Replace("\n", " "));
         }
         catch
         {

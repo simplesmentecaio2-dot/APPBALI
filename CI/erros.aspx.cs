@@ -1,5 +1,7 @@
 using System;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,6 +14,11 @@ public partial class ci_erros : System.Web.UI.Page
     private const string SenhaLogs = "@bali2025";
     private const string ViewStateCookieName = "BaliViewStateKey";
     private const int LimiteLinhas = 200;
+
+    private string ConnectionString
+    {
+        get { return ConfigurationManager.ConnectionStrings["APPWFConnectionString"].ConnectionString; }
+    }
 
     protected void Page_Init(object sender, EventArgs e)
     {
@@ -132,6 +139,17 @@ public partial class ci_erros : System.Web.UI.Page
         }
     }
 
+    protected void gvAuditoria_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType != DataControlRowType.DataRow) return;
+
+        int limite = Math.Min(gvAuditoria.Columns.Count, e.Row.Cells.Count);
+        for (int i = 0; i < limite; i++)
+        {
+            e.Row.Cells[i].Attributes["data-label"] = Server.HtmlDecode(gvAuditoria.Columns[i].HeaderText);
+        }
+    }
+
     private bool LogsAutorizados()
     {
         return Session["ci_logs_autorizado"] != null;
@@ -168,6 +186,51 @@ public partial class ci_erros : System.Web.UI.Page
         gvErros.DataSource = ordenada;
         gvErros.DataBind();
         litResumo.Text = MontarResumoLogs(tabela.Rows.Count, ordenada.Rows.Count);
+        CarregarAuditoria();
+    }
+
+    private void CarregarAuditoria()
+    {
+        try
+        {
+            using (SqlConnection con = new SqlConnection(ConnectionString))
+            using (SqlCommand cmd = new SqlCommand(@"
+                SELECT TOP 300
+                    dt_evento,
+                    ISNULL(usuario_nome, '') AS usuario_nome,
+                    acao,
+                    ISNULL(codigo_ci, '') AS codigo_ci,
+                    ISNULL(detalhe, '') AS detalhe,
+                    ISNULL(ip, '') AS ip
+                FROM dbo.ci_auditoria
+                WHERE (@busca IS NULL
+                    OR usuario_nome LIKE '%' + @busca + '%'
+                    OR acao LIKE '%' + @busca + '%'
+                    OR codigo_ci LIKE '%' + @busca + '%'
+                    OR detalhe LIKE '%' + @busca + '%'
+                    OR ip LIKE '%' + @busca + '%')
+                ORDER BY dt_evento DESC, id_auditoria DESC;", con))
+            using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+            {
+                string busca = (txtBuscaLogs.Text ?? "").Trim();
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandTimeout = 60;
+                cmd.Parameters.Add("@busca", SqlDbType.NVarChar, 160).Value = busca.Length == 0 ? (object)DBNull.Value : busca;
+                DataTable auditoria = new DataTable();
+                adapter.Fill(auditoria);
+                gvAuditoria.DataSource = auditoria;
+                gvAuditoria.DataBind();
+                litResumoAuditoria.Text = auditoria.Rows.Count == 0
+                    ? "Nenhuma a\u00e7\u00e3o encontrada no filtro atual."
+                    : "Exibindo as " + auditoria.Rows.Count.ToString() + " a\u00e7\u00f5es mais recentes no filtro atual.";
+            }
+        }
+        catch
+        {
+            gvAuditoria.DataSource = null;
+            gvAuditoria.DataBind();
+            litResumoAuditoria.Text = "N\u00e3o foi poss\u00edvel carregar a auditoria agora.";
+        }
     }
 
     private DataTable CriarTabela()

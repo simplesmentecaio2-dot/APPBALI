@@ -1,4 +1,7 @@
 using System;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Web;
 
 public partial class ci_login : System.Web.UI.Page
@@ -7,6 +10,7 @@ public partial class ci_login : System.Web.UI.Page
     {
         if (Request.QueryString["sair"] == "1")
         {
+            RegistrarAuditoriaLoginCI("LOGOUT_CI", "Sessao encerrada pelo usuario.");
             Session.Remove("ci_autenticado");
             Session.Remove("ci_login_em");
             MostrarMensagem("Sessao da CI encerrada com sucesso.");
@@ -49,6 +53,7 @@ public partial class ci_login : System.Web.UI.Page
                 Session["ci_autenticado"] = true;
                 Session["ci_login_em"] = DateTime.Now;
 
+                RegistrarAuditoriaLoginCI("LOGIN_CI", "Login realizado com sucesso.");
                 RedirecionarVolta();
                 return;
             }
@@ -59,6 +64,7 @@ public partial class ci_login : System.Web.UI.Page
 
         txtUsuario.Value = "";
         txtSenha.Value = "";
+        RegistrarAuditoriaLoginCI("LOGIN_INVALIDO_CI", "Tentativa invalida para usuario informado: " + usuarioInformado, usuarioInformado);
         MostrarMensagem("Usuario desativado ou senha invalida.");
         txtUsuario.Focus();
     }
@@ -99,5 +105,43 @@ public partial class ci_login : System.Web.UI.Page
     {
         pnlMensagem.Visible = true;
         litMensagem.Text = Server.HtmlEncode(mensagem);
+    }
+
+    private void RegistrarAuditoriaLoginCI(string acao, string detalhe, string usuarioTentativa = "")
+    {
+        try
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["APPWFConnectionString"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlCommand cmd = new SqlCommand("dbo.ci_auditoria_registrar", con))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandTimeout = 30;
+                cmd.Parameters.Add("@usuario_id", SqlDbType.NVarChar, 80).Value = ValorBanco(usuarioTentativa.Length > 0 ? usuarioTentativa : Convert.ToString(Session["id"] ?? ""));
+                cmd.Parameters.Add("@usuario_nome", SqlDbType.NVarChar, 160).Value = ValorBanco(Convert.ToString(Session["usuario"] ?? usuarioTentativa));
+                cmd.Parameters.Add("@usuario_tipo", SqlDbType.NVarChar, 80).Value = ValorBanco(Convert.ToString(Session["tipo"] ?? ""));
+                cmd.Parameters.Add("@usuario_email", SqlDbType.NVarChar, 180).Value = ValorBanco(Convert.ToString(Session["email"] ?? ""));
+                cmd.Parameters.Add("@empresa", SqlDbType.NVarChar, 120).Value = ValorBanco(Convert.ToString(Session["empresa"] ?? ""));
+                cmd.Parameters.Add("@ip", SqlDbType.NVarChar, 80).Value = ValorBanco(Request.UserHostAddress ?? "");
+                cmd.Parameters.Add("@url", SqlDbType.NVarChar, 500).Value = ValorBanco(Request.RawUrl ?? "");
+                cmd.Parameters.Add("@acao", SqlDbType.NVarChar, 80).Value = acao;
+                cmd.Parameters.Add("@id_ci", SqlDbType.Int).Value = DBNull.Value;
+                cmd.Parameters.Add("@codigo_ci", SqlDbType.NVarChar, 30).Value = DBNull.Value;
+                cmd.Parameters.Add("@detalhe", SqlDbType.NVarChar).Value = ValorBanco(detalhe);
+                cmd.Parameters.Add("@dados_antes", SqlDbType.NVarChar).Value = DBNull.Value;
+                cmd.Parameters.Add("@dados_depois", SqlDbType.NVarChar).Value = DBNull.Value;
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+        catch
+        {
+        }
+    }
+
+    private object ValorBanco(string valor)
+    {
+        string texto = (valor ?? "").Trim();
+        return texto.Length == 0 ? (object)DBNull.Value : texto;
     }
 }
