@@ -91,6 +91,7 @@ public partial class ci_default : System.Web.UI.Page
             EscreverTabelaBiCsv("Por prioridade", TabelaBi(dados, 3));
             EscreverTabelaBiCsv("Evolu\u00e7\u00e3o por dia", TabelaBi(dados, 4));
             EscreverTabelaBiCsv("Top destinos", TabelaBi(dados, 5));
+            EscreverTabelaBiCsv("Relat\u00f3rio por setor", TabelaBi(dados, 8));
             EscreverTabelaBiCsv("Criado por", TabelaBi(dados, 6));
             EscreverTabelaBiCsv("Por status", TabelaBi(dados, 7));
             EscreverTabelaBiCsv("\u00c1reas de origem", TabelaBi(dados, 8));
@@ -992,6 +993,7 @@ public partial class ci_default : System.Web.UI.Page
         litBiPrioridades.Text = RenderizarBarrasBi(TabelaBi(dados, 3));
         litBiDias.Text = RenderizarBarrasBi(TabelaBi(dados, 4));
         litBiDestinos.Text = RenderizarBarrasBi(TabelaBi(dados, 5));
+        litBiSetorDestino.Text = RenderizarRelatorioSetorDestino(TabelaBi(dados, 8), TabelaBi(dados, 5));
         litBiCriadores.Text = RenderizarBarrasBi(TabelaBi(dados, 6));
         litBiStatus.Text = RenderizarBarrasBi(TabelaBi(dados, 7));
         litBiOrigens.Text = RenderizarBarrasBi(TabelaBi(dados, 8));
@@ -1047,6 +1049,7 @@ public partial class ci_default : System.Web.UI.Page
         litBiPrioridades.Text = vazio;
         litBiDias.Text = vazio;
         litBiDestinos.Text = vazio;
+        litBiSetorDestino.Text = vazio;
         litBiCriadores.Text = vazio;
         litBiStatus.Text = vazio;
         litBiOrigens.Text = vazio;
@@ -1091,6 +1094,51 @@ public partial class ci_default : System.Web.UI.Page
             html.Append("%\"></span></div></div>");
         }
         html.Append("</div>");
+        return html.ToString();
+    }
+
+    private string RenderizarRelatorioSetorDestino(DataTable origens, DataTable destinos)
+    {
+        bool semOrigens = origens == null || origens.Rows.Count == 0;
+        bool semDestinos = destinos == null || destinos.Rows.Count == 0;
+        if (semOrigens && semDestinos)
+        {
+            return "<p class=\"empty-bi\">Nenhum setor ou destino encontrado.</p>";
+        }
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class=\"bi-report-grid\">");
+        html.Append("<section><h4>Setores de origem</h4>");
+        html.Append(RenderizarListaCompactaBi(origens, "Nenhuma origem no per\u00edodo."));
+        html.Append("</section><section><h4>Destinos mais acionados</h4>");
+        html.Append(RenderizarListaCompactaBi(destinos, "Nenhum destino no per\u00edodo."));
+        html.Append("</section></div>");
+        return html.ToString();
+    }
+
+    private string RenderizarListaCompactaBi(DataTable dados, string vazio)
+    {
+        if (dados == null || dados.Rows.Count == 0)
+        {
+            return "<p class=\"empty-bi\">" + Server.HtmlEncode(vazio) + "</p>";
+        }
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<ol class=\"bi-compact-list\">");
+        int limite = Math.Min(8, dados.Rows.Count);
+        for (int i = 0; i < limite; i++)
+        {
+            DataRow row = dados.Rows[i];
+            string rotulo = Convert.ToString(row["rotulo"] ?? "");
+            if (rotulo.Length == 0) rotulo = "N\u00e3o informado";
+            string total = Convert.ToString(row["total"] ?? "0");
+            html.Append("<li><span>");
+            html.Append(Server.HtmlEncode(rotulo));
+            html.Append("</span><strong>");
+            html.Append(Server.HtmlEncode(total));
+            html.Append("</strong></li>");
+        }
+        html.Append("</ol>");
         return html.ToString();
     }
 
@@ -1410,8 +1458,20 @@ public partial class ci_default : System.Web.UI.Page
     private void CarregarModelos()
     {
         DataTable modelos = ExecutarTabela("dbo.ci_modelo_listar");
+        if (!modelos.Columns.Contains("nome_exibicao"))
+        {
+            modelos.Columns.Add("nome_exibicao", typeof(string));
+        }
+
+        foreach (DataRow row in modelos.Rows)
+        {
+            string marca = row.Table.Columns.Contains("origem_marca") ? Convert.ToString(row["origem_marca"]) : "";
+            string nome = Convert.ToString(row["nome"]);
+            row["nome_exibicao"] = (marca.Length > 0 ? marca.Replace("Bali ", "") + " | " : "Geral | ") + nome;
+        }
+
         ddlModelosCI.DataSource = modelos;
-        ddlModelosCI.DataTextField = "nome";
+        ddlModelosCI.DataTextField = "nome_exibicao";
         ddlModelosCI.DataValueField = "id_modelo";
         ddlModelosCI.DataBind();
         ddlModelosCI.Items.Insert(0, new ListItem("Selecione um modelo", ""));

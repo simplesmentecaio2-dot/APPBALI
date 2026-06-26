@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260625-ci-requiredby" rel="stylesheet" />
+    <link href="ci.css?v=20260625-ci-ux01" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server">
@@ -150,6 +150,10 @@
                             <h3>Top destinos</h3>
                             <asp:Literal ID="litBiDestinos" runat="server"></asp:Literal>
                         </article>
+                        <article class="bi-card bi-card-wide">
+                            <h3>Relat&oacute;rio por setor e destino</h3>
+                            <asp:Literal ID="litBiSetorDestino" runat="server"></asp:Literal>
+                        </article>
                         <article class="bi-card">
                             <h3>Criado por</h3>
                             <asp:Literal ID="litBiCriadores" runat="server"></asp:Literal>
@@ -191,6 +195,8 @@
                                 <div class="notes-filter-actions">
                                     <asp:Button ID="btnFiltrarAnotacoes" runat="server" Text="Filtrar" CssClass="primary-button" OnClick="btnFiltrarAnotacoes_Click" />
                                     <asp:Button ID="btnLimparAnotacoes" runat="server" Text="Limpar" CssClass="secondary-button" OnClick="btnLimparAnotacoes_Click" />
+                                    <button type="button" class="secondary-button" onclick="filtrarFavoritasAnotacoesCI(true)">Somente favoritas</button>
+                                    <button type="button" class="secondary-button" onclick="filtrarFavoritasAnotacoesCI(false)">Mostrar todas</button>
                                 </div>
                             </div>
                             <div class="table-wrap">
@@ -344,6 +350,9 @@
                         <button type="button" onclick="aplicarPeriodoCI('mes')">Este m&ecirc;s</button>
                         <button type="button" onclick="aplicarPeriodoCI('30')">&Uacute;ltimos 30 dias</button>
                         <button type="button" onclick="aplicarPeriodoCI('hoje')">Hoje</button>
+                        <button type="button" onclick="aplicarFiltroRapidoCI('minhas')">Minhas CIs</button>
+                        <button type="button" onclick="aplicarFiltroRapidoCI('canceladas')">Canceladas</button>
+                        <button type="button" onclick="aplicarFiltroRapidoCI('rascunhos')">Rascunhos</button>
                         <button type="button" onclick="aplicarPeriodoCI('limpar')">Limpar per&iacute;odo</button>
                     </div>
 
@@ -359,7 +368,7 @@
                                 <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                     <ItemTemplate>
                                         <a class="table-action" href='print.aspx?id=<%# Eval("id_ci") %>' target="_blank" rel="noopener">Imprimir</a>
-                                        <asp:LinkButton ID="lnkDuplicar" runat="server" CssClass="table-action" CommandName="DuplicarCI" CommandArgument='<%# Eval("id_ci") %>'>Duplicar</asp:LinkButton>
+                                        <asp:LinkButton ID="lnkDuplicar" runat="server" CssClass="table-action duplicate-action" CommandName="DuplicarCI" CommandArgument='<%# Eval("id_ci") %>'>Duplicar CI</asp:LinkButton>
                                         <asp:LinkButton ID="lnkDuplicarFiat" runat="server" CssClass="table-action subtle-action" CommandName="DuplicarMarcaCI" CommandArgument='<%# Eval("id_ci", "{0}|Bali Fiat") %>'>Dup Fiat</asp:LinkButton>
                                         <asp:LinkButton ID="lnkDuplicarJeep" runat="server" CssClass="table-action subtle-action" CommandName="DuplicarMarcaCI" CommandArgument='<%# Eval("id_ci", "{0}|Bali Jeep") %>'>Dup Jeep</asp:LinkButton>
                                         <asp:LinkButton ID="lnkDuplicarByd" runat="server" CssClass="table-action subtle-action" CommandName="DuplicarMarcaCI" CommandArgument='<%# Eval("id_ci", "{0}|Bali BYD") %>'>Dup BYD</asp:LinkButton>
@@ -786,6 +795,22 @@
                     return ano + '-' + mes + '-' + dia;
                 }
 
+                function clicarBotaoFiltrarCI() {
+                    var botaoFiltro = campo('<%= btnFiltrar.ClientID %>');
+                    if (botaoFiltro) botaoFiltro.click();
+                }
+
+                function selecionarFiltroCI(id, valorSelecionado) {
+                    var lista = campo(id);
+                    if (!lista) return;
+                    for (var i = 0; i < lista.options.length; i++) {
+                        if (lista.options[i].value === valorSelecionado || lista.options[i].text === valorSelecionado) {
+                            lista.selectedIndex = i;
+                            return;
+                        }
+                    }
+                }
+
                 window.aplicarPeriodoCI = function (tipo) {
                     var inicio = campo('<%= txtFiltroInicio.ClientID %>');
                     var fim = campo('<%= txtFiltroFim.ClientID %>');
@@ -798,6 +823,7 @@
                     if (tipo === 'limpar') {
                         inicio.value = '';
                         fim.value = '';
+                        clicarBotaoFiltrarCI();
                         return;
                     }
 
@@ -809,8 +835,56 @@
 
                     inicio.value = formatarDataCI(dataInicio);
                     fim.value = formatarDataCI(dataFim);
-                    var botaoFiltro = campo('<%= btnFiltrar.ClientID %>');
-                    if (botaoFiltro) botaoFiltro.focus();
+                    clicarBotaoFiltrarCI();
+                };
+
+                window.aplicarFiltroRapidoCI = function (tipo) {
+                    var status = '<%= ddlFiltroStatus.ClientID %>';
+                    var somenteAtivas = campo('<%= chkSomenteAtivas.ClientID %>');
+                    if (tipo === 'canceladas') {
+                        selecionarFiltroCI(status, 'Cancelada');
+                        if (somenteAtivas) somenteAtivas.checked = false;
+                        clicarBotaoFiltrarCI();
+                        return;
+                    }
+
+                    if (tipo === 'rascunhos') {
+                        selecionarFiltroCI(status, 'Rascunho');
+                        if (somenteAtivas) somenteAtivas.checked = true;
+                        clicarBotaoFiltrarCI();
+                        return;
+                    }
+
+                    if (tipo === 'minhas') {
+                        var filtroCriadoPor = campo('<%= txtFiltroCriadoPor.ClientID %>');
+                        var origemCriadoPor = campo('<%= txtCriadoPor.ClientID %>');
+                        var nome = filtroCriadoPor && filtroCriadoPor.value ? filtroCriadoPor.value.trim() : '';
+                        if (!nome && origemCriadoPor && origemCriadoPor.value) nome = origemCriadoPor.value.trim();
+                        try {
+                            if (!nome) nome = (localStorage.getItem('bali-ci-criado-por') || '').trim();
+                        } catch (erroLocalStorage) {
+                            nome = nome || '';
+                        }
+
+                        if (!nome) {
+                            nome = window.prompt('Informe o nome usado no campo Criado por:') || '';
+                            nome = nome.trim();
+                        }
+
+                        if (!nome) return;
+                        if (filtroCriadoPor) filtroCriadoPor.value = nome;
+                        try { localStorage.setItem('bali-ci-criado-por', nome); } catch (erroSalvarNome) {}
+                        clicarBotaoFiltrarCI();
+                    }
+                };
+
+                window.filtrarFavoritasAnotacoesCI = function (somenteFavoritas) {
+                    var linhas = document.querySelectorAll('#<%= gvAnotacoes.ClientID %> tr');
+                    for (var i = 0; i < linhas.length; i++) {
+                        if (linhas[i].querySelector('th')) continue;
+                        var favorita = linhas[i].classList.contains('is-favorite-row');
+                        linhas[i].style.display = somenteFavoritas && !favorita ? 'none' : '';
+                    }
                 };
 
                 function limparErros() {
@@ -1132,6 +1206,30 @@
                     }
                 };
 
+                function revisarTextoAntesDeSalvarCI() {
+                    var avisos = [];
+                    var camposTexto = [
+                        { nome: 'Assunto', id: '<%= txtAssunto.ClientID %>' },
+                        { nome: 'Texto da comunica\u00e7\u00e3o', id: '<%= txtCorpo.ClientID %>' },
+                        { nome: 'Provid\u00eancias', id: '<%= txtProvidencias.ClientID %>' },
+                        { nome: 'Observa\u00e7\u00f5es', id: '<%= txtObservacoes.ClientID %>' }
+                    ];
+
+                    for (var i = 0; i < camposTexto.length; i++) {
+                        var item = camposTexto[i];
+                        var textoCampo = valor(item.id);
+                        if (!textoCampo) continue;
+
+                        if (/\s{3,}/.test(textoCampo)) avisos.push(item.nome + ': existem espa\u00e7os repetidos.');
+                        if (/[!?.,;:]{2,}/.test(textoCampo)) avisos.push(item.nome + ': existe pontua\u00e7\u00e3o repetida.');
+                        if (/\b(vc|vcs|pq|qdo|tbm|tb|blz)\b/i.test(textoCampo)) avisos.push(item.nome + ': h\u00e1 abrevia\u00e7\u00f5es informais.');
+                        if (/\b(nao|voce|sera|area|atencao|autorizacao|comunicacao|informacao)\b/i.test(textoCampo)) avisos.push(item.nome + ': revise palavras sem acento.');
+                    }
+
+                    if (avisos.length === 0) return true;
+                    return window.confirm('Revis\u00e3o r\u00e1pida encontrou pontos de aten\u00e7\u00e3o:\\n\\n- ' + avisos.slice(0, 6).join('\\n- ') + '\\n\\nDeseja salvar mesmo assim?');
+                }
+
                 window.validarCICliente = function () {
                     limparErros();
 
@@ -1171,6 +1269,10 @@
                             mostrarErro('Reduza o campo ' + limite.nome + ' para at\u00e9 ' + limite.max + ' caracteres.', campoLimite);
                             return false;
                         }
+                    }
+
+                    if (!revisarTextoAntesDeSalvarCI()) {
+                        return false;
                     }
 
                     if (salvandoCI) return false;
