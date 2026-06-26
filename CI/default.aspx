@@ -9,7 +9,7 @@
     <link href="ci.css?v=20260626-ci-review01" rel="stylesheet" />
 </head>
 <body class="ci-page">
-    <form id="form1" runat="server">
+    <form id="form1" runat="server" autocomplete="off">
         <a class="skip-link" href="#conteudo">Ir para o conte&uacute;do</a>
         <div class="app-shell">
             <aside class="sidebar">
@@ -338,7 +338,7 @@
                             <asp:TextBox ID="txtFiltroCriadoPor" runat="server" CssClass="text-field" MaxLength="160" placeholder="Respons&aacute;vel pelo cadastro"></asp:TextBox>
                         </label>
                         <label>Busca
-                            <asp:TextBox ID="txtBusca" runat="server" CssClass="text-field" placeholder="Assunto, &aacute;rea, destinat&aacute;rio ou texto" autocomplete="off"></asp:TextBox>
+                            <asp:TextBox ID="txtBusca" runat="server" CssClass="text-field" MaxLength="160" placeholder="Assunto, &aacute;rea, destinat&aacute;rio ou texto" autocomplete="new-password" AutoCompleteType="Disabled" spellcheck="false" data-ci-no-autofill="true" data-lpignore="true" data-1p-ignore="true"></asp:TextBox>
                         </label>
                         <label class="checkbox-row">
                             <asp:CheckBox ID="chkSomenteAtivas" runat="server" Checked="true" />
@@ -708,6 +708,49 @@
                 }
 
                 marcarNavegacaoAtivaCI();
+
+                function protegerBuscaConsultaCI() {
+                    var campoBusca = document.getElementById('<%= txtBusca.ClientID %>');
+                    if (!campoBusca) return;
+
+                    var valorServidor = campoBusca.defaultValue || '';
+                    var usuarioInteragiu = false;
+                    var atributos = {
+                        autocomplete: 'new-password',
+                        autocorrect: 'off',
+                        autocapitalize: 'none',
+                        spellcheck: 'false',
+                        'aria-autocomplete': 'none',
+                        'data-lpignore': 'true',
+                        'data-1p-ignore': 'true',
+                        'data-form-type': 'other'
+                    };
+
+                    Object.keys(atributos).forEach(function (nome) {
+                        campoBusca.setAttribute(nome, atributos[nome]);
+                    });
+
+                    function marcarInteracaoUsuario() {
+                        usuarioInteragiu = true;
+                    }
+
+                    function restaurarValorServidorSeAutofill() {
+                        if (usuarioInteragiu) return;
+                        if (campoBusca.value !== valorServidor) {
+                            campoBusca.value = valorServidor;
+                        }
+                    }
+
+                    ['keydown', 'mousedown', 'touchstart', 'paste'].forEach(function (evento) {
+                        campoBusca.addEventListener(evento, marcarInteracaoUsuario);
+                    });
+
+                    window.setTimeout(restaurarValorServidorSeAutofill, 80);
+                    window.setTimeout(restaurarValorServidorSeAutofill, 450);
+                    window.setTimeout(restaurarValorServidorSeAutofill, 1200);
+                }
+
+                protegerBuscaConsultaCI();
 
                 var postbackCIPendente = null;
                 var modalSenhaCI = document.getElementById('modalSenhaCI');
