@@ -355,6 +355,17 @@ label {
   font-size: 14px;
 }
 
+.file-field {
+  width: 100%;
+  min-height: 40px;
+  border: 1px dashed #b8c7dc;
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: var(--ink);
+  background: #fbfdff;
+  font-size: 13px;
+}
+
 .text-field:focus,
 .select-field:focus {
   border-color: var(--brand);
@@ -448,13 +459,38 @@ label {
 
 .table-action {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 10px;
   margin-right: 8px;
   color: var(--brand-strong);
+  background: #eef5ff;
+  cursor: pointer;
+  font-size: 12px;
   font-weight: 800;
+}
+
+.table-action:hover,
+.table-action:focus {
+  background: #dceafe;
+  outline: 0;
+}
+
+.copy-action {
+  color: #fff;
+  background: var(--brand);
+}
+
+.copy-action.is-copied {
+  background: var(--success);
 }
 
 .table-action.danger {
   color: var(--danger);
+  background: #fff1f0;
 }
 
 .ramais-pager td {
@@ -489,6 +525,62 @@ label {
 
 .print-panel {
   overflow: hidden;
+}
+
+.import-box {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(220px, .7fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #f8fbff;
+}
+
+.import-box strong {
+  display: block;
+  color: var(--ink);
+}
+
+.import-box p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.history-card {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+.history-card h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 18px;
+}
+
+.history-list {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history-list li,
+.empty-history {
+  border: 1px solid #e6edf6;
+  border-radius: 8px;
+  padding: 9px 10px;
+  color: #43536a;
+  background: #fbfdff;
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .print-summary {
@@ -738,6 +830,7 @@ label {
   .filter-grid,
   .form-grid,
   .compact-form,
+  .import-box,
   .two-column {
     grid-template-columns: 1fr;
   }
@@ -903,30 +996,30 @@ label {
   }
 
   .print-sector {
-    margin-top: 7px;
+    margin-top: 5px;
   }
 
   .print-sector h3 {
-    padding: 5px 7px;
-    font-size: 10px;
+    padding: 4px 6px;
+    font-size: 9px;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   .print-ramais-table th,
   .print-ramais-table td {
-    padding: 4px 6px;
-    font-size: 10px;
+    padding: 3px 5px;
+    font-size: 9px;
   }
 
   .print-ramais-table th {
-    font-size: 8.5px;
+    font-size: 8px;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   .ramal-number {
-    font-size: 11px !important;
+    font-size: 10px !important;
   }
 }
 

@@ -331,7 +331,6 @@ BEGIN
         SELECT 1 FROM dbo.ramais
         WHERE ramal = @ramal
           AND id_loja = @id_loja
-          AND id_setor = @id_setor
           AND ativo = 1
           AND (ISNULL(@id_ramal, 0) = 0 OR id_ramal <> @id_ramal)
     )

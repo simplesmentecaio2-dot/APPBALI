@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sistema de Ramais</title>
-    <link href="ramais.css?v=20260625-metrics" rel="stylesheet" />
+    <link href="ramais.css?v=20260625-ux01" rel="stylesheet" />
 </head>
 <body class="ramais-page">
     <form id="form1" runat="server">
@@ -110,7 +110,8 @@
                             <h2>Localizar ramais</h2>
                         </div>
                         <div class="panel-tools">
-                            <asp:Button ID="btnExportar" runat="server" Text="Exportar CSV" CssClass="secondary-button" OnClick="btnExportar_Click" />
+                            <a class="secondary-link" href="default.aspx?view=impressao">Imprimir/PDF</a>
+                            <asp:Button ID="btnExportar" runat="server" Text="Exportar Excel" CssClass="secondary-button" OnClick="btnExportar_Click" />
                             <asp:Button ID="btnLimparFiltros" runat="server" Text="Limpar filtros" CssClass="secondary-button" OnClick="btnLimparFiltros_Click" />
                         </div>
                     </div>
@@ -123,7 +124,7 @@
                             <asp:DropDownList ID="ddlFiltroSetor" runat="server" CssClass="select-field"></asp:DropDownList>
                         </label>
                         <label>Buscar
-                            <asp:TextBox ID="txtBusca" runat="server" CssClass="text-field" placeholder="Nome, ramal, loja ou setor"></asp:TextBox>
+                            <asp:TextBox ID="txtBusca" runat="server" CssClass="text-field" placeholder="Nome, ramal, loja ou setor" autocomplete="off"></asp:TextBox>
                         </label>
                         <label class="checkbox-row">
                             <asp:CheckBox ID="chkSomenteAtivos" runat="server" Checked="true" />
@@ -142,6 +143,7 @@
                                 <asp:BoundField DataField="status" HeaderText="Status" SortExpression="status" />
                                 <asp:TemplateField HeaderText="A&ccedil;&atilde;o">
                                     <ItemTemplate>
+                                        <button type="button" class="table-action copy-action" data-ramal='<%# Atributo(Eval("ramal")) %>' data-nome='<%# Atributo(Eval("nome")) %>' onclick="copiarRamalConsulta(this)">Copiar</button>
                                         <asp:LinkButton ID="lnkEditarConsulta" runat="server" CssClass="table-action" CommandName="EditarRamal" CommandArgument='<%# Eval("id_ramal") %>' OnClientClick="return solicitarSenhaRamal('editar', this);">Editar</asp:LinkButton>
                                     </ItemTemplate>
                                 </asp:TemplateField>
@@ -161,6 +163,15 @@
 
                     <asp:HiddenField ID="hfRamalId" runat="server" />
                     <div id="ramalClientMessage" class="client-message" aria-live="polite"></div>
+                    <div class="import-box">
+                        <div>
+                            <span class="eyebrow">Importa&ccedil;&atilde;o em massa</span>
+                            <strong>CSV ou Excel salvo como CSV</strong>
+                            <p>Colunas esperadas: Nome; Ramal; Loja; Setor; Ativo. Novos ramais n&atilde;o pedem senha; altera&ccedil;&otilde;es continuam protegidas.</p>
+                        </div>
+                        <asp:FileUpload ID="fuImportarRamais" runat="server" CssClass="file-field" />
+                        <asp:Button ID="btnImportarRamais" runat="server" Text="Importar lista" CssClass="secondary-button" OnClick="btnImportarRamais_Click" />
+                    </div>
                     <div class="form-grid">
                         <label>Nome
                             <asp:TextBox ID="txtNome" runat="server" CssClass="text-field" MaxLength="160"></asp:TextBox>
@@ -198,6 +209,16 @@
                             </Columns>
                         </asp:GridView>
                     </div>
+
+                    <asp:Panel ID="pnlHistoricoRamais" runat="server" CssClass="history-card">
+                        <div class="panel-header compact-header">
+                            <div>
+                                <span class="eyebrow">Auditoria</span>
+                                <h3>&Uacute;ltimas altera&ccedil;&otilde;es</h3>
+                            </div>
+                        </div>
+                        <asp:Literal ID="litHistoricoRamais" runat="server"></asp:Literal>
+                    </asp:Panel>
                 </asp:Panel>
 
                 <asp:Panel ID="pnlCadastrosAuxiliares" runat="server" CssClass="two-column">
@@ -364,6 +385,45 @@
                     return document.getElementById(id);
                 }
 
+                window.copiarRamalConsulta = function (botao) {
+                    var ramal = botao ? (botao.getAttribute('data-ramal') || '') : '';
+                    var nome = botao ? (botao.getAttribute('data-nome') || '') : '';
+                    var texto = ramal;
+                    if (!texto) return;
+
+                    function avisar() {
+                        var original = botao.textContent;
+                        botao.textContent = 'Copiado';
+                        botao.classList.add('is-copied');
+                        window.setTimeout(function () {
+                            botao.textContent = original;
+                            botao.classList.remove('is-copied');
+                        }, 1400);
+                    }
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(texto).then(avisar).catch(function () {
+                            window.prompt('Copie o ramal de ' + nome + ':', texto);
+                        });
+                    } else {
+                        window.prompt('Copie o ramal de ' + nome + ':', texto);
+                    }
+                };
+
+                function filtrarTabelaCarregada() {
+                    var busca = campo('<%= txtBusca.ClientID %>');
+                    var tabela = document.getElementById('<%= gvConsulta.ClientID %>');
+                    if (!busca || !tabela) return;
+
+                    var termo = busca.value.trim().toLowerCase();
+                    var linhas = tabela.querySelectorAll('tr');
+                    for (var i = 0; i < linhas.length; i++) {
+                        if (linhas[i].querySelector('th')) continue;
+                        var texto = linhas[i].textContent.toLowerCase();
+                        linhas[i].style.display = termo.length > 0 && texto.indexOf(termo) < 0 ? 'none' : '';
+                    }
+                }
+
                 function mostrarErroCliente(messageId, mensagem, elemento) {
                     var aviso = document.getElementById(messageId);
                     if (aviso) {
@@ -444,6 +504,9 @@
                 var viewAtual = params.get('view') || 'consulta';
                 var linkAtivo = document.querySelector('.side-nav a[href*="view=' + viewAtual + '"]');
                 if (linkAtivo) linkAtivo.classList.add('is-active');
+
+                var buscaRapida = campo('<%= txtBusca.ClientID %>');
+                if (buscaRapida) buscaRapida.addEventListener('input', filtrarTabelaCarregada);
             })();
         </script>
     </form>

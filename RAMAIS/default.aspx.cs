@@ -1,5 +1,6 @@
 using System;
 using System.Configuration;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -25,6 +26,8 @@ public partial class ramais_default : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        form1.Enctype = "multipart/form-data";
+
         if (!IsPostBack)
         {
             CarregarTudo();
@@ -65,26 +68,29 @@ public partial class ramais_default : System.Web.UI.Page
         ramais = OrdenarTabela(ramais, gvConsulta);
 
         Response.Clear();
-        Response.ContentType = "text/csv";
+        Response.ContentType = "application/vnd.ms-excel";
         Response.ContentEncoding = Encoding.UTF8;
-        Response.AddHeader("Content-Disposition", "attachment; filename=ramais-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".csv");
+        Response.AddHeader("Content-Disposition", "attachment; filename=ramais-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".xls");
         Response.BinaryWrite(Encoding.UTF8.GetPreamble());
-        Response.Write("Nome;Ramal;Loja;Setor;Status\r\n");
+        Response.Write("<html><head><meta charset=\"utf-8\" /></head><body><table border=\"1\">");
+        Response.Write("<tr><th>Nome</th><th>Ramal</th><th>Loja</th><th>Setor</th><th>Status</th></tr>");
 
         foreach (DataRow row in ramais.Rows)
         {
-            Response.Write(Csv(row["nome"]));
-            Response.Write(";");
-            Response.Write(Csv(row["ramal"]));
-            Response.Write(";");
-            Response.Write(Csv(row["loja"]));
-            Response.Write(";");
-            Response.Write(Csv(row["setor"]));
-            Response.Write(";");
-            Response.Write(Csv(row["status"]));
-            Response.Write("\r\n");
+            Response.Write("<tr><td>");
+            Response.Write(Server.HtmlEncode(Convert.ToString(row["nome"])));
+            Response.Write("</td><td>");
+            Response.Write(Server.HtmlEncode(Convert.ToString(row["ramal"])));
+            Response.Write("</td><td>");
+            Response.Write(Server.HtmlEncode(Convert.ToString(row["loja"])));
+            Response.Write("</td><td>");
+            Response.Write(Server.HtmlEncode(Convert.ToString(row["setor"])));
+            Response.Write("</td><td>");
+            Response.Write(Server.HtmlEncode(Convert.ToString(row["status"])));
+            Response.Write("</td></tr>");
         }
 
+        Response.Write("</table></body></html>");
         HttpContext.Current.ApplicationInstance.CompleteRequest();
     }
 
@@ -92,6 +98,52 @@ public partial class ramais_default : System.Web.UI.Page
     {
         CarregarImpressao();
         AplicarTela("impressao");
+    }
+
+    protected void btnImportarRamais_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            if (!fuImportarRamais.HasFile)
+            {
+                MostrarMensagem("Selecione um arquivo CSV para importar.", true);
+                AplicarTela("ramais");
+                return;
+            }
+
+            string extensao = Path.GetExtension(fuImportarRamais.FileName).ToLowerInvariant();
+            if (extensao != ".csv" && extensao != ".txt")
+            {
+                MostrarMensagem("Para importar do Excel, salve a planilha como CSV e envie novamente.", true);
+                AplicarTela("ramais");
+                return;
+            }
+
+            string conteudo;
+            using (StreamReader reader = new StreamReader(fuImportarRamais.FileContent, Encoding.Default, true))
+            {
+                conteudo = reader.ReadToEnd();
+            }
+
+            ResultadoImportacao resultado = ImportarRamaisCsv(conteudo);
+            CarregarTudo();
+            AplicarTela("ramais");
+
+            if (resultado.Erros.Count > 0)
+            {
+                MostrarMensagem("Importa\u00e7\u00e3o conclu\u00edda com " + resultado.Sucessos.ToString() + " " + TextoRamalPlural(resultado.Sucessos) + " salvo" + (resultado.Sucessos == 1 ? "" : "s") + ". Pend\u00eancias: " + String.Join(" | ", resultado.Erros.ToArray()), true);
+            }
+            else
+            {
+                MostrarMensagem("Importa\u00e7\u00e3o conclu\u00edda: " + resultado.Sucessos.ToString() + " " + TextoRamalPlural(resultado.Sucessos) + " salvo" + (resultado.Sucessos == 1 ? "" : "s") + ".", false);
+            }
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro("Importar ramais", ex);
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("ramais");
+        }
     }
 
     protected void btnSalvarRamal_Click(object sender, EventArgs e)
@@ -136,13 +188,25 @@ public partial class ramais_default : System.Web.UI.Page
                 return;
             }
 
-            ExecutarTabela("dbo.ramais_ramal_salvar",
+            int idLoja = Convert.ToInt32(ddlRamalLoja.SelectedValue);
+            int idSetor = Convert.ToInt32(ddlRamalSetor.SelectedValue);
+            if (ExisteRamalDuplicadoNaLoja(txtRamal.Text, idLoja, idAtual))
+            {
+                MostrarMensagem("J\u00e1 existe um ramal ativo com esse n\u00famero nesta loja. Revise antes de salvar.", true);
+                AplicarTela("ramais");
+                return;
+            }
+
+            DataRow antes = idAtual > 0 ? ObterRamalHistorico(idAtual) : null;
+            DataTable salvo = ExecutarTabela("dbo.ramais_ramal_salvar",
                 Param("@id_ramal", SqlDbType.Int, idAtual > 0 ? (object)idAtual : DBNull.Value),
                 Param("@nome", SqlDbType.NVarChar, txtNome.Text, 160),
                 Param("@ramal", SqlDbType.NVarChar, txtRamal.Text, 30),
-                Param("@id_loja", SqlDbType.Int, Convert.ToInt32(ddlRamalLoja.SelectedValue)),
-                Param("@id_setor", SqlDbType.Int, Convert.ToInt32(ddlRamalSetor.SelectedValue)),
+                Param("@id_loja", SqlDbType.Int, idLoja),
+                Param("@id_setor", SqlDbType.Int, idSetor),
                 Param("@ativo", SqlDbType.Bit, chkRamalAtivo.Checked));
+
+            RegistrarHistoricoRamal(idAtual > 0 ? "Alteracao" : "Inclusao", antes, salvo.Rows.Count > 0 ? salvo.Rows[0] : null);
 
             LimparAutorizacaoEdicaoRamal(idAtual);
             LimparRamal();
@@ -192,7 +256,9 @@ public partial class ramais_default : System.Web.UI.Page
                     return;
                 }
 
+                DataRow antes = ObterRamalHistorico(id);
                 ExecutarSemRetorno("dbo.ramais_ramal_excluir", Param("@id_ramal", SqlDbType.Int, id));
+                RegistrarHistoricoRamal("Exclusao", antes, null);
                 LimparAutorizacaoEdicaoRamal(id);
                 LimparRamal();
                 CarregarTudo();
@@ -456,6 +522,176 @@ public partial class ramais_default : System.Web.UI.Page
         CarregarLojas();
         CarregarSetores();
         CarregarImpressao();
+        CarregarHistoricoRamais();
+    }
+
+    private ResultadoImportacao ImportarRamaisCsv(string conteudo)
+    {
+        ResultadoImportacao resultado = new ResultadoImportacao();
+        if (String.IsNullOrWhiteSpace(conteudo))
+        {
+            resultado.Erros.Add("arquivo vazio");
+            return resultado;
+        }
+
+        DataTable lojas = ExecutarTabela("dbo.ramais_loja_listar", Param("@somente_ativas", SqlDbType.Bit, true));
+        DataTable setores = ExecutarTabela("dbo.ramais_setor_listar", Param("@somente_ativos", SqlDbType.Bit, true));
+        Dictionary<string, int> mapaLojas = CriarMapaPorNome(lojas, "id_loja");
+        Dictionary<string, int> mapaSetores = CriarMapaPorNome(setores, "id_setor");
+
+        string[] linhas = conteudo.Replace("\r\n", "\n").Replace("\r", "\n").Split('\n');
+        int inicio = 0;
+        if (linhas.Length > 0 && linhas[0].ToLowerInvariant().Contains("nome") && linhas[0].ToLowerInvariant().Contains("ramal"))
+        {
+            inicio = 1;
+        }
+
+        for (int i = inicio; i < linhas.Length; i++)
+        {
+            string linha = (linhas[i] ?? "").Trim();
+            if (linha.Length == 0) continue;
+
+            if (resultado.Processadas >= 300)
+            {
+                resultado.Erros.Add("limite de 300 linhas por importa\u00e7\u00e3o atingido");
+                break;
+            }
+
+            resultado.Processadas++;
+            string[] colunas = SepararLinhaCsv(linha);
+            if (colunas.Length < 4)
+            {
+                resultado.AdicionarErro("linha " + (i + 1).ToString() + ": informe Nome, Ramal, Loja e Setor");
+                continue;
+            }
+
+            string nome = TextoCurto(colunas[0]);
+            string ramal = TextoCurto(colunas[1]);
+            string loja = TextoCurto(colunas[2]);
+            string setor = TextoCurto(colunas[3]);
+            bool ativo = colunas.Length < 5 || ValorAtivoImportacao(colunas[4]);
+
+            if (nome.Length == 0 || ramal.Length == 0 || loja.Length == 0 || setor.Length == 0)
+            {
+                resultado.AdicionarErro("linha " + (i + 1).ToString() + ": campos obrigat\u00f3rios vazios");
+                continue;
+            }
+
+            string chaveLoja = ChaveNormalizada(loja);
+            string chaveSetor = ChaveNormalizada(setor);
+            if (!mapaLojas.ContainsKey(chaveLoja))
+            {
+                resultado.AdicionarErro("linha " + (i + 1).ToString() + ": loja n\u00e3o encontrada");
+                continue;
+            }
+
+            if (!mapaSetores.ContainsKey(chaveSetor))
+            {
+                resultado.AdicionarErro("linha " + (i + 1).ToString() + ": setor n\u00e3o encontrado");
+                continue;
+            }
+
+            int idLoja = mapaLojas[chaveLoja];
+            int idSetor = mapaSetores[chaveSetor];
+            if (ExisteRamalDuplicadoNaLoja(ramal, idLoja, 0))
+            {
+                resultado.AdicionarErro("linha " + (i + 1).ToString() + ": ramal duplicado na loja");
+                continue;
+            }
+
+            DataTable salvo = ExecutarTabela("dbo.ramais_ramal_salvar",
+                Param("@id_ramal", SqlDbType.Int, DBNull.Value),
+                Param("@nome", SqlDbType.NVarChar, nome, 160),
+                Param("@ramal", SqlDbType.NVarChar, ramal, 30),
+                Param("@id_loja", SqlDbType.Int, idLoja),
+                Param("@id_setor", SqlDbType.Int, idSetor),
+                Param("@ativo", SqlDbType.Bit, ativo));
+
+            RegistrarHistoricoRamal("Importacao", null, salvo.Rows.Count > 0 ? salvo.Rows[0] : null);
+            resultado.Sucessos++;
+        }
+
+        return resultado;
+    }
+
+    private Dictionary<string, int> CriarMapaPorNome(DataTable dados, string colunaId)
+    {
+        Dictionary<string, int> mapa = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        foreach (DataRow row in dados.Rows)
+        {
+            string nome = ChaveNormalizada(Convert.ToString(row["nome"]));
+            int id;
+            if (nome.Length > 0 && Int32.TryParse(Convert.ToString(row[colunaId]), out id) && !mapa.ContainsKey(nome))
+            {
+                mapa.Add(nome, id);
+            }
+        }
+
+        return mapa;
+    }
+
+    private string[] SepararLinhaCsv(string linha)
+    {
+        char separador = linha.IndexOf(';') >= 0 ? ';' : ',';
+        List<string> partes = new List<string>();
+        StringBuilder atual = new StringBuilder();
+        bool aspas = false;
+
+        for (int i = 0; i < linha.Length; i++)
+        {
+            char c = linha[i];
+            if (c == '"')
+            {
+                if (aspas && i + 1 < linha.Length && linha[i + 1] == '"')
+                {
+                    atual.Append('"');
+                    i++;
+                }
+                else
+                {
+                    aspas = !aspas;
+                }
+            }
+            else if (c == separador && !aspas)
+            {
+                partes.Add(atual.ToString());
+                atual.Length = 0;
+            }
+            else
+            {
+                atual.Append(c);
+            }
+        }
+
+        partes.Add(atual.ToString());
+        return partes.ToArray();
+    }
+
+    private bool ValorAtivoImportacao(string valor)
+    {
+        string texto = ChaveNormalizada(valor);
+        return texto.Length == 0 || texto == "1" || texto == "sim" || texto == "s" || texto == "ativo" || texto == "true";
+    }
+
+    private bool ExisteRamalDuplicadoNaLoja(string ramal, int idLoja, int idIgnorar)
+    {
+        DataTable dados = ExecutarTabela("dbo.ramais_ramal_listar",
+            Param("@id_loja", SqlDbType.Int, idLoja),
+            Param("@id_setor", SqlDbType.Int, DBNull.Value),
+            Param("@termo", SqlDbType.NVarChar, TextoCurto(ramal), 160),
+            Param("@somente_ativos", SqlDbType.Bit, true));
+
+        foreach (DataRow row in dados.Rows)
+        {
+            int id;
+            Int32.TryParse(Convert.ToString(row["id_ramal"]), out id);
+            if (id != idIgnorar && String.Equals(TextoCurto(Convert.ToString(row["ramal"])), TextoCurto(ramal), StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private string ObterTelaAtual()
@@ -809,11 +1045,122 @@ public partial class ramais_default : System.Web.UI.Page
         txtRamal.Text = TextoCurto(txtRamal.Text);
     }
 
+    private DataRow ObterRamalHistorico(int id)
+    {
+        if (id <= 0) return null;
+        DataTable dados = ExecutarTabela("dbo.ramais_ramal_obter", Param("@id_ramal", SqlDbType.Int, id));
+        return dados.Rows.Count > 0 ? dados.Rows[0] : null;
+    }
+
+    private void RegistrarHistoricoRamal(string acao, DataRow antes, DataRow depois)
+    {
+        try
+        {
+            string pasta = Server.MapPath("~/App_Data");
+            if (!Directory.Exists(pasta))
+            {
+                Directory.CreateDirectory(pasta);
+            }
+
+            string usuario = Context != null && Context.User != null && Context.User.Identity != null && Context.User.Identity.IsAuthenticated
+                ? Context.User.Identity.Name
+                : "anonimo";
+
+            string linha = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
+                " | " + acao +
+                " | usuario=" + usuario +
+                " | antes=" + ResumoRamalHistorico(antes) +
+                " | depois=" + ResumoRamalHistorico(depois) +
+                Environment.NewLine;
+
+            File.AppendAllText(Path.Combine(pasta, "ramais-historico.log"), linha, Encoding.UTF8);
+        }
+        catch
+        {
+        }
+    }
+
+    private string ResumoRamalHistorico(DataRow row)
+    {
+        if (row == null) return "";
+        return ("id=" + ValorHistorico(row, "id_ramal") +
+            ";nome=" + ValorHistorico(row, "nome") +
+            ";ramal=" + ValorHistorico(row, "ramal") +
+            ";loja=" + ValorHistorico(row, "loja") +
+            ";setor=" + ValorHistorico(row, "setor") +
+            ";status=" + ValorHistorico(row, "status")).Replace("\r", " ").Replace("\n", " ");
+    }
+
+    private string ValorHistorico(DataRow row, string coluna)
+    {
+        if (row == null || row.Table.Columns.IndexOf(coluna) < 0 || row[coluna] == DBNull.Value) return "";
+        return Convert.ToString(row[coluna]);
+    }
+
+    private void CarregarHistoricoRamais()
+    {
+        string caminho = Server.MapPath("~/App_Data/ramais-historico.log");
+        if (!File.Exists(caminho))
+        {
+            litHistoricoRamais.Text = "<p class=\"empty-history\">Nenhuma altera\u00e7\u00e3o registrada ainda.</p>";
+            return;
+        }
+
+        string[] linhas = File.ReadAllLines(caminho, Encoding.UTF8);
+        int inicio = Math.Max(0, linhas.Length - 8);
+        StringBuilder html = new StringBuilder();
+        html.Append("<ol class=\"history-list\">");
+        for (int i = linhas.Length - 1; i >= inicio; i--)
+        {
+            if (String.IsNullOrWhiteSpace(linhas[i])) continue;
+            html.Append("<li>");
+            html.Append(Server.HtmlEncode(linhas[i]));
+            html.Append("</li>");
+        }
+        html.Append("</ol>");
+        litHistoricoRamais.Text = html.ToString();
+    }
+
     private string TextoCurto(string valor)
     {
         string texto = (valor ?? "").Trim();
         if (texto.Length == 0) return "";
         return String.Join(" ", texto.Split((char[])null, StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    private string TextoRamalPlural(int total)
+    {
+        return total == 1 ? "ramal" : "ramais";
+    }
+
+    private string ChaveNormalizada(string valor)
+    {
+        return TextoCurto(valor).ToLowerInvariant();
+    }
+
+    protected string Atributo(object valor)
+    {
+        return HttpUtility.HtmlAttributeEncode(Convert.ToString(valor ?? ""));
+    }
+
+    private class ResultadoImportacao
+    {
+        public int Processadas { get; set; }
+        public int Sucessos { get; set; }
+        public List<string> Erros { get; private set; }
+
+        public ResultadoImportacao()
+        {
+            Erros = new List<string>();
+        }
+
+        public void AdicionarErro(string erro)
+        {
+            if (Erros.Count < 6)
+            {
+                Erros.Add(erro);
+            }
+        }
     }
 
     private SqlParameter Param(string nome, SqlDbType tipo, object valor, int tamanho = 0)
