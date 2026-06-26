@@ -338,7 +338,7 @@
                             <asp:TextBox ID="txtFiltroCriadoPor" runat="server" CssClass="text-field" MaxLength="160" placeholder="Respons&aacute;vel pelo cadastro"></asp:TextBox>
                         </label>
                         <label>Busca
-                            <asp:TextBox ID="txtBusca" runat="server" CssClass="text-field" MaxLength="160" placeholder="Assunto, &aacute;rea, destinat&aacute;rio ou texto" autocomplete="new-password" AutoCompleteType="Disabled" spellcheck="false" data-ci-no-autofill="true" data-lpignore="true" data-1p-ignore="true"></asp:TextBox>
+                            <asp:TextBox ID="txtBusca" runat="server" CssClass="text-field" MaxLength="160" placeholder="Assunto, &aacute;rea, destinat&aacute;rio ou texto" autocomplete="new-password" spellcheck="false" data-ci-no-autofill="true" data-lpignore="true" data-1p-ignore="true"></asp:TextBox>
                         </label>
                         <label class="checkbox-row">
                             <asp:CheckBox ID="chkSomenteAtivas" runat="server" Checked="true" />
