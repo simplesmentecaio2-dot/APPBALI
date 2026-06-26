@@ -17,7 +17,7 @@
 
     <script src="../tables/js/jquery.dataTables.min.js"></script>
     <link href="../tables/estilo/table.css" rel="stylesheet" />
-    <link href="../css/bali-contract.css?v=20260625-biline02" rel="stylesheet" />
+    <link href="../css/bali-contract.css?v=20260626-logout01" rel="stylesheet" />
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -124,7 +124,8 @@
                     <td id="table-menu-usuario" class="idUser">Usuário:
                         <asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text=""></asp:Label>
                         Perfil:
-                        <asp:Label ID="lblPerfil" CssClass="idUser" runat="server" Style="margin-right: 13px;" Text=""></asp:Label></td>
+                        <asp:Label ID="lblPerfil" CssClass="idUser" runat="server" Style="margin-right: 13px;" Text=""></asp:Label>
+                        <a class="bali-logout-link" href="/logout.aspx?voltar=/jeep/loginAppcontrato.aspx">Sair</a></td>
                 </tr>
             </table>
         </div>

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Central BYD | Grupo Bali</title>
-    <link href="../css/central-links.css?v=20260624-central" rel="stylesheet" />
+    <link href="../css/central-links.css?v=20260626-logout01" rel="stylesheet" />
     <script src="../js/central-links-icons.js?v=20260624-central" defer="defer"></script>
     <script src="../js/central-links-maintenance.js?v=20260625-noautofill" defer="defer"></script>
 </head>
@@ -25,6 +25,7 @@
                     <div class="central-user">
                         <div>Usu&aacute;rio: <span><asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text="CAIO AUGUSTO"></asp:Label></span></div>
                         <div>Perfil: <span><asp:Label ID="lblPerfil" CssClass="idUser" runat="server" Text=""></asp:Label></span></div>
+                        <a class="central-logout-button" href="/logout.aspx?voltar=/byd/loginAppcontrato.aspx">Sair</a>
                     </div>
                 </div>
             </header>

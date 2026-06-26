@@ -29,7 +29,7 @@
                     <a href="default.aspx?view=setores">Setores</a>
                     <a href="logs.aspx" class="is-active" aria-current="page">Logs</a>
                     <a href="../Intranet/index.html">Intranet</a>
-                    <a href="login.aspx?sair=1">Sair</a>
+                    <a href="/logout.aspx?voltar=/RAMAIS/login.aspx">Sair</a>
                 </nav>
             </aside>
 

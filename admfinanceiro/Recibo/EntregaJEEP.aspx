@@ -9,7 +9,7 @@
 <head runat="server">
     <title>Entrega de Veículo - Jeep</title>
     <link href="../../css/estilo.css" rel="stylesheet" />
-    <link href="../../css/bali-utility.css?v=20260624-1" rel="stylesheet" />
+    <link href="../../css/bali-utility.css?v=20260626-logout01" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
@@ -74,7 +74,7 @@
                         Perfil:
                                 <asp:label id="lblTipo" cssclass="idUser" runat="server" style="margin-right: 13px;"
                                     text=""></asp:label>
-                    </td>
+                    <a class="bali-logout-link" href="/logout.aspx?voltar=/jeep/loginAppcontrato.aspx">Sair</a></td>
                 </tr>
             </table>
         </div>

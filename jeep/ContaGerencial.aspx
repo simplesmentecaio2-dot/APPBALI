@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../css/estilo.css" rel="stylesheet" />
     <link href="../tables/estilo/table.css" rel="stylesheet" />
-    <link href="../css/bali-gerencial.css?v=20260624-1" rel="stylesheet" />
+    <link href="../css/bali-gerencial.css?v=20260626-logout01" rel="stylesheet" />
     <script src="../js/jquery-1.10.2.js"></script>
     <script src="../tables/js/jquery.dataTables.min.js"></script>
     <script src="../js/bali-gerencial.js?v=20260624-1"></script>
@@ -27,7 +27,10 @@
                     <h1>Conta Gerencial Jeep</h1>
                     <p>Consulta de fornecedores vinculados às contas gerenciais, com filtro rápido, ordenação por coluna e paginação.</p>
                 </div>
-                <a class="gerencial-back" href="principal.aspx">Voltar</a>
+                <div class="gerencial-actions">
+                    <a class="gerencial-back" href="principal.aspx">Voltar</a>
+                    <a class="gerencial-back gerencial-logout" href="/logout.aspx?voltar=/jeep/loginAppcontrato.aspx">Sair</a>
+                </div>
             </section>
 
             <section class="gerencial-card">

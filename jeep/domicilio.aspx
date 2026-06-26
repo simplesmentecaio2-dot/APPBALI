@@ -8,7 +8,7 @@
 <head runat="server">
     <title>Domicílio Jeep - Bali</title>
     <link href="../css/estilo.css" rel="stylesheet" />
-    <link href="../css/bali-utility.css?v=20260624-2" rel="stylesheet" />
+    <link href="../css/bali-utility.css?v=20260626-logout01" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
@@ -23,7 +23,7 @@
 
 
 
-   
+
     <form id="form1" runat="server">
         <div>
             <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
@@ -34,7 +34,7 @@
                         <td id="table-menu-usuario" class="idUser">Usuário:
                         <asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text=""></asp:Label>
                             Perfil:
-                        <asp:Label ID="lblTipo" CssClass="idUser" runat="server" Style="margin-right: 13px;" Text=""></asp:Label></td>
+                        <asp:Label ID="lblTipo" CssClass="idUser" runat="server" Style="margin-right: 13px;" Text=""></asp:Label><a class="bali-logout-link" href="/logout.aspx?voltar=/jeep/loginAppcontrato.aspx">Sair</a></td>
                     </tr>
                 </table>
             </div>
@@ -55,7 +55,7 @@
                 <div class="item-menu" style="padding-left: 80px; height: 50px; line-height: 60px;" onclick="escondeMenuLeft()">
                     MENU <<
                 </div>
-               
+
                 <div class="item-menu"><a class="links" href="default.aspx">Início</a></div>
 
                 <div id="completa-menu-left"></div>
@@ -83,8 +83,8 @@
                     <ContentTemplate>
                         <fieldset>
                             <legend>Domicílio</legend>
-                           
-                             
+
+
                             <br />
                             <img src="../img/imprimir.png" style="width: 30px; cursor: pointer;" onclick="javascript: imprimePanel()" />
                             <asp:Panel ID="pnlImpressao" runat="server" Width="100%" Height="100%">
@@ -92,10 +92,10 @@
 
                                     <div style="text-align: center; font-size: large;">
                                         <img src="../img/domicilio.PNG" /></div>
-                                   
-                                    
 
-                                  
+
+
+
                                 </div>
                             </asp:Panel>
                         </fieldset>
@@ -117,7 +117,7 @@
     <div id="ag" style=" position:fixed;  z-index:1000; top:0; left:0; width:100%; height:100%; background-color:rgba(0, 0, 0, 0.75); visibility:hidden;">
             <div style="position:fixed; z-index:1001; top:50%; left:50%; width:300px; height:100px; margin-left:-150px; margin-top:-50px; background-color:white; border-radius:5px;">
                <img src="../../img/aguarde.gif" style=" border-radius:5px;" />
-                
+
             </div>
         </div>
 </body>

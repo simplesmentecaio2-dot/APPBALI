@@ -8,7 +8,7 @@
 <head runat="server">
     <title>Recibo de Desconto - Jeep</title>
     <link href="../css/estilo.css" rel="stylesheet" />
-    <link href="../css/bali-utility.css?v=20260624-1" rel="stylesheet" />
+    <link href="../css/bali-utility.css?v=20260626-logout01" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
@@ -90,7 +90,7 @@
                         <td id="table-menu-usuario" class="idUser">Usuário:
                         <asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text=""></asp:Label>
                             Perfil:
-                        <asp:Label ID="lblTipo" CssClass="idUser" runat="server" Style="margin-right: 13px;" Text=""></asp:Label></td>
+                        <asp:Label ID="lblTipo" CssClass="idUser" runat="server" Style="margin-right: 13px;" Text=""></asp:Label><a class="bali-logout-link" href="/logout.aspx?voltar=/jeep/loginAppcontrato.aspx">Sair</a></td>
                     </tr>
                 </table>
             </div>
@@ -120,7 +120,7 @@
                 <asp:TabPanel ID="TabPanel1" runat="server" HeaderText="TabPanel1">
                     <HeaderTemplate>
                         Recibo
-                    
+
 </HeaderTemplate>
 
 
@@ -136,7 +136,7 @@
 
 
 
-                    
+
 
 
 
@@ -156,11 +156,11 @@
 referente à compra do veículo: <asp:Label ID="lblVeículo" Font-Bold="True" runat="server" ></asp:Label>,
                                         chassi : <asp:Label ID="lblChassi" Font-Bold="True" runat="server" ></asp:Label>,
                                         cor: <asp:Label ID="lblCor" runat="server" Font-Bold="True" ></asp:Label>,
-                                        
+
                                         ano/modelo: <asp:Label ID="lblAno" runat="server" Font-Bold="True" ></asp:Label>,
                                         faturado por meio de nota Fiscal nº: <asp:Label ID="lblNota" Font-Bold="True" runat="server" ></asp:Label>.<br /> <br /><br /><br />Declaro que estou ciente que haverá incidência de percentual em relação à cobrança <br />do valor do IPVA do veículo zero quilometro acima descriminado e neste ato, dou pena <br />e total quitação desse valor para <asp:Label ID="Label2" Font-Bold="True" runat="server" Text="BALI MOTORS   LTDA"></asp:Label></div><br /><br /><br /><br /><div style="text-align: center; font-size: large;">Por ser a expressão de verdade firmo o presente recibo.</div><br /><br /><br /><div style="font-size: large; text-align: center">Brasília&#160;DF&#160;-&#160; <script language="javascript">
                                                         document.write(DiaExtenso());
-                                        </script></div><br /><br /><br /><br /><br /><br /><br /><div style="text-align: center; align-items: center; width: 100%;"><div>_____________________________________</div><br /><div style="font-size: large"><asp:Label ID="lblCliente" runat="server" style="font-size: large"  Font-Bold="True"></asp:Label></div></div></div></asp:Panel></fieldset> 
+                                        </script></div><br /><br /><br /><br /><br /><br /><br /><div style="text-align: center; align-items: center; width: 100%;"><div>_____________________________________</div><br /><div style="font-size: large"><asp:Label ID="lblCliente" runat="server" style="font-size: large"  Font-Bold="True"></asp:Label></div></div></div></asp:Panel></fieldset>
 </ContentTemplate>
 
 
@@ -172,7 +172,7 @@ referente à compra do veículo: <asp:Label ID="lblVeículo" Font-Bold="True" ru
 
 
 
-                
+
 
 
 
@@ -184,7 +184,7 @@ referente à compra do veículo: <asp:Label ID="lblVeículo" Font-Bold="True" ru
     <div id="ag" style=" position:fixed;  z-index:1000; top:0; left:0; width:100%; height:100%; background-color:rgba(0, 0, 0, 0.75); visibility:hidden;">
             <div style="position:fixed; z-index:1001; top:50%; left:50%; width:300px; height:100px; margin-left:-150px; margin-top:-50px; background-color:white; border-radius:5px;">
                <img src="../../img/aguarde.gif" style=" border-radius:5px;" />
-                
+
             </div>
         </div>
 </body>

@@ -90,6 +90,7 @@ body.central-links-page {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
+  align-items: center;
   gap: 6px 14px;
   color: rgba(255, 255, 255, .78);
   font-size: 12px;
@@ -98,6 +99,31 @@ body.central-links-page {
 
 .central-user span {
   color: #fff;
+}
+
+.central-logout-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, .24);
+  border-radius: 8px;
+  color: #fff;
+  background: rgba(255, 255, 255, .12);
+  font-size: 12px;
+  font-weight: 900;
+  text-decoration: none;
+  transition: background .16s ease, border-color .16s ease, transform .16s ease;
+}
+
+.central-logout-button:hover,
+.central-logout-button:focus {
+  color: #fff;
+  border-color: rgba(255, 255, 255, .42);
+  background: rgba(255, 255, 255, .20);
+  text-decoration: none;
+  transform: translateY(-1px);
 }
 
 .central-main {

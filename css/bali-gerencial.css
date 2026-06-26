@@ -69,6 +69,13 @@ body.gerencial-page {
   line-height: 1.45;
 }
 
+.gerencial-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .gerencial-back {
   display: inline-flex;
   align-items: center;
@@ -90,6 +97,11 @@ body.gerencial-page {
   border-color: transparent;
   background: var(--gerencial-brand);
   color: #fff;
+}
+
+.gerencial-logout {
+  border-color: rgba(94, 127, 66, .28);
+  background: var(--gerencial-brand-soft);
 }
 
 .gerencial-card {

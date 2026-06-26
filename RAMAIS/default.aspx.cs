@@ -47,7 +47,7 @@ public partial class ramais_default : System.Web.UI.Page
     protected void btnSair_Click(object sender, EventArgs e)
     {
         RegistrarAuditoriaRamais("SAIR_RAMAIS", null, "", "Sessao encerrada pelo usuario.");
-        Response.Redirect("login.aspx?sair=1");
+        Response.Redirect("/logout.aspx?voltar=/RAMAIS/login.aspx");
     }
 
     private bool UsuarioRamaisAutenticado()

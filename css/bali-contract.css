@@ -100,6 +100,30 @@ body.bali-contract-page *::after {
   font-weight: 700;
 }
 
+.bali-contract-page .bali-logout-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  margin-left: 12px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, .28);
+  border-radius: 8px;
+  color: #fff !important;
+  background: rgba(255, 255, 255, .14);
+  font-size: 12px;
+  font-weight: 900;
+  text-decoration: none !important;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.bali-contract-page .bali-logout-link:hover,
+.bali-contract-page .bali-logout-link:focus {
+  border-color: rgba(255, 255, 255, .46);
+  background: rgba(255, 255, 255, .22);
+}
+
 .bali-contract-page .idUser {
   color: inherit;
   font-family: Arial, Helvetica, sans-serif;

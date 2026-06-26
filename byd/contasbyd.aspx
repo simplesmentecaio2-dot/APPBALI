@@ -8,7 +8,7 @@
 <head runat="server">
     <title>Contas BYD - Bali</title>
     <link href="../css/estilo.css" rel="stylesheet" />
-    <link href="../css/bali-utility.css?v=20260624-2" rel="stylesheet" />
+    <link href="../css/bali-utility.css?v=20260626-logout01" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
@@ -18,7 +18,7 @@
             width: 714px;
         }
 
-        
+
     </style>
 </head>
 <body class="bali-utility-page utility-byd">
@@ -30,7 +30,7 @@
 
 
 
-   
+
     <form id="form1" runat="server">
         <div>
             <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
@@ -41,7 +41,7 @@
                         <td id="table-menu-usuario" class="idUser">Usuário:
                         <asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text=""></asp:Label>
                             Perfil:
-                        <asp:Label ID="lblTipo" CssClass="idUser" runat="server" Style="margin-right: 13px;" Text=""></asp:Label></td>
+                        <asp:Label ID="lblTipo" CssClass="idUser" runat="server" Style="margin-right: 13px;" Text=""></asp:Label><a class="bali-logout-link" href="/logout.aspx?voltar=/byd/loginAppcontrato.aspx">Sair</a></td>
                     </tr>
                 </table>
             </div>
@@ -62,7 +62,7 @@
                 <div class="item-menu" style="padding-left: 80px; height: 50px; line-height: 60px;" onclick="escondeMenuLeft()">
                     MENU <<
                 </div>
-                
+
                 <div class="item-menu"><a class="links" href="default.aspx">Início</a></div>
 
                 <div id="completa-menu-left"></div>
@@ -134,12 +134,12 @@
                                                 <td>36.444.055/0001-38</td>
                                             </tr>--%>
                                         </table>
-                                        
-                                    </div>
-                                   
-                                    
 
-                                  
+                                    </div>
+
+
+
+
                                 </div>
                             </asp:Panel>
                         </fieldset>
@@ -161,7 +161,7 @@
     <div id="ag" style=" position:fixed;  z-index:1000; top:0; left:0; width:100%; height:100%; background-color:rgba(0, 0, 0, 0.75); visibility:hidden;">
             <div style="position:fixed; z-index:1001; top:50%; left:50%; width:300px; height:100px; margin-left:-150px; margin-top:-50px; background-color:white; border-radius:5px;">
                <img src="../../img/aguarde.gif" style=" border-radius:5px;" />
-                
+
             </div>
         </div>
 </body>
