@@ -373,3 +373,79 @@ BEGIN
     WHERE id_ramal = @id_ramal;
 END
 GO
+
+IF OBJECT_ID('dbo.ramais_auditoria', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.ramais_auditoria (
+        id_auditoria INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        dt_evento DATETIME NOT NULL CONSTRAINT DF_ramais_auditoria_dt_evento DEFAULT (GETDATE()),
+        usuario_id NVARCHAR(80) NULL,
+        usuario_nome NVARCHAR(160) NULL,
+        usuario_tipo NVARCHAR(80) NULL,
+        usuario_email NVARCHAR(180) NULL,
+        empresa NVARCHAR(120) NULL,
+        ip NVARCHAR(80) NULL,
+        url NVARCHAR(500) NULL,
+        acao NVARCHAR(80) NOT NULL,
+        id_ramal INT NULL,
+        ramal NVARCHAR(30) NULL,
+        detalhe NVARCHAR(MAX) NULL,
+        dados_antes NVARCHAR(MAX) NULL,
+        dados_depois NVARCHAR(MAX) NULL
+    );
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ramais_auditoria_evento' AND object_id = OBJECT_ID('dbo.ramais_auditoria'))
+BEGIN
+    CREATE INDEX IX_ramais_auditoria_evento ON dbo.ramais_auditoria (dt_evento DESC, acao, id_ramal);
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ramais_auditoria_usuario' AND object_id = OBJECT_ID('dbo.ramais_auditoria'))
+BEGIN
+    CREATE INDEX IX_ramais_auditoria_usuario ON dbo.ramais_auditoria (usuario_nome, dt_evento DESC);
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.ramais_auditoria_registrar
+    @usuario_id NVARCHAR(80) = NULL,
+    @usuario_nome NVARCHAR(160) = NULL,
+    @usuario_tipo NVARCHAR(80) = NULL,
+    @usuario_email NVARCHAR(180) = NULL,
+    @empresa NVARCHAR(120) = NULL,
+    @ip NVARCHAR(80) = NULL,
+    @url NVARCHAR(500) = NULL,
+    @acao NVARCHAR(80),
+    @id_ramal INT = NULL,
+    @ramal NVARCHAR(30) = NULL,
+    @detalhe NVARCHAR(MAX) = NULL,
+    @dados_antes NVARCHAR(MAX) = NULL,
+    @dados_depois NVARCHAR(MAX) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO dbo.ramais_auditoria
+    (
+        usuario_id, usuario_nome, usuario_tipo, usuario_email, empresa,
+        ip, url, acao, id_ramal, ramal, detalhe, dados_antes, dados_depois
+    )
+    VALUES
+    (
+        NULLIF(LTRIM(RTRIM(@usuario_id)), ''),
+        NULLIF(LTRIM(RTRIM(@usuario_nome)), ''),
+        NULLIF(LTRIM(RTRIM(@usuario_tipo)), ''),
+        NULLIF(LTRIM(RTRIM(@usuario_email)), ''),
+        NULLIF(LTRIM(RTRIM(@empresa)), ''),
+        NULLIF(LTRIM(RTRIM(@ip)), ''),
+        NULLIF(LTRIM(RTRIM(@url)), ''),
+        @acao,
+        @id_ramal,
+        NULLIF(LTRIM(RTRIM(@ramal)), ''),
+        NULLIF(@detalhe, ''),
+        NULLIF(@dados_antes, ''),
+        NULLIF(@dados_depois, '')
+    );
+END
+GO
