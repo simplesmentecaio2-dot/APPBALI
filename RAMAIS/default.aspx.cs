@@ -36,14 +36,17 @@ public partial class ramais_default : System.Web.UI.Page
 
         if (!IsPostBack)
         {
+            string tela = ObterTelaAtual();
             CarregarTudo();
-            AplicarTela(ObterTelaAtual());
+            AplicarTela(tela);
             MostrarAvisoViewStateExpirado();
+            RegistrarAuditoriaRamais("ACESSAR_RAMAIS", null, "", "Tela=" + tela);
         }
     }
 
     protected void btnSair_Click(object sender, EventArgs e)
     {
+        RegistrarAuditoriaRamais("SAIR_RAMAIS", null, "", "Sessao encerrada pelo usuario.");
         Response.Redirect("login.aspx?sair=1");
     }
 
@@ -65,6 +68,7 @@ public partial class ramais_default : System.Web.UI.Page
     {
         CarregarRamais();
         AplicarTela("consulta");
+        RegistrarAuditoriaRamais("FILTRAR_RAMAIS", null, "", ResumoFiltrosRamais());
     }
 
     protected void btnLimparFiltros_Click(object sender, EventArgs e)
@@ -75,6 +79,7 @@ public partial class ramais_default : System.Web.UI.Page
         chkSomenteAtivos.Checked = true;
         CarregarRamais();
         AplicarTela("consulta");
+        RegistrarAuditoriaRamais("LIMPAR_FILTROS_RAMAIS", null, "", "Filtros da consulta limpos.");
     }
 
     protected void btnExportar_Click(object sender, EventArgs e)
@@ -86,6 +91,7 @@ public partial class ramais_default : System.Web.UI.Page
             Param("@somente_ativos", SqlDbType.Bit, chkSomenteAtivos.Checked));
 
         ramais = OrdenarTabela(ramais, gvConsulta);
+        RegistrarAuditoriaRamais("EXPORTAR_RAMAIS", null, "", ResumoFiltrosRamais() + "; Registros=" + ramais.Rows.Count.ToString());
 
         Response.Clear();
         Response.ContentType = "application/vnd.ms-excel";
@@ -116,6 +122,7 @@ public partial class ramais_default : System.Web.UI.Page
 
     protected void btnBaixarModeloImportacao_Click(object sender, EventArgs e)
     {
+        RegistrarAuditoriaRamais("BAIXAR_MODELO_IMPORTACAO_RAMAIS", null, "", "Modelo CSV de importacao baixado.");
         Response.Clear();
         Response.ContentType = "text/csv";
         Response.ContentEncoding = Encoding.UTF8;
@@ -131,6 +138,7 @@ public partial class ramais_default : System.Web.UI.Page
     {
         CarregarImpressao();
         AplicarTela("impressao");
+        RegistrarAuditoriaRamais("GERAR_IMPRESSAO_RAMAIS", null, "", "Loja=" + TextoComboSelecionado(ddlImpressaoLoja));
     }
 
     protected void btnImportarRamais_Click(object sender, EventArgs e)
@@ -161,6 +169,7 @@ public partial class ramais_default : System.Web.UI.Page
             ResultadoImportacao resultado = ImportarRamaisCsv(conteudo);
             CarregarTudo();
             AplicarTela("ramais");
+            RegistrarAuditoriaRamais("IMPORTAR_RAMAIS", null, "", "Arquivo=" + fuImportarRamais.FileName + "; Processadas=" + resultado.Processadas.ToString() + "; Sucessos=" + resultado.Sucessos.ToString() + "; Falhas=" + resultado.Falhas.ToString());
 
             if (resultado.Erros.Count > 0)
             {
@@ -245,7 +254,15 @@ public partial class ramais_default : System.Web.UI.Page
                 Param("@id_setor", SqlDbType.Int, idSetor),
                 Param("@ativo", SqlDbType.Bit, chkRamalAtivo.Checked));
 
-            RegistrarHistoricoRamal(idAtual > 0 ? "Alteracao" : "Inclusao", antes, salvo.Rows.Count > 0 ? salvo.Rows[0] : null);
+            DataRow depois = salvo.Rows.Count > 0 ? salvo.Rows[0] : null;
+            RegistrarHistoricoRamal(idAtual > 0 ? "Alteracao" : "Inclusao", antes, depois);
+            RegistrarAuditoriaRamais(
+                idAtual > 0 ? "EDITAR_RAMAL" : "CRIAR_RAMAL",
+                ObterIdRamalAuditoria(depois, idAtual),
+                ValorHistorico(depois, "ramal"),
+                "Ramal salvo pelo formulario.",
+                ResumoRamalHistorico(antes),
+                ResumoRamalHistorico(depois));
 
             LimparAutorizacaoEdicaoRamal(idAtual);
             LimparRamal();
@@ -284,6 +301,7 @@ public partial class ramais_default : System.Web.UI.Page
 
                 AutorizarEdicaoRamal(id);
                 CarregarRamal(id);
+                RegistrarAuditoriaRamais("ABRIR_EDICAO_RAMAL", id, "", "Ramal carregado para edicao.");
                 MostrarMensagem("Ramal carregado para edi\u00e7\u00e3o.", false);
                 AplicarTela("ramais");
             }
@@ -298,6 +316,7 @@ public partial class ramais_default : System.Web.UI.Page
                 DataRow antes = ObterRamalHistorico(id);
                 ExecutarSemRetorno("dbo.ramais_ramal_excluir", Param("@id_ramal", SqlDbType.Int, id));
                 RegistrarHistoricoRamal("Exclusao", antes, null);
+                RegistrarAuditoriaRamais("EXCLUIR_RAMAL", id, ValorHistorico(antes, "ramal"), "Ramal inativado.", ResumoRamalHistorico(antes), "");
                 LimparAutorizacaoEdicaoRamal(id);
                 LimparRamal();
                 CarregarTudo();
@@ -417,10 +436,12 @@ public partial class ramais_default : System.Web.UI.Page
                 return;
             }
 
-            ExecutarTabela("dbo.ramais_loja_salvar",
+            int idLojaAtual = ObterIdNumerico(hfLojaId.Value);
+            DataTable lojaSalva = ExecutarTabela("dbo.ramais_loja_salvar",
                 Param("@id_loja", SqlDbType.Int, ObterId(hfLojaId.Value)),
                 Param("@nome", SqlDbType.NVarChar, txtLojaNome.Text.Trim(), 120),
                 Param("@ativo", SqlDbType.Bit, chkLojaAtiva.Checked));
+            RegistrarAuditoriaRamais(idLojaAtual > 0 ? "EDITAR_LOJA_RAMAL" : "CRIAR_LOJA_RAMAL", null, "", "Loja=" + ResumoLinhaCadastro(lojaSalva, "id_loja"));
 
             LimparLoja();
             CarregarTudo();
@@ -457,13 +478,16 @@ public partial class ramais_default : System.Web.UI.Page
                     hfLojaId.Value = row["id_loja"].ToString();
                     txtLojaNome.Text = row["nome"].ToString();
                     chkLojaAtiva.Checked = Convert.ToBoolean(row["ativo"]);
+                    RegistrarAuditoriaRamais("ABRIR_EDICAO_LOJA_RAMAL", null, "", "Loja=" + ValorHistorico(row, "nome") + "; ID=" + id.ToString());
                     MostrarMensagem("Loja carregada para edi\u00e7\u00e3o.", false);
                     AplicarTela("lojas");
                 }
             }
             else if (e.CommandName == "ExcluirLoja")
             {
+                string resumoLoja = "ID=" + id.ToString();
                 ExecutarSemRetorno("dbo.ramais_loja_excluir", Param("@id_loja", SqlDbType.Int, id));
+                RegistrarAuditoriaRamais("EXCLUIR_LOJA_RAMAL", null, "", resumoLoja);
                 LimparLoja();
                 CarregarTudo();
                 MostrarMensagem("Loja inativada com sucesso.", false);
@@ -498,10 +522,12 @@ public partial class ramais_default : System.Web.UI.Page
                 return;
             }
 
-            ExecutarTabela("dbo.ramais_setor_salvar",
+            int idSetorAtual = ObterIdNumerico(hfSetorId.Value);
+            DataTable setorSalvo = ExecutarTabela("dbo.ramais_setor_salvar",
                 Param("@id_setor", SqlDbType.Int, ObterId(hfSetorId.Value)),
                 Param("@nome", SqlDbType.NVarChar, txtSetorNome.Text.Trim(), 120),
                 Param("@ativo", SqlDbType.Bit, chkSetorAtivo.Checked));
+            RegistrarAuditoriaRamais(idSetorAtual > 0 ? "EDITAR_SETOR_RAMAL" : "CRIAR_SETOR_RAMAL", null, "", "Setor=" + ResumoLinhaCadastro(setorSalvo, "id_setor"));
 
             LimparSetor();
             CarregarTudo();
@@ -538,13 +564,16 @@ public partial class ramais_default : System.Web.UI.Page
                     hfSetorId.Value = row["id_setor"].ToString();
                     txtSetorNome.Text = row["nome"].ToString();
                     chkSetorAtivo.Checked = Convert.ToBoolean(row["ativo"]);
+                    RegistrarAuditoriaRamais("ABRIR_EDICAO_SETOR_RAMAL", null, "", "Setor=" + ValorHistorico(row, "nome") + "; ID=" + id.ToString());
                     MostrarMensagem("Setor carregado para edi\u00e7\u00e3o.", false);
                     AplicarTela("setores");
                 }
             }
             else if (e.CommandName == "ExcluirSetor")
             {
+                string resumoSetor = "ID=" + id.ToString();
                 ExecutarSemRetorno("dbo.ramais_setor_excluir", Param("@id_setor", SqlDbType.Int, id));
+                RegistrarAuditoriaRamais("EXCLUIR_SETOR_RAMAL", null, "", resumoSetor);
                 LimparSetor();
                 CarregarTudo();
                 MostrarMensagem("Setor inativado com sucesso.", false);
@@ -1055,6 +1084,37 @@ public partial class ramais_default : System.Web.UI.Page
         return Int32.TryParse(valor, out id) && id > 0 ? id : 0;
     }
 
+    private int? ObterIdRamalAuditoria(DataRow row, int idFallback)
+    {
+        int id = ObterIdNumerico(ValorHistorico(row, "id_ramal"));
+        if (id > 0) return id;
+        return idFallback > 0 ? (int?)idFallback : null;
+    }
+
+    private string TextoComboSelecionado(DropDownList combo)
+    {
+        if (combo == null || combo.SelectedItem == null) return "";
+        string texto = (combo.SelectedItem.Text ?? "").Trim();
+        return texto.Length == 0 ? combo.SelectedValue : texto;
+    }
+
+    private string ResumoFiltrosRamais()
+    {
+        return "Loja=" + TextoComboSelecionado(ddlFiltroLoja) +
+            "; Setor=" + TextoComboSelecionado(ddlFiltroSetor) +
+            "; Busca=" + TextoCurto(txtBusca.Text) +
+            "; SomenteAtivos=" + (chkSomenteAtivos.Checked ? "Sim" : "Nao");
+    }
+
+    private string ResumoLinhaCadastro(DataTable dados, string colunaId)
+    {
+        if (dados == null || dados.Rows.Count == 0) return "";
+        DataRow row = dados.Rows[0];
+        return "ID=" + ValorHistorico(row, colunaId) +
+            "; Nome=" + ValorHistorico(row, "nome") +
+            "; Status=" + ValorHistorico(row, "status");
+    }
+
     private bool SenhaManutencaoInformada()
     {
         bool autorizada = String.Equals((hfSenhaManutencao.Value ?? "").Trim(), SenhaManutencaoRamais, StringComparison.Ordinal);
@@ -1170,9 +1230,7 @@ public partial class ramais_default : System.Web.UI.Page
                 Directory.CreateDirectory(pasta);
             }
 
-            string usuario = Context != null && Context.User != null && Context.User.Identity != null && Context.User.Identity.IsAuthenticated
-                ? Context.User.Identity.Name
-                : "anonimo";
+            string usuario = UsuarioSessaoRamais();
 
             string linha = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
                 " | " + acao +
@@ -1280,6 +1338,54 @@ public partial class ramais_default : System.Web.UI.Page
         return parametro;
     }
 
+    private string IdUsuarioSessaoRamais()
+    {
+        return Convert.ToString(Session["id"] ?? "").Trim();
+    }
+
+    private string UsuarioSessaoRamais()
+    {
+        string usuario = Convert.ToString(Session["usuario"] ?? "").Trim();
+        if (usuario.Length > 0) return usuario;
+
+        usuario = Convert.ToString(Session["id"] ?? "").Trim();
+        return usuario.Length > 0 ? usuario : "anonimo";
+    }
+
+    private string LimitarAuditoria(string valor)
+    {
+        string texto = (valor ?? "").Replace("\r", " ").Replace("\n", " ").Replace("\t", " ").Trim();
+        while (texto.Contains("  "))
+        {
+            texto = texto.Replace("  ", " ");
+        }
+        return texto.Length > 12000 ? texto.Substring(0, 12000) + "...(truncado)" : texto;
+    }
+
+    private void RegistrarAuditoriaRamais(string acao, int? idRamal = null, string ramal = "", string detalhe = "", string dadosAntes = "", string dadosDepois = "")
+    {
+        try
+        {
+            ExecutarSemRetorno("dbo.ramais_auditoria_registrar",
+                Param("@usuario_id", SqlDbType.NVarChar, IdUsuarioSessaoRamais(), 80),
+                Param("@usuario_nome", SqlDbType.NVarChar, UsuarioSessaoRamais(), 160),
+                Param("@usuario_tipo", SqlDbType.NVarChar, Convert.ToString(Session["tipo"] ?? ""), 80),
+                Param("@usuario_email", SqlDbType.NVarChar, Convert.ToString(Session["email"] ?? ""), 180),
+                Param("@empresa", SqlDbType.NVarChar, Convert.ToString(Session["empresa"] ?? ""), 120),
+                Param("@ip", SqlDbType.NVarChar, Request.UserHostAddress ?? "", 80),
+                Param("@url", SqlDbType.NVarChar, Request.RawUrl ?? "", 500),
+                Param("@acao", SqlDbType.NVarChar, acao, 80),
+                Param("@id_ramal", SqlDbType.Int, idRamal.HasValue ? (object)idRamal.Value : DBNull.Value),
+                Param("@ramal", SqlDbType.NVarChar, ramal, 30),
+                Param("@detalhe", SqlDbType.NVarChar, LimitarAuditoria(detalhe)),
+                Param("@dados_antes", SqlDbType.NVarChar, LimitarAuditoria(dadosAntes)),
+                Param("@dados_depois", SqlDbType.NVarChar, LimitarAuditoria(dadosDepois)));
+        }
+        catch
+        {
+        }
+    }
+
     private string Csv(object valor)
     {
         string texto = Convert.ToString(valor ?? "");
@@ -1340,9 +1446,7 @@ public partial class ramais_default : System.Web.UI.Page
                 Directory.CreateDirectory(pasta);
             }
 
-            string usuario = Context != null && Context.User != null && Context.User.Identity != null && Context.User.Identity.IsAuthenticated
-                ? Context.User.Identity.Name
-                : "anonimo";
+            string usuario = UsuarioSessaoRamais();
 
             string linha = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
                 " | " + origem +
@@ -1352,6 +1456,7 @@ public partial class ramais_default : System.Web.UI.Page
                 Environment.NewLine;
 
             File.AppendAllText(Path.Combine(pasta, "ramais-erros.log"), linha, Encoding.UTF8);
+            RegistrarAuditoriaRamais("ERRO_RAMAIS", null, "", origem + ": " + (ex.Message ?? "").Replace("\r", " ").Replace("\n", " "));
         }
         catch
         {
