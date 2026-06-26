@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 
 public partial class ci_print : System.Web.UI.Page
@@ -68,8 +69,8 @@ public partial class ci_print : System.Web.UI.Page
         litCriadoPor.Text = Html(row["criado_por"].ToString());
         litEmitidaEm.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
 
-        secProvidencias.Visible = row["providencias"].ToString().Trim().Length > 0;
-        secObservacoes.Visible = row["observacoes"].ToString().Trim().Length > 0;
+        secProvidencias.Visible = TextoPlanoRich(row["providencias"].ToString()).Length > 0;
+        secObservacoes.Visible = TextoPlanoRich(row["observacoes"].ToString()).Length > 0;
 
         ConfigurarLogo(marca);
         CarregarRelacionados(Convert.ToInt32(row["id_ci"]));
@@ -146,9 +147,9 @@ public partial class ci_print : System.Web.UI.Page
     {
         int tamanho =
             row["assunto"].ToString().Length +
-            row["corpo"].ToString().Length +
-            row["providencias"].ToString().Length +
-            row["observacoes"].ToString().Length;
+            TextoPlanoRich(row["corpo"].ToString()).Length +
+            TextoPlanoRich(row["providencias"].ToString()).Length +
+            TextoPlanoRich(row["observacoes"].ToString()).Length;
 
         if (tamanho > 5200) return " ci-print-muito-longa";
         if (tamanho > 3200) return " ci-print-longa";
@@ -231,7 +232,131 @@ public partial class ci_print : System.Web.UI.Page
 
     private string TextoLongo(string valor)
     {
-        string seguro = HttpUtility.HtmlEncode(valor ?? "");
-        return "<p>" + seguro.Replace("\r\n", "\n").Replace("\n", "</p><p>") + "</p>";
+        string texto = valor ?? "";
+        if (ContemHtml(texto))
+        {
+            string seguro = SanitizarHtmlRich(texto);
+            return seguro.Length > 0 ? seguro : "<p></p>";
+        }
+
+        string seguroTexto = HttpUtility.HtmlEncode(texto);
+        return "<p>" + seguroTexto.Replace("\r\n", "\n").Replace("\n", "</p><p>") + "</p>";
+    }
+
+    private string TextoPlanoRich(string valor)
+    {
+        string texto = valor ?? "";
+        texto = Regex.Replace(texto, @"<\s*br\s*/?\s*>", "\n", RegexOptions.IgnoreCase);
+        texto = Regex.Replace(texto, @"</\s*(p|div)\s*>", "\n", RegexOptions.IgnoreCase);
+        texto = Regex.Replace(texto, @"<[^>]+>", "");
+        texto = HttpUtility.HtmlDecode(texto);
+        return (texto ?? "").Replace('\u00a0', ' ').Trim();
+    }
+
+    private bool ContemHtml(string valor)
+    {
+        return Regex.IsMatch(valor ?? "", @"<[a-zA-Z][\s\S]*>");
+    }
+
+    private string SanitizarHtmlRich(string valor)
+    {
+        string html = (valor ?? "").Replace("\r\n", "\n").Replace("\r", "\n");
+        html = Regex.Replace(html, @"<\s*(script|style)[^>]*>[\s\S]*?<\s*/\s*\1\s*>", "", RegexOptions.IgnoreCase);
+
+        StringBuilder saida = new StringBuilder();
+        int posicao = 0;
+        foreach (Match tag in Regex.Matches(html, @"<[^>]+>"))
+        {
+            if (tag.Index > posicao)
+            {
+                saida.Append(HtmlSeguroSegmento(html.Substring(posicao, tag.Index - posicao)));
+            }
+
+            saida.Append(TagRichPermitida(tag.Value));
+            posicao = tag.Index + tag.Length;
+        }
+
+        if (posicao < html.Length)
+        {
+            saida.Append(HtmlSeguroSegmento(html.Substring(posicao)));
+        }
+
+        return saida.ToString().Trim();
+    }
+
+    private string HtmlSeguroSegmento(string texto)
+    {
+        return HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(texto ?? ""));
+    }
+
+    private string TagRichPermitida(string tag)
+    {
+        Match match = Regex.Match(tag ?? "", @"^<\s*(/?)\s*([a-zA-Z0-9]+)([^>]*)/?\s*>$", RegexOptions.IgnoreCase);
+        if (!match.Success) return "";
+
+        bool fechamento = match.Groups[1].Value == "/";
+        string nome = match.Groups[2].Value.ToLowerInvariant();
+        string atributos = match.Groups[3].Value ?? "";
+
+        if (nome == "br") return fechamento ? "" : "<br />";
+        if (nome == "b") nome = "strong";
+        if (nome == "i") nome = "em";
+        if (nome == "div") nome = "p";
+
+        if (nome == "strong" || nome == "em" || nome == "u" || nome == "p" || nome == "mark")
+        {
+            return fechamento ? "</" + nome + ">" : "<" + nome + ">";
+        }
+
+        if (nome == "span")
+        {
+            if (fechamento) return "</span>";
+            string estilo = EstiloRichPermitido(atributos);
+            return estilo.Length > 0 ? "<span style=\"" + estilo + "\">" : "<span>";
+        }
+
+        return "";
+    }
+
+    private string EstiloRichPermitido(string atributos)
+    {
+        Match match = Regex.Match(atributos ?? "", @"style\s*=\s*[""']([^""']*)[""']", RegexOptions.IgnoreCase);
+        if (!match.Success) return "";
+
+        string[] declaracoes = match.Groups[1].Value.Split(';');
+        StringBuilder estilo = new StringBuilder();
+        foreach (string declaracao in declaracoes)
+        {
+            string[] partes = declaracao.Split(new char[] { ':' }, 2);
+            if (partes.Length != 2) continue;
+
+            string propriedade = partes[0].Trim().ToLowerInvariant();
+            string cor = NormalizarCorRich(partes[1]);
+            if (cor.Length == 0) continue;
+
+            if (propriedade == "color" || propriedade == "background-color")
+            {
+                if (estilo.Length > 0) estilo.Append(" ");
+                estilo.Append(propriedade).Append(":").Append(cor).Append(";");
+            }
+        }
+
+        return estilo.ToString();
+    }
+
+    private string NormalizarCorRich(string valor)
+    {
+        string cor = (valor ?? "").Trim().ToLowerInvariant();
+        switch (cor)
+        {
+            case "rgb(17, 24, 39)": return "#111827";
+            case "rgb(201, 51, 58)": return "#c9333a";
+            case "rgb(25, 105, 179)": return "#1969b3";
+            case "rgb(40, 114, 70)": return "#287246";
+            case "rgb(255, 243, 191)": return "#fff3bf";
+            case "rgb(219, 234, 254)": return "#dbeafe";
+        }
+
+        return Regex.IsMatch(cor, @"^#([0-9a-f]{3}|[0-9a-f]{6})$") ? cor : "";
     }
 }

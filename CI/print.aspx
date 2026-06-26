@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title><%=CodigoCI%> - Impress&atilde;o</title>
-    <link href="ci.css?v=20260625-ci-ux01" rel="stylesheet" />
+    <link href="ci.css?v=20260626-richtext01" rel="stylesheet" />
 </head>
 <body class="ci-print-page <%=MarcaClasse%>">
     <form id="form1" runat="server">

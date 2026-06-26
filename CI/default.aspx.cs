@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -369,7 +370,7 @@ public partial class ci_default : System.Web.UI.Page
                 return;
             }
 
-            if (TextoCurto(txtAssunto.Text).Length == 0 || TextoLongoEntrada(txtCorpo.Text).Length == 0)
+            if (TextoCurto(txtAssunto.Text).Length == 0 || TextoPlanoRich(txtCorpo.Text).Length == 0)
             {
                 MostrarMensagem("Preencha assunto e texto para transformar esta CI em modelo.", true);
                 AplicarTela("nova");
@@ -388,9 +389,9 @@ public partial class ci_default : System.Web.UI.Page
                 Param("@categoria", SqlDbType.NVarChar, ddlCategoria.SelectedValue, 60),
                 Param("@prioridade", SqlDbType.NVarChar, ddlPrioridade.SelectedValue, 20),
                 Param("@assunto", SqlDbType.NVarChar, TextoCurto(txtAssunto.Text), 200),
-                Param("@corpo", SqlDbType.NVarChar, TextoLongoEntrada(txtCorpo.Text)),
-                Param("@providencias", SqlDbType.NVarChar, TextoLongoEntrada(txtProvidencias.Text)),
-                Param("@observacoes", SqlDbType.NVarChar, TextoLongoEntrada(txtObservacoes.Text)));
+                Param("@corpo", SqlDbType.NVarChar, TextoRichEntrada(txtCorpo.Text)),
+                Param("@providencias", SqlDbType.NVarChar, TextoRichEntrada(txtProvidencias.Text)),
+                Param("@observacoes", SqlDbType.NVarChar, TextoRichEntrada(txtObservacoes.Text)));
 
             CarregarModelos();
             if (modelo.Rows.Count > 0)
@@ -490,9 +491,9 @@ public partial class ci_default : System.Web.UI.Page
                 Param("@categoria", SqlDbType.NVarChar, ddlCategoria.SelectedValue, 60),
                 Param("@prioridade", SqlDbType.NVarChar, ddlPrioridade.SelectedValue, 20),
                 Param("@status_ci", SqlDbType.NVarChar, ddlStatusCI.SelectedValue, 20),
-                Param("@corpo", SqlDbType.NVarChar, TextoLongoEntrada(txtCorpo.Text)),
-                Param("@providencias", SqlDbType.NVarChar, TextoLongoEntrada(txtProvidencias.Text)),
-                Param("@observacoes", SqlDbType.NVarChar, TextoLongoEntrada(txtObservacoes.Text)),
+                Param("@corpo", SqlDbType.NVarChar, TextoRichEntrada(txtCorpo.Text)),
+                Param("@providencias", SqlDbType.NVarChar, TextoRichEntrada(txtProvidencias.Text)),
+                Param("@observacoes", SqlDbType.NVarChar, TextoRichEntrada(txtObservacoes.Text)),
                 Param("@criado_por", SqlDbType.NVarChar, TextoCurto(txtCriadoPor.Text), 160));
 
             string codigo = salvo.Rows.Count > 0 ? salvo.Rows[0]["codigo_ci"].ToString() : "CI";
@@ -1762,7 +1763,7 @@ public partial class ci_default : System.Web.UI.Page
             if (TextoCurto(txtDestinoArea.Text).Length == 0) return "Informe a \u00e1rea de destino.";
             if (TextoCurto(txtDestinatario.Text).Length == 0) return "Informe o destinat\u00e1rio.";
             if (TextoCurto(txtAssunto.Text).Length == 0) return "Informe o assunto.";
-            if (TextoLongoEntrada(txtCorpo.Text).Length == 0) return "Informe o texto da comunica\u00e7\u00e3o.";
+            if (TextoPlanoRich(txtCorpo.Text).Length == 0) return "Informe o texto da comunica\u00e7\u00e3o.";
             if (!ChecklistFinalConfirmado()) return "Confirme o checklist final antes de emitir ou revisar a CI.";
         }
 
@@ -1772,9 +1773,9 @@ public partial class ci_default : System.Web.UI.Page
         if (TextoCurto(txtDestinatario.Text).Length > 160) return "O destinat\u00e1rio deve ter at\u00e9 160 caracteres.";
         if (TextoCurto(txtAssunto.Text).Length > 200) return "O assunto deve ter at\u00e9 200 caracteres.";
         if (TextoCurto(txtCriadoPor.Text).Length > 160) return "O campo criado por deve ter at\u00e9 160 caracteres.";
-        if (TextoLongoEntrada(txtCorpo.Text).Length > 6000) return "Reduza o texto da comunica\u00e7\u00e3o para at\u00e9 6000 caracteres.";
-        if (TextoLongoEntrada(txtProvidencias.Text).Length > 2500) return "Reduza as provid\u00eancias solicitadas para at\u00e9 2500 caracteres.";
-        if (TextoLongoEntrada(txtObservacoes.Text).Length > 1800) return "Reduza as observa\u00e7\u00f5es para at\u00e9 1800 caracteres.";
+        if (TextoPlanoRich(txtCorpo.Text).Length > 6000) return "Reduza o texto da comunica\u00e7\u00e3o para at\u00e9 6000 caracteres.";
+        if (TextoPlanoRich(txtProvidencias.Text).Length > 2500) return "Reduza as provid\u00eancias solicitadas para at\u00e9 2500 caracteres.";
+        if (TextoPlanoRich(txtObservacoes.Text).Length > 1800) return "Reduza as observa\u00e7\u00f5es para at\u00e9 1800 caracteres.";
         if (!rascunho &&
             (ContemMarcadorModelo(txtAssunto.Text) ||
              ContemMarcadorModelo(txtCorpo.Text) ||
@@ -1799,7 +1800,7 @@ public partial class ci_default : System.Web.UI.Page
         if (TextoCurto(txtDestinoArea.Text).Length == 0) txtDestinoArea.Text = "A definir";
         if (TextoCurto(txtDestinatario.Text).Length == 0) txtDestinatario.Text = "A definir";
         if (TextoCurto(txtAssunto.Text).Length == 0) txtAssunto.Text = "Rascunho de CI";
-        if (TextoLongoEntrada(txtCorpo.Text).Length == 0) txtCorpo.Text = "Texto a definir.";
+        if (TextoPlanoRich(txtCorpo.Text).Length == 0) txtCorpo.Text = "Texto a definir.";
     }
 
     private bool ChecklistFinalConfirmado()
@@ -1821,9 +1822,9 @@ public partial class ci_default : System.Web.UI.Page
         txtDestinoArea.Text = TextoCurto(txtDestinoArea.Text);
         txtDestinatario.Text = TextoCurto(txtDestinatario.Text);
         txtAssunto.Text = TextoCurto(txtAssunto.Text);
-        txtCorpo.Text = TextoLongoEntrada(txtCorpo.Text);
-        txtProvidencias.Text = TextoLongoEntrada(txtProvidencias.Text);
-        txtObservacoes.Text = TextoLongoEntrada(txtObservacoes.Text);
+        txtCorpo.Text = TextoRichEntrada(txtCorpo.Text);
+        txtProvidencias.Text = TextoRichEntrada(txtProvidencias.Text);
+        txtObservacoes.Text = TextoRichEntrada(txtObservacoes.Text);
         txtCriadoPor.Text = TextoCurto(txtCriadoPor.Text);
     }
 
@@ -1944,6 +1945,137 @@ public partial class ci_default : System.Web.UI.Page
         return String.Join(" ", texto.Split((char[])null, StringSplitOptions.RemoveEmptyEntries));
     }
 
+    private string TextoRichEntrada(string valor)
+    {
+        string texto = (valor ?? "").Replace("\r\n", "\n").Replace("\r", "\n").Trim();
+        if (texto.Length == 0) return "";
+        if (!ContemHtml(texto)) return TextoLongoEntrada(texto);
+        return SanitizarHtmlRich(texto);
+    }
+
+    private string TextoPlanoRich(string valor)
+    {
+        string texto = valor ?? "";
+        texto = Regex.Replace(texto, @"<\s*br\s*/?\s*>", "\n", RegexOptions.IgnoreCase);
+        texto = Regex.Replace(texto, @"</\s*(p|div)\s*>", "\n", RegexOptions.IgnoreCase);
+        texto = Regex.Replace(texto, @"<[^>]+>", "");
+        texto = HttpUtility.HtmlDecode(texto);
+        texto = (texto ?? "").Replace('\u00a0', ' ').Trim();
+        while (texto.Contains("\n\n\n"))
+        {
+            texto = texto.Replace("\n\n\n", "\n\n");
+        }
+
+        return texto;
+    }
+
+    private bool ContemHtml(string valor)
+    {
+        return Regex.IsMatch(valor ?? "", @"<[a-zA-Z][\s\S]*>");
+    }
+
+    private string SanitizarHtmlRich(string valor)
+    {
+        string html = (valor ?? "").Replace("\r\n", "\n").Replace("\r", "\n");
+        html = Regex.Replace(html, @"<\s*(script|style)[^>]*>[\s\S]*?<\s*/\s*\1\s*>", "", RegexOptions.IgnoreCase);
+
+        StringBuilder saida = new StringBuilder();
+        int posicao = 0;
+        foreach (Match tag in Regex.Matches(html, @"<[^>]+>"))
+        {
+            if (tag.Index > posicao)
+            {
+                saida.Append(HtmlSeguroSegmento(html.Substring(posicao, tag.Index - posicao)));
+            }
+
+            saida.Append(TagRichPermitida(tag.Value));
+            posicao = tag.Index + tag.Length;
+        }
+
+        if (posicao < html.Length)
+        {
+            saida.Append(HtmlSeguroSegmento(html.Substring(posicao)));
+        }
+
+        return saida.ToString().Trim();
+    }
+
+    private string HtmlSeguroSegmento(string texto)
+    {
+        return HttpUtility.HtmlEncode(HttpUtility.HtmlDecode(texto ?? ""));
+    }
+
+    private string TagRichPermitida(string tag)
+    {
+        Match match = Regex.Match(tag ?? "", @"^<\s*(/?)\s*([a-zA-Z0-9]+)([^>]*)/?\s*>$", RegexOptions.IgnoreCase);
+        if (!match.Success) return "";
+
+        bool fechamento = match.Groups[1].Value == "/";
+        string nome = match.Groups[2].Value.ToLowerInvariant();
+        string atributos = match.Groups[3].Value ?? "";
+
+        if (nome == "br") return fechamento ? "" : "<br />";
+        if (nome == "b") nome = "strong";
+        if (nome == "i") nome = "em";
+        if (nome == "div") nome = "p";
+
+        if (nome == "strong" || nome == "em" || nome == "u" || nome == "p" || nome == "mark")
+        {
+            return fechamento ? "</" + nome + ">" : "<" + nome + ">";
+        }
+
+        if (nome == "span")
+        {
+            if (fechamento) return "</span>";
+            string estilo = EstiloRichPermitido(atributos);
+            return estilo.Length > 0 ? "<span style=\"" + estilo + "\">" : "<span>";
+        }
+
+        return "";
+    }
+
+    private string EstiloRichPermitido(string atributos)
+    {
+        Match match = Regex.Match(atributos ?? "", @"style\s*=\s*[""']([^""']*)[""']", RegexOptions.IgnoreCase);
+        if (!match.Success) return "";
+
+        string[] declaracoes = match.Groups[1].Value.Split(';');
+        StringBuilder estilo = new StringBuilder();
+        foreach (string declaracao in declaracoes)
+        {
+            string[] partes = declaracao.Split(new char[] { ':' }, 2);
+            if (partes.Length != 2) continue;
+
+            string propriedade = partes[0].Trim().ToLowerInvariant();
+            string valor = NormalizarCorRich(partes[1]);
+            if (valor.Length == 0) continue;
+
+            if (propriedade == "color" || propriedade == "background-color")
+            {
+                if (estilo.Length > 0) estilo.Append(" ");
+                estilo.Append(propriedade).Append(":").Append(valor).Append(";");
+            }
+        }
+
+        return estilo.ToString();
+    }
+
+    private string NormalizarCorRich(string valor)
+    {
+        string cor = (valor ?? "").Trim().ToLowerInvariant();
+        switch (cor)
+        {
+            case "rgb(17, 24, 39)": return "#111827";
+            case "rgb(201, 51, 58)": return "#c9333a";
+            case "rgb(25, 105, 179)": return "#1969b3";
+            case "rgb(40, 114, 70)": return "#287246";
+            case "rgb(255, 243, 191)": return "#fff3bf";
+            case "rgb(219, 234, 254)": return "#dbeafe";
+        }
+
+        return Regex.IsMatch(cor, @"^#([0-9a-f]{3}|[0-9a-f]{6})$") ? cor : "";
+    }
+
     private string TextoLongoEntrada(string valor)
     {
         string texto = (valor ?? "").Replace("\r\n", "\n").Replace("\r", "\n").Trim();
@@ -1957,7 +2089,7 @@ public partial class ci_default : System.Web.UI.Page
 
     private bool ContemMarcadorModelo(string valor)
     {
-        string texto = valor ?? "";
+        string texto = TextoPlanoRich(valor);
         int abre = texto.IndexOf("[", StringComparison.Ordinal);
         int fecha = texto.IndexOf("]", StringComparison.Ordinal);
         return abre >= 0 && fecha > abre;

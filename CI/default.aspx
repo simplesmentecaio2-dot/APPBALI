@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeFile="default.aspx.cs" Inherits="ci_default" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="default.aspx.cs" Inherits="ci_default" ValidateRequest="false" %>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br">
@@ -507,14 +507,56 @@
                         <label class="wide">Assunto
                             <asp:TextBox ID="txtAssunto" runat="server" CssClass="text-field" MaxLength="200"></asp:TextBox>
                         </label>
-                        <label class="wide">Texto da comunica&ccedil;&atilde;o
-                            <asp:TextBox ID="txtCorpo" runat="server" CssClass="textarea-field" TextMode="MultiLine" Rows="9"></asp:TextBox>
+                        <label class="wide rich-text-field">Texto da comunica&ccedil;&atilde;o
+                            <asp:TextBox ID="txtCorpo" runat="server" CssClass="textarea-field rich-text-source" TextMode="MultiLine" Rows="9"></asp:TextBox>
+                            <span class="rich-editor" data-source-id="<%= txtCorpo.ClientID %>" data-placeholder="Digite o texto da comunica&ccedil;&atilde;o">
+                                <span class="rich-toolbar" aria-label="Formata&ccedil;&atilde;o do texto da comunica&ccedil;&atilde;o">
+                                    <button type="button" data-rich-command="bold" title="Negrito"><strong>B</strong></button>
+                                    <button type="button" data-rich-command="italic" title="It&aacute;lico"><em>I</em></button>
+                                    <button type="button" data-rich-command="removeFormat" title="Limpar formata&ccedil;&atilde;o">Limpar</button>
+                                    <button type="button" data-rich-color="#111827" title="Fonte preta"><span class="color-dot" style="background:#111827"></span></button>
+                                    <button type="button" data-rich-color="#c9333a" title="Fonte vermelha"><span class="color-dot" style="background:#c9333a"></span></button>
+                                    <button type="button" data-rich-color="#1969b3" title="Fonte azul"><span class="color-dot" style="background:#1969b3"></span></button>
+                                    <button type="button" data-rich-color="#287246" title="Fonte verde"><span class="color-dot" style="background:#287246"></span></button>
+                                    <button type="button" data-rich-highlight="#fff3bf" title="Destacar em amarelo"><span class="highlight-dot" style="background:#fff3bf"></span></button>
+                                    <button type="button" data-rich-highlight="#dbeafe" title="Destacar em azul"><span class="highlight-dot" style="background:#dbeafe"></span></button>
+                                </span>
+                                <span class="rich-surface" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Texto da comunica&ccedil;&atilde;o"></span>
+                            </span>
                         </label>
-                        <label class="wide">Provid&ecirc;ncias solicitadas
-                            <asp:TextBox ID="txtProvidencias" runat="server" CssClass="textarea-field" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                        <label class="wide rich-text-field">Provid&ecirc;ncias solicitadas
+                            <asp:TextBox ID="txtProvidencias" runat="server" CssClass="textarea-field rich-text-source" TextMode="MultiLine" Rows="4"></asp:TextBox>
+                            <span class="rich-editor" data-source-id="<%= txtProvidencias.ClientID %>" data-placeholder="Digite as provid&ecirc;ncias solicitadas">
+                                <span class="rich-toolbar" aria-label="Formata&ccedil;&atilde;o das provid&ecirc;ncias">
+                                    <button type="button" data-rich-command="bold" title="Negrito"><strong>B</strong></button>
+                                    <button type="button" data-rich-command="italic" title="It&aacute;lico"><em>I</em></button>
+                                    <button type="button" data-rich-command="removeFormat" title="Limpar formata&ccedil;&atilde;o">Limpar</button>
+                                    <button type="button" data-rich-color="#111827" title="Fonte preta"><span class="color-dot" style="background:#111827"></span></button>
+                                    <button type="button" data-rich-color="#c9333a" title="Fonte vermelha"><span class="color-dot" style="background:#c9333a"></span></button>
+                                    <button type="button" data-rich-color="#1969b3" title="Fonte azul"><span class="color-dot" style="background:#1969b3"></span></button>
+                                    <button type="button" data-rich-color="#287246" title="Fonte verde"><span class="color-dot" style="background:#287246"></span></button>
+                                    <button type="button" data-rich-highlight="#fff3bf" title="Destacar em amarelo"><span class="highlight-dot" style="background:#fff3bf"></span></button>
+                                    <button type="button" data-rich-highlight="#dbeafe" title="Destacar em azul"><span class="highlight-dot" style="background:#dbeafe"></span></button>
+                                </span>
+                                <span class="rich-surface" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Provid&ecirc;ncias solicitadas"></span>
+                            </span>
                         </label>
-                        <label class="wide">Observa&ccedil;&otilde;es
-                            <asp:TextBox ID="txtObservacoes" runat="server" CssClass="textarea-field" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                        <label class="wide rich-text-field">Observa&ccedil;&otilde;es
+                            <asp:TextBox ID="txtObservacoes" runat="server" CssClass="textarea-field rich-text-source" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                            <span class="rich-editor" data-source-id="<%= txtObservacoes.ClientID %>" data-placeholder="Digite observa&ccedil;&otilde;es complementares">
+                                <span class="rich-toolbar" aria-label="Formata&ccedil;&atilde;o das observa&ccedil;&otilde;es">
+                                    <button type="button" data-rich-command="bold" title="Negrito"><strong>B</strong></button>
+                                    <button type="button" data-rich-command="italic" title="It&aacute;lico"><em>I</em></button>
+                                    <button type="button" data-rich-command="removeFormat" title="Limpar formata&ccedil;&atilde;o">Limpar</button>
+                                    <button type="button" data-rich-color="#111827" title="Fonte preta"><span class="color-dot" style="background:#111827"></span></button>
+                                    <button type="button" data-rich-color="#c9333a" title="Fonte vermelha"><span class="color-dot" style="background:#c9333a"></span></button>
+                                    <button type="button" data-rich-color="#1969b3" title="Fonte azul"><span class="color-dot" style="background:#1969b3"></span></button>
+                                    <button type="button" data-rich-color="#287246" title="Fonte verde"><span class="color-dot" style="background:#287246"></span></button>
+                                    <button type="button" data-rich-highlight="#fff3bf" title="Destacar em amarelo"><span class="highlight-dot" style="background:#fff3bf"></span></button>
+                                    <button type="button" data-rich-highlight="#dbeafe" title="Destacar em azul"><span class="highlight-dot" style="background:#dbeafe"></span></button>
+                                </span>
+                                <span class="rich-surface" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Observa&ccedil;&otilde;es"></span>
+                            </span>
                         </label>
                         <label><span class="field-label-line">Criado por <span class="required-mark">obrigat&oacute;rio</span></span>
                             <asp:TextBox ID="txtCriadoPor" runat="server" CssClass="text-field" MaxLength="160" placeholder="Nome de quem est&aacute; criando a CI"></asp:TextBox>
@@ -833,7 +875,6 @@
                     { id: '<%= txtCorpo.ClientID %>', mensagem: 'Informe o texto da comunica\u00e7\u00e3o.' },
                     { id: '<%= txtCriadoPor.ClientID %>', mensagem: 'Informe quem est\u00e1 criando a CI no campo Criado por.', sempre: true }
                 ];
-                var dataInicialCI = valor('<%= txtData.ClientID %>');
                 var camposComModelo = [
                     '<%= txtAssunto.ClientID %>',
                     '<%= txtCorpo.ClientID %>',
@@ -845,6 +886,12 @@
                     { id: '<%= txtProvidencias.ClientID %>', nome: 'provid\u00eancias solicitadas', max: 2500 },
                     { id: '<%= txtObservacoes.ClientID %>', nome: 'observa\u00e7\u00f5es', max: 1800 }
                 ];
+                var camposRichTextCI = [
+                    '<%= txtCorpo.ClientID %>',
+                    '<%= txtProvidencias.ClientID %>',
+                    '<%= txtObservacoes.ClientID %>'
+                ];
+                var dataInicialCI = valor('<%= txtData.ClientID %>');
                 var checklistFinalCI = [
                     { id: '<%= chkChecklistDocumento.ClientID %>', mensagem: 'Confirme que documento, data e marca foram conferidos.' },
                     { id: '<%= chkChecklistDestino.ClientID %>', mensagem: 'Confirme que origem, destino e destinat\u00e1rio foram conferidos.' },
@@ -1005,6 +1052,8 @@
                     for (var i = 0; i < camposParaLimpar.length; i++) {
                         var item = campo(camposParaLimpar[i]);
                         if (item) item.classList.remove('field-error');
+                        var editor = editorDoCampoRichCI(camposParaLimpar[i]);
+                        if (editor) editor.classList.remove('field-error');
                     }
                 }
 
@@ -1017,13 +1066,184 @@
 
                     if (elemento) {
                         elemento.classList.add('field-error');
-                        elemento.focus();
+                        var alvoFoco = elemento;
+                        if (ehCampoRichTextCI(elemento.id)) {
+                            var editor = editorDoCampoRichCI(elemento.id);
+                            if (editor) {
+                                editor.classList.add('field-error');
+                                alvoFoco = editor.querySelector('.rich-surface') || editor;
+                            }
+                        }
+                        if (alvoFoco && typeof alvoFoco.focus === 'function') alvoFoco.focus();
                     }
                 }
 
                 function valor(id) {
                     var item = campo(id);
+                    if (item && ehCampoRichTextCI(id)) return textoPlanoRichCI(item.value).trim();
                     return item ? item.value.trim() : '';
+                }
+
+                function valorBrutoCI(id) {
+                    var item = campo(id);
+                    return item ? item.value.trim() : '';
+                }
+
+                function ehCampoRichTextCI(id) {
+                    return camposRichTextCI && camposRichTextCI.indexOf(id) >= 0;
+                }
+
+                function editorDoCampoRichCI(id) {
+                    var editores = document.querySelectorAll('.rich-editor[data-source-id]');
+                    for (var i = 0; i < editores.length; i++) {
+                        if (editores[i].getAttribute('data-source-id') === id) return editores[i];
+                    }
+                    return null;
+                }
+
+                function textoPlanoRichCI(html) {
+                    var div = document.createElement('div');
+                    div.innerHTML = String(html || '').replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>|<\/div>/gi, '\n');
+                    return (div.textContent || div.innerText || '').replace(/\u00a0/g, ' ');
+                }
+
+                function htmlParaEditorCI(valorCampo) {
+                    var texto = String(valorCampo || '');
+                    if (/<[a-z][\s\S]*>/i.test(texto)) return sanitizarHtmlRichCI(texto);
+                    var partes = texto.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split(/\n+/);
+                    var html = '';
+                    for (var i = 0; i < partes.length; i++) {
+                        if (partes[i].trim().length === 0) continue;
+                        html += '<p>' + htmlSeguroCI(partes[i]) + '</p>';
+                    }
+                    return html || '';
+                }
+
+                function sanitizarHtmlRichCI(html) {
+                    var raiz = document.createElement('div');
+                    raiz.innerHTML = String(html || '');
+                    var permitidas = {
+                        STRONG: true,
+                        B: true,
+                        EM: true,
+                        I: true,
+                        U: true,
+                        SPAN: true,
+                        MARK: true,
+                        P: true,
+                        DIV: true,
+                        BR: true
+                    };
+                    var coresSeguras = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+                    function limpar(no) {
+                        if (no.nodeType === 3) return document.createTextNode(no.nodeValue || '');
+                        if (no.nodeType !== 1) return document.createTextNode('');
+
+                        var nome = no.nodeName.toUpperCase();
+                        if (!permitidas[nome]) {
+                            var fragmento = document.createDocumentFragment();
+                            while (no.firstChild) fragmento.appendChild(limpar(no.firstChild));
+                            return fragmento;
+                        }
+
+                        var tag = nome === 'B' ? 'strong' : (nome === 'I' ? 'em' : (nome === 'DIV' ? 'p' : nome.toLowerCase()));
+                        var novo = document.createElement(tag);
+                        if (tag === 'span') {
+                            var cor = (no.style && no.style.color) ? normalizarCorRichCI(no.style.color) : '';
+                            var fundo = (no.style && no.style.backgroundColor) ? normalizarCorRichCI(no.style.backgroundColor) : '';
+                            if (cor) novo.style.color = cor;
+                            if (fundo) novo.style.backgroundColor = fundo;
+                        }
+
+                        while (no.firstChild) novo.appendChild(limpar(no.firstChild));
+                        return novo;
+                    }
+
+                    function normalizarCorRichCI(cor) {
+                        cor = String(cor || '').trim();
+                        var mapa = {
+                            'rgb(17, 24, 39)': '#111827',
+                            'rgb(201, 51, 58)': '#c9333a',
+                            'rgb(25, 105, 179)': '#1969b3',
+                            'rgb(40, 114, 70)': '#287246',
+                            'rgb(255, 243, 191)': '#fff3bf',
+                            'rgb(219, 234, 254)': '#dbeafe'
+                        };
+                        if (mapa[cor]) return mapa[cor];
+                        return coresSeguras.test(cor) ? cor : '';
+                    }
+
+                    var saida = document.createElement('div');
+                    while (raiz.firstChild) saida.appendChild(limpar(raiz.firstChild));
+                    return saida.innerHTML;
+                }
+
+                function sincronizarEditorRichCI(editor) {
+                    if (!editor) return;
+                    var source = campo(editor.getAttribute('data-source-id'));
+                    var surface = editor.querySelector('.rich-surface');
+                    if (!source || !surface) return;
+                    source.value = sanitizarHtmlRichCI(surface.innerHTML).trim();
+                    source.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+
+                function sincronizarEditoresRichCI() {
+                    var editores = document.querySelectorAll('.rich-editor[data-source-id]');
+                    for (var i = 0; i < editores.length; i++) sincronizarEditorRichCI(editores[i]);
+                }
+
+                function atualizarEditorRichCI(id) {
+                    var editor = editorDoCampoRichCI(id);
+                    if (!editor) return;
+                    var source = campo(id);
+                    var surface = editor.querySelector('.rich-surface');
+                    if (!source || !surface) return;
+                    surface.innerHTML = htmlParaEditorCI(source.value);
+                }
+
+                function inicializarEditoresRichCI() {
+                    var editores = document.querySelectorAll('.rich-editor[data-source-id]');
+                    for (var i = 0; i < editores.length; i++) {
+                        (function (editor) {
+                            var source = campo(editor.getAttribute('data-source-id'));
+                            var surface = editor.querySelector('.rich-surface');
+                            if (!source || !surface) return;
+
+                            surface.setAttribute('data-placeholder', editor.getAttribute('data-placeholder') || '');
+                            surface.innerHTML = htmlParaEditorCI(source.value);
+
+                            surface.addEventListener('input', function () {
+                                sincronizarEditorRichCI(editor);
+                                formularioAlterado = true;
+                                atualizarPainelCI();
+                                agendarRascunhoAutomaticoCI();
+                            });
+
+                            surface.addEventListener('paste', function (event) {
+                                event.preventDefault();
+                                var texto = (event.clipboardData || window.clipboardData).getData('text/plain');
+                                document.execCommand('insertText', false, texto);
+                            });
+
+                            var botoes = editor.querySelectorAll('.rich-toolbar button');
+                            for (var b = 0; b < botoes.length; b++) {
+                                botoes[b].addEventListener('click', function () {
+                                    surface.focus();
+                                    document.execCommand('styleWithCSS', false, true);
+                                    var comando = this.getAttribute('data-rich-command');
+                                    var cor = this.getAttribute('data-rich-color');
+                                    var destaque = this.getAttribute('data-rich-highlight');
+
+                                    if (comando) document.execCommand(comando, false, null);
+                                    if (cor) document.execCommand('foreColor', false, cor);
+                                    if (destaque) document.execCommand('hiliteColor', false, destaque);
+                                    sincronizarEditorRichCI(editor);
+                                    atualizarPainelCI();
+                                });
+                            }
+                        })(editores[i]);
+                    }
                 }
 
                 function contemMarcadorModelo(texto) {
@@ -1140,6 +1360,7 @@
                 }
 
                 function camposRascunhoCI() {
+                    sincronizarEditoresRichCI();
                     return {
                         marca: valor('<%= ddlMarca.ClientID %>'),
                         data: valor('<%= txtData.ClientID %>'),
@@ -1151,9 +1372,9 @@
                         destinoArea: valor('<%= txtDestinoArea.ClientID %>'),
                         destinatario: valor('<%= txtDestinatario.ClientID %>'),
                         assunto: valor('<%= txtAssunto.ClientID %>'),
-                        corpo: valor('<%= txtCorpo.ClientID %>'),
-                        providencias: valor('<%= txtProvidencias.ClientID %>'),
-                        observacoes: valor('<%= txtObservacoes.ClientID %>'),
+                        corpo: valorBrutoCI('<%= txtCorpo.ClientID %>'),
+                        providencias: valorBrutoCI('<%= txtProvidencias.ClientID %>'),
+                        observacoes: valorBrutoCI('<%= txtObservacoes.ClientID %>'),
                         criadoPor: valor('<%= txtCriadoPor.ClientID %>')
                     };
                 }
@@ -1192,7 +1413,10 @@
 
                 function preencherCampoCI(id, valorCampo) {
                     var item = campo(id);
-                    if (item) item.value = valorCampo || '';
+                    if (item) {
+                        item.value = valorCampo || '';
+                        if (ehCampoRichTextCI(id)) atualizarEditorRichCI(id);
+                    }
                 }
 
                 function dataLocalHojeCI() {
@@ -1255,7 +1479,13 @@
                 }
 
                 function textoParagrafosCI(texto) {
-                    var partes = String(texto || '').replace(/\r\n/g, '\n').split(/\n+/);
+                    var bruto = String(texto || '');
+                    if (/<[a-z][\s\S]*>/i.test(bruto)) {
+                        var html = sanitizarHtmlRichCI(bruto);
+                        return html.trim().length > 0 ? html : '<p>A definir.</p>';
+                    }
+
+                    var partes = bruto.replace(/\r\n/g, '\n').split(/\n+/);
                     var html = '';
                     for (var i = 0; i < partes.length; i++) {
                         if (partes[i].trim().length === 0) continue;
@@ -1280,7 +1510,7 @@
                     var marca = dados.marca || 'Grupo Bali';
                     var cor = marca.indexOf('Jeep') >= 0 ? '#287246' : (marca.indexOf('BYD') >= 0 ? '#1969b3' : '#c9333a');
                     var documento = '<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><title>Pr\u00e9via da CI</title>' +
-                        '<style>@page{size:A4;margin:10mm}body{margin:0;background:#dfe6ef;font-family:Arial,Helvetica,sans-serif;color:#172033}.sheet{width:210mm;min-height:297mm;margin:18px auto;padding:14mm;background:#fff;box-shadow:0 20px 60px rgba(15,23,42,.18)}header{display:flex;justify-content:space-between;gap:18px;border-bottom:3px solid ' + cor + ';padding-bottom:12px}.brand{display:grid;place-items:center;min-width:180px;min-height:64px;border-radius:10px;padding:12px 18px;color:#fff;background:' + cor + ';font-weight:900}.title{text-align:right}.title span,.meta span,.grid span,.block span,footer span{color:#64748b;font-size:11px;font-weight:900;text-transform:uppercase}.title h1{margin:5px 0 0;color:' + cor + ';font-size:24px}.meta,.grid{display:grid;gap:10px;margin-top:14px}.meta{grid-template-columns:repeat(5,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.meta div,.grid div,.block{border:1px solid #d9e1ed;border-radius:8px;padding:10px}.meta strong,.grid strong,.grid small{display:block;margin-top:4px}.block{margin-top:12px}.block h2{margin:5px 0 0;font-size:18px}.block p{margin:8px 0 0;line-height:1.45}footer{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}.sig{border-top:1px solid #94a3b8;padding-top:8px;text-align:center}@media print{body{background:#fff}.sheet{width:auto;min-height:auto;margin:0;padding:0;box-shadow:none}.meta{grid-template-columns:repeat(5,1fr)!important}.grid,footer{grid-template-columns:repeat(2,1fr)!important}}</style></head><body><main class="sheet">' +
+                        '<style>@page{size:A4;margin:10mm}body{margin:0;background:#dfe6ef;font-family:Arial,Helvetica,sans-serif;color:#172033}.sheet{width:210mm;min-height:297mm;margin:18px auto;padding:14mm;background:#fff;box-shadow:0 20px 60px rgba(15,23,42,.18)}header{display:flex;justify-content:space-between;gap:18px;border-bottom:3px solid ' + cor + ';padding-bottom:12px}.brand{display:grid;place-items:center;min-width:180px;min-height:64px;border-radius:10px;padding:12px 18px;color:#fff;background:' + cor + ';font-weight:900}.title{text-align:right}.title span,.meta>div>span,.grid>div>span,.block>span,footer span{color:#64748b;font-size:11px;font-weight:900;text-transform:uppercase}.title h1{margin:5px 0 0;color:' + cor + ';font-size:24px}.meta,.grid{display:grid;gap:10px;margin-top:14px}.meta{grid-template-columns:repeat(5,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.meta div,.grid div,.block{border:1px solid #d9e1ed;border-radius:8px;padding:10px}.meta strong,.grid strong,.grid small{display:block;margin-top:4px}.block{margin-top:12px}.block h2{margin:5px 0 0;font-size:18px}.block p{margin:8px 0 0;line-height:1.45}.block mark,.block span[style*=background-color]{border-radius:3px;padding:0 2px;-webkit-print-color-adjust:exact;print-color-adjust:exact}footer{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px}.sig{border-top:1px solid #94a3b8;padding-top:8px;text-align:center}@media print{body{background:#fff}.sheet{width:auto;min-height:auto;margin:0;padding:0;box-shadow:none}.meta{grid-template-columns:repeat(5,1fr)!important}.grid,footer{grid-template-columns:repeat(2,1fr)!important}}</style></head><body><main class="sheet">' +
                         '<header><div class="brand">' + htmlSeguroCI(marca) + '</div><div class="title"><span>Comunica\u00e7\u00e3o Interna</span><h1>Pr\u00e9via</h1></div></header>' +
                         '<section class="meta"><div><span>Data</span><strong>' + htmlSeguroCI(formatarDataPreviaCI(dados.data)) + '</strong></div><div><span>Marca</span><strong>' + htmlSeguroCI(marca) + '</strong></div><div><span>Categoria</span><strong>' + htmlSeguroCI(dados.categoria) + '</strong></div><div><span>Prioridade</span><strong>' + htmlSeguroCI(dados.prioridade) + '</strong></div><div><span>Status</span><strong>' + htmlSeguroCI(dados.status) + '</strong></div></section>' +
                         '<section class="grid"><div><span>Origem</span><strong>' + htmlSeguroCI(dados.origemArea || 'A definir') + '</strong><small>' + htmlSeguroCI(dados.origemResponsavel || 'A definir') + '</small></div><div><span>Destino</span><strong>' + htmlSeguroCI(dados.destinoArea || 'A definir') + '</strong><small>' + htmlSeguroCI(dados.destinatario || 'A definir') + '</small></div></section>' +
@@ -1356,6 +1586,7 @@
 
                 window.validarCICliente = function () {
                     limparErros();
+                    sincronizarEditoresRichCI();
                     sincronizarDataNovaCI();
 
                     var ehRascunho = valor('<%= ddlStatusCI.ClientID %>') === 'Rascunho';
@@ -1363,7 +1594,8 @@
                         var item = campo(camposObrigatorios[i].id);
                         var campoData = camposObrigatorios[i].id === '<%= txtData.ClientID %>';
                         var sempreObrigatorio = campoData || camposObrigatorios[i].sempre;
-                        if ((!ehRascunho || sempreObrigatorio) && (!item || item.value.trim().length === 0)) {
+                        var preenchido = ehCampoRichTextCI(camposObrigatorios[i].id) ? valor(camposObrigatorios[i].id).length > 0 : (item && item.value.trim().length > 0);
+                        if ((!ehRascunho || sempreObrigatorio) && !preenchido) {
                             mostrarErro(camposObrigatorios[i].mensagem, item);
                             return false;
                         }
@@ -1372,7 +1604,7 @@
                     if (!ehRascunho) {
                         for (var p = 0; p < camposComModelo.length; p++) {
                             var campoModelo = campo(camposComModelo[p]);
-                            if (campoModelo && contemMarcadorModelo(campoModelo.value)) {
+                            if (campoModelo && contemMarcadorModelo(valor(camposComModelo[p]))) {
                                 mostrarErro('Substitua os trechos entre colchetes antes de salvar a CI.', campoModelo);
                                 return false;
                             }
@@ -1390,7 +1622,8 @@
                     for (var l = 0; l < limitesTextoCI.length; l++) {
                         var limite = limitesTextoCI[l];
                         var campoLimite = campo(limite.id);
-                        if (campoLimite && campoLimite.value.length > limite.max) {
+                        var tamanhoCampo = ehCampoRichTextCI(limite.id) ? valor(limite.id).length : (campoLimite ? campoLimite.value.length : 0);
+                        if (campoLimite && tamanhoCampo > limite.max) {
                             mostrarErro('Reduza o campo ' + limite.nome + ' para at\u00e9 ' + limite.max + ' caracteres.', campoLimite);
                             return false;
                         }
@@ -1468,6 +1701,7 @@
                     event.returnValue = '';
                 });
 
+                inicializarEditoresRichCI();
                 atualizarPainelCI();
                 ajustarTextareasCI();
                 lembrarCriadoPorCI();
