@@ -12,6 +12,8 @@
   var contractStepSignature = '';
   var wizardKeyboardBound = false;
   var qualityUpdateTimer = null;
+  var sectionProgressTimer = null;
+  var reviewSnapshotTimer = null;
   var editChangeTimer = null;
   var identityContextTimer = null;
   var draftMaxAgeMs = 72 * 60 * 60 * 1000;
@@ -848,9 +850,38 @@
     scheduleQualityPanelUpdate();
   }
 
+  function queueContractFrame(callback) {
+    if (window.requestAnimationFrame) {
+      window.requestAnimationFrame(callback);
+    } else {
+      window.setTimeout(callback, 0);
+    }
+  }
+
   function scheduleQualityPanelUpdate() {
     window.clearTimeout(qualityUpdateTimer);
-    qualityUpdateTimer = window.setTimeout(updateQualityPanel, 80);
+    qualityUpdateTimer = window.setTimeout(function () {
+      qualityUpdateTimer = null;
+      queueContractFrame(updateQualityPanel);
+    }, 160);
+  }
+
+  function scheduleSectionProgressUpdate() {
+    window.clearTimeout(sectionProgressTimer);
+    sectionProgressTimer = window.setTimeout(function () {
+      sectionProgressTimer = null;
+      queueContractFrame(updateSectionProgress);
+    }, 30);
+  }
+
+  function scheduleReviewSnapshotUpdate(isEdit) {
+    window.clearTimeout(reviewSnapshotTimer);
+    reviewSnapshotTimer = window.setTimeout(function () {
+      reviewSnapshotTimer = null;
+      queueContractFrame(function () {
+        updateReviewSnapshot(isEdit);
+      });
+    }, 30);
   }
 
   function currentRequiredFields(isEdit) {
@@ -870,27 +901,36 @@
     if (issues.indexOf(message) < 0) issues.push(message);
   }
 
+  function validateFormatField(rule, field, showMessages) {
+    if (!field || !isRelevantContractField(field)) return '';
+
+    var value = String(field.value || '').trim();
+    if (isFormatBlank(rule, value)) {
+      if (showMessages) showFieldMessage(field, '');
+      return '';
+    }
+
+    if (rule.normalize) {
+      value = rule.normalize(value);
+      field.value = value;
+    }
+
+    if (!rule.validate(value)) {
+      if (showMessages) showFieldMessage(field, rule.message);
+      return rule.message;
+    }
+
+    if (showMessages) showFieldMessage(field, '');
+    return '';
+  }
+
   function collectFormatIssues(showMessages) {
     var issues = [];
     formatRules.forEach(function (rule) {
       rule.ids.forEach(function (id) {
         allBySuffix(id).forEach(function (field) {
-          if (!field || !isRelevantContractField(field)) return;
-
-          var value = String(field.value || '').trim();
-          if (isFormatBlank(rule, value)) return;
-
-          if (rule.normalize) {
-            value = rule.normalize(value);
-            field.value = value;
-          }
-
-          if (!rule.validate(value)) {
-            pushUniqueIssue(issues, rule.message);
-            if (showMessages) showFieldMessage(field, rule.message);
-          } else if (showMessages) {
-            showFieldMessage(field, '');
-          }
+          var message = validateFormatField(rule, field, showMessages);
+          if (message) pushUniqueIssue(issues, message);
         });
       });
     });
@@ -1289,11 +1329,13 @@
     var isNew = currentContractMode() === 'novo' && !!getWizardHost();
     var panel = ensureQualityPanel(isEdit);
     if (!panel) return;
-    updateReviewSnapshot(isEdit);
+    var host = getWizardHost();
+    var reviewActive = host && (' ' + String(host.className || '') + ' ').indexOf(' contract-wizard-review ') >= 0;
+    if (reviewActive) scheduleReviewSnapshotUpdate(isEdit);
 
     if ((!isEdit && !isNew) || !contractHasAnyValue(isEdit)) {
       panel.classList.add('is-hidden');
-      updateSectionProgress();
+      scheduleSectionProgressUpdate();
       return;
     }
 
@@ -1330,7 +1372,7 @@
       });
     }
 
-    updateSectionProgress();
+    scheduleSectionProgressUpdate();
   }
 
   function enhanceDateFilters() {
@@ -2074,16 +2116,34 @@
 
     if (actions.getAttribute('data-step-bound') !== 'true') {
       actions.setAttribute('data-step-bound', 'true');
-      actions.querySelector('[data-step-action="prev"]').addEventListener('click', function () {
+      actions.querySelector('[data-step-action="prev"]').addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        resetWizardActionButtons();
         setWizardStep(contractStepIndex - 1, false);
+        return false;
       });
-      actions.querySelector('[data-step-action="next"]').addEventListener('click', function () {
+      actions.querySelector('[data-step-action="next"]').addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        resetWizardActionButtons();
         setWizardStep(contractStepIndex + 1, true);
+        return false;
       });
     }
 
     if (host && actions.parentNode !== host) host.appendChild(actions);
     return actions;
+  }
+
+  function resetWizardActionButtons() {
+    Array.prototype.slice.call(document.querySelectorAll('[data-step-action]')).forEach(function (button) {
+      button.removeAttribute('data-contract-processing');
+      button.removeAttribute('data-contract-submitting');
+      button.removeAttribute('aria-busy');
+      button.removeAttribute('aria-disabled');
+      removeClass(button, 'is-submitting');
+    });
   }
 
   function setWizardStep(index, validateBeforeAdvance) {
@@ -2101,7 +2161,7 @@
           applyWizardStep();
           showWizardMessage(currentIssues[0]);
           focusFirstInvalidField();
-          updateQualityPanel();
+          scheduleQualityPanelUpdate();
           return;
         }
       }
@@ -2125,7 +2185,8 @@
     }
 
     if (target && target.scrollIntoView) {
-      window.setTimeout(function () {
+      window.clearTimeout(target._contractScrollTimer);
+      target._contractScrollTimer = window.setTimeout(function () {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 40);
     }
@@ -2144,7 +2205,7 @@
 
     var reviewActive = checklist && contractStepIndex === sections.length;
     var reviewSnapshot = reviewActive ? ensureReviewSnapshot(currentContractMode() === 'edicao') : document.getElementById('contractReviewSnapshot');
-    if (reviewActive) updateReviewSnapshot(currentContractMode() === 'edicao');
+    if (reviewActive) scheduleReviewSnapshotUpdate(currentContractMode() === 'edicao');
     addClass(host, 'contract-wizard-host');
     if (reviewActive) {
       addClass(host, 'contract-wizard-review');
@@ -2193,7 +2254,7 @@
       });
     }
 
-    updateSectionProgress();
+    scheduleSectionProgressUpdate();
   }
 
   function sectionLabel(section) {
@@ -2234,8 +2295,12 @@
         button.innerHTML = '<span class="contract-step-number">' + (index + 1) + '</span><span class="contract-step-copy"><strong>' + sectionLabel(name) + '</strong><small>Pendente</small></span>';
         button.setAttribute('data-section-name', name);
         button.setAttribute('data-section-index', index);
-        button.addEventListener('click', function () {
+        button.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          resetWizardActionButtons();
           setWizardStep(parseInt(button.getAttribute('data-section-index'), 10), true);
+          return false;
         });
         steps.appendChild(button);
       });
@@ -2246,8 +2311,12 @@
         checklistButton.innerHTML = '<span class="contract-step-number">' + (sections.length + 1) + '</span><span class="contract-step-copy"><strong>' + sectionLabel('checklist') + '</strong><small>Pendente</small></span>';
         checklistButton.setAttribute('data-section-name', 'checklist');
         checklistButton.setAttribute('data-section-index', sections.length);
-        checklistButton.addEventListener('click', function () {
+        checklistButton.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          resetWizardActionButtons();
           setWizardStep(sections.length, true);
+          return false;
         });
         steps.appendChild(checklistButton);
       }
@@ -2263,7 +2332,7 @@
       contractStepIndex = 0;
     }
     applyWizardStep();
-    updateSectionProgress();
+    scheduleSectionProgressUpdate();
   }
 
   function bindWizardKeyboard() {
@@ -2844,7 +2913,7 @@
     contractDirty = true;
     updateDirtyNotice();
     hideDraftPanel();
-    updateQualityPanel();
+    scheduleQualityPanelUpdate();
     updateEditChangePanel();
   }
 
@@ -2975,7 +3044,7 @@
       showSubmitSummary(button, issues);
       focusFirstInvalidField();
       event.preventDefault();
-      updateQualityPanel();
+      scheduleQualityPanelUpdate();
       return false;
     }
 
@@ -3063,7 +3132,7 @@
         field.addEventListener('input', function () { showFieldMessage(field, ''); });
         field.addEventListener('change', function () {
           showFieldMessage(field, '');
-          updateQualityPanel();
+          scheduleQualityPanelUpdate();
         });
       });
     });
@@ -3074,11 +3143,11 @@
         field.setAttribute('data-contract-pay-watch', 'true');
         field.addEventListener('change', function () {
           updatePaymentHint();
-          updateQualityPanel();
+          scheduleQualityPanelUpdate();
         });
         field.addEventListener('click', function () {
           updatePaymentHint();
-          updateQualityPanel();
+          scheduleQualityPanelUpdate();
         });
       });
     });
@@ -3103,8 +3172,8 @@
             if (rule.normalize && !isFormatBlank(rule, field.value)) {
               field.value = rule.normalize(field.value);
             }
-            collectFormatIssues(true);
-            updateQualityPanel();
+            validateFormatField(rule, field, true);
+            scheduleQualityPanelUpdate();
           });
 
           field.addEventListener('input', function () {
@@ -3535,7 +3604,7 @@
       field.addEventListener('change', function () {
         toggle();
         removeClass(closestClass(field, 'contract-checklist'), 'is-warning');
-        updateSectionProgress();
+        scheduleSectionProgressUpdate();
         var checklist = closestTag(field, 'div');
         var warning = checklist && checklist.parentNode ? checklist.parentNode.querySelector('.contract-checklist-warning') : null;
         if (warning) {
@@ -3744,7 +3813,7 @@
     bindLifecycleReset();
     bindEnterKeyGuard();
     prepareMoneyFields(false);
-    updateQualityPanel();
+    scheduleQualityPanelUpdate();
     bindAjaxEndRequest();
   }
 

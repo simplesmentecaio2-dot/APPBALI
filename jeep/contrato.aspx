@@ -112,7 +112,7 @@
         });
     </script>
 
-    <script src="../js/bali-contract.js?v=20260625-phone11"></script>
+    <script src="../js/bali-contract.js?v=20260626-wizardperf01"></script>
 </head>
 <body class="bali-contract-page contrato-jeep">
     <form id="form1" style="height: 100%;" runat="server">

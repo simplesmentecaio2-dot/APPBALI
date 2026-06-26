@@ -84,7 +84,7 @@
             $('.phone').attr('inputmode', 'tel');
            
         });
-    </script><script src="../js/bali-contract.js?v=20260625-phone11"></script></head><body class="bali-contract-page contrato-fiat"><form id="form1" style="height: 100%;" runat="server">
+    </script><script src="../js/bali-contract.js?v=20260626-wizardperf01"></script></head><body class="bali-contract-page contrato-fiat"><form id="form1" style="height: 100%;" runat="server">
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
         <div id="topo">
             <table id="table-menu">
