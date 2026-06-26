@@ -9,7 +9,8 @@ Modulo interno para consulta, cadastro, manutencao e impressao dos ramais do Gru
 - `default.aspx?view=ramais`: cadastro, edicao e inativacao de ramais.
 - `default.aspx?view=lojas`: cadastro e inativacao de lojas.
 - `default.aspx?view=setores`: cadastro e inativacao de setores.
-- `login.aspx`: login legado do modulo.
+- `logs.aspx`: consulta protegida dos erros e da auditoria do modulo.
+- `login.aspx`: login proprio do modulo, usando a validacao padrao do sistema.
 
 ## Banco de dados
 
@@ -26,12 +27,14 @@ Objetos principais:
 - `dbo.ramais_ramal_excluir`: inativacao logica.
 - `dbo.ramais_loja_*`: procedures de loja.
 - `dbo.ramais_setor_*`: procedures de setor.
+- `dbo.ramais_auditoria`: registro das acoes dos usuarios.
+- `dbo.ramais_auditoria_registrar`: procedure central de auditoria.
 
 O script versionado fica em `sql/ramais-schema.sql`.
 
 ## Regras operacionais
 
-- A consulta fica liberada.
+- O acesso ao modulo exige login, mas a manutencao sensivel continua protegida pela senha administrativa.
 - Editar ou excluir ramais exige senha: `@bali2025`.
 - Lojas e setores nao podem ser excluidos se houver ramal ativo vinculado.
 - A impressao mostra somente ramais ativos.
@@ -53,3 +56,7 @@ O script versionado fica em `sql/ramais-schema.sql`.
 Erros tratados no code-behind sao registrados em:
 
 `App_Data/ramais-erros.log`
+
+Acoes de usuarios, logins, importacoes, alteracoes e exclusoes ficam registradas no APPWF em `dbo.ramais_auditoria`.
+
+A tela `logs.aspx` exige login no modulo e senha administrativa `@bali2025`.

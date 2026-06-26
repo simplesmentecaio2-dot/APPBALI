@@ -30,6 +30,7 @@
                     <a href="default.aspx?view=ramais">Ramais</a>
                     <a href="default.aspx?view=lojas">Lojas</a>
                     <a href="default.aspx?view=setores">Setores</a>
+                    <a href="logs.aspx">Logs</a>
                     <a href="../Intranet/index.html">Intranet</a>
                 </nav>
 
