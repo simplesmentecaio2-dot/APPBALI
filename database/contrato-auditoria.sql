@@ -35,6 +35,22 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_contrato_auditoria_contrato_tipo' AND object_id = OBJECT_ID('dbo.contrato_auditoria'))
+BEGIN
+    CREATE INDEX IX_contrato_auditoria_contrato_tipo
+        ON dbo.contrato_auditoria (marca, contrato_id, tipo, dt_evento DESC, id_auditoria DESC)
+        INCLUDE (acao, usuario_id, usuario_nome, ip);
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_contrato_auditoria_marca_data' AND object_id = OBJECT_ID('dbo.contrato_auditoria'))
+BEGIN
+    CREATE INDEX IX_contrato_auditoria_marca_data
+        ON dbo.contrato_auditoria (marca, dt_evento DESC, id_auditoria DESC)
+        INCLUDE (contrato_id, tipo, acao, usuario_nome);
+END
+GO
+
 CREATE OR ALTER PROCEDURE dbo.contrato_auditoria_registrar
     @marca NVARCHAR(30),
     @tipo NVARCHAR(10) = NULL,

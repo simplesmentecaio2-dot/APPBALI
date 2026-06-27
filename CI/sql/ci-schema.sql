@@ -150,6 +150,30 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_auditoria_ci_data' AND object_id = OBJECT_ID('dbo.ci_auditoria'))
+BEGIN
+    CREATE INDEX IX_ci_auditoria_ci_data
+        ON dbo.ci_auditoria (id_ci, dt_evento DESC, id_auditoria DESC)
+        INCLUDE (acao, usuario_nome, codigo_ci, ip);
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_auditoria_codigo_data' AND object_id = OBJECT_ID('dbo.ci_auditoria'))
+BEGIN
+    CREATE INDEX IX_ci_auditoria_codigo_data
+        ON dbo.ci_auditoria (codigo_ci, dt_evento DESC, id_auditoria DESC)
+        INCLUDE (acao, usuario_nome, id_ci, ip);
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ci_auditoria_recente' AND object_id = OBJECT_ID('dbo.ci_auditoria'))
+BEGIN
+    CREATE INDEX IX_ci_auditoria_recente
+        ON dbo.ci_auditoria (dt_evento DESC, id_auditoria DESC)
+        INCLUDE (usuario_nome, acao, codigo_ci, id_ci, ip);
+END
+GO
+
 IF OBJECT_ID('dbo.ci_modelos', 'U') IS NULL
 BEGIN
     CREATE TABLE dbo.ci_modelos (

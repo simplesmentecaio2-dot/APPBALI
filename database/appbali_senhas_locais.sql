@@ -56,3 +56,27 @@ BEGIN
     CREATE INDEX IX_appbali_senhas_locais_auditoria_usuario
         ON dbo.appbali_senhas_locais_auditoria (id_usuario, dt_evento DESC);
 END;
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'IX_appbali_senhas_locais_auditoria_data'
+      AND object_id = OBJECT_ID('dbo.appbali_senhas_locais_auditoria')
+)
+BEGIN
+    CREATE INDEX IX_appbali_senhas_locais_auditoria_data
+        ON dbo.appbali_senhas_locais_auditoria (dt_evento DESC, id_auditoria DESC)
+        INCLUDE (id_usuario, acao, origem, ip);
+END;
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'IX_appbali_senhas_locais_auditoria_acao'
+      AND object_id = OBJECT_ID('dbo.appbali_senhas_locais_auditoria')
+)
+BEGIN
+    CREATE INDEX IX_appbali_senhas_locais_auditoria_acao
+        ON dbo.appbali_senhas_locais_auditoria (acao, dt_evento DESC, id_auditoria DESC)
+        INCLUDE (id_usuario, origem, ip);
+END;

@@ -408,6 +408,30 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ramais_auditoria_ramal_data' AND object_id = OBJECT_ID('dbo.ramais_auditoria'))
+BEGIN
+    CREATE INDEX IX_ramais_auditoria_ramal_data
+        ON dbo.ramais_auditoria (id_ramal, dt_evento DESC, id_auditoria DESC)
+        INCLUDE (acao, usuario_nome, ramal, ip);
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ramais_auditoria_ramal_texto' AND object_id = OBJECT_ID('dbo.ramais_auditoria'))
+BEGIN
+    CREATE INDEX IX_ramais_auditoria_ramal_texto
+        ON dbo.ramais_auditoria (ramal, dt_evento DESC, id_auditoria DESC)
+        INCLUDE (acao, usuario_nome, id_ramal, ip);
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_ramais_auditoria_recente' AND object_id = OBJECT_ID('dbo.ramais_auditoria'))
+BEGIN
+    CREATE INDEX IX_ramais_auditoria_recente
+        ON dbo.ramais_auditoria (dt_evento DESC, id_auditoria DESC)
+        INCLUDE (usuario_nome, acao, ramal, id_ramal, ip);
+END
+GO
+
 CREATE OR ALTER PROCEDURE dbo.ramais_auditoria_registrar
     @usuario_id NVARCHAR(80) = NULL,
     @usuario_nome NVARCHAR(160) = NULL,
