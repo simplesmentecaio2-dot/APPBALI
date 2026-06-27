@@ -94,12 +94,22 @@ public partial class ci_print : System.Web.UI.Page
         litObservacoes.Text = TextoLongo(row["observacoes"].ToString());
         litCriadoPor.Text = Html(row["criado_por"].ToString());
         litEmitidaEm.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+        litUsuarioImpressao.Text = Html(UsuarioImpressao());
 
         secProvidencias.Visible = TextoPlanoRich(row["providencias"].ToString()).Length > 0;
         secObservacoes.Visible = TextoPlanoRich(row["observacoes"].ToString()).Length > 0;
 
         ConfigurarLogo(marca);
         CarregarRelacionados(Convert.ToInt32(row["id_ci"]));
+    }
+
+    private string UsuarioImpressao()
+    {
+        string usuario = Convert.ToString(Session["usuario"] ?? "").Trim();
+        if (usuario.Length > 0) return usuario;
+
+        string id = Convert.ToString(Session["id"] ?? "").Trim();
+        return id.Length > 0 ? id : "Usu\u00e1rio n\u00e3o identificado";
     }
 
     private void MostrarErro(string titulo, string mensagem)

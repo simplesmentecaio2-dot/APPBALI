@@ -80,6 +80,7 @@
                     <span>Emitido por</span>
                     <strong><asp:Literal ID="litCriadoPor" runat="server"></asp:Literal></strong>
                     <small>Gerado em <asp:Literal ID="litEmitidaEm" runat="server"></asp:Literal></small>
+                    <small>Usu&aacute;rio da impress&atilde;o: <asp:Literal ID="litUsuarioImpressao" runat="server"></asp:Literal></small>
                 </div>
                 <div class="signature">
                     <span>Assinatura / ci&ecirc;ncia</span>
