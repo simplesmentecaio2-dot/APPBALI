@@ -97,6 +97,7 @@ public partial class ci_login : System.Web.UI.Page
         if (url.StartsWith("//")) return false;
         return url.StartsWith("default.aspx", StringComparison.OrdinalIgnoreCase)
             || url.StartsWith("print.aspx", StringComparison.OrdinalIgnoreCase)
+            || url.StartsWith("auditoria.aspx", StringComparison.OrdinalIgnoreCase)
             || url.StartsWith("erros.aspx", StringComparison.OrdinalIgnoreCase)
             || url.StartsWith("/CI/", StringComparison.OrdinalIgnoreCase);
     }

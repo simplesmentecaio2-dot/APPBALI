@@ -320,6 +320,41 @@ BEGIN
 END
 GO
 
+CREATE OR ALTER PROCEDURE dbo.ci_auditoria_ci_listar
+    @id_ci INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @codigo_ci NVARCHAR(30);
+
+    SELECT @codigo_ci = 'CI-' + CAST(ano AS VARCHAR(4)) + '-' + RIGHT('0000' + CAST(numero AS VARCHAR(10)), 4)
+    FROM dbo.ci_comunicacoes
+    WHERE id_ci = @id_ci;
+
+    SELECT TOP 500
+        id_auditoria,
+        dt_evento,
+        ISNULL(usuario_id, '') AS usuario_id,
+        ISNULL(usuario_nome, '') AS usuario_nome,
+        ISNULL(usuario_tipo, '') AS usuario_tipo,
+        ISNULL(usuario_email, '') AS usuario_email,
+        ISNULL(empresa, '') AS empresa,
+        ISNULL(ip, '') AS ip,
+        ISNULL(url, '') AS url,
+        acao,
+        id_ci,
+        ISNULL(codigo_ci, @codigo_ci) AS codigo_ci,
+        ISNULL(detalhe, '') AS detalhe,
+        ISNULL(dados_antes, '') AS dados_antes,
+        ISNULL(dados_depois, '') AS dados_depois
+    FROM dbo.ci_auditoria
+    WHERE id_ci = @id_ci
+       OR (codigo_ci IS NOT NULL AND codigo_ci = @codigo_ci)
+    ORDER BY dt_evento ASC, id_auditoria ASC;
+END
+GO
+
 CREATE OR ALTER PROCEDURE dbo.ci_comunicacao_resumo
 AS
 BEGIN

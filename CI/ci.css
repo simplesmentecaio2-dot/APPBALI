@@ -1226,6 +1226,19 @@ label {
   background: #eef5ff;
 }
 
+.table-action.audit-action {
+  border-color: #d9e2f2;
+  color: #263a5f;
+  background: #f8fafc;
+}
+
+.table-action.audit-action:hover,
+.table-action.audit-action:focus {
+  border-color: #9db3d6;
+  color: #102a56;
+  background: #eef4ff;
+}
+
 .table-action.copy-action.is-copied {
   border-color: #b7dfcc;
   color: var(--success);
@@ -1686,6 +1699,105 @@ label {
   font-weight: 700;
 }
 
+.audit-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.audit-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.audit-card span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.audit-card strong {
+  display: block;
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.audit-current-data {
+  border: 1px solid #dce5f1;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 18px;
+  background: #fbfdff;
+}
+
+.audit-current-data dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.audit-current-data dt {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.audit-current-data dd {
+  margin: 4px 0 0;
+  color: var(--ink);
+  font-weight: 800;
+  word-break: break-word;
+}
+
+.audit-table td {
+  vertical-align: top;
+}
+
+.audit-table td:nth-child(4),
+.audit-table td:nth-child(5),
+.audit-table td:nth-child(6),
+.audit-table td:nth-child(7) {
+  max-width: 360px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.audit-event-source {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: #eef5ff;
+  color: #174ea6;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.audit-empty-note {
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 14px;
+  color: var(--muted);
+  background: #f8fafc;
+  font-weight: 800;
+}
+
 .marca-jeep {
   --brand: #287246;
   --brand-strong: #155734;
@@ -1723,6 +1835,8 @@ label {
   .bi-report-grid,
   .notes-layout,
   .notes-filter,
+  .audit-summary-grid,
+  .audit-current-data dl,
   .notes-form-grid {
     grid-template-columns: 1fr;
   }

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comunica&ccedil;&atilde;o Interna - CI</title>
-    <link href="ci.css?v=20260626-ci-review01" rel="stylesheet" />
+    <link href="ci.css?v=20260627-ci-auditoria01" rel="stylesheet" />
 </head>
 <body class="ci-page">
     <form id="form1" runat="server" autocomplete="off">
@@ -374,6 +374,7 @@
                                 <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                     <ItemTemplate>
                                         <a class="table-action" href='print.aspx?id=<%# Eval("id_ci") %>' target="_blank" rel="noopener">Imprimir</a>
+                                        <a class="table-action audit-action" href='auditoria.aspx?id=<%# Eval("id_ci") %>'>Logs da CI</a>
                                         <button type="button" class="table-action copy-action" data-ci-code='<%# Atributo(Eval("codigo_ci")) %>' onclick="copiarCodigoCI(this)">Copiar c&oacute;digo</button>
                                         <button type="button" class="table-action copy-action" data-ci-code='<%# Atributo(Eval("codigo_ci")) %>' data-ci-data='<%# Atributo(Eval("data_documento", "{0:dd/MM/yyyy}")) %>' data-ci-marca='<%# Atributo(Eval("origem_marca")) %>' data-ci-destino='<%# Atributo(Eval("destinatario")) %>' data-ci-assunto='<%# Atributo(Eval("assunto")) %>' onclick="copiarResumoCI(this)">Copiar resumo</button>
                                         <asp:LinkButton ID="lnkDuplicar" runat="server" CssClass="table-action duplicate-action" CommandName="DuplicarCI" CommandArgument='<%# Eval("id_ci") %>'>Duplicar CI</asp:LinkButton>
