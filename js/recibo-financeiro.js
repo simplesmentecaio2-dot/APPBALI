@@ -240,6 +240,16 @@
     document.addEventListener('click', function (event) {
       var action = event.target.getAttribute('data-action');
       var templateAction = event.target.getAttribute('data-template');
+      var choice = event.target.closest ? event.target.closest('.receipt-choice') : null;
+
+      if (choice && event.target.tagName !== 'INPUT') {
+        var radio = choice.querySelector('input[type="radio"]');
+        if (radio && !radio.checked) {
+          radio.checked = true;
+          radio.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        return;
+      }
 
       if (action === 'rebuild-text') {
         state.textTouched = false;

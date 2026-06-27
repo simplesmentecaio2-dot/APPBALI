@@ -196,7 +196,7 @@ body.receipt-page {
 
 .receipt-workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr);
+  grid-template-columns: minmax(420px, .96fr) minmax(390px, 1.04fr);
   gap: 16px;
   align-items: start;
 }
@@ -209,11 +209,11 @@ body.receipt-page {
 }
 
 .receipt-form-panel {
-  padding: 18px;
+  padding: 20px;
 }
 
 .receipt-preview-panel {
-  padding: 18px;
+  padding: 20px;
   position: sticky;
   top: 18px;
 }
@@ -251,7 +251,7 @@ body.receipt-page {
 .receipt-template-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px 12px;
 }
 
 .receipt-template-grid {
@@ -261,6 +261,8 @@ body.receipt-page {
 
 .receipt-template-actions {
   grid-column: 1 / -1;
+  align-items: center;
+  margin-top: -2px;
 }
 
 .receipt-field {
@@ -282,7 +284,7 @@ body.receipt-page {
   text-transform: uppercase;
 }
 
-.receipt-field input,
+.receipt-field input:not([type="radio"]),
 .receipt-field select,
 .receipt-field textarea {
   width: 100%;
@@ -298,13 +300,16 @@ body.receipt-page {
 }
 
 .receipt-field textarea {
-  min-height: 170px;
+  min-height: 190px;
   padding: 12px;
   resize: vertical;
   line-height: 1.55;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 13px;
+  font-weight: 700;
 }
 
-.receipt-field input:focus,
+.receipt-field input:not([type="radio"]):focus,
 .receipt-field select:focus,
 .receipt-field textarea:focus {
   border-color: var(--receipt-brand);
@@ -317,26 +322,61 @@ body.receipt-page {
   gap: 8px;
 }
 
-.receipt-segmented label {
+.receipt-choice {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 42px;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
   border: 1px solid var(--receipt-line);
   border-radius: var(--receipt-radius);
-  padding: 0 12px;
+  padding: 0 13px;
   background: #fff;
   color: var(--receipt-ink);
   font-size: 13px;
   font-weight: 900;
+  cursor: pointer;
+  transition: border-color .16s ease, background .16s ease, box-shadow .16s ease;
+}
+
+.receipt-choice:has(input:checked) {
+  border-color: var(--receipt-brand);
+  background: var(--receipt-brand-soft);
+  box-shadow: 0 0 0 3px rgba(91, 107, 140, .08);
+}
+
+.receipt-segmented input[type="radio"] {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #8b95a7;
+  accent-color: var(--receipt-brand);
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.receipt-choice span,
+.receipt-choice label {
+  margin: 0;
+  color: var(--receipt-ink);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: none;
+  cursor: pointer;
 }
 
 .receipt-hints {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 8px;
   margin-top: 12px;
-  padding: 10px;
+  padding: 11px;
   border: 1px solid var(--receipt-soft-line);
   border-radius: var(--receipt-radius);
   background: #fbfdff;
@@ -344,7 +384,7 @@ body.receipt-page {
 
 .receipt-hints code {
   border-radius: 6px;
-  padding: 3px 6px;
+  padding: 4px 7px;
   background: var(--receipt-brand-soft);
   color: var(--receipt-ink);
   font-size: 12px;
@@ -369,13 +409,16 @@ body.receipt-page {
 
 .receipt-actions {
   justify-content: flex-end;
-  margin-top: 14px;
+  margin-top: 15px;
 }
 
 .receipt-empty-preview {
   border: 1px dashed var(--receipt-line);
   border-radius: var(--receipt-radius);
-  padding: 24px;
+  display: grid;
+  place-items: center;
+  min-height: 88px;
+  padding: 24px 28px;
   background: #fbfdff;
   color: var(--receipt-muted);
   font-size: 14px;

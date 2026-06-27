@@ -54,12 +54,12 @@
                         <div class="receipt-field receipt-field-full">
                             <span>Tipo</span>
                             <div class="receipt-segmented">
-                                <label>
+                                <div class="receipt-choice">
                                     <asp:RadioButton ID="rBtnVendas" GroupName="tipo" Checked="True" runat="server" Text="Vendas" />
-                                </label>
-                                <label>
+                                </div>
+                                <div class="receipt-choice">
                                     <asp:RadioButton ID="rBtnSupervisao" GroupName="tipo" runat="server" Text="Supervis&atilde;o" />
-                                </label>
+                                </div>
                             </div>
                         </div>
 
