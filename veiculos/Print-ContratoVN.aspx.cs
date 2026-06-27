@@ -21,6 +21,7 @@ public partial class veiculos_Pint_Contrato : System.Web.UI.Page
         if (Request.QueryString["contrato"] != null)
         {
             contrato = Request.QueryString["contrato"].ToString();
+            ContratoAuditoria.Registrar("Fiat", "VN", contrato, Convert.ToString(Session["id"] ?? ""), Convert.ToString(Session["usuario"] ?? ""), Request.UserHostAddress ?? "", Request.RawUrl ?? "", "IMPRIMIR_CONTRATO", "Contrato=" + contrato + "; Tipo=VN; Marca=Fiat; Pagina=Print-ContratoVN.aspx", "", "");
         }
         else
         {

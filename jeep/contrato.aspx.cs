@@ -202,7 +202,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         return texto.Length > 1200 ? texto.Substring(0, 1200) + "...(truncado)" : texto;
     }
 
-    private void RegistrarContratoOperacao(string acao, string detalhe)
+    private void RegistrarContratoOperacao(string acao, string detalhe, string dadosAntes = "", string dadosDepois = "")
     {
         try
         {
@@ -226,6 +226,19 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 + "\t" + LimparLog(contexto + detalhe);
 
             File.AppendAllText(caminhoLog, linha + Environment.NewLine, Encoding.UTF8);
+            string detalheCompleto = contexto + detalhe;
+            ContratoAuditoria.Registrar(
+                MarcaContrato,
+                ContratoAuditoria.ExtrairCampoDetalhe(detalheCompleto, "Tipo"),
+                ContratoAuditoria.ExtrairCampoDetalhe(detalheCompleto, "Contrato"),
+                Convert.ToString(Session["id"] ?? ""),
+                UsuarioAtual(),
+                Request.UserHostAddress ?? "",
+                Request.RawUrl ?? "",
+                acao,
+                detalheCompleto,
+                dadosAntes,
+                dadosDepois);
         }
         catch
         {
@@ -539,6 +552,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
         Dictionary<string, string> anterior = LerSnapshot(Convert.ToString(ViewState["ContratoSnapshot"]));
         Dictionary<string, string> atual = CamposEdicao();
         List<string> mudancas = new List<string>();
+        List<string> valoresAntes = new List<string>();
+        List<string> valoresDepois = new List<string>();
 
         foreach (KeyValuePair<string, string> campo in atual)
         {
@@ -547,12 +562,18 @@ public partial class veiculos_contrato : System.Web.UI.Page
             if (!String.Equals(valorAnterior, valorAtual, StringComparison.Ordinal))
             {
                 mudancas.Add(campo.Key + " de [" + valorAnterior + "] para [" + valorAtual + "]");
+                valoresAntes.Add(campo.Key + "=" + valorAnterior);
+                valoresDepois.Add(campo.Key + "=" + valorAtual);
             }
         }
 
         if (mudancas.Count > 0)
         {
-            RegistrarContratoOperacao("EDICAO_ALTERACOES", "Contrato=" + contrato + "; Campos alterados=" + mudancas.Count + "; " + String.Join(" | ", mudancas.Take(60).ToArray()));
+            RegistrarContratoOperacao(
+                "EDICAO_ALTERACOES",
+                "Contrato=" + contrato + "; Campos alterados=" + mudancas.Count + "; " + String.Join(" | ", mudancas.Take(60).ToArray()),
+                String.Join(" | ", valoresAntes.Take(60).ToArray()),
+                String.Join(" | ", valoresDepois.Take(60).ToArray()));
         }
         else
         {
@@ -2086,6 +2107,16 @@ public partial class veiculos_contrato : System.Web.UI.Page
       return "<td style='text-align:center; font-size:12px;'>" + HttpUtility.HtmlEncode(Convert.ToString(valor)) + "</td>";
   }
 
+  private string ConsultaLogCell(string contrato, string tipo)
+  {
+      string url = "../contrato-auditoria.aspx?marca=" + HttpUtility.UrlEncode(MarcaContrato)
+          + "&tipo=" + HttpUtility.UrlEncode(tipo)
+          + "&contrato=" + HttpUtility.UrlEncode(contrato);
+      return "<td style='text-align:center; font-size:12px;'><a class='contract-log-action' href='"
+          + HttpUtility.HtmlAttributeEncode(url)
+          + "' target='_blank' rel='noopener'>Log</a></td>";
+  }
+
   private void select_Tab_ConsultaPeriodo(string paginaImpressao, string tipo, DateTime dtInicio, DateTime dtFim, out string tabelaHtml)
   {
       string cacheKey = "contrato-consulta:" + MarcaContrato + ":" + CacheVersaoContrato("consulta") + ":" + tipo + ":" + dtInicio.ToString("yyyyMMdd") + ":" + dtFim.ToString("yyyyMMdd") + ":limite:" + LimiteLinhasConsulta.ToString(CulturaBrasil);
@@ -2116,6 +2147,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                                 <td style='text-align:center; font-size:12px;'>Telefone 3</td>
                                 <td style='text-align:center; font-size:12px;'>E-mail</td>
                                 <td style='text-align:center; font-size:12px;'>Vendedor</td>
+                                <td style='text-align:center; font-size:12px;'>Log</td>
                             </tr>
                         </thead><tbody>");
 
@@ -2178,17 +2210,18 @@ public partial class veiculos_contrato : System.Web.UI.Page
                       html.Append(ConsultaCell(odr["tel_celular"]));
                       html.Append(ConsultaCell(odr["email"]));
                       html.Append(ConsultaCell(odr["vendedor"]));
+                      html.Append(ConsultaLogCell(id, tipo));
                       html.Append("</tr>");
                   }
               }
 
                 if (totalLinhas == 0)
                 {
-                    html.Append("<tr class='contract-empty-row'><td colspan='9'><strong>Nenhum contrato encontrado neste período.</strong><small>Revise as datas ou tente um período maior.</small></td></tr>");
+                    html.Append("<tr class='contract-empty-row'><td colspan='10'><strong>Nenhum contrato encontrado neste período.</strong><small>Revise as datas ou tente um período maior.</small></td></tr>");
                 }
                 else if (limiteExcedido)
                 {
-                    html.Append("<tr class='contract-limit-row'><td colspan='9'><strong>Mostrando os ")
+                    html.Append("<tr class='contract-limit-row'><td colspan='10'><strong>Mostrando os ")
                         .Append(LimiteLinhasConsulta.ToString(CulturaBrasil))
                         .Append(" contratos mais recentes deste filtro.</strong><small>Para ver resultados mais específicos, reduza o período ou use o filtro da tabela por cliente, CPF/CNPJ ou vendedor.</small></td></tr>");
                     RegistrarContratoOperacao("CONSULTA_LIMITE_RESULTADO", "Tipo=" + tipo + "; Inicio=" + dtInicio.ToString("dd/MM/yyyy") + "; Fim=" + dtFim.ToString("dd/MM/yyyy") + "; Limite=" + LimiteLinhasConsulta.ToString(CulturaBrasil));
