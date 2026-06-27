@@ -709,6 +709,12 @@ body.central-links-page {
   --brand-strong: #1e4f8d;
 }
 
+.brand-financeiro {
+  --brand-color: #5b6b8c;
+  --brand-soft: rgba(91, 107, 140, .12);
+  --brand-strong: #31405e;
+}
+
 .brand-fiat .central-topbar,
 .brand-fiat .central-hero {
   background:
@@ -730,6 +736,13 @@ body.central-links-page {
     linear-gradient(135deg, #0d1b2f 0%, #255b95 56%, #0c1828 100%);
 }
 
+.brand-financeiro .central-topbar,
+.brand-financeiro .central-hero {
+  background:
+    linear-gradient(135deg, rgba(115, 132, 164, .30), transparent 46%),
+    linear-gradient(135deg, #101827 0%, #3d4d6e 56%, #111827 100%);
+}
+
 .brand-fiat .central-link-icon {
   background: rgba(200, 58, 58, .10);
 }
@@ -740,6 +753,10 @@ body.central-links-page {
 
 .brand-byd .central-link-icon {
   background: rgba(47, 111, 189, .12);
+}
+
+.brand-financeiro .central-link-icon {
+  background: rgba(91, 107, 140, .12);
 }
 
 @media (max-width: 780px) {

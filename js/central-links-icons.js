@@ -5,6 +5,7 @@
     { key: 'contract', terms: ['contrato', 'compra e venda'] },
     { key: 'guide', terms: ['guia do comprador', 'guia'] },
     { key: 'receipt', terms: ['recibo', 'desconto'] },
+    { key: 'commission', terms: ['comissao', 'comissionamento'] },
     { key: 'delivery', terms: ['entrega', 'veiculo entregue'] },
     { key: 'test-drive', terms: ['test drive', 'experiencia'] },
     { key: 'phone', terms: ['telefone', 'contatos', 'financeiras'] },
