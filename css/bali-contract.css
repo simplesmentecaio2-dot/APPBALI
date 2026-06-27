@@ -2698,6 +2698,183 @@ body.bali-contract-page *::after {
   text-transform: none;
 }
 
+.bali-contract-page .contract-cpf-lookup-cell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.bali-contract-page .contract-cpf-lookup-cell .form-contrato {
+  width: 100%;
+  min-width: 0;
+}
+
+.bali-contract-page .contract-cpf-search {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  min-width: 34px;
+  height: 30px;
+  margin: 0 !important;
+  padding: 0;
+  border: 1px solid var(--contract-brand);
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--contract-brand-strong), var(--contract-brand));
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 8px 16px var(--contract-brand-ring);
+  transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease;
+}
+
+.bali-contract-page .contract-cpf-search:hover,
+.bali-contract-page .contract-cpf-search:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px var(--contract-brand-ring);
+  outline: 0;
+}
+
+.bali-contract-page .contract-cpf-search[disabled] {
+  cursor: wait;
+  opacity: .72;
+  transform: none;
+}
+
+.bali-contract-page .contract-cpf-search.is-loading span {
+  animation: contractLookupSpin .8s linear infinite;
+}
+
+@keyframes contractLookupSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.contract-dealernet-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  background: rgba(15, 23, 42, .45);
+  backdrop-filter: blur(5px);
+}
+
+.contract-dealernet-modal.is-open {
+  display: flex;
+}
+
+.contract-dealernet-dialog {
+  width: min(720px, 100%);
+  max-height: min(620px, calc(100vh - 44px));
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, .94);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 30px 70px rgba(15, 23, 42, .26);
+}
+
+.contract-dealernet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e6edf5;
+  background: linear-gradient(135deg, rgba(248, 250, 252, .98), #fff);
+}
+
+.contract-dealernet-head span {
+  display: block;
+  margin-bottom: 3px;
+  color: #667085;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.contract-dealernet-head strong {
+  display: block;
+  color: #17202a;
+  font-size: 18px;
+  line-height: 1.15;
+}
+
+.contract-dealernet-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #dbe5ef;
+  border-radius: 8px;
+  background: #fff;
+  color: #475467;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.contract-dealernet-status {
+  padding: 12px 18px;
+  border-bottom: 1px solid #edf2f7;
+  color: #475467;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.contract-dealernet-list {
+  display: grid;
+  gap: 10px;
+  max-height: 430px;
+  overflow: auto;
+  padding: 14px 18px 18px;
+}
+
+.contract-dealernet-item {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #e1e8f0;
+  border-left: 4px solid var(--contract-brand);
+  border-radius: 9px;
+  background: #fff;
+  color: #17202a;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, .045);
+}
+
+.contract-dealernet-item:hover,
+.contract-dealernet-item:focus-visible {
+  border-color: var(--contract-brand);
+  outline: 0;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, .08);
+}
+
+.contract-dealernet-item strong {
+  color: #17202a;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.contract-dealernet-item span,
+.contract-dealernet-item small {
+  color: #667085;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
 .bali-contract-page .contract-context-alert {
   display: none;
   margin-top: 6px;
@@ -3057,6 +3234,23 @@ body.bali-contract-page *::after {
 
   .contract-toast {
     padding: 12px;
+  }
+
+  .contract-dealernet-modal {
+    align-items: flex-end;
+    padding: 12px;
+  }
+
+  .contract-dealernet-dialog {
+    max-height: calc(100vh - 24px);
+    border-radius: 10px;
+  }
+
+  .contract-dealernet-head,
+  .contract-dealernet-status,
+  .contract-dealernet-list {
+    padding-right: 12px;
+    padding-left: 12px;
   }
 
   .bali-contract-page .contract-draft-panel {

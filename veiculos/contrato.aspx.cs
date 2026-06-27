@@ -10,6 +10,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Configuration;
+using System.Web.Services;
 
 public partial class veiculos_contrato : System.Web.UI.Page
 {
@@ -71,6 +73,100 @@ public partial class veiculos_contrato : System.Web.UI.Page
     public string historicoHtml;
 
     private static readonly CultureInfo CulturaBrasil = new CultureInfo("pt-BR");
+
+    public class ClienteDealernetContrato
+    {
+        public string Cliente { get; set; }
+        public string Email { get; set; }
+        public string Endereco { get; set; }
+        public string Bairro { get; set; }
+        public string UF { get; set; }
+        public string CEP { get; set; }
+        public string Nascimento { get; set; }
+        public string Cidade { get; set; }
+        public string CpfCnpj { get; set; }
+    }
+
+    [WebMethod(EnableSession = true)]
+    public static List<ClienteDealernetContrato> ConsultarClienteDealernet(string cpf)
+    {
+        HttpContext contexto = HttpContext.Current;
+        if (contexto == null || contexto.Session == null || contexto.Session["usuario"] == null || contexto.Session["usuario"].ToString().Trim().Length == 0)
+        {
+            throw new InvalidOperationException("Sessão expirada. Entre novamente no sistema para consultar o CPF/CNPJ.");
+        }
+
+        string documento = NormalizarDocumentoDealernet(cpf);
+        if (documento.Length != 11 && documento.Length != 14)
+        {
+            throw new ArgumentException("Informe um CPF com 11 números ou CNPJ com 14 números para consultar.");
+        }
+
+        List<ClienteDealernetContrato> clientes = new List<ClienteDealernetContrato>();
+        string connectionString = ConfigurationManager.ConnectionStrings["GrupoBali_DealernetWFConnectionString"].ConnectionString;
+
+        using (SqlConnection con = new SqlConnection(connectionString))
+        using (SqlCommand cmd = new SqlCommand(@"
+            SELECT TOP 10
+                p.Pessoa_DocIdentificador AS CpfCnpj,
+                p.Pessoa_Nome AS Cliente,
+                p.Pessoa_Email AS Email,
+                pe.PessoaEndereco_Logradouro AS Endereco,
+                pe.PessoaEndereco_Bairro AS Bairro,
+                pe.PessoaEndereco_EstadoCod AS UF,
+                pe.PessoaEndereco_CEP AS CEP,
+                CONVERT(VARCHAR, p.Pessoa_DataNascimentoFundacao, 103) AS Nascimento,
+                'BRASÍLIA' AS Cidade
+            FROM dbo.Pessoa p
+            INNER JOIN dbo.PessoaEndereco pe ON pe.Pessoa_Codigo = p.Pessoa_Codigo
+            WHERE p.Pessoa_DocIdentificador = @cpf
+            ORDER BY CASE WHEN ISNULL(pe.PessoaEndereco_Status, 0) = 1 THEN 0 ELSE 1 END,
+                     pe.PessoaEndereco_Codigo DESC;", con))
+        {
+            cmd.CommandTimeout = 30;
+            cmd.Parameters.Add("@cpf", SqlDbType.VarChar, 20).Value = documento;
+            con.Open();
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    clientes.Add(new ClienteDealernetContrato
+                    {
+                        CpfCnpj = ValorDealernet(reader, "CpfCnpj"),
+                        Cliente = ValorDealernet(reader, "Cliente"),
+                        Email = ValorDealernet(reader, "Email"),
+                        Endereco = ValorDealernet(reader, "Endereco"),
+                        Bairro = ValorDealernet(reader, "Bairro"),
+                        UF = ValorDealernet(reader, "UF"),
+                        CEP = ValorDealernet(reader, "CEP"),
+                        Nascimento = ValorDealernet(reader, "Nascimento"),
+                        Cidade = ValorDealernet(reader, "Cidade")
+                    });
+                }
+            }
+        }
+
+        return clientes;
+    }
+
+    private static string NormalizarDocumentoDealernet(string valor)
+    {
+        StringBuilder digitos = new StringBuilder();
+        foreach (char c in Convert.ToString(valor ?? ""))
+        {
+            if (Char.IsDigit(c))
+            {
+                digitos.Append(c);
+            }
+        }
+        return digitos.ToString();
+    }
+
+    private static string ValorDealernet(SqlDataReader reader, string coluna)
+    {
+        object valor = reader[coluna];
+        return valor == DBNull.Value ? "" : Convert.ToString(valor).Trim();
+    }
 
     private void ExibirAlerta(string mensagem)
     {

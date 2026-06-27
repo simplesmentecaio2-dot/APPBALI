@@ -3642,6 +3642,237 @@
     });
   }
 
+  function dispatchContractChange(field) {
+    if (!field) return;
+    var eventNames = ['input', 'change', 'blur'];
+    eventNames.forEach(function (name) {
+      var event;
+      if (typeof Event === 'function') {
+        event = new Event(name, { bubbles: true });
+      } else {
+        event = document.createEvent('Event');
+        event.initEvent(name, true, true);
+      }
+      field.dispatchEvent(event);
+    });
+  }
+
+  function getDealernetModal() {
+    var modal = document.getElementById('contractDealernetModal');
+    if (modal) return modal;
+
+    modal = document.createElement('div');
+    modal.id = 'contractDealernetModal';
+    modal.className = 'contract-dealernet-modal';
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML =
+      '<div class="contract-dealernet-dialog" role="dialog" aria-modal="true" aria-labelledby="contractDealernetTitle">' +
+        '<div class="contract-dealernet-head">' +
+          '<div><span>Consulta interna</span><strong id="contractDealernetTitle">Clientes encontrados</strong></div>' +
+          '<button type="button" class="contract-dealernet-close" aria-label="Fechar consulta">x</button>' +
+        '</div>' +
+        '<div class="contract-dealernet-status" id="contractDealernetStatus"></div>' +
+        '<div class="contract-dealernet-list" id="contractDealernetList"></div>' +
+      '</div>';
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal || closestClass(event.target, 'contract-dealernet-close')) {
+        closeDealernetModal();
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if ((event.key === 'Escape' || event.keyCode === 27) && modal.getAttribute('aria-hidden') === 'false') {
+        closeDealernetModal();
+      }
+    });
+
+    return modal;
+  }
+
+  function closeDealernetModal() {
+    var modal = document.getElementById('contractDealernetModal');
+    if (!modal) return;
+    modal.setAttribute('aria-hidden', 'true');
+    removeClass(modal, 'is-open');
+  }
+
+  function dealernetFieldMap(mode) {
+    if (mode === 'edicao') {
+      return {
+        CpfCnpj: 'txtEdCPF',
+        Cliente: 'txtEdCliente',
+        Email: 'txtEdEmail',
+        Endereco: 'txtEdEndereco',
+        Bairro: 'txtEdBairro',
+        UF: 'txtEdUF',
+        CEP: 'txtEdCep',
+        Nascimento: 'txtEdNascimento',
+        Cidade: 'txtEdCidade'
+      };
+    }
+
+    return {
+      CpfCnpj: 'txtCPFCNPJ',
+      Cliente: 'txtCliente',
+      Email: 'txtEmail',
+      Endereco: 'txtEndereco',
+      Bairro: 'txtBairro',
+      UF: 'txtUF',
+      CEP: 'txtCEP',
+      Nascimento: 'txtNascimento',
+      Cidade: 'txtCidade'
+    };
+  }
+
+  function normalizeDealernetValue(key, value) {
+    if (key === 'CpfCnpj') return formatCpfCnpj(value);
+    if (key === 'CEP') return formatCep(value);
+    if (key === 'UF') return String(value || '').trim().toUpperCase().substr(0, 2);
+    return String(value || '').replace(/\s+/g, ' ').trim();
+  }
+
+  function fillDealernetClient(client, mode) {
+    var map = dealernetFieldMap(mode);
+    Object.keys(map).forEach(function (key) {
+      var field = bySuffix(map[key]);
+      if (!field) return;
+      var value = normalizeDealernetValue(key, client[key]);
+      if (value) {
+        field.value = value;
+        dispatchContractChange(field);
+      }
+    });
+
+    closeDealernetModal();
+    updateIdentityContext();
+    scheduleIdentityContextUpdate();
+    scheduleSectionProgressUpdate();
+    scheduleQualityPanelUpdate();
+    if (window.BaliContractToast) {
+      window.BaliContractToast('Dados do cliente preenchidos pela consulta interna.', 'info');
+    }
+  }
+
+  function renderDealernetResults(results, mode, documentDigits) {
+    var modal = getDealernetModal();
+    var status = document.getElementById('contractDealernetStatus');
+    var list = document.getElementById('contractDealernetList');
+    var total = results.length;
+    status.textContent = total + ' resultado(s) para o documento ' + formatCpfCnpj(documentDigits) + '. Confira o endere\u00e7o antes de preencher.';
+    list.innerHTML = '';
+
+    results.forEach(function (client, index) {
+      var item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'contract-dealernet-item';
+      item.innerHTML =
+        '<strong>' + escapeHtml(client.Cliente || 'Cliente sem nome') + '</strong>' +
+        '<span>' + escapeHtml(client.Endereco || 'Endere\u00e7o n\u00e3o informado') + '</span>' +
+        '<small>' +
+          escapeHtml(client.Bairro || '-') + ' | ' +
+          escapeHtml(client.Cidade || '-') + '/' + escapeHtml(client.UF || '-') + ' | CEP ' +
+          escapeHtml(client.CEP || '-') +
+        '</small>';
+      item.addEventListener('click', function () {
+        fillDealernetClient(results[index], mode);
+      });
+      list.appendChild(item);
+    });
+
+    modal.setAttribute('aria-hidden', 'false');
+    addClass(modal, 'is-open');
+    var first = list.querySelector('button');
+    if (first && first.focus) first.focus();
+  }
+
+  function parseDealernetError(xhr) {
+    var fallback = 'N\u00e3o foi poss\u00edvel consultar o CPF/CNPJ agora.';
+    try {
+      var data = JSON.parse(xhr.responseText || '{}');
+      return data.Message || data.message || fallback;
+    } catch (ex) {
+      return fallback;
+    }
+  }
+
+  function requestDealernetClients(cpfDigits, callback) {
+    var xhr = new XMLHttpRequest();
+    var path = window.location.pathname || '';
+    var endpoint = path.replace(/\/$/, '') + '/ConsultarClienteDealernet';
+    xhr.open('POST', endpoint, true);
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState !== 4) return;
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          var data = JSON.parse(xhr.responseText || '{}');
+          callback(null, data.d || []);
+        } catch (ex) {
+          callback('N\u00e3o foi poss\u00edvel ler o retorno da consulta interna.');
+        }
+      } else {
+        callback(parseDealernetError(xhr));
+      }
+    };
+    xhr.send(JSON.stringify({ cpf: cpfDigits }));
+  }
+
+  function consultDealernetCpf(button) {
+    var targetId = button.getAttribute('data-cpf-target') || 'txtCPFCNPJ';
+    var mode = button.getAttribute('data-cpf-mode') || (targetId.indexOf('Ed') >= 0 ? 'edicao' : 'novo');
+    var cpfField = bySuffix(targetId);
+    var digits = digitsOnly(cpfField ? cpfField.value : '');
+
+    if (digits.length !== 11 && digits.length !== 14) {
+      showFieldMessage(cpfField, 'Informe um CPF com 11 n\u00fameros ou CNPJ com 14 n\u00fameros para consultar.');
+      if (window.BaliContractToast) {
+        window.BaliContractToast('Informe um CPF/CNPJ v\u00e1lido antes de consultar.', 'warning');
+      }
+      return;
+    }
+
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+    addClass(button, 'is-loading');
+    requestDealernetClients(digits, function (error, results) {
+      button.disabled = false;
+      button.setAttribute('aria-busy', 'false');
+      removeClass(button, 'is-loading');
+
+      if (error) {
+        if (window.BaliContractToast) window.BaliContractToast(error, 'warning');
+        return;
+      }
+
+      if (!results || !results.length) {
+        if (window.BaliContractToast) {
+          window.BaliContractToast('Nenhum cliente encontrado no sistema interno para este CPF/CNPJ.', 'warning');
+        }
+        return;
+      }
+
+      renderDealernetResults(results, mode, digits);
+    });
+  }
+
+  function enhanceDealernetCpfLookup() {
+    Array.prototype.slice.call(document.querySelectorAll('.contract-cpf-search')).forEach(function (button) {
+      if (button.getAttribute('data-dealernet-bound') === 'true') return;
+      button.setAttribute('data-dealernet-bound', 'true');
+      button.setAttribute('autocomplete', 'off');
+      var target = bySuffix(button.getAttribute('data-cpf-target') || '');
+      if (target) {
+        target.setAttribute('autocomplete', 'off');
+        target.setAttribute('inputmode', 'numeric');
+      }
+      button.addEventListener('click', function () {
+        consultDealernetCpf(button);
+      });
+    });
+  }
+
   function markRequiredLabels() {
     requiredNewFields.concat(requiredEditFields).forEach(function (item) {
       allBySuffix(item.id).forEach(function (field) {
@@ -3793,6 +4024,7 @@
     enhanceFormatFields();
     enhanceAutocompleteFields();
     enhanceIdentityFields();
+    enhanceDealernetCpfLookup();
     enhanceTextCleanupFields();
     markRequiredLabels();
     enhanceChecklist();
