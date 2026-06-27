@@ -21,7 +21,7 @@
                 <strong><asp:Label ID="lblUsuario" runat="server" /></strong>
                 <small>Perfil: <asp:Label ID="lblTipo" runat="server" /></small>
             </div>
-            <nav class="tech-actions" aria-label="Ações rápidas">
+            <nav class="tech-actions" aria-label="A&ccedil;&otilde;es r&aacute;pidas">
                 <a href="Default.aspx">Voltar</a>
                 <a href="../login.aspx?sair=1">Sair</a>
             </nav>
@@ -30,7 +30,7 @@
         <main class="tech-main">
             <section class="tech-hero">
                 <div>
-                    <span class="tech-eyebrow">Catálogo técnico</span>
+                    <span class="tech-eyebrow">Cat&aacute;logo t&eacute;cnico</span>
                     <h1>Sistemas</h1>
                     <p>Consulte os sistemas usados nas regras de acesso e confira nome, imagem e URL configurada.</p>
                 </div>
@@ -45,7 +45,7 @@
                     <div>
                         <span class="tech-panel-kicker">Sistemas cadastrados</span>
                         <h2>Mapa de acessos</h2>
-                        <p>Esses registros são usados pelas permissões de usuários. Alterações estruturais devem ser feitas com cautela.</p>
+                        <p>Esses registros s&atilde;o usados pelas permiss&otilde;es de usu&aacute;rios. Altera&ccedil;&otilde;es estruturais devem ser feitas com cautela.</p>
                     </div>
                 </div>
 

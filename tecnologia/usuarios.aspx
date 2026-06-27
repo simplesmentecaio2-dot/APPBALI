@@ -7,7 +7,7 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Usuários | Tecnologia</title>
+    <title>Usu&aacute;rios | Tecnologia</title>
     <link href="../css/bali-tecnologia.css?v=20260627-tech01" rel="stylesheet" />
 </head>
 <body class="bali-tech-page">
@@ -24,7 +24,7 @@
                 <strong><asp:Label ID="lblUsuario" runat="server" /></strong>
                 <small>Perfil: <asp:Label ID="lblTipo" runat="server" /></small>
             </div>
-            <nav class="tech-actions" aria-label="Ações rápidas">
+            <nav class="tech-actions" aria-label="A&ccedil;&otilde;es r&aacute;pidas">
                 <a href="Default.aspx">Voltar</a>
                 <a href="../login.aspx?sair=1">Sair</a>
             </nav>
@@ -33,12 +33,12 @@
         <main class="tech-main">
             <section class="tech-hero">
                 <div>
-                    <span class="tech-eyebrow">Permissões</span>
-                    <h1>Usuários</h1>
-                    <p>Consulte usuários, cadastre novos acessos e ajuste sistemas/perfis em um fluxo mais seguro.</p>
+                    <span class="tech-eyebrow">Permiss&otilde;es</span>
+                    <h1>Usu&aacute;rios</h1>
+                    <p>Consulte usu&aacute;rios, cadastre novos acessos e ajuste sistemas/perfis em um fluxo mais seguro.</p>
                 </div>
                 <label class="tech-search" for="techSearchUsers">
-                    <span>Buscar usuário</span>
+                    <span>Buscar usu&aacute;rio</span>
                     <input id="techSearchUsers" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ex.: nome, e-mail, perfil, ativo" />
                 </label>
             </section>
@@ -51,12 +51,12 @@
                             <div class="tech-panel-head">
                                 <div>
                                     <span class="tech-panel-kicker">Consulta</span>
-                                    <h2>Usuários cadastrados</h2>
-                                    <p>Selecione um usuário para carregar edição, sistemas liberados e perfis vinculados.</p>
+                                    <h2>Usu&aacute;rios cadastrados</h2>
+                                    <p>Selecione um usu&aacute;rio para carregar edi&ccedil;&atilde;o, sistemas liberados e perfis vinculados.</p>
                                 </div>
                             </div>
 
-                            <asp:GridView ID="gvConsultaUsuarios" runat="server" AutoGenerateColumns="False" CssClass="tech-gridview" DataKeyNames="Login" DataSourceID="sqldsConsultaUsuarios" AllowPaging="True" PageSize="20" GridLines="None" OnSelectedIndexChanged="gvConsultaUsuarios_SelectedIndexChanged" EmptyDataText="Nenhum usuário encontrado.">
+                            <asp:GridView ID="gvConsultaUsuarios" runat="server" AutoGenerateColumns="False" CssClass="tech-gridview" DataKeyNames="Login" DataSourceID="sqldsConsultaUsuarios" AllowPaging="True" PageSize="20" GridLines="None" OnSelectedIndexChanged="gvConsultaUsuarios_SelectedIndexChanged" EmptyDataText="Nenhum usu&aacute;rio encontrado.">
                                 <Columns>
                                     <asp:CommandField ShowSelectButton="True" SelectText="Selecionar" />
                                     <asp:BoundField DataField="Nome" HeaderText="Nome" SortExpression="Nome" />
@@ -67,7 +67,7 @@
                                 <PagerStyle HorizontalAlign="Center" />
                             </asp:GridView>
 
-                            <div id="techEmptyUsers" class="tech-empty" hidden>Nenhum usuário encontrado para a busca informada.</div>
+                            <div id="techEmptyUsers" class="tech-empty" hidden>Nenhum usu&aacute;rio encontrado para a busca informada.</div>
                             <asp:SqlDataSource ID="sqldsConsultaUsuarios" runat="server" ConnectionString="<%$ ConnectionStrings:APPConnectionString %>" SelectCommand="app_select_usuarios" SelectCommandType="StoredProcedure"></asp:SqlDataSource>
                         </section>
                     </ContentTemplate>
@@ -80,8 +80,8 @@
                             <div class="tech-panel-head">
                                 <div>
                                     <span class="tech-panel-kicker">Novo acesso</span>
-                                    <h2>Cadastrar usuário</h2>
-                                    <p>Informe nome, e-mail, tipo de usuário, situação, senha inicial e sistemas liberados.</p>
+                                    <h2>Cadastrar usu&aacute;rio</h2>
+                                    <p>Informe nome, e-mail, tipo de usu&aacute;rio, situa&ccedil;&atilde;o, senha inicial e sistemas liberados.</p>
                                 </div>
                             </div>
 
@@ -100,11 +100,11 @@
                                         <asp:ListItem> -- Tipo -- </asp:ListItem>
                                         <asp:ListItem>ADMINISTRADOR</asp:ListItem>
                                         <asp:ListItem>SUPERVISOR</asp:ListItem>
-                                        <asp:ListItem>USUÁRIO</asp:ListItem>
+                                        <asp:ListItem>USU&Aacute;RIO</asp:ListItem>
                                     </asp:DropDownList>
                                 </div>
                                 <div class="tech-field">
-                                    <span>Situação</span>
+                                    <span>Situa&ccedil;&atilde;o</span>
                                     <div class="tech-radio-row">
                                         <asp:RadioButton ID="rbtnAtivo" runat="server" Checked="True" GroupName="ativo" Text="Ativo" />
                                         <asp:RadioButton ID="rbtnInativo" runat="server" GroupName="ativo" Text="Inativo" />
@@ -115,7 +115,7 @@
                                     <asp:TextBox ID="txtSenha" runat="server" TextMode="Password" MaxLength="20"></asp:TextBox>
                                 </div>
                                 <div class="tech-field">
-                                    <span>Confirmação</span>
+                                    <span>Confirma&ccedil;&atilde;o</span>
                                     <asp:TextBox ID="txtConfirmacao" runat="server" TextMode="Password" MaxLength="20"></asp:TextBox>
                                 </div>
                                 <div class="tech-check-panel">
@@ -124,7 +124,7 @@
                                     <asp:SqlDataSource ID="sqldsSistemas" runat="server" ConnectionString="<%$ ConnectionStrings:APPConnectionString %>" SelectCommand="app_select_sistemas" SelectCommandType="StoredProcedure"></asp:SqlDataSource>
                                 </div>
                                 <div class="tech-actions-row">
-                                    <asp:Button ID="btnSalvar" runat="server" OnClick="btnSalvar_Click" Text="Salvar usuário" />
+                                    <asp:Button ID="btnSalvar" runat="server" OnClick="btnSalvar_Click" Text="Salvar usu&aacute;rio" />
                                 </div>
                             </div>
                         </section>
@@ -137,9 +137,9 @@
                         <section class="tech-panel">
                             <div class="tech-panel-head">
                                 <div>
-                                    <span class="tech-panel-kicker">Manutenção</span>
-                                    <h2>Alterar usuário</h2>
-                                    <p>Selecione primeiro um usuário na aba consulta para editar dados, senha e sistemas.</p>
+                                    <span class="tech-panel-kicker">Manuten&ccedil;&atilde;o</span>
+                                    <h2>Alterar usu&aacute;rio</h2>
+                                    <p>Selecione primeiro um usu&aacute;rio na aba consulta para editar dados, senha e sistemas.</p>
                                 </div>
                             </div>
 
@@ -158,11 +158,11 @@
                                         <asp:ListItem> -- Tipo -- </asp:ListItem>
                                         <asp:ListItem>ADMINISTRADOR</asp:ListItem>
                                         <asp:ListItem>SUPERVISOR</asp:ListItem>
-                                        <asp:ListItem>USUÁRIO</asp:ListItem>
+                                        <asp:ListItem>USU&Aacute;RIO</asp:ListItem>
                                     </asp:DropDownList>
                                 </div>
                                 <div class="tech-field">
-                                    <span>Situação</span>
+                                    <span>Situa&ccedil;&atilde;o</span>
                                     <div class="tech-radio-row">
                                         <asp:RadioButton ID="rbtnAtivoAlterar" runat="server" Checked="True" GroupName="ativoAlterar" Text="Ativo" />
                                         <asp:RadioButton ID="rbtnInativoAlterar" runat="server" GroupName="ativoAlterar" Text="Inativo" />
@@ -173,7 +173,7 @@
                                     <asp:TextBox ID="txtSenhaAlterar" runat="server" TextMode="Password" MaxLength="20"></asp:TextBox>
                                 </div>
                                 <div class="tech-field">
-                                    <span>Confirmação</span>
+                                    <span>Confirma&ccedil;&atilde;o</span>
                                     <asp:TextBox ID="txtConfirmacaoAlterar" runat="server" TextMode="Password" MaxLength="20"></asp:TextBox>
                                 </div>
                                 <div class="tech-actions-row">
@@ -185,7 +185,7 @@
                                     <asp:SqlDataSource ID="sqldsSistemasAlterar" runat="server" ConnectionString="<%$ ConnectionStrings:APPConnectionString %>" SelectCommand="app_select_sistemas" SelectCommandType="StoredProcedure"></asp:SqlDataSource>
                                 </div>
                                 <div class="tech-actions-row">
-                                    <asp:Button ID="btnAlterar" runat="server" Text="Salvar alterações" OnClick="btnAlterar_Click" />
+                                    <asp:Button ID="btnAlterar" runat="server" Text="Salvar altera&ccedil;&otilde;es" OnClick="btnAlterar_Click" />
                                 </div>
                             </div>
                         </section>
@@ -201,7 +201,7 @@
                                     <div>
                                         <span class="tech-panel-kicker">Perfil por sistema</span>
                                         <h2>Ajustar perfil</h2>
-                                        <p>Após selecionar o usuário, escolha o sistema e o perfil operacional permitido.</p>
+                                        <p>Ap&oacute;s selecionar o usu&aacute;rio, escolha o sistema e o perfil operacional permitido.</p>
                                     </div>
                                 </div>
 
@@ -241,9 +241,9 @@
                             <div class="tech-panel">
                                 <div class="tech-panel-head">
                                     <div>
-                                        <span class="tech-panel-kicker">Permissões atuais</span>
+                                        <span class="tech-panel-kicker">Permiss&otilde;es atuais</span>
                                         <h2>Sistemas vinculados</h2>
-                                        <p>Resumo dos sistemas e perfis carregados para o usuário selecionado.</p>
+                                        <p>Resumo dos sistemas e perfis carregados para o usu&aacute;rio selecionado.</p>
                                     </div>
                                 </div>
 

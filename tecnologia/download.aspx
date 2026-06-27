@@ -21,7 +21,7 @@
                 <strong><asp:Label ID="lblUsuario" runat="server" /></strong>
                 <small>Perfil: <asp:Label ID="lblTipo" runat="server" /></small>
             </div>
-            <nav class="tech-actions" aria-label="Ações rápidas">
+            <nav class="tech-actions" aria-label="A&ccedil;&otilde;es r&aacute;pidas">
                 <a href="Default.aspx">Voltar</a>
                 <a href="../login.aspx?sair=1">Sair</a>
             </nav>
@@ -32,33 +32,33 @@
                 <div>
                     <span class="tech-eyebrow">Downloads</span>
                     <h1>Arquivos importantes</h1>
-                    <p>Materiais técnicos, instaladores e referências usados para suporte interno.</p>
+                    <p>Materiais t&eacute;cnicos, instaladores e refer&ecirc;ncias usados para suporte interno.</p>
                 </div>
                 <label class="tech-search" for="techSearchFiles">
                     <span>Buscar arquivo</span>
-                    <input id="techSearchFiles" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ex.: bibliotecas, Kaspersky, código" />
+                    <input id="techSearchFiles" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ex.: bibliotecas, Kaspersky, c&oacute;digo" />
                 </label>
             </section>
 
-            <section class="tech-file-list" aria-label="Arquivos disponíveis">
+            <section class="tech-file-list" aria-label="Arquivos dispon&iacute;veis">
                 <a class="tech-file" href="../Bibliotecas%20e%20exemplos.rar" data-search="bibliotecas exemplos rar desenvolvimento suporte">
                     <span class="tech-panel-kicker">Pacote</span>
                     <strong>Bibliotecas e exemplos.rar</strong>
-                    <small>Arquivos de apoio para desenvolvimento e manutenção.</small>
+                    <small>Arquivos de apoio para desenvolvimento e manuten&ccedil;&atilde;o.</small>
                     <span class="tech-card-action">Baixar</span>
                 </a>
 
-                <a class="tech-file" href="Arquivos/ksos19.0.0.1088apt_15121.exe" data-search="kaspersky instalador exe segurança ksos">
+                <a class="tech-file" href="Arquivos/ksos19.0.0.1088apt_15121.exe" data-search="kaspersky instalador exe seguranca ksos">
                     <span class="tech-panel-kicker">Instalador</span>
                     <strong>KSOS 19.0.0.1088 APT</strong>
-                    <small>Executável de instalação para suporte técnico autorizado.</small>
+                    <small>Execut&aacute;vel de instala&ccedil;&atilde;o para suporte t&eacute;cnico autorizado.</small>
                     <span class="tech-card-action">Baixar</span>
                 </a>
 
-                <a class="tech-file" href="Arquivos/codigo.txt" data-search="codigo código txt referencia suporte">
-                    <span class="tech-panel-kicker">Referência</span>
+                <a class="tech-file" href="Arquivos/codigo.txt" data-search="codigo txt referencia suporte">
+                    <span class="tech-panel-kicker">Refer&ecirc;ncia</span>
                     <strong>codigo.txt</strong>
-                    <small>Arquivo textual de consulta rápida da equipe de tecnologia.</small>
+                    <small>Arquivo textual de consulta r&aacute;pida da equipe de tecnologia.</small>
                     <span class="tech-card-action">Abrir</span>
                 </a>
             </section>

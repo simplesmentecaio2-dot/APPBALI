@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -335,7 +336,31 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
 
     private void ExibirMensagem(string mensagem)
     {
-        string segura = HttpUtility.JavaScriptStringEncode(mensagem);
+        string segura = EscaparUnicodeJavascript(HttpUtility.JavaScriptStringEncode(mensagem));
         ScriptManager.RegisterStartupScript(this, GetType(), "mensagemTecnologia", "alert('" + segura + "');", true);
+    }
+
+    private string EscaparUnicodeJavascript(string texto)
+    {
+        if (String.IsNullOrEmpty(texto))
+        {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder(texto.Length);
+        foreach (char c in texto)
+        {
+            if (c > 127)
+            {
+                sb.Append("\\u");
+                sb.Append(((int)c).ToString("x4"));
+            }
+            else
+            {
+                sb.Append(c);
+            }
+        }
+
+        return sb.ToString();
     }
 }
