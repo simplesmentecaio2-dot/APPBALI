@@ -1,17 +1,17 @@
 (function () {
   var systems = {
-    '2': { title: 'ADM / Financeiro', subtitle: 'Administrativo, financeiro e recibos.' },
-    '4': { title: 'Ve\u00edculos', subtitle: 'Centrais e rotinas comerciais.' },
-    '7': { title: 'Pe\u00e7as e acess\u00f3rios', subtitle: 'Opera\u00e7\u00f5es de pe\u00e7as e acess\u00f3rios.' },
-    '9': { title: 'Assist. t\u00e9cnica', subtitle: 'Atendimento t\u00e9cnico e p\u00f3s-venda.' },
-    '10': { title: 'Lanternagem', subtitle: 'Acompanhamento de lanternagem.' },
-    '12': { title: 'Entrega', subtitle: 'Entregas e autoriza\u00e7\u00e3o de sa\u00edda.' },
-    '13': { title: 'Jur\u00eddico', subtitle: 'Documentos e consultas jur\u00eddicas.' },
-    '14': { title: 'CRM', subtitle: 'Relacionamento e prospec\u00e7\u00e3o.' },
-    '15': { title: 'Despachante', subtitle: 'Documenta\u00e7\u00e3o e processos externos.' },
-    '16': { title: 'DP', subtitle: 'Rotinas de departamento pessoal.' },
-    '17': { title: 'Tecnologia', subtitle: 'Suporte, usu\u00e1rios e sistemas.' },
-    '18': { title: 'Diretoria', subtitle: 'Pain\u00e9is e indicadores gerenciais.' }
+    '2': { title: 'ADM / Financeiro', subtitle: 'Administrativo, financeiro e recibos.', icon: 'img/app-icons/financeiro.svg' },
+    '4': { title: 'Ve\u00edculos', subtitle: 'Centrais e rotinas comerciais.', icon: 'img/app-icons/veiculos.svg' },
+    '7': { title: 'Pe\u00e7as e acess\u00f3rios', subtitle: 'Opera\u00e7\u00f5es de pe\u00e7as e acess\u00f3rios.', icon: 'img/app-icons/pecas.svg' },
+    '9': { title: 'Assist. t\u00e9cnica', subtitle: 'Atendimento t\u00e9cnico e p\u00f3s-venda.', icon: 'img/app-icons/assistencia-tecnica.svg' },
+    '10': { title: 'Lanternagem', subtitle: 'Acompanhamento de lanternagem.', icon: 'img/app-icons/lanternagem.svg' },
+    '12': { title: 'Entrega', subtitle: 'Entregas e autoriza\u00e7\u00e3o de sa\u00edda.', icon: 'img/app-icons/entrega.svg' },
+    '13': { title: 'Jur\u00eddico', subtitle: 'Documentos e consultas jur\u00eddicas.', icon: 'img/app-icons/juridico.svg' },
+    '14': { title: 'CRM', subtitle: 'Relacionamento e prospec\u00e7\u00e3o.', icon: 'img/app-icons/crm.svg' },
+    '15': { title: 'Despachante', subtitle: 'Documenta\u00e7\u00e3o e processos externos.', icon: 'img/app-icons/despachante.svg' },
+    '16': { title: 'DP', subtitle: 'Rotinas de departamento pessoal.', icon: 'img/app-icons/dp.svg' },
+    '17': { title: 'Tecnologia', subtitle: 'Suporte, usu\u00e1rios e sistemas.', icon: 'img/app-icons/tecnologia.svg' },
+    '18': { title: 'Diretoria', subtitle: 'Pain\u00e9is e indicadores gerenciais.', icon: 'img/app-icons/diretoria.svg' }
   };
 
   function normalize(text) {
@@ -35,7 +35,11 @@
 
       if (title) title.textContent = info.title;
       if (subtitle) subtitle.textContent = info.subtitle;
-      if (img) img.alt = info.title;
+      if (img) {
+        img.src = info.icon || img.getAttribute('src');
+        img.alt = info.title;
+        img.className = 'app-card-icon';
+      }
       card.setAttribute('data-search', normalize(info.title + ' ' + info.subtitle + ' ' + id));
 
       if (!url || url === '#') {

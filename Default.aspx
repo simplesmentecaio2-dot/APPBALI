@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>APP Bali</title>
-    <link href="css/bali-app-home.css?v=20260627-root01" rel="stylesheet" />
+    <link href="css/bali-app-home.css?v=20260627-icons01" rel="stylesheet" />
 </head>
 <body class="bali-app-home">
     <form id="form1" runat="server">
@@ -68,6 +68,6 @@
             </section>
         </main>
     </form>
-    <script src="js/bali-app-home.js?v=20260627-root01"></script>
+    <script src="js/bali-app-home.js?v=20260627-icons01"></script>
 </body>
 </html>
