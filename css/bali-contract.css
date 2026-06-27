@@ -2720,22 +2720,25 @@ body.bali-contract-page *::after {
   height: 30px;
   margin: 0 !important;
   padding: 0;
-  border: 1px solid var(--contract-brand);
+  border: 1px solid #d3dde9;
   border-radius: 8px;
-  background: linear-gradient(135deg, var(--contract-brand-strong), var(--contract-brand));
-  color: #fff;
+  background: #fff;
+  color: #27364a;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 900;
   line-height: 1;
-  box-shadow: 0 8px 16px var(--contract-brand-ring);
-  transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease;
+  box-shadow: 0 5px 12px rgba(15, 23, 42, .08);
+  transition: border-color .16s ease, background .16s ease, box-shadow .16s ease, color .16s ease, transform .16s ease;
 }
 
 .bali-contract-page .contract-cpf-search:hover,
 .bali-contract-page .contract-cpf-search:focus-visible {
+  border-color: #9fb0c4;
+  background: #f8fafc;
+  color: var(--contract-brand-strong);
   transform: translateY(-1px);
-  box-shadow: 0 10px 20px var(--contract-brand-ring);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, .12);
   outline: 0;
 }
 
