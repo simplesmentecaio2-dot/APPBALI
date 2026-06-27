@@ -5,11 +5,22 @@
     'contract',
     'guide',
     'receipt',
+    'commission',
     'delivery',
+    'vehicle',
+    'parts',
+    'service',
+    'paint',
     'test-drive',
     'phone',
     'accounts',
     'store',
+    'legal',
+    'hr',
+    'technology',
+    'users',
+    'files',
+    'director',
     'prospecting',
     'performance',
     'communication',
@@ -33,6 +44,11 @@
   };
 
   var elements = {};
+
+  function getIconBasePath() {
+    var bodyPath = document.body ? document.body.getAttribute('data-icon-base') : '';
+    return bodyPath || '../img/central-icons/';
+  }
 
   function normalize(value) {
     return (value || '')
@@ -564,7 +580,7 @@
       button.className = 'central-icon-option';
       button.setAttribute('data-icon-key', icon);
       button.setAttribute('aria-label', 'Selecionar \u00edcone ' + icon);
-      button.innerHTML = '<img src="../img/central-icons/' + icon + '.svg" alt="" />';
+      button.innerHTML = '<img src="' + getIconBasePath() + icon + '.svg" alt="" />';
       if (icon === state.selectedIcon) {
         button.classList.add('is-selected');
       }
@@ -586,7 +602,7 @@
       item.setAttribute('data-shortcut-id', shortcut.id);
       item.innerHTML =
         '<div class="central-maintenance-item-main">' +
-          '<span class="central-maintenance-item-icon"><img src="../img/central-icons/' + inferIcon(shortcut) + '.svg" alt="" /></span>' +
+          '<span class="central-maintenance-item-icon"><img src="' + getIconBasePath() + inferIcon(shortcut) + '.svg" alt="" /></span>' +
           '<span><strong></strong><small></small></span>' +
         '</div>' +
         '<div class="central-maintenance-item-actions">' +

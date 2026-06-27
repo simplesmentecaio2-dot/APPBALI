@@ -248,6 +248,10 @@ body.central-links-page {
   gap: 12px;
 }
 
+.central-link-grid > span {
+  display: contents;
+}
+
 .central-link-card {
   position: relative;
   display: grid;
@@ -715,6 +719,18 @@ body.central-links-page {
   --brand-strong: #31405e;
 }
 
+.brand-app {
+  --brand-color: #2f6fbd;
+  --brand-soft: rgba(47, 111, 189, .12);
+  --brand-strong: #1e4f8d;
+}
+
+.brand-tecnologia {
+  --brand-color: #2f6fbd;
+  --brand-soft: rgba(47, 111, 189, .12);
+  --brand-strong: #1f4f89;
+}
+
 .brand-fiat .central-topbar,
 .brand-fiat .central-hero {
   background:
@@ -743,6 +759,21 @@ body.central-links-page {
     linear-gradient(135deg, #101827 0%, #3d4d6e 56%, #111827 100%);
 }
 
+.brand-app .central-topbar,
+.brand-app .central-hero {
+  background:
+    linear-gradient(135deg, rgba(200, 58, 58, .20), transparent 34%),
+    linear-gradient(225deg, rgba(47, 111, 189, .30), transparent 46%),
+    linear-gradient(135deg, #111827 0%, #263f68 56%, #151827 100%);
+}
+
+.brand-tecnologia .central-topbar,
+.brand-tecnologia .central-hero {
+  background:
+    linear-gradient(135deg, rgba(47, 111, 189, .30), transparent 46%),
+    linear-gradient(135deg, #0e1a2b 0%, #275b94 56%, #111827 100%);
+}
+
 .brand-fiat .central-link-icon {
   background: rgba(200, 58, 58, .10);
 }
@@ -757,6 +788,11 @@ body.central-links-page {
 
 .brand-financeiro .central-link-icon {
   background: rgba(91, 107, 140, .12);
+}
+
+.brand-app .central-link-icon,
+.brand-tecnologia .central-link-icon {
+  background: rgba(47, 111, 189, .12);
 }
 
 @media (max-width: 780px) {

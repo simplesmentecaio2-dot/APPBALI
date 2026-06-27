@@ -1,5 +1,8 @@
 (function () {
-  var iconBasePath = '../img/central-icons/';
+  function getIconBasePath() {
+    var bodyPath = document.body ? document.body.getAttribute('data-icon-base') : '';
+    return bodyPath || '../img/central-icons/';
+  }
 
   var rules = [
     { key: 'contract', terms: ['contrato', 'compra e venda'] },
@@ -7,10 +10,20 @@
     { key: 'receipt', terms: ['recibo', 'desconto'] },
     { key: 'commission', terms: ['comissao', 'comissionamento'] },
     { key: 'delivery', terms: ['entrega', 'veiculo entregue'] },
+    { key: 'vehicle', terms: ['veiculos', 'veiculo', 'carro', 'vendas'] },
+    { key: 'parts', terms: ['pecas', 'acessorios'] },
+    { key: 'service', terms: ['assistencia', 'tecnica', 'pos-venda'] },
+    { key: 'paint', terms: ['lanternagem', 'funilaria'] },
     { key: 'test-drive', terms: ['test drive', 'experiencia'] },
     { key: 'phone', terms: ['telefone', 'contatos', 'financeiras'] },
     { key: 'accounts', terms: ['contas', 'bancarias', 'financeiro'] },
     { key: 'store', terms: ['lojas', 'unidades', 'informacoes das lojas'] },
+    { key: 'legal', terms: ['juridico', 'documentos juridicos'] },
+    { key: 'hr', terms: ['dp', 'departamento pessoal', 'recursos humanos'] },
+    { key: 'technology', terms: ['tecnologia', 'sistemas', 'suporte'] },
+    { key: 'users', terms: ['usuarios', 'permissoes', 'acessos'] },
+    { key: 'files', terms: ['arquivos', 'downloads', 'bibliotecas'] },
+    { key: 'director', terms: ['diretoria', 'gerenciais'] },
     { key: 'ranking', terms: ['ranking'] },
     { key: 'prospecting', terms: ['prospeccao', 'vendas'] },
     { key: 'workflow', terms: ['workflow', 'processos'] },
@@ -65,14 +78,14 @@
 
     var iconKey = inferIcon(card);
     var icon = document.createElement('img');
-    icon.src = iconBasePath + iconKey + '.svg';
+    icon.src = getIconBasePath() + iconKey + '.svg';
     icon.alt = '';
     icon.loading = 'lazy';
     icon.className = 'central-auto-icon-img';
     icon.setAttribute('aria-hidden', 'true');
     icon.addEventListener('error', function () {
       if (iconKey !== 'default') {
-        icon.src = iconBasePath + 'default.svg';
+        icon.src = getIconBasePath() + 'default.svg';
       }
     });
 

@@ -6,10 +6,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Central Financeira | Grupo Bali</title>
-    <link href="../css/central-links.css?v=20260627-financeiro01" rel="stylesheet" />
-    <script src="../js/central-links-icons.js?v=20260627-financeiro01" defer="defer"></script>
+    <link href="../css/central-links.css?v=20260627-maint01" rel="stylesheet" />
+    <script src="../js/central-links-icons.js?v=20260627-maint01" defer="defer"></script>
+    <script src="../js/central-links-maintenance.js?v=20260627-maint01" defer="defer"></script>
 </head>
-<body class="central-links-page brand-financeiro">
+<body class="central-links-page brand-financeiro" data-brand-name="Financeiro" data-links-api="central-links.ashx?AspxAutoDetectCookieSupport=1">
     <form id="form1" runat="server">
         <div class="central-shell">
             <header class="central-topbar">
