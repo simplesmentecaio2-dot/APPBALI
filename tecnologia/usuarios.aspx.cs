@@ -14,7 +14,7 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
         }
 
         lblUsuario.Text = Convert.ToString(Session["usuario"]);
-        lblTipo.Text = Convert.ToString(Session["tipo"]);
+        lblTipo.Text = Session["usuario_codigo"] == null ? "-" : Convert.ToString(Session["usuario_codigo"]);
     }
 
     protected void btnSalvar_Click(object sender, EventArgs e)

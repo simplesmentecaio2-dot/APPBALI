@@ -10,7 +10,7 @@ public partial class tecnologia_sistemas : System.Web.UI.Page
         }
 
         lblUsuario.Text = Convert.ToString(Session["usuario"]);
-        lblTipo.Text = Convert.ToString(Session["tipo"]);
+        lblTipo.Text = Session["usuario_codigo"] == null ? "-" : Convert.ToString(Session["usuario_codigo"]);
     }
 
     private bool UsuarioTecnologiaValido()

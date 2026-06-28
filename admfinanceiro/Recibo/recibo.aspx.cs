@@ -72,7 +72,7 @@ public partial class admfinanceiro_Comissao_geral : System.Web.UI.Page
     private void PreencherUsuario()
     {
         lblUsuario.Text = Session["usuario"] == null ? "-" : Convert.ToString(Session["usuario"]);
-        lblTipo.Text = Session["tipo"] == null ? "-" : Convert.ToString(Session["tipo"]);
+        lblTipo.Text = Session["usuario_codigo"] == null ? "-" : Convert.ToString(Session["usuario_codigo"]);
     }
 
     private void SelecionarMesAtual()

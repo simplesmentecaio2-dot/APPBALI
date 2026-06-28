@@ -24,7 +24,7 @@
                     </a>
                     <div class="central-user">
                         <div>Usu&aacute;rio: <span><asp:Label ID="lblUsuario" runat="server" /></span></div>
-                        <div>Perfil: <span><asp:Label ID="lblTipo" runat="server" /></span></div>
+                        <div>C&oacute;digo: <span><asp:Label ID="lblTipo" runat="server" /></span></div>
                         <a class="central-logout-button" href="/logout.aspx?voltar=/login.aspx">Sair</a>
                     </div>
                 </div>

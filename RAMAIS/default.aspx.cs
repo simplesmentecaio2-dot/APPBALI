@@ -34,6 +34,8 @@ public partial class ramais_default : System.Web.UI.Page
             return;
         }
 
+        PreencherCabecalhoSessao();
+
         if (!IsPostBack)
         {
             string tela = ObterTelaAtual();
@@ -62,6 +64,12 @@ public partial class ramais_default : System.Web.UI.Page
         string destino = "login.aspx?voltar=" + Server.UrlEncode(Request.RawUrl ?? "default.aspx?view=consulta");
         Response.Redirect(destino, false);
         Context.ApplicationInstance.CompleteRequest();
+    }
+
+    private void PreencherCabecalhoSessao()
+    {
+        litUsuarioSessao.Text = Server.HtmlEncode(Convert.ToString(Session["usuario"]));
+        litCodigoSessao.Text = Session["usuario_codigo"] == null ? "-" : Server.HtmlEncode(Convert.ToString(Session["usuario_codigo"]));
     }
 
     protected void btnFiltrar_Click(object sender, EventArgs e)

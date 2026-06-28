@@ -93,6 +93,7 @@
                     <td id="table-menu-usuario" class="idUser">USUÁRIO:
                         <asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text=""></asp:Label>
                        
+                        C&Oacute;DIGO:
                         <asp:Label ID="lblPerfil" CssClass="idUser" runat="server" Style="margin-right: 13px;" Text=""></asp:Label>
                         <a class="bali-logout-link" href="/logout.aspx?voltar=/veiculos/loginAppcontrato.aspx">Sair</a></td>
                 </tr>

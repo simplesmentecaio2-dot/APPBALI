@@ -40,7 +40,7 @@
                         <td id="table-menu-logo"><font id="logo" style="font-family: Arial black; font-size: 32px; font-style: italic; color: white; margin-left: 13px;"><a href="/principal.aspx" class="linkHome"><img src="../img/logojeep.png" style="height: 36px; width: 141px" /></a></font><font style="font-family: Calibri; font-size: 14px; margin-left: 5px; font-style: italic; color: white;">APP</font><%--<img src="img/logo4.png" style="margin-left:13px; margin-top:-10px; height: 78px; width: 161px;" />--%></td>
                         <td id="table-menu-usuario" class="idUser">Usuário:
                         <asp:Label ID="lblUsuario" CssClass="idUser" runat="server" Text=""></asp:Label>
-                            Perfil:
+                            C&oacute;digo:
                         <asp:Label ID="lblTipo" CssClass="idUser" runat="server" Style="margin-right: 13px;" Text=""></asp:Label><a class="bali-logout-link" href="/logout.aspx?voltar=/jeep/loginAppcontrato.aspx">Sair</a></td>
                     </tr>
                 </table>

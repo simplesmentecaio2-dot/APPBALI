@@ -12,6 +12,6 @@ public partial class _Default : System.Web.UI.Page
         }
 
         lblUsuario.Text = Session["usuario"].ToString();
-        lblTipo.Text = Session["tipo"] == null ? "-" : Session["tipo"].ToString();
+        lblTipo.Text = Session["usuario_codigo"] == null ? "-" : Session["usuario_codigo"].ToString();
     }
 }

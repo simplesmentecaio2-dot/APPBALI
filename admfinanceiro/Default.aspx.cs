@@ -14,6 +14,6 @@ public partial class admfinanceiro_Default : System.Web.UI.Page
         }
 
         lblUsuario.Text = Session["usuario"].ToString();
-        lblPerfil.Text = Session["tipo"] == null ? "-" : Session["tipo"].ToString();
+        lblPerfil.Text = Session["usuario_codigo"] == null ? "-" : Session["usuario_codigo"].ToString();
     }
 }

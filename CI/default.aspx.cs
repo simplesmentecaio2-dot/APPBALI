@@ -34,6 +34,8 @@ public partial class ci_default : System.Web.UI.Page
             return;
         }
 
+        PreencherCabecalhoSessao();
+
         if (!IsPostBack)
         {
             DateTime hoje = DateTime.Today;
@@ -72,6 +74,12 @@ public partial class ci_default : System.Web.UI.Page
 
         Response.Redirect("login.aspx?voltar=" + HttpUtility.UrlEncode(voltar), false);
         Context.ApplicationInstance.CompleteRequest();
+    }
+
+    private void PreencherCabecalhoSessao()
+    {
+        litUsuarioSessao.Text = Server.HtmlEncode(Convert.ToString(Session["usuario"]));
+        litCodigoSessao.Text = Session["usuario_codigo"] == null ? "-" : Server.HtmlEncode(Convert.ToString(Session["usuario_codigo"]));
     }
 
     protected void btnAtualizarBi_Click(object sender, EventArgs e)

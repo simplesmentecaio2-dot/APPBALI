@@ -23,7 +23,7 @@
             </a>
             <div class="receipt-user">
                 <div>Usu&aacute;rio: <strong><asp:Label ID="lblUsuario" runat="server" Text="-"></asp:Label></strong></div>
-                <div>Perfil: <strong><asp:Label ID="lblTipo" runat="server" Text="-"></asp:Label></strong></div>
+                <div>C&oacute;digo: <strong><asp:Label ID="lblTipo" runat="server" Text="-"></asp:Label></strong></div>
                 <a href="/logout.aspx?voltar=/login.aspx">Sair</a>
             </div>
         </header>

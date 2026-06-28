@@ -17,6 +17,7 @@ public partial class veiculos_Default : System.Web.UI.Page
         else
         {
             lblUsuario.Text = Session["usuario"].ToString();
+            lblPerfil.Text = Session["usuario_codigo"] == null ? "-" : Session["usuario_codigo"].ToString();
         }
     }
 }

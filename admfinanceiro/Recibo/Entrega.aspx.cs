@@ -9,6 +9,12 @@ public partial class admfinanceiro_Recibo_Entrega : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["usuario"] != null)
+        {
+            lblUsuario.Text = Session["usuario"].ToString();
+            lblTipo.Text = Session["usuario_codigo"] == null ? "-" : Session["usuario_codigo"].ToString();
+        }
+
         //if (Session["id"] != null)
         //{
         //    lblUsuario.Text = Session["usuario"].ToString();

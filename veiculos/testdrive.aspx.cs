@@ -16,6 +16,7 @@ public partial class veiculos_Recibo_desconto : System.Web.UI.Page
         else
         {
             lblUsuario.Text = Session["usuario"].ToString();
+            lblTipo.Text = Session["usuario_codigo"] == null ? "-" : Session["usuario_codigo"].ToString();
         }
     }
    protected void btnGerar_Click(object sender, EventArgs e)

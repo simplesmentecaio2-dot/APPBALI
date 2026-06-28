@@ -19,7 +19,7 @@
             <div class="tech-user">
                 <span>Tecnologia</span>
                 <strong><asp:Label ID="lblUsuario" runat="server" /></strong>
-                <small>Perfil: <asp:Label ID="lblTipo" runat="server" /></small>
+                <small>C&oacute;digo: <asp:Label ID="lblTipo" runat="server" /></small>
             </div>
             <nav class="tech-actions" aria-label="A&ccedil;&otilde;es r&aacute;pidas">
                 <a href="Default.aspx">Voltar</a>

@@ -39,6 +39,11 @@
                         <p>Cadastre, consulte e imprima comunica&ccedil;&otilde;es internas padronizadas por marca.</p>
                     </div>
                     <div class="hero-side">
+                        <div class="session-card" aria-label="Usu&aacute;rio logado">
+                            <span>Usu&aacute;rio</span>
+                            <strong><asp:Literal ID="litUsuarioSessao" runat="server" Text="-"></asp:Literal></strong>
+                            <small>C&oacute;digo: <asp:Literal ID="litCodigoSessao" runat="server" Text="-"></asp:Literal></small>
+                        </div>
                         <div class="brand-strip" aria-label="Marcas atendidas">
                             <span class="brand-chip fiat"><img src="../img/logobali.png" alt="Bali Fiat" /></span>
                             <span class="brand-chip jeep"><img src="../img/logojeep.png" alt="Bali Jeep" /></span>
