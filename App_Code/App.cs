@@ -16,12 +16,26 @@ public class App : Dao
 
 	public void login(string id, string senha, out string usuario, out string tipo, out string email, out string ramal, out string celular, out string empresa ) 
 	{
-        LoginComSenhaLocalOuLegado(id, senha, "app..app_proc_login", true, out usuario, out tipo, out email, out ramal, out celular, out empresa);
+        string usuarioCodigo;
+        login(id, senha, out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo);
 	}
+
+    public void login(string id, string senha, out string usuario, out string tipo, out string email, out string ramal, out string celular, out string empresa, out string usuarioCodigo)
+    {
+        LoginComSenhaLocalOuLegado(id, senha, "app..app_proc_login", true, out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo);
+        GuardarUsuarioCodigoSessao(usuario, usuarioCodigo);
+    }
 
     public void loginBI(string id, string senha, out string usuario, out string tipo, out string email, out string ramal, out string celular, out string empresa)
     {
-        LoginComSenhaLocalOuLegado(id, senha, "app..app_proc_loginBI", false, out usuario, out tipo, out email, out ramal, out celular, out empresa);
+        string usuarioCodigo;
+        loginBI(id, senha, out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo);
+    }
+
+    public void loginBI(string id, string senha, out string usuario, out string tipo, out string email, out string ramal, out string celular, out string empresa, out string usuarioCodigo)
+    {
+        LoginComSenhaLocalOuLegado(id, senha, "app..app_proc_loginBI", false, out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo);
+        GuardarUsuarioCodigoSessao(usuario, usuarioCodigo);
     }
 
     public bool AlterarSenhaLocal(string id, string senhaAtual, string novaSenha, string origem, out string mensagem)
@@ -55,7 +69,7 @@ public class App : Dao
             return false;
         }
 
-        string usuario, tipo, email, ramal, celular, empresa;
+        string usuario, tipo, email, ramal, celular, empresa, usuarioCodigo;
         bool existeSenhaLocal = AppSenhaLocal.ExisteSenhaLocalAtiva(id);
 
         if (existeSenhaLocal)
@@ -67,7 +81,7 @@ public class App : Dao
                 return false;
             }
 
-            if (!BuscarUsuarioAtivoSemSenha(id, true, out usuario, out tipo, out email, out ramal, out celular, out empresa))
+            if (!BuscarUsuarioAtivoSemSenha(id, true, out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo))
             {
                 AppSenhaLocal.RegistrarFalha(id, origem, HttpContext.Current, "usuario inativo na origem");
                 mensagem = "Usuário inativo ou desligado na base de origem.";
@@ -76,7 +90,7 @@ public class App : Dao
         }
         else
         {
-            LoginLegado("app..app_proc_login", id, senhaAtual, out usuario, out tipo, out email, out ramal, out celular, out empresa);
+            LoginLegado("app..app_proc_login", id, senhaAtual, out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo);
             if (usuario == "N")
             {
                 mensagem = "Senha atual inválida ou usuário inativo.";
@@ -89,9 +103,9 @@ public class App : Dao
         return true;
     }
 
-    private void LoginComSenhaLocalOuLegado(string id, string senha, string procedureLegada, bool incluirUsuarioWf, out string usuario, out string tipo, out string email, out string ramal, out string celular, out string empresa)
+    private void LoginComSenhaLocalOuLegado(string id, string senha, string procedureLegada, bool incluirUsuarioWf, out string usuario, out string tipo, out string email, out string ramal, out string celular, out string empresa, out string usuarioCodigo)
     {
-        PreencherLoginNegado(out usuario, out tipo, out email, out ramal, out celular, out empresa);
+        PreencherLoginNegado(out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo);
 
         id = (id ?? "").Trim();
         senha = senha ?? "";
@@ -127,30 +141,36 @@ public class App : Dao
             bool usuarioAtivo;
             try
             {
-                usuarioAtivo = BuscarUsuarioAtivoSemSenha(id, incluirUsuarioWf, out usuario, out tipo, out email, out ramal, out celular, out empresa);
+                usuarioAtivo = BuscarUsuarioAtivoSemSenha(id, incluirUsuarioWf, out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo);
             }
             catch
             {
                 usuarioAtivo = false;
+                usuarioCodigo = "0";
             }
 
             if (usuarioAtivo)
             {
+                if (String.IsNullOrWhiteSpace(usuarioCodigo) || usuarioCodigo == "0")
+                {
+                    usuarioCodigo = BuscarUsuarioCodigoSeguro(id, usuario, email, "");
+                }
+
                 AppSenhaLocal.RegistrarLoginOk(id, "login", HttpContext.Current);
                 return;
             }
 
             AppSenhaLocal.RegistrarFalha(id, "login", HttpContext.Current, "usuario inativo na origem");
-            PreencherLoginNegado(out usuario, out tipo, out email, out ramal, out celular, out empresa);
+            PreencherLoginNegado(out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo);
             return;
         }
 
-        LoginLegado(procedureLegada, id, senha, out usuario, out tipo, out email, out ramal, out celular, out empresa);
+        LoginLegado(procedureLegada, id, senha, out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo);
     }
 
-    private void LoginLegado(string procedure, string id, string senha, out string usuario, out string tipo, out string email, out string ramal, out string celular, out string empresa)
+    private void LoginLegado(string procedure, string id, string senha, out string usuario, out string tipo, out string email, out string ramal, out string celular, out string empresa, out string usuarioCodigo)
     {
-        PreencherLoginNegado(out usuario, out tipo, out email, out ramal, out celular, out empresa);
+        PreencherLoginNegado(out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo);
         Conexao();
 
         try
@@ -170,6 +190,7 @@ public class App : Dao
                 ramal = odr["fun_ramal"].ToString();
                 celular = odr["fun_radio"].ToString();
                 empresa = odr["emp"].ToString();
+                usuarioCodigo = LerCampoSeguro(odr, "usuario_codigo", "0");
             }
         }
         finally
@@ -178,9 +199,9 @@ public class App : Dao
         }
     }
 
-    private bool BuscarUsuarioAtivoSemSenha(string id, bool incluirUsuarioWf, out string usuario, out string tipo, out string email, out string ramal, out string celular, out string empresa)
+    private bool BuscarUsuarioAtivoSemSenha(string id, bool incluirUsuarioWf, out string usuario, out string tipo, out string email, out string ramal, out string celular, out string empresa, out string usuarioCodigo)
     {
-        PreencherLoginNegado(out usuario, out tipo, out email, out ramal, out celular, out empresa);
+        PreencherLoginNegado(out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo);
         Conexao();
 
         try
@@ -284,11 +305,108 @@ public class App : Dao
             ramal = odr["fun_ramal"].ToString();
             celular = odr["fun_radio"].ToString();
             empresa = odr["emp"].ToString();
+            usuarioCodigo = LerCampoSeguro(odr, "usuario_codigo", "0");
             return usuario != "N";
         }
         finally
         {
             FecharConexao();
+        }
+    }
+
+    private string LerCampoSeguro(SqlDataReader reader, string coluna, string padrao)
+    {
+        try
+        {
+            int ordinal = reader.GetOrdinal(coluna);
+            if (reader.IsDBNull(ordinal)) return padrao;
+            string valor = reader.GetValue(ordinal).ToString();
+            return String.IsNullOrWhiteSpace(valor) ? padrao : valor;
+        }
+        catch
+        {
+            return padrao;
+        }
+    }
+
+    private string BuscarUsuarioCodigoSeguro(string id, string usuario, string email, string matricula)
+    {
+        try
+        {
+            Conexao();
+
+            SqlCommand oCmd = new SqlCommand();
+            oCmd.Connection = oCon;
+            oCmd.CommandType = CommandType.Text;
+            oCmd.CommandText = @"
+                BEGIN TRY
+                    SELECT TOP 1 ISNULL(wu.Usuario_Codigo, 0) AS usuario_codigo
+                    FROM WORKFLOW.GrupoBali_DealernetWF.dbo.Usuario wu
+                    WHERE wu.Usuario_Ativo = 1
+                      AND wu.Usuario_DataDemissao IS NULL
+                      AND (
+                            (@id IS NOT NULL AND UPPER(LTRIM(RTRIM(wu.Usuario_Identificador))) COLLATE SQL_Latin1_General_CP1_CI_AS =
+                                UPPER(LTRIM(RTRIM(@id))) COLLATE SQL_Latin1_General_CP1_CI_AS)
+                         OR (@usuario IS NOT NULL AND UPPER(LTRIM(RTRIM(wu.Usuario_Identificador))) COLLATE SQL_Latin1_General_CP1_CI_AS =
+                                UPPER(LTRIM(RTRIM(@usuario))) COLLATE SQL_Latin1_General_CP1_CI_AS)
+                         OR (@email IS NOT NULL AND LOWER(LTRIM(RTRIM(wu.Usuario_Email))) COLLATE SQL_Latin1_General_CP1_CI_AS =
+                                LOWER(LTRIM(RTRIM(@email))) COLLATE SQL_Latin1_General_CP1_CI_AS)
+                         OR (@matricula IS NOT NULL AND LTRIM(RTRIM(wu.Usuario_Matricula)) COLLATE SQL_Latin1_General_CP1_CI_AS =
+                                LTRIM(RTRIM(@matricula)) COLLATE SQL_Latin1_General_CP1_CI_AS)
+                          )
+                    ORDER BY
+                        CASE
+                            WHEN @id IS NOT NULL AND UPPER(LTRIM(RTRIM(wu.Usuario_Identificador))) COLLATE SQL_Latin1_General_CP1_CI_AS =
+                                UPPER(LTRIM(RTRIM(@id))) COLLATE SQL_Latin1_General_CP1_CI_AS THEN 1
+                            WHEN @usuario IS NOT NULL AND UPPER(LTRIM(RTRIM(wu.Usuario_Identificador))) COLLATE SQL_Latin1_General_CP1_CI_AS =
+                                UPPER(LTRIM(RTRIM(@usuario))) COLLATE SQL_Latin1_General_CP1_CI_AS THEN 2
+                            WHEN @email IS NOT NULL AND LOWER(LTRIM(RTRIM(wu.Usuario_Email))) COLLATE SQL_Latin1_General_CP1_CI_AS =
+                                LOWER(LTRIM(RTRIM(@email))) COLLATE SQL_Latin1_General_CP1_CI_AS THEN 3
+                            ELSE 4
+                        END;
+                END TRY
+                BEGIN CATCH
+                    SELECT 0 AS usuario_codigo;
+                END CATCH";
+            oCmd.Parameters.Add("@id", SqlDbType.VarChar, 80).Value = ValorOuDbNull(id);
+            oCmd.Parameters.Add("@usuario", SqlDbType.VarChar, 80).Value = ValorOuDbNull(usuario);
+            oCmd.Parameters.Add("@email", SqlDbType.VarChar, 160).Value = ValorOuDbNull(email);
+            oCmd.Parameters.Add("@matricula", SqlDbType.VarChar, 30).Value = ValorOuDbNull(matricula);
+
+            object resultado = oCmd.ExecuteScalar();
+            return resultado == null || resultado == DBNull.Value ? "0" : resultado.ToString();
+        }
+        catch
+        {
+            return "0";
+        }
+        finally
+        {
+            if (oCon.State != ConnectionState.Closed)
+            {
+                FecharConexao();
+            }
+        }
+    }
+
+    private object ValorOuDbNull(string valor)
+    {
+        valor = (valor ?? "").Trim();
+        return valor.Length == 0 || valor == "N" ? (object)DBNull.Value : valor;
+    }
+
+    private void GuardarUsuarioCodigoSessao(string usuario, string usuarioCodigo)
+    {
+        HttpContext contexto = HttpContext.Current;
+        if (contexto == null || contexto.Session == null) return;
+
+        if (!String.IsNullOrWhiteSpace(usuario) && usuario != "N")
+        {
+            contexto.Session["usuario_codigo"] = String.IsNullOrWhiteSpace(usuarioCodigo) ? "0" : usuarioCodigo;
+        }
+        else
+        {
+            contexto.Session.Remove("usuario_codigo");
         }
     }
 
@@ -300,6 +418,12 @@ public class App : Dao
         ramal = "N";
         celular = "N";
         empresa = "N";
+    }
+
+    private void PreencherLoginNegado(out string usuario, out string tipo, out string email, out string ramal, out string celular, out string empresa, out string usuarioCodigo)
+    {
+        PreencherLoginNegado(out usuario, out tipo, out email, out ramal, out celular, out empresa);
+        usuarioCodigo = "0";
     }
 
     public int verificaPermissaoSistema(string id_isuario, string sistema)
