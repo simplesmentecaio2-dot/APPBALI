@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>APP Bali | Central de aplicativos</title>
-    <link href="css/central-links.css?v=20260627-maint01" rel="stylesheet" />
+    <link href="css/central-links.css?v=20260628-home-footer" rel="stylesheet" />
     <script src="js/bali-app-home.js?v=20260627-maint01" defer="defer"></script>
     <script src="js/central-links-icons.js?v=20260627-maint01" defer="defer"></script>
     <script src="js/central-links-maintenance.js?v=20260627-maint01" defer="defer"></script>
@@ -70,6 +70,11 @@
                         </SelectParameters>
                     </asp:SqlDataSource>
                 </section>
+
+                <footer class="central-footer">
+                    <div class="central-footer-ip"><strong>IP:</strong> <asp:Label ID="lblIp" runat="server" Text=""></asp:Label></div>
+                    <div class="central-footer-contact">TI - GRUPO BALI | (61) 3362-6208 | ti@bali.com.br</div>
+                </footer>
             </main>
         </div>
     </form>
