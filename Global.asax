@@ -1,6 +1,8 @@
 <%@ Application Language="C#" %>
 
 <script runat="server">
+    private const int TempoSessaoMinutos = 15;
+
     void Application_PreRequestHandlerExecute(object sender, EventArgs e)
     {
         try
@@ -8,6 +10,8 @@
             if (Context == null || Session == null) return;
             if (DeveIgnorarTimerSessao()) return;
             if (Session["usuario"] == null || Convert.ToString(Session["usuario"]).Trim().Length == 0) return;
+
+            Session.Timeout = TempoSessaoMinutos;
 
             System.Web.UI.Page pagina = Context.CurrentHandler as System.Web.UI.Page;
             if (pagina == null) return;
@@ -24,6 +28,8 @@
         if (Context == null || Session == null) return;
         if (SessaoUnica.DeveIgnorarValidacao(Context)) return;
         if (Session["usuario"] == null || Convert.ToString(Session["usuario"]).Trim().Length == 0) return;
+
+        Session.Timeout = TempoSessaoMinutos;
 
         if (SessaoUnica.ValidarSessaoAtual(Context))
         {
@@ -105,7 +111,9 @@
             return;
         }
 
-        int timeoutMinutos = Session.Timeout > 0 ? Session.Timeout : 15;
+        Session.Timeout = TempoSessaoMinutos;
+
+        int timeoutMinutos = TempoSessaoMinutos;
         int timeoutSegundos = timeoutMinutos * 60;
         long expiraEm = (long)(DateTime.UtcNow.AddSeconds(timeoutSegundos) - new DateTime(1970, 1, 1)).TotalMilliseconds;
         string loginUrl = SessaoUnica.UrlLoginSessaoEncerrada(Context);
@@ -115,7 +123,7 @@
             loginUrl = loginUrl.Substring(0, queryIndex);
         }
 
-        string scriptUrl = pagina.ResolveUrl("~/js/bali-session-timer.js?v=20260628");
+        string scriptUrl = pagina.ResolveUrl("~/js/bali-session-timer.js?v=20260628-15min");
         string renovarUrl = pagina.ResolveUrl("~/sessao-renovar.aspx");
         string init = String.Format(
             "window.BaliSessionTimer&&window.BaliSessionTimer.init({{timeoutSeconds:{0},expiresAt:{1},loginUrl:'{2}',renewUrl:'{3}'}});",
