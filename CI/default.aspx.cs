@@ -15,6 +15,7 @@ public partial class ci_default : System.Web.UI.Page
     private const string SenhaEdicao = "@bali2025";
     private const string ViewStateCookieName = "BaliViewStateKey";
     private const int TimeoutSqlSegundos = 60;
+    private const int DiasMaximosBi = 32;
 
     private string ConnectionString
     {
@@ -89,6 +90,11 @@ public partial class ci_default : System.Web.UI.Page
             CarregarBi();
             AplicarTela("bi");
         }
+        catch (InvalidOperationException ex)
+        {
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("bi");
+        }
         catch (Exception ex)
         {
             RegistrarErro("Atualizar BI da CI", ex);
@@ -136,6 +142,11 @@ public partial class ci_default : System.Web.UI.Page
             EscreverTabelaBiCsv("Sem ci\u00eancia registrada", TabelaBi(dados, 9));
             Response.Flush();
             HttpContext.Current.ApplicationInstance.CompleteRequest();
+        }
+        catch (InvalidOperationException ex)
+        {
+            MostrarMensagem(FormatarErro(ex), true);
+            AplicarTela("bi");
         }
         catch (Exception ex)
         {
@@ -1087,6 +1098,16 @@ public partial class ci_default : System.Web.UI.Page
             fim = troca;
             txtBiInicio.Text = inicio.ToString("yyyy-MM-dd");
             txtBiFim.Text = fim.ToString("yyyy-MM-dd");
+        }
+
+        if (!inicioValido || !fimValido)
+        {
+            throw new InvalidOperationException("Informe data inicial e data final para atualizar o BI.");
+        }
+
+        if ((fim.Date - inicio.Date).Days + 1 > DiasMaximosBi)
+        {
+            throw new InvalidOperationException("Selecione um per\u00edodo de at\u00e9 32 dias para manter o BI r\u00e1pido e confi\u00e1vel.");
         }
 
         object dtInicio = inicioValido ? (object)inicio : DBNull.Value;

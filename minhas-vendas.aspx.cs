@@ -13,6 +13,7 @@ public partial class minhas_vendas : System.Web.UI.Page
 {
     private readonly CultureInfo ptBr = new CultureInfo("pt-BR");
     private const string DealernetConnectionString = "Data Source=129.13.144.8\\wf;Initial Catalog=GrupoBali_DealernetWF;User ID=caio;Password=D6d3h7g711;Connect Timeout=30;";
+    private const int DiasMaximosPeriodoBI = 32;
 
     private string marcaAtual = "fiat";
 
@@ -438,6 +439,12 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         if (dataFinal.Date < dataInicial.Date)
         {
             ExibirAviso("A data final precisa ser maior ou igual \u00e0 data inicial.");
+            return false;
+        }
+
+        if ((dataFinal.Date - dataInicial.Date).Days + 1 > DiasMaximosPeriodoBI)
+        {
+            ExibirAviso("Selecione um per\u00edodo de at\u00e9 32 dias para manter o BI r\u00e1pido e confi\u00e1vel.");
             return false;
         }
 

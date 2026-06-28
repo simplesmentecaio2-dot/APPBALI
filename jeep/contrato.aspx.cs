@@ -17,7 +17,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 {
     private const string TabelaContratosBI = "APP.dbo.veiculos_contrato_vendaJEEP";
     private const string MarcaContrato = "Jeep";
-    private const int DiasMaximosBI = 370;
+    private const int DiasMaximosBI = 32;
     private const int DiasMaximosConsulta = 370;
     private const int TimeoutConsultaSegundos = 60;
     private const int LimiteLinhasConsulta = 750;
@@ -1010,9 +1010,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
         DateTime fim;
         ObterPeriodoBI(out inicio, out fim);
 
-        if ((fim.Date - inicio.Date).TotalDays > DiasMaximosBI)
+        if ((fim.Date - inicio.Date).Days + 1 > DiasMaximosBI)
         {
-            biHtml = "<div class='contract-bi-empty'>Selecione um período de até 12 meses para manter o BI rápido e confiável.</div>";
+            biHtml = "<div class='contract-bi-empty'>Selecione um per&iacute;odo de at&eacute; 32 dias para manter o BI r&aacute;pido e confi&aacute;vel.</div>";
             return;
         }
 
