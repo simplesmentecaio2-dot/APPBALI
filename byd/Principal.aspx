@@ -97,7 +97,7 @@
 
                 <footer class="central-footer">
                     <div class="central-footer-ip"><strong>IP:</strong> <asp:Label ID="lblIp" runat="server" Text="Label"></asp:Label></div>
-                    <div class="central-footer-contact">TI - BALI Motors | (61) 3362-6208 | ti@bali.com.br</div>
+                    <div class="central-footer-contact">TI - GRUPO BALI | (61) 3362-6208 | ti@bali.com.br</div>
                 </footer>
             </main>
         </div>
