@@ -1,6 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="contrato.aspx.cs" Inherits="veiculos_contrato" %>
 
-<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head runat="server"><title>Contrato de Venda - Fiat</title><meta name="viewport" content="width=device-width, initial-scale=1" /><link href="../css/estilo.css" rel="stylesheet" /><script src="../js/jquery-1.10.2.js"></script><script src="../js/js.js"></script><script src="../js/jquery.maskMoney.js"></script><script src="../js/maskMin.js"></script><script src="../js/maskPhone.js"></script><script src="../tables/js/jquery.dataTables.min.js"></script><link href="../tables/estilo/table.css" rel="stylesheet" /><link href="../css/bali-contract.css?v=20260627-contrato-log01" rel="stylesheet" /><script type="text/javascript">
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head runat="server"><title>Contrato de Venda - Fiat</title><meta name="viewport" content="width=device-width, initial-scale=1" /><link href="../css/estilo.css" rel="stylesheet" /><script src="../js/jquery-1.10.2.js"></script><script src="../js/js.js"></script><script src="../js/jquery.maskMoney.js"></script><script src="../js/maskMin.js"></script><script src="../js/maskPhone.js"></script><script src="../tables/js/jquery.dataTables.min.js"></script><link href="../tables/estilo/table.css" rel="stylesheet" /><link href="../css/bali-contract.css?v=20260628-back01" rel="stylesheet" /><script type="text/javascript">
         $(document).ready(function () {
             var oTable = $('#tblConsultaProcesso').dataTable({ //example é o ID da tabela
                 "bPaginate": true,
@@ -84,7 +84,7 @@
             $('.phone').attr('inputmode', 'tel');
            
         });
-    </script><script src="../js/bali-contract.js?v=20260626-cpfdealernet01"></script></head><body class="bali-contract-page contrato-fiat"><form id="form1" style="height: 100%;" runat="server">
+    </script><script src="../js/bali-contract.js?v=20260626-cpfdealernet01"></script></head><body class="bali-contract-page contrato-fiat contract-no-sidebar"><form id="form1" style="height: 100%;" runat="server">
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
         <div id="topo">
             <table id="table-menu">
@@ -103,22 +103,10 @@
         <div id="menu-topo">
         </div>
         <div id="menu">
-            <div id="openMenuUp" class="menu-top" onmouseover="escondeMenuLeft()" onclick="escondeMenuLeft()">
-                MENU >>
-            </div>
+            <button type="button" class="bali-back-button" onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='default.aspx'; }">&larr; Voltar</button>
             <div style="text-align: right; margin-right: 15px;">
                 <asp:Label ID="lblFrmID" runat="server" Text="Contrato de Venda"></asp:Label>
             </div>
-        </div>
-        <img id="openMenu" src="../img/openMenu.png" style="height: 68px; width: 68px; position: absolute; z-index: 200; top: 60px; left: 10px; display: none;" />
-        <div id="menu-left">
-            <div class="item-menu" style="padding-left: 80px; height: 50px; line-height: 60px;" onclick="escondeMenuLeft()">
-                MENU <<
-            </div>
-
-           <div class="item-menu"><a class="links" href="default.aspx">Inicio</a></div>
-
-            <div id="completa-menu-left"></div>
         </div>
 
         <div id="Cont" onmouseover="esconderMenuLeftMouse()">

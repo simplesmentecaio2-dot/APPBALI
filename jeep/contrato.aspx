@@ -17,7 +17,7 @@
 
     <script src="../tables/js/jquery.dataTables.min.js"></script>
     <link href="../tables/estilo/table.css" rel="stylesheet" />
-    <link href="../css/bali-contract.css?v=20260627-contrato-log01" rel="stylesheet" />
+    <link href="../css/bali-contract.css?v=20260628-back01" rel="stylesheet" />
 
     <script type="text/javascript">
         $(document).ready(function () {
@@ -114,7 +114,7 @@
 
     <script src="../js/bali-contract.js?v=20260626-cpfdealernet01"></script>
 </head>
-<body class="bali-contract-page contrato-jeep">
+<body class="bali-contract-page contrato-jeep contract-no-sidebar">
     <form id="form1" style="height: 100%;" runat="server">
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
         <div id="topo">
@@ -133,22 +133,10 @@
         <div id="menu-topo">
         </div>
         <div id="menu">
-            <div id="openMenuUp" class="menu-top" onmouseover="escondeMenuLeft()" onclick="escondeMenuLeft()">
-                MENU >>
-            </div>
+            <button type="button" class="bali-back-button" onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='principal.aspx'; }">&larr; Voltar</button>
             <div style="text-align: right; margin-right: 15px;">
                 <asp:Label ID="lblFrmID" runat="server" Text="Contrato de Venda"></asp:Label>
             </div>
-        </div>
-        <img id="openMenu" src="../img/openMenu.png" style="height: 68px; width: 68px; position: absolute; z-index: 200; top: 60px; left: 10px; display: none;" />
-        <div id="menu-left">
-            <div class="item-menu" style="padding-left: 80px; height: 50px; line-height: 60px;" onclick="escondeMenuLeft()">
-                MENU <<
-            </div>
-
-           <div class="item-menu"><a class="links" href="default.aspx">Inicio</a></div>
-
-            <div id="completa-menu-left"></div>
         </div>
 
         <div id="Cont" onmouseover="esconderMenuLeftMouse()">

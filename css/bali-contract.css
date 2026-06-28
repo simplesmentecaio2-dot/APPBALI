@@ -166,6 +166,34 @@ body.bali-contract-page *::after {
   text-transform: uppercase;
 }
 
+.bali-contract-page #menu .bali-back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 104px;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--contract-line);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--contract-brand-strong);
+  cursor: pointer;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.bali-contract-page #menu .bali-back-button:hover,
+.bali-contract-page #menu .bali-back-button:focus {
+  border-color: var(--contract-brand);
+  box-shadow: 0 0 0 3px var(--contract-brand-ring);
+  transform: translateY(-1px);
+}
+
 .bali-contract-page #menu span[id$="lblFrmID"],
 .bali-contract-page #menu #lblFrmID {
   display: inline-flex;
@@ -228,11 +256,20 @@ body.bali-contract-page *::after {
   display: none;
 }
 
+.bali-contract-page.contract-no-sidebar #openMenu,
+.bali-contract-page.contract-no-sidebar #menu-left {
+  display: none !important;
+}
+
 .bali-contract-page #Cont {
   width: auto;
   min-height: calc(100vh - 112px);
   margin: 0;
   padding: 22px 24px 42px 228px;
+}
+
+.bali-contract-page.contract-no-sidebar #Cont {
+  padding-left: 24px;
 }
 
 .bali-contract-page #Cont > table {
