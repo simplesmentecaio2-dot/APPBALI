@@ -12,8 +12,8 @@ public partial class ci_login : System.Web.UI.Page
         {
             SessaoUnica.EncerrarSessaoAtual("LOGOUT_CI");
             RegistrarAuditoriaLoginCI("LOGOUT_CI", "Sessao encerrada pelo usuario.");
-            Session.Remove("ci_autenticado");
-            Session.Remove("ci_login_em");
+            Session.Clear();
+            Session.Abandon();
             MostrarMensagem("Sessao da CI encerrada com sucesso.");
             return;
         }

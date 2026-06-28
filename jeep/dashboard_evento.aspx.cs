@@ -456,6 +456,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     }
     public void btnSair_Click(object sender, EventArgs e)
     {
+        SessaoUnica.EncerrarSessaoAtual("LOGOUT_LOCAL");
         Session.Clear();
         Response.Redirect("./loginApp.aspx");
     }

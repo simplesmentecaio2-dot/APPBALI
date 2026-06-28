@@ -12,8 +12,8 @@ public partial class ramais_login : System.Web.UI.Page
         {
             SessaoUnica.EncerrarSessaoAtual("LOGOUT_RAMAIS");
             RegistrarAuditoriaLoginRamais("LOGOUT_RAMAIS", "Sessao encerrada pelo usuario.");
-            Session.Remove("ramais_autenticado");
-            Session.Remove("ramais_login_em");
+            Session.Clear();
+            Session.Abandon();
             MostrarMensagem("Sessao dos Ramais encerrada com sucesso.");
             return;
         }

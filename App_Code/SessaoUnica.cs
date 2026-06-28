@@ -40,6 +40,22 @@ public static class SessaoUnica
 SET XACT_ABORT ON;
 BEGIN TRAN;
 
+DECLARE @lockResult INT;
+DECLARE @lockResource NVARCHAR(255) = N'app_sessao_usuario:' + @usuario_id;
+
+EXEC @lockResult = sys.sp_getapplock
+    @Resource = @lockResource,
+    @LockMode = 'Exclusive',
+    @LockOwner = 'Transaction',
+    @LockTimeout = 10000;
+
+IF @lockResult < 0
+BEGIN
+    ROLLBACK;
+    RAISERROR(N'Nao foi possivel bloquear a sessao do usuario para login.', 16, 1);
+    RETURN;
+END;
+
 UPDATE dbo.app_sessao_usuario
    SET ativo = 0,
        data_encerramento = SYSDATETIME(),
