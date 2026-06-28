@@ -10,6 +10,7 @@
     { key: 'receipt', terms: ['recibo', 'desconto'] },
     { key: 'commission', terms: ['comissao', 'comissionamento'] },
     { key: 'delivery', terms: ['entrega', 'veiculo entregue'] },
+    { key: 'my-sales', terms: ['minhas vendas', 'vendas do vendedor'] },
     { key: 'vehicle', terms: ['veiculos', 'veiculo', 'carro', 'vendas'] },
     { key: 'parts', terms: ['pecas', 'acessorios'] },
     { key: 'service', terms: ['assistencia', 'tecnica', 'pos-venda'] },

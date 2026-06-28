@@ -17,6 +17,13 @@
       "icon": "contract"
     },
     {
+      "id": "padrao-minhas-vendas",
+      "title": "Minhas vendas",
+      "caption": "BI do vendedor",
+      "url": "../minhas-vendas.aspx?marca=byd",
+      "icon": "my-sales"
+    },
+    {
       "id": "padrao-3-pedido-de-vd",
       "title": "Pedido de VD",
       "caption": "Venda direta",
@@ -66,5 +73,5 @@
       "icon": "prospecting"
     }
   ],
-  "updatedAt": "2026-06-24 11:34:20"
+  "updatedAt": "2026-06-28 00:00:00"
 }

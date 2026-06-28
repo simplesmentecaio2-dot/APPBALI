@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Central BYD | Grupo Bali</title>
     <link href="../css/central-links.css?v=20260626-logout01" rel="stylesheet" />
-    <script src="../js/central-links-icons.js?v=20260624-central" defer="defer"></script>
-    <script src="../js/central-links-maintenance.js?v=20260625-noautofill" defer="defer"></script>
+    <script src="../js/central-links-icons.js?v=20260628-minhasvendas" defer="defer"></script>
+    <script src="../js/central-links-maintenance.js?v=20260628-minhasvendas" defer="defer"></script>
 </head>
 <body class="central-links-page brand-byd" data-brand-name="BYD" data-links-api="central-links.ashx?AspxAutoDetectCookieSupport=1">
     <form id="form1" runat="server">
@@ -38,7 +38,7 @@
                         <p>Acesse workflow, contratos, recibos, pedido de venda direta, test drive e informa&ccedil;&otilde;es operacionais da Bali BYD.</p>
                     </div>
                     <div class="central-summary" aria-label="Resumo dos atalhos">
-                        <div class="central-summary-item"><strong>9</strong><span>atalhos</span></div>
+                        <div class="central-summary-item"><strong>10</strong><span>atalhos</span></div>
                         <div class="central-summary-item"><strong>BYD</strong><span>opera&ccedil;&atilde;o</span></div>
                     </div>
                 </section>
@@ -59,6 +59,10 @@
                         <a class="central-link-card" href="contrato.aspx" data-icon="contract">
                             <span class="central-link-icon"></span>
                             <span><span class="central-link-title">Contrato</span><span class="central-link-caption">Compra e venda</span></span>
+                        </a>
+                        <a class="central-link-card" href="../minhas-vendas.aspx?marca=byd" data-icon="my-sales">
+                            <span class="central-link-icon"></span>
+                            <span><span class="central-link-title">Minhas vendas</span><span class="central-link-caption">BI do vendedor</span></span>
                         </a>
                         <a class="central-link-card" href="http://129.13.147.127/intranet/formbyd/" data-icon="direct-sale">
                             <span class="central-link-icon"></span>

@@ -24,6 +24,13 @@
       "icon": "contract"
     },
     {
+      "id": "padrao-minhas-vendas",
+      "title": "Minhas vendas",
+      "caption": "BI do vendedor",
+      "url": "../minhas-vendas.aspx?marca=jeep",
+      "icon": "my-sales"
+    },
+    {
       "id": "padrao-3-recibo-de-desconto",
       "title": "Recibo de Desconto",
       "caption": "Financeiro",
@@ -73,5 +80,5 @@
       "icon": "bi"
     }
   ],
-  "updatedAt": "2026-06-24 10:20:00"
+  "updatedAt": "2026-06-28 00:00:00"
 }

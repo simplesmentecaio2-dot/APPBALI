@@ -7,6 +7,7 @@
     'receipt',
     'commission',
     'delivery',
+    'my-sales',
     'vehicle',
     'parts',
     'service',
