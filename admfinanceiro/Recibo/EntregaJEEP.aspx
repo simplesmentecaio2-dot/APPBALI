@@ -9,7 +9,7 @@
 <head runat="server">
     <title>Entrega de Veículo - Jeep</title>
     <link href="../../css/estilo.css" rel="stylesheet" />
-    <link href="../../css/bali-utility.css?v=20260626-logout01" rel="stylesheet" />
+    <link href="../../css/bali-utility.css?v=20260628-back01" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
@@ -54,7 +54,7 @@
 
 </head>
 
-<body class="bali-utility-page utility-jeep">
+<body class="bali-utility-page utility-jeep utility-no-sidebar">
     <form id="form1" runat="server">
         <asp:scriptmanager id="ScriptManager1" enablescriptglobalization="true" runat="server">
         </asp:scriptmanager>
@@ -82,24 +82,10 @@
         <div id="menu-topo">
         </div>
         <div id="menu">
-            <div id="openMenuUp" class="menu-top" onmouseover="escondeMenuLeft()" onclick="escondeMenuLeft()">
-                MENU >>
-            </div>
+            <button type="button" class="bali-back-button" onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='../../jeep/Principal.aspx'; }">&larr; Voltar</button>
             <div style="text-align: right; margin-right: 15px;">
                 <asp:label id="lblFrmID" runat="server" text="Entrega de Veículo"></asp:label>
             </div>
-        </div>
-        <img id="openMenu" src="../../img/openMenu.png"
-            style="height: 68px; width: 68px; position: absolute; z-index: 200; top: 60px; left: 10px; display: none;" />
-        <div id="menu-left">
-            <div class="item-menu" style="padding-left: 80px; height: 50px; line-height: 60px;"
-                onclick="escondeMenuLeft()">
-                MENU <<
-            </div>
-            <div class="item-menu-select"><a class="links" href="../Default.aspx">PASTAS</a></div>
-            <div class="item-menu"><a class="links" href="Entregaveic.aspx">Recibo</a></div>
-
-            <div id="completa-menu-left"></div>
         </div>
 
 

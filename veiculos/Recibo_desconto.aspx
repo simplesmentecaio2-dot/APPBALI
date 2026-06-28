@@ -8,13 +8,13 @@
 <head runat="server">
     <title>Recibo de Desconto - Fiat</title>
     <link href="../css/estilo.css" rel="stylesheet" />
-    <link href="../css/bali-utility.css?v=20260626-logout01" rel="stylesheet" />
+    <link href="../css/bali-utility.css?v=20260628-back01" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
     <script src="../../js/js.js"></script>
 </head>
-<body class="bali-utility-page utility-fiat">
+<body class="bali-utility-page utility-fiat utility-no-sidebar">
   <script>
          function aguarde() {
              document.getElementById('ag').style.visibility = 'visible';
@@ -99,21 +99,10 @@
             <div id="menu-topo">
             </div>
             <div id="menu">
-                <div id="openMenuUp" class="menu-top" onmouseover="escondeMenuLeft()" onclick="escondeMenuLeft()">
-                    MENU >>
-                </div>
+                <button type="button" class="bali-back-button" onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='default.aspx'; }">&larr; Voltar</button>
                 <div style="text-align: right; margin-right: 15px;">
                     <asp:Label ID="lblFrmID" runat="server" Text="Recibo de Desconto"></asp:Label>
                 </div>
-            </div>
-            <img id="openMenu" src="../../img/openMenu.png" style="height: 68px; width: 68px; position: absolute; z-index: 200; top: 60px; left: 10px; display: none;" />
-            <div id="menu-left">
-                <div class="item-menu" style="padding-left: 80px; height: 50px; line-height: 60px;" onclick="escondeMenuLeft()">
-                    MENU <<
-                </div>
-                <div class="item-menu"><a class="links" href="default.aspx">Início</a></div>
-
-                <div id="completa-menu-left"></div>
             </div>
 
             <asp:TabContainer ID="TabRecibo" runat="server" CssClass="tabPanelConsultar" Width="100%" ActiveTabIndex="0">
