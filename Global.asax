@@ -7,8 +7,9 @@
     {
         try
         {
-            if (Context == null || Session == null) return;
+            if (Context == null) return;
             if (DeveIgnorarTimerSessao()) return;
+            if (Session == null) return;
             if (Session["usuario"] == null || Convert.ToString(Session["usuario"]).Trim().Length == 0) return;
 
             Session.Timeout = TempoSessaoMinutos;
@@ -25,8 +26,9 @@
 
     void Application_AcquireRequestState(object sender, EventArgs e)
     {
-        if (Context == null || Session == null) return;
+        if (Context == null) return;
         if (SessaoUnica.DeveIgnorarValidacao(Context)) return;
+        if (Session == null) return;
         if (Session["usuario"] == null || Convert.ToString(Session["usuario"]).Trim().Length == 0) return;
 
         Session.Timeout = TempoSessaoMinutos;
