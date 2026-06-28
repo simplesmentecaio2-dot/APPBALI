@@ -22,7 +22,7 @@
                     </a>
                 </div>
                 <div class="sales-user-block">
-                    <span>Usuário: <strong><asp:Label ID="lblUsuario" runat="server" /></strong></span>
+                    <span>Usu&aacute;rio: <strong><asp:Label ID="lblUsuario" runat="server" /></strong></span>
                     <asp:HyperLink ID="lnkVoltar" runat="server" CssClass="sales-light-button">Voltar</asp:HyperLink>
                     <asp:HyperLink ID="lnkSair" runat="server" CssClass="sales-logout-button">Sair</asp:HyperLink>
                 </div>
@@ -33,23 +33,23 @@
                     <div>
                         <span class="sales-eyebrow"><asp:Literal ID="litEyebrow" runat="server" /></span>
                         <h1>Minhas vendas</h1>
-                        <p>Acompanhe sua performance por período com vendas, devoluções, ticket médio, margem e detalhes dos veículos faturados.</p>
+                        <p>Acompanhe sua performance por per&iacute;odo com vendas, devolu&ccedil;&otilde;es, ticket m&eacute;dio, margem e detalhes dos ve&iacute;culos faturados.</p>
                     </div>
                     <div class="sales-hero-meta">
-                        <span>Código do vendedor</span>
+                        <span>C&oacute;digo do vendedor</span>
                         <strong><asp:Label ID="lblCodigoVendedor" runat="server" Text="-" /></strong>
                     </div>
                 </section>
 
                 <asp:Panel ID="pnlAviso" runat="server" Visible="false" CssClass="sales-alert">
-                    <strong>Atenção</strong>
+                    <strong>Aten&ccedil;&atilde;o</strong>
                     <asp:Literal ID="litAviso" runat="server" />
                 </asp:Panel>
 
                 <section class="sales-filter-card">
                     <div class="sales-section-heading">
                         <span>Filtros</span>
-                        <h2>Período da consulta</h2>
+                        <h2>Per&iacute;odo da consulta</h2>
                     </div>
                     <div class="sales-filter-grid">
                         <label>
@@ -63,9 +63,9 @@
                         <asp:Button ID="btnFiltrar" runat="server" Text="Atualizar BI" CssClass="sales-primary-button" OnClick="btnFiltrar_Click" />
                     </div>
                     <div class="sales-filter-actions">
-                        <asp:LinkButton ID="lnkMesAtual" runat="server" CssClass="sales-chip" CommandArgument="mes" OnCommand="PeriodoRapido_Command">Este mês</asp:LinkButton>
-                        <asp:LinkButton ID="lnkMesAnterior" runat="server" CssClass="sales-chip" CommandArgument="mesAnterior" OnCommand="PeriodoRapido_Command">Mês anterior</asp:LinkButton>
-                        <asp:LinkButton ID="lnkUltimos30" runat="server" CssClass="sales-chip" CommandArgument="ultimos30" OnCommand="PeriodoRapido_Command">Últimos 30 dias</asp:LinkButton>
+                        <asp:LinkButton ID="lnkMesAtual" runat="server" CssClass="sales-chip" CommandArgument="mes" OnCommand="PeriodoRapido_Command">Este m&ecirc;s</asp:LinkButton>
+                        <asp:LinkButton ID="lnkMesAnterior" runat="server" CssClass="sales-chip" CommandArgument="mesAnterior" OnCommand="PeriodoRapido_Command">M&ecirc;s anterior</asp:LinkButton>
+                        <asp:LinkButton ID="lnkUltimos30" runat="server" CssClass="sales-chip" CommandArgument="ultimos30" OnCommand="PeriodoRapido_Command">&Uacute;ltimos 30 dias</asp:LinkButton>
                         <asp:LinkButton ID="lnkHoje" runat="server" CssClass="sales-chip" CommandArgument="hoje" OnCommand="PeriodoRapido_Command">Hoje</asp:LinkButton>
                     </div>
                 </section>
@@ -77,24 +77,24 @@
 
                     <section class="sales-kpi-grid" aria-label="Resumo de vendas">
                         <article class="sales-kpi-card">
-                            <span>Unidades líquidas</span>
+                            <span>Unidades l&iacute;quidas</span>
                             <strong><asp:Label ID="lblTotalUnidades" runat="server" /></strong>
-                            <small>Vendas menos devoluções</small>
+                            <small>Vendas menos devolu&ccedil;&otilde;es</small>
                         </article>
                         <article class="sales-kpi-card">
-                            <span>Valor líquido</span>
+                            <span>Valor l&iacute;quido</span>
                             <strong><asp:Label ID="lblValorTotal" runat="server" /></strong>
-                            <small>Total faturado no período</small>
+                            <small>Total faturado no per&iacute;odo</small>
                         </article>
                         <article class="sales-kpi-card">
-                            <span>Ticket médio</span>
+                            <span>Ticket m&eacute;dio</span>
                             <strong><asp:Label ID="lblTicketMedio" runat="server" /></strong>
-                            <small>Valor médio por unidade</small>
+                            <small>Valor m&eacute;dio por unidade</small>
                         </article>
                         <article class="sales-kpi-card">
-                            <span>Margem média</span>
+                            <span>Margem m&eacute;dia</span>
                             <strong><asp:Label ID="lblMargemMedia" runat="server" /></strong>
-                            <small>Média das notas exibidas</small>
+                            <small>M&eacute;dia das notas exibidas</small>
                         </article>
                         <article class="sales-kpi-card">
                             <span>Notas</span>
@@ -104,14 +104,14 @@
                         <article class="sales-kpi-card">
                             <span>Dias com venda</span>
                             <strong><asp:Label ID="lblDiasAtivos" runat="server" /></strong>
-                            <small>Atividade no período</small>
+                            <small>Atividade no per&iacute;odo</small>
                         </article>
                     </section>
 
                     <section class="sales-dashboard-grid">
                         <article class="sales-chart-card sales-chart-wide">
                             <div class="sales-card-heading">
-                                <span>Evolução</span>
+                                <span>Evolu&ccedil;&atilde;o</span>
                                 <h2>Vendas por dia</h2>
                             </div>
                             <asp:Literal ID="litGraficoDiario" runat="server" />
@@ -138,7 +138,7 @@
                             <h2>Vendas encontradas</h2>
                         </div>
                         <div class="sales-table-wrap">
-                            <asp:GridView ID="gvVendas" runat="server" AutoGenerateColumns="false" CssClass="sales-table" GridLines="None" OnRowDataBound="gvVendas_RowDataBound" EmptyDataText="Nenhuma venda encontrada para este vendedor no período selecionado.">
+                            <asp:GridView ID="gvVendas" runat="server" AutoGenerateColumns="false" CssClass="sales-table" GridLines="None" OnRowDataBound="gvVendas_RowDataBound" EmptyDataText="Nenhuma venda encontrada para este vendedor no per&iacute;odo selecionado.">
                                 <Columns>
                                     <asp:BoundField DataField="datavenda" HeaderText="Data" DataFormatString="{0:dd/MM/yyyy}" />
                                     <asp:BoundField DataField="notafiscal" HeaderText="Nota fiscal" />

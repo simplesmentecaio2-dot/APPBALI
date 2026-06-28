@@ -37,7 +37,7 @@ public partial class minhas_vendas : System.Web.UI.Page
 
         if (codigoUsuario <= 0)
         {
-            ExibirAviso("Não foi possível identificar o código do vendedor na sessão. Saia do sistema e entre novamente para atualizar o acesso.");
+            ExibirAviso("N\u00e3o foi poss\u00edvel identificar o c\u00f3digo do vendedor na sess\u00e3o. Saia do sistema e entre novamente para atualizar o acesso.");
             pnlConteudo.Visible = false;
             return;
         }
@@ -114,7 +114,7 @@ public partial class minhas_vendas : System.Web.UI.Page
         int codigoUsuario = ObterCodigoUsuarioLogado();
         if (codigoUsuario <= 0)
         {
-            ExibirAviso("Sessão sem código de vendedor. Entre novamente para consultar suas vendas.");
+            ExibirAviso("Sess\u00e3o sem c\u00f3digo de vendedor. Entre novamente para consultar suas vendas.");
             pnlConteudo.Visible = false;
             return;
         }
@@ -129,7 +129,7 @@ public partial class minhas_vendas : System.Web.UI.Page
         catch (Exception ex)
         {
             pnlConteudo.Visible = false;
-            ExibirAviso("Não foi possível carregar suas vendas agora. Tente novamente em alguns instantes ou reduza o período pesquisado.");
+            ExibirAviso("N\u00e3o foi poss\u00edvel carregar suas vendas agora. Tente novamente em alguns instantes ou reduza o per\u00edodo pesquisado.");
             RegistrarErro("minhas-vendas", ex);
         }
     }
@@ -175,8 +175,8 @@ SELECT
     pessoa_email AS emailcliente,
     NotaFiscal_Pessoa_DocIdentificador AS CPFCliente,
     CASE NotaFiscal_PessoaTipo
-        WHEN 'J' THEN 'Jurídica'
-        WHEN 'F' THEN 'Física'
+        WHEN 'J' THEN N'Jur' + NCHAR(237) + N'dica'
+        WHEN 'F' THEN N'F' + NCHAR(237) + N'sica'
     END AS Tipopessoa
 FROM VendasVeiculos v
 INNER JOIN Pessoa p ON p.Pessoa_Codigo = v.NotaFiscal_PessoaCod
@@ -228,7 +228,7 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         decimal ticketMedio = totalUnidades == 0 ? 0 : valorTotal / Math.Abs(totalUnidades);
         decimal margemMedia = margemQtde == 0 ? 0 : margemSoma / margemQtde;
 
-        lblPeriodo.Text = String.Format(ptBr, "Período analisado: {0:dd/MM/yyyy} a {1:dd/MM/yyyy}", dataInicial, dataFinal);
+        lblPeriodo.Text = String.Format(ptBr, "Per\u00edodo analisado: {0:dd/MM/yyyy} a {1:dd/MM/yyyy}", dataInicial, dataFinal);
         lblTotalUnidades.Text = totalUnidades.ToString("N0", ptBr);
         lblValorTotal.Text = valorTotal.ToString("C0", ptBr);
         lblTicketMedio.Text = ticketMedio.ToString("C0", ptBr);
@@ -283,7 +283,7 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
 
         if (porDia.Count == 0)
         {
-            return "<div class=\"sales-empty-chart\">Sem dados para montar o gráfico.</div>";
+            return "<div class=\"sales-empty-chart\">Sem dados para montar o gr&aacute;fico.</div>";
         }
 
         decimal maximo = 0;
@@ -331,7 +331,7 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         }
 
         StringBuilder svg = new StringBuilder();
-        svg.Append("<div class=\"sales-line-chart\" role=\"img\" aria-label=\"Evolução diária de vendas\">");
+        svg.Append("<div class=\"sales-line-chart\" role=\"img\" aria-label=\"Evolu&#231;&#227;o di&#225;ria de vendas\">");
         svg.AppendFormat(CultureInfo.InvariantCulture, "<svg viewBox=\"0 0 {0} {1}\" preserveAspectRatio=\"none\">", largura, altura);
         svg.Append("<line class=\"sales-axis\" x1=\"52\" y1=\"212\" x2=\"896\" y2=\"212\"></line>");
         svg.Append("<line class=\"sales-grid\" x1=\"52\" y1=\"28\" x2=\"896\" y2=\"28\"></line>");
@@ -361,7 +361,7 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
             string chave = Convert.ToString(vendas.Rows[i][campoGrupo]).Trim();
             if (chave.Length == 0)
             {
-                chave = "Não informado";
+                chave = "N\u00e3o informado";
             }
 
             if (!grupos.ContainsKey(chave))
@@ -424,20 +424,20 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
     {
         if (!TentarLerData(txtDataInicial.Text, out dataInicial))
         {
-            ExibirAviso("Informe uma data inicial válida.");
+            ExibirAviso("Informe uma data inicial v\u00e1lida.");
             dataFinal = DateTime.Today;
             return false;
         }
 
         if (!TentarLerData(txtDataFinal.Text, out dataFinal))
         {
-            ExibirAviso("Informe uma data final válida.");
+            ExibirAviso("Informe uma data final v\u00e1lida.");
             return false;
         }
 
         if (dataFinal.Date < dataInicial.Date)
         {
-            ExibirAviso("A data final precisa ser maior ou igual à data inicial.");
+            ExibirAviso("A data final precisa ser maior ou igual \u00e0 data inicial.");
             return false;
         }
 
