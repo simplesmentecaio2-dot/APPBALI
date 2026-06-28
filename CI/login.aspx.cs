@@ -10,11 +10,17 @@ public partial class ci_login : System.Web.UI.Page
     {
         if (Request.QueryString["sair"] == "1")
         {
+            SessaoUnica.EncerrarSessaoAtual("LOGOUT_CI");
             RegistrarAuditoriaLoginCI("LOGOUT_CI", "Sessao encerrada pelo usuario.");
             Session.Remove("ci_autenticado");
             Session.Remove("ci_login_em");
             MostrarMensagem("Sessao da CI encerrada com sucesso.");
             return;
+        }
+
+        if (!IsPostBack)
+        {
+            SessaoUnica.MostrarAvisoSessaoEncerrada(this);
         }
 
         if (!IsPostBack && UsuarioCIAutenticado())
@@ -50,6 +56,7 @@ public partial class ci_login : System.Web.UI.Page
                 Session["ramal"] = ramal;
                 Session["celular"] = celular;
                 Session["empresa"] = empresa;
+                SessaoUnica.RegistrarLoginAtual();
                 Session["ci_autenticado"] = true;
                 Session["ci_login_em"] = DateTime.Now;
 

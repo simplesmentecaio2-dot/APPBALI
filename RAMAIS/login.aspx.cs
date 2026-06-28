@@ -10,11 +10,17 @@ public partial class ramais_login : System.Web.UI.Page
     {
         if (Request.QueryString["sair"] == "1")
         {
+            SessaoUnica.EncerrarSessaoAtual("LOGOUT_RAMAIS");
             RegistrarAuditoriaLoginRamais("LOGOUT_RAMAIS", "Sessao encerrada pelo usuario.");
             Session.Remove("ramais_autenticado");
             Session.Remove("ramais_login_em");
             MostrarMensagem("Sessao dos Ramais encerrada com sucesso.");
             return;
+        }
+
+        if (!IsPostBack)
+        {
+            SessaoUnica.MostrarAvisoSessaoEncerrada(this);
         }
 
         if (!IsPostBack && UsuarioRamaisAutenticado())
@@ -50,6 +56,7 @@ public partial class ramais_login : System.Web.UI.Page
                 Session["ramal"] = ramal;
                 Session["celular"] = celular;
                 Session["empresa"] = empresa;
+                SessaoUnica.RegistrarLoginAtual();
                 Session["ramais_autenticado"] = true;
                 Session["ramais_login_em"] = DateTime.Now;
 

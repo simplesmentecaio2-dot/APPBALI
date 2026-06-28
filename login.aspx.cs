@@ -8,8 +8,14 @@ public partial class login : System.Web.UI.Page
     {
         if (!IsPostBack && Request.QueryString["sair"] == "1")
         {
+            SessaoUnica.EncerrarSessaoAtual("LOGOUT_LOGIN");
             Session.Clear();
             Session.Abandon();
+        }
+
+        if (!IsPostBack)
+        {
+            SessaoUnica.MostrarAvisoSessaoEncerrada(this);
         }
     }
 
@@ -40,6 +46,7 @@ public partial class login : System.Web.UI.Page
             Session["ramal"] = ramal;
             Session["celular"] = celular;
             Session["empresa"] = empresa;
+            SessaoUnica.RegistrarLoginAtual();
             Response.Redirect("default.aspx", false);
             Context.ApplicationInstance.CompleteRequest();
             return;

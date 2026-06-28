@@ -13,6 +13,7 @@ public partial class logout : System.Web.UI.Page
 
         try
         {
+            SessaoUnica.EncerrarSessaoAtual("LOGOUT");
             Session.Clear();
             Session.Abandon();
 

@@ -1,6 +1,34 @@
 <%@ Application Language="C#" %>
 
 <script runat="server">
+    void Application_AcquireRequestState(object sender, EventArgs e)
+    {
+        if (Context == null || Session == null) return;
+        if (SessaoUnica.DeveIgnorarValidacao(Context)) return;
+        if (Session["usuario"] == null || Convert.ToString(Session["usuario"]).Trim().Length == 0) return;
+
+        if (SessaoUnica.ValidarSessaoAtual(Context))
+        {
+            return;
+        }
+
+        string destino = SessaoUnica.UrlLoginSessaoEncerrada(Context);
+
+        try
+        {
+            Session.Clear();
+            Session.Abandon();
+        }
+        catch
+        {
+        }
+
+        Response.Cache.SetCacheability(HttpCacheability.NoCache);
+        Response.Cache.SetNoStore();
+        Response.Redirect(destino, false);
+        Context.ApplicationInstance.CompleteRequest();
+    }
+
     void Application_Error(object sender, EventArgs e)
     {
         Exception erro = Server.GetLastError();
