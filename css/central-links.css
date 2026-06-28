@@ -431,17 +431,47 @@ body.central-links-page {
 }
 
 .central-footer {
-  margin-top: 18px;
-  padding: 16px 18px;
-  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 22px;
+  padding: 18px 22px;
+  border: 1px solid transparent;
   border-radius: var(--radius);
-  background: #fff;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, var(--brand-color), rgba(255, 255, 255, .2)) border-box;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, .08);
   color: var(--muted);
   font-size: 13px;
+  font-weight: 750;
+  line-height: 1.45;
+  text-align: center;
 }
 
 .central-footer strong {
-  color: var(--ink);
+  color: var(--brand-strong);
+}
+
+.central-footer-ip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.central-footer-contact {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .central-maintenance-button,

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Central BYD | Grupo Bali</title>
-    <link href="../css/central-links.css?v=20260626-logout01" rel="stylesheet" />
+    <link href="../css/central-links.css?v=20260628-footer01" rel="stylesheet" />
     <script src="../js/central-links-icons.js?v=20260628-minhasvendas" defer="defer"></script>
     <script src="../js/central-links-maintenance.js?v=20260628-minhasvendas" defer="defer"></script>
 </head>
@@ -96,9 +96,8 @@
                 </section>
 
                 <footer class="central-footer">
-                    <strong>IP:</strong> <asp:Label ID="lblIp" runat="server" Text="Label"></asp:Label>
-                    <br />
-                    TI - BALI Motors | (61) 3362-6208 | ti@bali.com.br
+                    <div class="central-footer-ip"><strong>IP:</strong> <asp:Label ID="lblIp" runat="server" Text="Label"></asp:Label></div>
+                    <div class="central-footer-contact">TI - BALI Motors | (61) 3362-6208 | ti@bali.com.br</div>
                 </footer>
             </main>
         </div>
