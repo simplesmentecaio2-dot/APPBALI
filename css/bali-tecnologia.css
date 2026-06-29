@@ -462,6 +462,41 @@ body.bali-tech-page {
   background: #fbfdff;
 }
 
+.tech-password-panel {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+  margin-top: 2px;
+  border: 1px dashed #cbd5e1;
+  border-radius: var(--tech-radius);
+  padding: 14px;
+  background: linear-gradient(180deg, #fbfdff, #fff);
+}
+
+.tech-password-panel p {
+  margin: 6px 0 0;
+  color: var(--tech-muted);
+  font-size: 12px;
+  font-weight: 760;
+  line-height: 1.45;
+}
+
+.tech-form-grid.is-password {
+  width: 100%;
+}
+
+.bali-tech-page input[type="submit"].tech-button-secondary,
+.bali-tech-page input[type="button"].tech-button-secondary {
+  border-color: var(--tech-line);
+  background: #fff;
+  color: var(--tech-brand);
+}
+
+.bali-tech-page input[type="submit"].tech-button-secondary:hover,
+.bali-tech-page input[type="button"].tech-button-secondary:hover {
+  background: #f8fbff;
+}
+
 .tech-check-panel table,
 .tech-check-panel tbody,
 .tech-check-panel tr,

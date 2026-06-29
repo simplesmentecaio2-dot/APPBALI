@@ -152,6 +152,7 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
             ddlSistemaperfil.DataBind();
             dlPerfilSistemas.DataBind();
             gvConsultaUsuarios.DataBind();
+            LimparSenhaAlterar();
         }
 
         ExibirMensagem(NormalizarMensagem(obs));
@@ -217,6 +218,7 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
         App oApp = new App();
         string obs;
         oApp.UpdateUsuarioSenha(email, senha, out obs);
+        LimparSenhaAlterar();
         ExibirMensagem(NormalizarMensagem(obs));
     }
 
@@ -227,15 +229,14 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
         CheckBoxListSistemasAlterar.ClearSelection();
 
         App oApp = new App();
-        string usuario, senha, ativo, tipo;
-        oApp.select_usuario(idUsuario, out usuario, out senha, out ativo, out tipo);
+        string usuario, senhaIgnorada, ativo, tipo;
+        oApp.select_usuario(idUsuario, out usuario, out senhaIgnorada, out ativo, out tipo);
 
         txtNomeAlterar.Text = usuario;
         txtNomePerfil.Text = usuario;
         txtEmailAlterar.Text = idUsuario;
         txtEmailAlterarPerfil.Text = idUsuario;
-        txtSenhaAlterar.Text = senha;
-        txtConfirmacaoAlterar.Text = senha;
+        LimparSenhaAlterar();
         SelecionarItem(ddlTipoAlterar, tipo);
 
         rbtnAtivoAlterar.Checked = ativo == "S";
@@ -332,6 +333,14 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
         ddlTipo.ClearSelection();
         rbtnAtivo.Checked = true;
         rbtnInativo.Checked = false;
+    }
+
+    private void LimparSenhaAlterar()
+    {
+        txtSenhaAlterar.Text = "";
+        txtConfirmacaoAlterar.Text = "";
+        txtSenhaAlterar.Attributes["value"] = "";
+        txtConfirmacaoAlterar.Attributes["value"] = "";
     }
 
     private void ExibirMensagem(string mensagem)

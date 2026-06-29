@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Usu&aacute;rios | Tecnologia</title>
-    <link href="../css/bali-tecnologia.css?v=20260627-tech01" rel="stylesheet" />
+    <link href="../css/bali-tecnologia.css?v=20260629-usuarios01" rel="stylesheet" />
 </head>
 <body class="bali-tech-page">
     <form id="form1" runat="server" autocomplete="off">
@@ -139,7 +139,7 @@
                                 <div>
                                     <span class="tech-panel-kicker">Manuten&ccedil;&atilde;o</span>
                                     <h2>Alterar usu&aacute;rio</h2>
-                                    <p>Selecione primeiro um usu&aacute;rio na aba consulta para editar dados, senha e sistemas.</p>
+                                    <p>Selecione primeiro um usu&aacute;rio na aba consulta para editar dados, situa&ccedil;&atilde;o e sistemas. A senha s&oacute; muda no bloco separado de senha.</p>
                                 </div>
                             </div>
 
@@ -168,24 +168,32 @@
                                         <asp:RadioButton ID="rbtnInativoAlterar" runat="server" GroupName="ativoAlterar" Text="Inativo" />
                                     </div>
                                 </div>
-                                <div class="tech-field">
-                                    <span>Nova senha</span>
-                                    <asp:TextBox ID="txtSenhaAlterar" runat="server" TextMode="Password" MaxLength="20"></asp:TextBox>
-                                </div>
-                                <div class="tech-field">
-                                    <span>Confirma&ccedil;&atilde;o</span>
-                                    <asp:TextBox ID="txtConfirmacaoAlterar" runat="server" TextMode="Password" MaxLength="20"></asp:TextBox>
-                                </div>
-                                <div class="tech-actions-row">
-                                    <asp:Button ID="btnAlterarSenha" runat="server" Text="Alterar senha" OnClick="btnAlterarSenha_Click" />
-                                </div>
                                 <div class="tech-check-panel">
                                     <span class="tech-check-title">Sistemas liberados</span>
                                     <asp:CheckBoxList ID="CheckBoxListSistemasAlterar" runat="server" DataSourceID="sqldsSistemasAlterar" DataTextField="nome" DataValueField="id_sistema" RepeatColumns="2"></asp:CheckBoxList>
                                     <asp:SqlDataSource ID="sqldsSistemasAlterar" runat="server" ConnectionString="<%$ ConnectionStrings:APPConnectionString %>" SelectCommand="app_select_sistemas" SelectCommandType="StoredProcedure"></asp:SqlDataSource>
                                 </div>
                                 <div class="tech-actions-row">
-                                    <asp:Button ID="btnAlterar" runat="server" Text="Salvar altera&ccedil;&otilde;es" OnClick="btnAlterar_Click" />
+                                    <asp:Button ID="btnAlterar" runat="server" Text="Salvar dados e situa&ccedil;&atilde;o" OnClick="btnAlterar_Click" />
+                                </div>
+                                <div class="tech-password-panel">
+                                    <div>
+                                        <span class="tech-check-title">Senha do usu&aacute;rio</span>
+                                        <p>Use esta &aacute;rea somente quando realmente precisar trocar a senha. Inativar, reativar ou alterar permiss&otilde;es n&atilde;o exige senha.</p>
+                                    </div>
+                                    <div class="tech-form-grid is-password">
+                                        <div class="tech-field">
+                                            <span>Nova senha</span>
+                                            <asp:TextBox ID="txtSenhaAlterar" runat="server" TextMode="Password" MaxLength="20" autocomplete="new-password"></asp:TextBox>
+                                        </div>
+                                        <div class="tech-field">
+                                            <span>Confirma&ccedil;&atilde;o da nova senha</span>
+                                            <asp:TextBox ID="txtConfirmacaoAlterar" runat="server" TextMode="Password" MaxLength="20" autocomplete="new-password"></asp:TextBox>
+                                        </div>
+                                        <div class="tech-actions-row">
+                                            <asp:Button ID="btnAlterarSenha" runat="server" Text="Atualizar senha" CssClass="tech-button-secondary" OnClick="btnAlterarSenha_Click" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </section>
