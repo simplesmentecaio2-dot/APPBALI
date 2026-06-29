@@ -194,6 +194,12 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         Veiculos veiculos = new Veiculos();
         String retorno = "";
+        string cacheKey = "patio_acesso_" + acesso_id;
+
+        if (Session[cacheKey] != null)
+        {
+            return Session[cacheKey].ToString();
+        }
 
         try
         {
@@ -209,8 +215,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
             SqlDataReader odr = oCmd.ExecuteReader();
 
 
-            odr.Read();
-            retorno = odr["resultado"].ToString();
+            if (odr.Read())
+            {
+                retorno = odr["resultado"].ToString();
+                Session[cacheKey] = retorno;
+            }
 
         }
         catch
