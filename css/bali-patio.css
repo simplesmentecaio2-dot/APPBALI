@@ -163,6 +163,79 @@ body.patio-modern-page.patio-brand-byd {
   border-top: 1px solid var(--patio-line);
 }
 
+.patio-modern-page .card.border-alternate {
+  min-width: 230px;
+  margin: 0 12px 14px 0;
+  border: 1px solid var(--patio-line) !important;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .08);
+}
+
+.patio-modern-page .card.border-alternate .card-header {
+  min-height: 46px;
+  justify-content: center;
+  background: #f7fafc;
+  color: var(--patio-ink);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.patio-modern-page .card.border-alternate .card-body {
+  min-height: 112px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.patio-modern-page .card.border-alternate .card-title {
+  max-width: 100%;
+  margin: 0;
+  color: var(--patio-ink);
+  font-size: 16px;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.patio-modern-page .card.border-alternate .card-text {
+  margin-bottom: 8px;
+  color: var(--patio-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.patio-modern-page .card.border-alternate .card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px;
+}
+
+.patio-modern-page .card.border-alternate .card-footer .col-4,
+.patio-modern-page .card.border-alternate .card-footer .btn-primary {
+  display: none;
+}
+
+.patio-modern-page .card.border-alternate .card-footer .col-8 {
+  flex: 0 0 auto;
+  max-width: 100%;
+  padding: 0;
+}
+
+.patio-modern-page .badge {
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
 .patio-modern-page .card-footer .btn {
   min-height: 44px;
 }
@@ -235,6 +308,19 @@ body.patio-modern-page.patio-brand-byd {
   font-weight: 900;
 }
 
+.patio-modern-page .patio-copy-field .btn {
+  min-width: 42px;
+  border-color: #d9e2ec;
+  background: #fff;
+  color: var(--patio-muted);
+  box-shadow: none;
+}
+
+.patio-modern-page .patio-copy-field .btn:hover {
+  border-color: var(--patio-brand);
+  color: var(--patio-brand);
+}
+
 .patio-modern-page .form-control,
 .patio-modern-page select.form-control {
   min-height: 40px;
@@ -302,16 +388,23 @@ body.patio-modern-page.patio-brand-byd {
 
 .patio-modern-page .progress.container {
   position: fixed;
-  inset: 0;
+  top: 74px;
+  right: 18px;
   z-index: 9998;
-  max-width: none;
-  height: 100vh;
-  background: rgba(255, 255, 255, .76);
-  backdrop-filter: blur(2px);
+  width: auto;
+  max-width: calc(100vw - 28px);
+  height: auto;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--patio-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, .14);
+  backdrop-filter: blur(6px);
 }
 
 .patio-modern-page .loader {
-  background-color: rgba(255, 255, 255, .76);
+  background-color: transparent;
 }
 
 .patio-modern-page .patio-toast-root {
@@ -516,12 +609,23 @@ body.patio-modern-page.patio-brand-byd {
     max-width: 100%;
   }
 
+  .patio-modern-page .card.border-alternate {
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-right: 0;
+  }
+
   .patio-modern-page footer.fixed-bottom {
     position: static;
   }
 
   .patio-modern-page .patio-toast-root {
     top: 16px;
+    right: 14px;
+  }
+
+  .patio-modern-page .progress.container {
+    top: 14px;
     right: 14px;
   }
 }
