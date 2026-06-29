@@ -119,9 +119,19 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
         else
         {
+            int codVeiculo;
+            int lojaOrigem;
+            int lojaDestino;
+            if (!int.TryParse(txtCodVec.Text, out codVeiculo) || !int.TryParse(ddlOrigem.Value, out lojaOrigem) || !int.TryParse(ddlDestino.Value, out lojaDestino))
+            {
+                PatioJeepAuditoria.Registrar("TRANSFERIR_VALIDACAO", Session["usuario"], txtSerie.Text, "Dados obrigatorios ausentes antes da transferencia");
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Pesquise a série e selecione a loja de destino antes de transferir.');", true);
+                return;
+            }
 
             if (ddlDestino.Value == ddlOrigem.Value)
             {
+                PatioJeepAuditoria.Registrar("TRANSFERIR_ORIGEM_DESTINO_IGUAIS", Session["usuario"], txtSerie.Text, "Origem=" + ddlOrigem.Value + "; Destino=" + ddlDestino.Value);
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Origem e destino iguais!')", true);
                 btnRegistrar.Visible = true;
             }
@@ -135,16 +145,17 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     oCmd.Connection = oJeep.oCon2;
                     oCmd.CommandText = "APP..veiculos_patio_insert_tranferencia";
                     oCmd.CommandType = CommandType.StoredProcedure;
-                    oCmd.Parameters.Add("@ve_nr", SqlDbType.Int).Value = Convert.ToInt32(txtCodVec.Text);
+                    oCmd.Parameters.Add("@ve_nr", SqlDbType.Int).Value = codVeiculo;
                     oCmd.Parameters.Add("@fun_cad", SqlDbType.VarChar).Value = Session["usuario"];
-                    oCmd.Parameters.Add("@lojaOrigem", SqlDbType.Int).Value = Convert.ToInt32(ddlOrigem.Value);
-                    oCmd.Parameters.Add("@lojaDestino", SqlDbType.Int).Value = Convert.ToInt32(ddlDestino.Value);
+                    oCmd.Parameters.Add("@lojaOrigem", SqlDbType.Int).Value = lojaOrigem;
+                    oCmd.Parameters.Add("@lojaDestino", SqlDbType.Int).Value = lojaDestino;
                     SqlDataReader odr = oCmd.ExecuteReader();
 
                     txtChassi.Text = "";
                     txtModelo.Text = "";
                     txtCor.Text = "";
                     txtCodVec.Text = "";
+                    PatioJeepAuditoria.Registrar("TRANSFERIR_SUCESSO", Session["usuario"], txtSerie.Text, "Origem=" + ddlOrigem.Value + "; Destino=" + ddlDestino.Value);
                     txtSerie.Text = "";
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Transferência realizada com sucesso.')", true);
 
@@ -153,6 +164,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 }
                 catch
                 {
+                    PatioJeepAuditoria.Registrar("TRANSFERIR_ERRO", Session["usuario"], txtSerie.Text, "Erro ao gravar dados no banco");
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Erro ao gravar dados no banco!')", true);
                 }
                 finally

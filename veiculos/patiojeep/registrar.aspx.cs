@@ -136,6 +136,15 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
         else
         {
+            int codVeiculo;
+            int loja;
+            int numeroNota;
+            if (!int.TryParse(txtCodVec.Text, out codVeiculo) || !int.TryParse(ddlLoja.Value, out loja) || !int.TryParse(txtNUMERONF.Text, out numeroNota))
+            {
+                PatioJeepAuditoria.Registrar("REGISTRAR_VALIDACAO", Session["usuario"], txtSerie.Text, "Dados obrigatorios ausentes antes da gravacao");
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Pesquise a série, confira os dados do veículo e selecione a loja antes de salvar.');", true);
+                return;
+            }
 
             try
             {
@@ -144,10 +153,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 oCmd.Connection = oJeep.oCon2;
                 oCmd.CommandText = "APP..veiculos_patio_insert_locacao";
                 oCmd.CommandType = CommandType.StoredProcedure;
-                oCmd.Parameters.Add("@ve_nr", SqlDbType.Int).Value = Convert.ToInt32(txtCodVec.Text);
+                oCmd.Parameters.Add("@ve_nr", SqlDbType.Int).Value = codVeiculo;
                 oCmd.Parameters.Add("@fun_cad", SqlDbType.VarChar).Value = Session["usuario"];
-                oCmd.Parameters.Add("@loja", SqlDbType.Int).Value = Convert.ToInt32(ddlLoja.Value);
-                oCmd.Parameters.Add("@numeronf", SqlDbType.Int).Value = Convert.ToInt32(txtNUMERONF.Text);
+                oCmd.Parameters.Add("@loja", SqlDbType.Int).Value = loja;
+                oCmd.Parameters.Add("@numeronf", SqlDbType.Int).Value = numeroNota;
 
 
 
@@ -155,6 +164,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 odr.Read();
                 if (odr["resultado"].ToString().Equals("n"))
                 {
+                    PatioJeepAuditoria.Registrar("REGISTRAR_DUPLICADO", Session["usuario"], txtSerie.Text, "Veiculo ja cadastrado");
                     txtChassi.Text = "";
                     txtModelo.Text = "";
                     txtCor.Text = "";
@@ -164,6 +174,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 }
                 else
                 {
+                    PatioJeepAuditoria.Registrar("REGISTRAR_SUCESSO", Session["usuario"], txtSerie.Text, "Loja=" + ddlLoja.Value + "; Veiculo=" + txtCodVec.Text);
                     txtChassi.Text = "";
                     txtModelo.Text = "";
                     txtCor.Text = "";
@@ -176,6 +187,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             }
             catch
             {
+                PatioJeepAuditoria.Registrar("REGISTRAR_ERRO", Session["usuario"], txtSerie.Text, "Erro ao gravar dados no banco");
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Erro ao gravar dados no banco!')", true);
             }
             finally

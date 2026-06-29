@@ -130,6 +130,16 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
         else
         {
+            int codVeiculo;
+            int loja;
+            string dt = Request.Form[dtAgendamento.UniqueID];
+            DateTime dataAgendamento;
+            if (!int.TryParse(txtCodVec.Text, out codVeiculo) || !int.TryParse(ddlLoja.Value, out loja) || String.IsNullOrWhiteSpace(dt) || !DateTime.TryParse(dt, out dataAgendamento))
+            {
+                PatioJeepAuditoria.Registrar("AGENDAR_VALIDACAO", Session["usuario"], txtSerie.Text, "Dados obrigatorios ausentes antes do agendamento");
+                this.executarJavaScript("alert('Pesquise a série, selecione a loja e informe uma data válida antes de agendar.'); ");
+                return;
+            }
 
             try
             {
@@ -138,22 +148,23 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 oCmd.Connection = vec.oCon;
                 oCmd.CommandText = "APP..veiculos_patio_insert_agendamento";
                 oCmd.CommandType = CommandType.StoredProcedure;
-                oCmd.Parameters.Add("@ve_nr", SqlDbType.Int).Value = Convert.ToInt32(txtCodVec.Text);
+                oCmd.Parameters.Add("@ve_nr", SqlDbType.Int).Value = codVeiculo;
                 oCmd.Parameters.Add("@fun_cad", SqlDbType.VarChar).Value = Session["usuario"];
-                oCmd.Parameters.Add("@loja", SqlDbType.Int).Value = Convert.ToInt32(ddlLoja.Value);
-                string dt = Request.Form[dtAgendamento.UniqueID];
-                oCmd.Parameters.Add("@dt_agend", SqlDbType.DateTime).Value = Convert.ToDateTime(dt);
+                oCmd.Parameters.Add("@loja", SqlDbType.Int).Value = loja;
+                oCmd.Parameters.Add("@dt_agend", SqlDbType.DateTime).Value = dataAgendamento;
 
 
                 SqlDataReader odr = oCmd.ExecuteReader();
                 odr.Read();
                 if (odr["resultado"].ToString().Equals("n"))
                 {
+                    PatioJeepAuditoria.Registrar("AGENDAR_DUPLICADO", Session["usuario"], txtSerie.Text, "Veiculo ja tem agendamento registrado");
                     this.limpaCampos();
                     this.executarJavaScript("alert('Veículo já tem agendamento registrado!'); ");
                 }
                 else
                 {
+                    PatioJeepAuditoria.Registrar("AGENDAR_SUCESSO", Session["usuario"], txtSerie.Text, "Loja=" + ddlLoja.Value + "; Data=" + dt);
                     this.limpaCampos();
                     this.executarJavaScript("alert('Veículo agendado com sucesso.'); ");
 
@@ -161,6 +172,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             }
             catch
             {
+                PatioJeepAuditoria.Registrar("AGENDAR_ERRO", Session["usuario"], txtSerie.Text, "Erro ao gravar dados no banco");
                 this.executarJavaScript("alert('Erro ao gravar dados no banco!'); ");
             }
             finally
