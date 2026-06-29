@@ -386,6 +386,25 @@
       }
     }
 
+    function registerPrint() {
+      try {
+        var data = new FormData();
+        data.append('acao', 'impressao-pdf');
+        data.append('marca', document.body.className || '');
+        data.append('url', window.location.href);
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon('/minhas-vendas-auditoria.ashx', data);
+        } else {
+          fetch('/minhas-vendas-auditoria.ashx', {
+            method: 'POST',
+            body: data,
+            credentials: 'same-origin',
+            keepalive: true
+          });
+        }
+      } catch (ignore) {}
+    }
+
     document.addEventListener('click', function (event) {
       var detail = event.target.closest('[data-sales-detail]');
       if (detail) {
@@ -396,6 +415,12 @@
       var copy = event.target.closest('[data-copy-contact]');
       if (copy) {
         copyContact(copy);
+        return;
+      }
+
+      if (event.target.closest('[data-sales-print]')) {
+        registerPrint();
+        window.print();
         return;
       }
 
