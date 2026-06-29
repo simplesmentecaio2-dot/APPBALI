@@ -94,7 +94,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     private void executarJavaScript(String script)
     {
         ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", script +
-            "$(\"#dtAgendamento\").datetimepicker({ format: 'yyyy-mm-dd', autoclose: true, language: 'pt-BR' });$('#tablelvd').DataTable();", true);
+            "$(\"#dtAgendamento\").datetimepicker({ format: 'yyyy-mm-dd', autoclose: true, language: 'pt-BR', todayBtn: true, todayHighlight: true });if ($.fn.DataTable && $(\"#tablelvd\").length && !$.fn.DataTable.isDataTable(\"#tablelvd\")) { $('#tablelvd').DataTable({ pageLength: 25 }); }", true);
     }
 
     protected void btnProcessar_Click(object sender, EventArgs e)

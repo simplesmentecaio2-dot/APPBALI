@@ -9,6 +9,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        bool consultaProcessadaNaAbertura = false;
 
         if (Session["id"] != null)
         {
@@ -26,6 +27,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                         serie = Request.QueryString["serie"].ToString();
                         txtSerie.Text = serie.Substring(10, 7);
                         btnProcessar_Click(sender, e);
+                        consultaProcessadaNaAbertura = true;
 
                     }
                 }
@@ -44,7 +46,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             Response.Redirect("./login.aspx?voltar=" + Server.UrlEncode(Request.RawUrl));
         }
 
-        if (!IsPostBack)
+        if (!IsPostBack && !consultaProcessadaNaAbertura)
         {
             btnProcessar_Click(sender, e);
         }

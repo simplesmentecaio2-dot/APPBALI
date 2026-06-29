@@ -238,7 +238,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void executarJavaScript(String script)
     {
-        ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", script + "$(\"#dtAgendamento\").datetimepicker({ format: 'yyyy-mm-dd hh:ii', autoclose: true });", true);
+        ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", script + "$(\"#dtAgendamento\").datetimepicker({ format: 'yyyy-mm-dd hh:ii', autoclose: true, language: 'pt-BR', todayBtn: true, todayHighlight: true });", true);
     }
 
 }
