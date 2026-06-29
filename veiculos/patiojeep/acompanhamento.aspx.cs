@@ -46,7 +46,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         SessaoUnica.EncerrarSessaoAtual("LOGOUT_LOCAL");
         Session.Clear();
-        Response.Redirect("./login.aspx");
+        Session.Abandon();
+        Response.Redirect("./login.aspx", false);
+        Context.ApplicationInstance.CompleteRequest();
     }
 
     public String getAcesso(int acesso_id)

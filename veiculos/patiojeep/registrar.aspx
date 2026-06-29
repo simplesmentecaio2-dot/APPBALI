@@ -392,7 +392,8 @@
             });
 
     </script>
-    
+    <script src="./assets/js/patio-jeep-ux.js?v=20260629-1"></script>
+
 </body>
 
 </html>

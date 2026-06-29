@@ -13,9 +13,9 @@ public partial class login : System.Web.UI.Page
     {
         SessaoUnica.MostrarAvisoSessaoEncerrada(this);
 
-        if (Session["usuario"] != null && Session["usuario"] != "")
+        if (!String.IsNullOrEmpty(Convert.ToString(Session["usuario"])))
         {
-            Response.Redirect("./");
+            Redirecionar(DestinoAposLogin());
         }
     }
     protected void btnLogin_Click(object sender, EventArgs e)
@@ -41,8 +41,8 @@ public partial class login : System.Web.UI.Page
                     Session["ramal"] = ramal;
                     Session["celular"] = celular;
                     Session["empresa"] = empresa;
-                SessaoUnica.RegistrarLoginAtual();
-                    Response.Redirect("./");
+                    SessaoUnica.RegistrarLoginAtual();
+                    Redirecionar(DestinoAposLogin());
                 }
 
                 else
@@ -50,16 +50,63 @@ public partial class login : System.Web.UI.Page
                     txtUsuario.Value = "";
                     txtSenha.Value = "";
                     txtUsuario.Focus();
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Usuário ou Senha Inválida!');", true);
+                    ExibirMensagem("Usu\u00e1rio ou senha inv\u00e1lida.");
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                executarJavaScript("alert('Erro: ');" + ex);
+                ExibirMensagem("N\u00e3o foi poss\u00edvel entrar agora. Tente novamente.");
             }
         }
 
     }
+
+    private string DestinoAposLogin()
+    {
+        string voltar = Request.QueryString["voltar"];
+        if (UrlLocalSegura(voltar))
+        {
+            return voltar.Trim();
+        }
+
+        return "./";
+    }
+
+    private bool UrlLocalSegura(string url)
+    {
+        if (String.IsNullOrWhiteSpace(url))
+        {
+            return false;
+        }
+
+        string destino = url.Trim();
+        if (destino.IndexOf("login.aspx", StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            return false;
+        }
+
+        if (destino.StartsWith("http:", StringComparison.OrdinalIgnoreCase) ||
+            destino.StartsWith("https:", StringComparison.OrdinalIgnoreCase) ||
+            destino.StartsWith("//", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return destino.StartsWith("./") || destino.StartsWith("/") || destino.StartsWith("?");
+    }
+
+    private void Redirecionar(string url)
+    {
+        Response.Redirect(url, false);
+        Context.ApplicationInstance.CompleteRequest();
+    }
+
+    private void ExibirMensagem(string mensagem)
+    {
+        string texto = HttpUtility.JavaScriptStringEncode(mensagem);
+        executarJavaScript("alert('" + texto + "');");
+    }
+
     private void executarJavaScript(String script)
     {
         ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", script, true);

@@ -165,14 +165,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
     public void btnSair_Click(object sender, EventArgs e)
     {
         SessaoUnica.EncerrarSessaoAtual("LOGOUT_LOCAL");
-        Session["id"] = null;
-        Session["usuario"] = null;
-        Session["tipo"] = null;
-        Session["email"] = null;
-        Session["ramal"] = null;
-        Session["celular"] = null;
-        Session["empresa"] = null;
-        Response.Redirect("./login.aspx");
+        Session.Clear();
+        Session.Abandon();
+        Response.Redirect("./login.aspx", false);
+        Context.ApplicationInstance.CompleteRequest();
     }
     public String getAcesso(int acesso_id)
     {
