@@ -541,6 +541,44 @@ body {
   text-align: center;
 }
 
+.sales-followup-list {
+  display: grid;
+  gap: 10px;
+}
+
+.sales-followup-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #edf2f7;
+  border-radius: 14px;
+  background: #fbfdff;
+  padding: 10px;
+}
+
+.sales-followup-item div {
+  min-width: 0;
+}
+
+.sales-followup-item span,
+.sales-followup-item small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.sales-followup-item strong {
+  display: block;
+  margin: 2px 0;
+  color: var(--text);
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .sales-table-card {
   overflow: hidden;
 }

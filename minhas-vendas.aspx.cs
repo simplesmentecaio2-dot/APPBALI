@@ -738,6 +738,9 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         litGraficoValorDiario.Text = RenderizarGraficoValorDiario(vendas, dataInicial, dataFinal);
         litLojas.Text = RenderizarBarras(vendas, "loja", "qtde", "Nenhuma loja encontrada.");
         litTipos.Text = RenderizarBarras(vendas, "tipoestoque", "qtde", "Nenhum tipo de estoque encontrado.");
+        litTopModelos.Text = RenderizarBarras(vendas, "modeloveiculo", "qtde", "Nenhum modelo encontrado.");
+        litTopClientes.Text = RenderizarBarras(vendas, "NomeCliente", "ValordeVenda", "Nenhum cliente encontrado.", "C0");
+        litFollowUp.Text = RenderizarFollowUp(vendas);
     }
 
     private void PreencherTabela(DataTable vendas)
@@ -947,6 +950,11 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
 
     private string RenderizarBarras(DataTable vendas, string campoGrupo, string campoValor, string mensagemVazio)
     {
+        return RenderizarBarras(vendas, campoGrupo, campoValor, mensagemVazio, "N0");
+    }
+
+    private string RenderizarBarras(DataTable vendas, string campoGrupo, string campoValor, string mensagemVazio, string formatoValor)
+    {
         Dictionary<string, decimal> grupos = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
 
         for (int i = 0; i < vendas.Rows.Count; i++)
@@ -1001,7 +1009,7 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
             html.Append("<div class=\"sales-bar-label\"><span>");
             html.Append(HttpUtility.HtmlEncode(itens[i].Key));
             html.Append("</span><strong>");
-            html.Append(HttpUtility.HtmlEncode(valor.ToString("N0", ptBr)));
+            html.Append(HttpUtility.HtmlEncode(valor.ToString(formatoValor, ptBr)));
             html.Append("</strong></div>");
             html.Append("<div class=\"sales-bar-track\"><span class=\"sales-bar-fill");
             html.Append(classe);
@@ -1010,6 +1018,61 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
             html.Append("%\"></span></div></div>");
         }
         html.Append("</div>");
+        return html.ToString();
+    }
+
+    private string RenderizarFollowUp(DataTable vendas)
+    {
+        if (vendas.Rows.Count == 0)
+        {
+            return "<div class=\"sales-empty-chart\">Nenhuma venda para follow-up neste filtro.</div>";
+        }
+
+        StringBuilder html = new StringBuilder();
+        int adicionados = 0;
+        html.Append("<div class=\"sales-followup-list\">");
+
+        for (int i = 0; i < vendas.Rows.Count && adicionados < 6; i++)
+        {
+            DataRow linha = vendas.Rows[i];
+            if (ToDecimal(linha["qtde"]) <= 0)
+            {
+                continue;
+            }
+
+            string cliente = Convert.ToString(linha["NomeCliente"]).Trim();
+            string telefone = Convert.ToString(linha["TelefoneCliente"]).Trim();
+            string email = Convert.ToString(linha["emailcliente"]).Trim();
+            string modelo = Convert.ToString(linha["modeloveiculo"]).Trim();
+            string loja = Convert.ToString(linha["loja"]).Trim();
+            string data = FormatarDataExcel(linha["datavenda"]);
+
+            html.Append("<article class=\"sales-followup-item\">");
+            html.Append("<div><span>");
+            html.Append(HttpUtility.HtmlEncode(data));
+            html.Append("</span><strong>");
+            html.Append(HttpUtility.HtmlEncode(cliente.Length == 0 ? "Cliente sem nome" : cliente));
+            html.Append("</strong><small>");
+            html.Append(HttpUtility.HtmlEncode(String.Join(" | ", new string[] { modelo, loja }).Trim(' ', '|')));
+            html.Append("</small></div>");
+            html.Append("<button type=\"button\" class=\"sales-row-action is-secondary\" data-copy-contact=\"true\" data-cliente=\"");
+            html.Append(Atributo(cliente));
+            html.Append("\" data-telefone=\"");
+            html.Append(Atributo(telefone));
+            html.Append("\" data-email=\"");
+            html.Append(Atributo(email));
+            html.Append("\">Copiar contato</button>");
+            html.Append("</article>");
+            adicionados++;
+        }
+
+        html.Append("</div>");
+
+        if (adicionados == 0)
+        {
+            return "<div class=\"sales-empty-chart\">Nenhuma venda positiva para follow-up neste filtro.</div>";
+        }
+
         return html.ToString();
     }
 
