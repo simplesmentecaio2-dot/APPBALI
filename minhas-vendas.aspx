@@ -6,7 +6,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Minhas vendas | Grupo Bali</title>
-    <link href="css/minhas-vendas.css?v=20260629-insights01" rel="stylesheet" />
+    <link href="css/minhas-vendas.css?v=20260629-tabela01" rel="stylesheet" />
+    <script src="js/minhas-vendas.js?v=20260629-tabela01" defer="defer"></script>
 </head>
 <body id="pageBody" runat="server" class="sales-bi-page brand-fiat">
     <form id="form1" runat="server">
@@ -162,9 +163,26 @@
                     </section>
 
                     <section class="sales-table-card">
-                        <div class="sales-card-heading">
-                            <span>Detalhamento</span>
-                            <h2>Vendas encontradas</h2>
+                        <div class="sales-table-header">
+                            <div class="sales-card-heading">
+                                <span>Detalhamento</span>
+                                <h2>Vendas encontradas</h2>
+                            </div>
+                            <div class="sales-table-tools" aria-label="Ferramentas da tabela">
+                                <label>
+                                    <span>Buscar</span>
+                                    <input id="salesTableSearch" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Cliente, chassi, placa, nota ou pedido" />
+                                </label>
+                                <label>
+                                    <span>Linhas</span>
+                                    <select id="salesPageSize">
+                                        <option value="10">10</option>
+                                        <option value="25" selected="selected">25</option>
+                                        <option value="50">50</option>
+                                        <option value="all">Todas</option>
+                                    </select>
+                                </label>
+                            </div>
                         </div>
                         <div class="sales-table-wrap">
                             <asp:GridView ID="gvVendas" runat="server" AutoGenerateColumns="false" CssClass="sales-table" GridLines="None" OnRowDataBound="gvVendas_RowDataBound" EmptyDataText="Nenhuma venda encontrada para este vendedor no per&iacute;odo selecionado.">
@@ -183,6 +201,14 @@
                                     <asp:BoundField DataField="placa" HeaderText="Placa" />
                                 </Columns>
                             </asp:GridView>
+                        </div>
+                        <div class="sales-table-footer">
+                            <span id="salesTableCounter">Carregando tabela...</span>
+                            <div class="sales-pagination" aria-label="Pagina&ccedil;&atilde;o da tabela">
+                                <button id="salesPrevPage" type="button">Anterior</button>
+                                <span id="salesPageInfo">-</span>
+                                <button id="salesNextPage" type="button">Pr&oacute;xima</button>
+                            </div>
                         </div>
                     </section>
                 </asp:Panel>
