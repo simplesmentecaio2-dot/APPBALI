@@ -142,6 +142,11 @@ ORDER BY COALESCE(NULLIF(usuario_nome, N''), usuario_id), usuario_id;");
         ddlUsuarioLocal.DataValueField = "id_usuario_local";
         ddlUsuarioLocal.DataBind();
 
+        foreach (ListItem item in ddlUsuarioLocal.Items)
+        {
+            item.Text = CorrigirAcentos(item.Text);
+        }
+
         if (ddlUsuarioLocal.Items.Count == 0)
         {
             ddlUsuarioLocal.Items.Add(new ListItem("Nenhum usu\u00e1rio espelhado ainda", "0"));
@@ -260,7 +265,22 @@ WHERE id_usuario_local = @id_usuario_local
     protected string Html(object valor)
     {
         string texto = Convert.ToString(valor);
-        return Server.HtmlEncode(String.IsNullOrWhiteSpace(texto) ? "-" : texto.Trim());
+        return Server.HtmlEncode(String.IsNullOrWhiteSpace(texto) ? "-" : CorrigirAcentos(texto.Trim()));
+    }
+
+    private string CorrigirAcentos(string texto)
+    {
+        if (String.IsNullOrEmpty(texto)) return texto;
+
+        return texto
+            .Replace("Usu\u00c3\u00a1rio", "Usu\u00e1rio")
+            .Replace("usu\u00c3\u00a1rio", "usu\u00e1rio")
+            .Replace("c\u00c3\u00b3d.", "c\u00f3d.")
+            .Replace("C\u00c3\u00b3d.", "C\u00f3d.")
+            .Replace("permiss\u00c3\u00a3o", "permiss\u00e3o")
+            .Replace("Permiss\u00c3\u00a3o", "Permiss\u00e3o")
+            .Replace("a\u00c3\u00a7\u00c3\u00a3o", "a\u00e7\u00e3o")
+            .Replace("A\u00c3\u00a7\u00c3\u00a3o", "A\u00e7\u00e3o");
     }
 
     protected string DataHora(object valor)
