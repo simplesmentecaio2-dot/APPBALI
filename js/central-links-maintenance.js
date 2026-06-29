@@ -187,6 +187,10 @@
     return document.body.getAttribute('data-brand-name') || 'Central';
   }
 
+  function shouldHideShortcutSearch() {
+    return document.body && document.body.getAttribute('data-hide-shortcut-search') === 'true';
+  }
+
   function uniqueSearchName() {
     return 'central_filtro_' + normalize(getBrandName()).replace(/[^a-z0-9]+/g, '_') + '_' + Date.now().toString(36);
   }
@@ -199,14 +203,16 @@
     }
 
     var tools = document.createElement('div');
-    tools.className = 'central-utility-row';
+    var hideSearch = shouldHideShortcutSearch();
+    tools.className = 'central-utility-row' + (hideSearch ? ' is-status-only' : '');
     tools.setAttribute('data-central-tools', 'true');
-    tools.innerHTML =
-      '<div class="central-search-box">' +
-        '<input type="search" data-shortcut-search aria-label="Buscar atalhos" placeholder="Buscar atalho, &aacute;rea ou link" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-form-type="other" />' +
-        '<button type="button" data-clear-shortcut-search aria-label="Limpar busca" hidden>&times;</button>' +
-      '</div>' +
-      '<span class="central-status-chip" data-shortcut-status>Carregando atalhos...</span>';
+    tools.innerHTML = hideSearch
+      ? '<span class="central-status-chip" data-shortcut-status>Carregando atalhos...</span>'
+      : '<div class="central-search-box">' +
+          '<input type="search" data-shortcut-search aria-label="Buscar atalhos" placeholder="Buscar atalho, &aacute;rea ou link" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" data-lpignore="true" data-form-type="other" />' +
+          '<button type="button" data-clear-shortcut-search aria-label="Limpar busca" hidden>&times;</button>' +
+        '</div>' +
+        '<span class="central-status-chip" data-shortcut-status>Carregando atalhos...</span>';
 
     cardPanel.insertBefore(tools, grid);
 

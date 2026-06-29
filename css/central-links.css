@@ -351,6 +351,11 @@ body.central-links-page {
   margin: -2px 0 16px;
 }
 
+.central-utility-row.is-status-only {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .central-search-box {
   position: relative;
 }
