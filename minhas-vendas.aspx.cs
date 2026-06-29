@@ -862,6 +862,16 @@ ORDER BY unidades DESC, valor DESC;";
         Response.Write("<tr><th>Maior venda</th><td colspan=\"3\">");
         Response.Write(HttpUtility.HtmlEncode(indicadores.TemMaiorVenda ? indicadores.MaiorVenda.ToString("C2", ptBr) + " - " + indicadores.MaiorVendaDetalhe : "-"));
         Response.Write("</td></tr>");
+        Response.Write("<tr><th>Meta referencial</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(MontarResumoMetaExcel(indicadores, dataInicial, dataFinal)));
+        Response.Write("</td><th>Top modelo</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(ObterTopGrupo(vendas, "modeloveiculo", "qtde", "N0")));
+        Response.Write("</td></tr>");
+        Response.Write("<tr><th>Top cliente</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(ObterTopGrupo(vendas, "NomeCliente", "ValordeVenda", "C2")));
+        Response.Write("</td><th>Alertas</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(MontarResumoAlertasExcel(vendas, indicadores)));
+        Response.Write("</td></tr>");
         Response.Write("</tbody></table><br />");
 
         Response.Write("<table border=\"1\"><thead><tr>");
@@ -884,6 +894,7 @@ ORDER BY unidades DESC, valor DESC;";
             "Qtde",
             "Valor de venda",
             "Margem %",
+            "Classificacao margem",
             "Chassi",
             "Placa",
             "Dias em estoque"
@@ -917,7 +928,9 @@ ORDER BY unidades DESC, valor DESC;";
             EscreverCelulaExcel(row["estoqueveiculo"]);
             EscreverCelulaExcel(ToDecimal(row["qtde"]).ToString("N0", ptBr));
             EscreverCelulaExcel(ToDecimal(row["ValordeVenda"]).ToString("C2", ptBr));
-            EscreverCelulaExcel(ToDecimal(row["Margem"]).ToString("N2", ptBr) + "%");
+            decimal margem = ToDecimal(row["Margem"]);
+            EscreverCelulaExcel(margem.ToString("N2", ptBr) + "%");
+            EscreverCelulaExcel(ClassificarMargem(margem));
             EscreverCelulaExcel(row["chassi"]);
             EscreverCelulaExcel(row["placa"]);
             EscreverCelulaExcel(row["diasdeestoque"]);
@@ -927,6 +940,76 @@ ORDER BY unidades DESC, valor DESC;";
         Response.Write("</tbody></table></body></html>");
         Response.Flush();
         Response.End();
+    }
+
+    private string MontarResumoMetaExcel(IndicadoresVendas indicadores, DateTime dataInicial, DateTime dataFinal)
+    {
+        int metaMesReferencia = ObterMetaReferenciaMensal();
+        int diasPeriodo = (dataFinal.Date - dataInicial.Date).Days + 1;
+        int diasMes = DateTime.DaysInMonth(dataInicial.Year, dataInicial.Month);
+        decimal metaPeriodo = Math.Max(1, Math.Round(metaMesReferencia * (diasPeriodo / (decimal)diasMes), 0));
+        decimal percentual = metaPeriodo == 0 ? 0 : (indicadores.VendasBrutas / metaPeriodo) * 100;
+        return String.Format(ptBr, "{0:N0}/{1:N0} ({2:N0}%)", indicadores.VendasBrutas, metaPeriodo, percentual);
+    }
+
+    private string MontarResumoAlertasExcel(DataTable vendas, IndicadoresVendas indicadores)
+    {
+        List<string> alertas = new List<string>();
+        if (indicadores.Devolucoes > 0) alertas.Add(indicadores.Devolucoes.ToString("N0", ptBr) + " devolu\u00e7\u00e3o(\u00f5es)");
+        if (indicadores.MargemMedia > 0 && indicadores.MargemMedia < 8) alertas.Add("margem m\u00e9dia abaixo de 8%");
+        int contatosIncompletos = ContarContatosIncompletos(vendas);
+        if (contatosIncompletos > 0) alertas.Add(contatosIncompletos.ToString("N0", ptBr) + " contato(s) incompleto(s)");
+        if (indicadores.VendasBrutas == 0) alertas.Add("sem venda positiva");
+        return alertas.Count == 0 ? "Sem pontos cr\u00edticos" : String.Join("; ", alertas.ToArray());
+    }
+
+    private string ObterTopGrupo(DataTable vendas, string campoGrupo, string campoValor, string formatoValor)
+    {
+        Dictionary<string, decimal> grupos = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
+        for (int i = 0; i < vendas.Rows.Count; i++)
+        {
+            string chave = Convert.ToString(vendas.Rows[i][campoGrupo]).Trim();
+            if (chave.Length == 0)
+            {
+                chave = "N\u00e3o informado";
+            }
+
+            if (!grupos.ContainsKey(chave))
+            {
+                grupos[chave] = 0;
+            }
+            grupos[chave] += ToDecimal(vendas.Rows[i][campoValor]);
+        }
+
+        string melhorGrupo = "";
+        decimal melhorValor = 0;
+        foreach (KeyValuePair<string, decimal> item in grupos)
+        {
+            if (melhorGrupo.Length == 0 || Math.Abs(item.Value) > Math.Abs(melhorValor))
+            {
+                melhorGrupo = item.Key;
+                melhorValor = item.Value;
+            }
+        }
+
+        return melhorGrupo.Length == 0 ? "-" : melhorGrupo + " - " + melhorValor.ToString(formatoValor, ptBr);
+    }
+
+    private string ClassificarMargem(decimal margem)
+    {
+        if (margem <= 0)
+        {
+            return "N\u00e3o informada";
+        }
+        if (margem < 8)
+        {
+            return "Aten\u00e7\u00e3o";
+        }
+        if (margem >= 15)
+        {
+            return "Alta";
+        }
+        return "Saud\u00e1vel";
     }
 
     private void EscreverCelulaExcel(object valor)
