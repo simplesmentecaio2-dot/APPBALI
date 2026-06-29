@@ -11,7 +11,7 @@
 <body class="bali-tech-page password-generator-page">
     <form id="form1" runat="server">
         <header class="tech-topbar">
-            <a class="tech-brand" href="../tecnologia/Default.aspx" aria-label="Voltar para tecnologia">
+            <a class="tech-brand" href="../Intranet/index.html" aria-label="Voltar para intranet">
                 <img src="../img/logobali.png?v=20260624-logo2" alt="Bali" />
                 <span>APP</span>
             </a>
@@ -21,7 +21,7 @@
                 <small>C&oacute;digo: <asp:Label ID="lblCodigo" runat="server" /></small>
             </div>
             <nav class="tech-actions" aria-label="A&ccedil;&otilde;es r&aacute;pidas">
-                <a href="../tecnologia/Default.aspx">Voltar</a>
+                <a href="../Intranet/index.html">Voltar</a>
                 <a href="../logout.aspx?voltar=/login.aspx">Sair</a>
             </nav>
         </header>

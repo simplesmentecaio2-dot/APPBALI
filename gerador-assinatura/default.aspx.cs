@@ -16,10 +16,19 @@ public partial class veiculos_Pint_Contrato : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (!UsuarioTecnologiaValido())
+        {
+            return;
+        }
     }
 
     protected void btnConvert_Click(object sender, EventArgs e)
     {
+        if (!UsuarioTecnologiaValido())
+        {
+            return;
+        }
+
         string tel = "";
        
         string telBack = "";
@@ -158,5 +167,32 @@ public partial class veiculos_Pint_Contrato : System.Web.UI.Page
         Response.TransmitFile(Server.MapPath("./created/assinatura-" + this.txtNome.Value + ".png"));
         Response.End();
 
+    }
+
+    private bool UsuarioTecnologiaValido()
+    {
+        if (Session["id"] == null)
+        {
+            RedirecionarLogin();
+            return false;
+        }
+
+        App app = new App();
+        int permissao = app.verificaPermissaoSistema(Convert.ToString(Session["id"]), "TECNOLOGIA");
+        if (permissao != 1)
+        {
+            RedirecionarLogin();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void RedirecionarLogin()
+    {
+        Response.Clear();
+        Response.Redirect("../login.aspx?voltar=/gerador-assinatura/default.aspx", false);
+        Response.SuppressContent = true;
+        Context.ApplicationInstance.CompleteRequest();
     }
 }

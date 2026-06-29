@@ -525,7 +525,7 @@
                                 <h1>Gerador de assinatura</h1>
                                 <p>Preencha os dados, confira a pr&eacute;via e gere a imagem final para usar no e-mail corporativo.</p>
                             </div>
-                            <a class="signature-back-link" href="../tecnologia/Default.aspx">Voltar para tecnologia</a>
+                            <a class="signature-back-link" href="../Intranet/index.html">Voltar</a>
                         </header>
 
                         <form runat="server" class="signature-form-shell" autocomplete="off">

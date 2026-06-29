@@ -47,7 +47,7 @@ public partial class login : System.Web.UI.Page
             Session["celular"] = celular;
             Session["empresa"] = empresa;
             SessaoUnica.RegistrarLoginAtual();
-            Response.Redirect("default.aspx", false);
+            Response.Redirect(DestinoAposLogin(), false);
             Context.ApplicationInstance.CompleteRequest();
             return;
         }
@@ -62,5 +62,26 @@ public partial class login : System.Web.UI.Page
     {
         string texto = HttpUtility.JavaScriptStringEncode(mensagem);
         ScriptManager.RegisterStartupScript(this, GetType(), Guid.NewGuid().ToString("N"), "alert('" + texto + "');", true);
+    }
+
+    private string DestinoAposLogin()
+    {
+        string voltar = Request.QueryString["voltar"];
+        return UrlLocalSegura(voltar) ? voltar.Trim() : "default.aspx";
+    }
+
+    private bool UrlLocalSegura(string url)
+    {
+        if (String.IsNullOrWhiteSpace(url)) return false;
+
+        url = url.Trim();
+        if (url.StartsWith("http:", StringComparison.OrdinalIgnoreCase)) return false;
+        if (url.StartsWith("https:", StringComparison.OrdinalIgnoreCase)) return false;
+        if (url.StartsWith("//")) return false;
+        if (url.IndexOf('\r') >= 0 || url.IndexOf('\n') >= 0) return false;
+
+        return url.StartsWith("/", StringComparison.Ordinal)
+            || url.StartsWith("./", StringComparison.Ordinal)
+            || url.StartsWith("../", StringComparison.Ordinal);
     }
 }
