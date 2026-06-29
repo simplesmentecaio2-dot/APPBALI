@@ -207,6 +207,7 @@
                                                 <b>Consultar Agendamento</b>
 
                                                 <div class="page-title-subheading">
+                                                    Filtre a agenda por loja e data para acompanhar entregas.
                                                 </div>
                                             </div>
                                         </div>

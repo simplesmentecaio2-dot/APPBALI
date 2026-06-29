@@ -44,7 +44,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
             Response.Redirect("./login.aspx");
         }
 
-        btnProcessar_Click(sender, e);
+        if (!IsPostBack)
+        {
+            btnProcessar_Click(sender, e);
+        }
 
     }
 
@@ -99,7 +102,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void executarJavaScript(String script)
     {
-        ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", script + "$(\"#dtAgendamento\").datetimepicker({ format: 'yyyy-mm-dd', autoclose: true, language: 'pt-BR' });$('#tablelvd').DataTable();", true);
+        ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", script + "$(\"#dtAgendamento\").datetimepicker({ format: 'yyyy-mm-dd', autoclose: true, language: 'pt-BR', todayBtn: true, todayHighlight: true });if ($.fn.DataTable && $(\"#tablelvd\").length && !$.fn.DataTable.isDataTable(\"#tablelvd\")) { $('#tablelvd').DataTable({ pageLength: 25, language: { search: 'Buscar:', lengthMenu: 'Mostrar _MENU_', info: 'Mostrando _START_ a _END_ de _TOTAL_', zeroRecords: 'Nenhum registro encontrado', paginate: { previous: 'Anterior', next: 'Próxima' } } }); }", true);
     }
 
     protected void btnProcessar_Click(object sender, EventArgs e)
@@ -132,11 +135,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
             }
             System.Data.SqlClient.SqlDataReader odr = oCmd.ExecuteReader();
             string head = "";
-            head = @"<table class='table table-striped table-bordered dt-responsive nowrap' style='width:100%' id='tablelvd'>
+            head = @"<table class='table table-striped table-bordered dt-responsive nowrap patio-data-table' style='width:100%' id='tablelvd'>
                         <thead >
                             <tr>
                                 <td>Data</td>
-                                <td>Serie</td>
+                                <td>Série</td>
                                 <td>Modelo</td>
                                 <td>Cor</td>
                                 <td>Pedido</td>
@@ -150,7 +153,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             foot = @"</tbody></table>";
             while (odr.Read())
             {
-                body += @"<tr><td>" + odr["dt_agend"].ToString() +
+                body += @"<tr><td>" + FormatarData(odr["dt_agend"]) +
                                "</td><td>" + odr["ve_chassiserie"].ToString() +
                                "</td><td>" + odr["mod_ds"].ToString() +
                                "</td><td>" + odr["cor_ds"].ToString() +
@@ -170,6 +173,17 @@ public partial class veiculos_contrato : System.Web.UI.Page
         {
             vec.FecharConexao(); executarJavaScript("");// }
         }
+    }
+
+    private string FormatarData(object valor)
+    {
+        DateTime data;
+        if (valor != null && DateTime.TryParse(valor.ToString(), out data))
+        {
+            return data.ToString("dd/MM/yyyy");
+        }
+
+        return "";
     }
 
 }

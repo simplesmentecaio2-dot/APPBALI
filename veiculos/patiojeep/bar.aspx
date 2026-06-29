@@ -176,6 +176,24 @@
                                         Consultar
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="./registrar_agendamento.aspx">
+                                        <i class="metismenu-icon far fa-calendar-plus"></i>
+                                        Agendar Entrega
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="./consultar_agendamento.aspx">
+                                        <i class="metismenu-icon far fa-calendar-check"></i>
+                                        Consultar Agenda
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="./acompanhamento.aspx">
+                                        <i class="metismenu-icon fas fa-tasks"></i>
+                                        Acompanhamento
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -194,6 +212,7 @@
                                                 <b>Início</b>
 
                                                 <div class="page-title-subheading">
+                                                    Acesse rapidamente as funções principais do pátio.
                                                 </div>
                                             </div>
                                         </div>

@@ -214,6 +214,7 @@
                                                 <b>Acompanhamento</b>
 
                                                 <div class="page-title-subheading">
+                                                    Acompanhe preparação, pendências e status do veículo.
                                                 </div>
                                             </div>
                                         </div>

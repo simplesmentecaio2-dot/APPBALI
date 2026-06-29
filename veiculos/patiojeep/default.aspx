@@ -154,6 +154,24 @@
                                         Consultar
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="./registrar_agendamento.aspx">
+                                        <i class="metismenu-icon far fa-calendar-plus"></i>
+                                        Agendar Entrega
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="./consultar_agendamento.aspx">
+                                        <i class="metismenu-icon far fa-calendar-check"></i>
+                                        Consultar Agenda
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="./acompanhamento.aspx">
+                                        <i class="metismenu-icon fas fa-tasks"></i>
+                                        Acompanhamento
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -172,6 +190,7 @@
                                                 <b>Início</b>
 
                                                 <div class="page-title-subheading">
+                                                    Operações de pátio, agendamento e consulta de veículos.
                                                 </div>
                                             </div>
                                         </div>
@@ -189,15 +208,38 @@
                                                 </div>
                                             </div>
                                             <div class="card-body">
-                                                <a href="./registrar.aspx">
-                                                    <div class="btn btn-secondary ml-2 mb-2"><i class="fa fa-folder-plus fa-3x col-12"></i><b>Registrar</b></div>
-                                                </a>
-                                                <a href="./transferir.aspx">
-                                                    <div class="btn btn-secondary ml-2 mb-2"><i class="fa fa-exchange-alt fa-3x col-12"></i><b>Transferir</b></div>
-                                                </a>
-                                                <a href="./historico.aspx">
-                                                    <div class="btn btn-secondary ml-2 mb-2"><i class="fa fa-history fa-3x col-12 "></i><b>Consultar</b></div>
-                                                </a>
+                                                <div class="patio-home-grid">
+                                                    <a class="patio-home-card" href="./registrar.aspx">
+                                                        <span class="patio-home-icon"><i class="fa fa-folder-plus"></i></span>
+                                                        <strong>Registrar veículo</strong>
+                                                        <small>Inclua a localização inicial do veículo no pátio.</small>
+                                                    </a>
+                                                    <a class="patio-home-card" href="./transferir.aspx">
+                                                        <span class="patio-home-icon"><i class="fa fa-exchange-alt"></i></span>
+                                                        <strong>Transferir</strong>
+                                                        <small>Mova o veículo entre lojas ou áreas operacionais.</small>
+                                                    </a>
+                                                    <a class="patio-home-card" href="./historico.aspx">
+                                                        <span class="patio-home-icon"><i class="fa fa-history"></i></span>
+                                                        <strong>Histórico</strong>
+                                                        <small>Consulte o caminho percorrido pelo veículo.</small>
+                                                    </a>
+                                                    <a class="patio-home-card" href="./registrar_agendamento.aspx">
+                                                        <span class="patio-home-icon"><i class="fa fa-calendar-plus"></i></span>
+                                                        <strong>Agendar entrega</strong>
+                                                        <small>Registre previsão de entrega vinculada ao chassi.</small>
+                                                    </a>
+                                                    <a class="patio-home-card" href="./consultar_agendamento.aspx">
+                                                        <span class="patio-home-icon"><i class="fa fa-search"></i></span>
+                                                        <strong>Consultar agenda</strong>
+                                                        <small>Veja os agendamentos por data de entrega.</small>
+                                                    </a>
+                                                    <a class="patio-home-card" href="./acompanhamento.aspx">
+                                                        <span class="patio-home-icon"><i class="fa fa-tasks"></i></span>
+                                                        <strong>Acompanhamento</strong>
+                                                        <small>Acompanhe pendências e preparação dos veículos.</small>
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

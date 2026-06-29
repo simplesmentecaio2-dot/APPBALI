@@ -182,6 +182,7 @@
                                                 <b>Registrar Agendamento</b>
 
                                                 <div class="page-title-subheading">
+                                                    Cadastre a previsão de entrega para veículos com pedido.
                                                 </div>
                                             </div>
                                         </div>

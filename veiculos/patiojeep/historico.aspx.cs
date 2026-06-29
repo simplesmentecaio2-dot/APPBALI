@@ -108,9 +108,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     public String getHistorico(int vec_nr)
     {
         Jeep veiculos = new Jeep();
-        String retorno = "";
-        String lojaAtual = "";
-        int cont = 0;
+        System.Text.StringBuilder retorno = new System.Text.StringBuilder();
         try
         {
             veiculos.Conexao2();
@@ -123,23 +121,22 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
             while (odr.Read())
             {
-                cont++;
-                retorno += "<li class=\"list-group-item\">" +
-                                                   " <div class=\"widget-content p-0\">" +
-                                                       " <div class=\"widget-content-outer\">" +
-                                                           " <div class=\"widget-content-wrapper\">" +
-                                                              "  <div class=\"widget-content-left\">" +
-                                                                 "   <div class=\"widget-heading\"><i class=\"fa fa-user mr-2\"></i>"+odr["fun_cad"].ToString()+"</div>" +
-                                                                  "  <div class=\"widget-subheading\"><i class=\"fa fa-calendar mr-2\"></i><b>" + odr["dt_transf"].ToString() + "</b></div>" +
-                                                               " </div>" +
-                                                                "<div class=\"widget-content-right\">" +
-                                                                 "   <div class=\"widget-numbers\"><i class=\"badge badge-danger\">" + odr["origem"].ToString() + "</i><i class=\"fa fa-arrow-right ml-2 mr-2 text-info\"></i><i class=\"badge badge-success\">" + odr["destino"].ToString() + "</i></div>" +
-                                                                "</div>" +
-                                                            "</div>" +
-                                                       " </div>" +
-                                                   " </div>" +
-                                               " </li>";
-                
+                string usuario = Html(odr["fun_cad"]);
+                string data = FormatarDataHora(odr["dt_transf"]);
+                string origem = Html(odr["origem"]);
+                string destino = Html(odr["destino"]);
+
+                retorno.Append("<li class=\"list-group-item patio-history-item\">");
+                retorno.Append("<div class=\"widget-content p-0\"><div class=\"widget-content-outer\"><div class=\"widget-content-wrapper\">");
+                retorno.Append("<div class=\"widget-content-left\">");
+                retorno.Append("<div class=\"widget-heading\"><i class=\"fa fa-user mr-2\"></i>" + usuario + "</div>");
+                retorno.Append("<div class=\"widget-subheading\"><i class=\"fa fa-calendar mr-2\"></i><b>" + data + "</b></div>");
+                retorno.Append("</div>");
+                retorno.Append("<div class=\"widget-content-right\">");
+                retorno.Append("<div class=\"widget-numbers\"><i class=\"badge badge-danger\">" + origem + "</i><i class=\"fa fa-arrow-right ml-2 mr-2 text-info\"></i><i class=\"badge badge-success\">" + destino + "</i></div>");
+                retorno.Append("</div>");
+                retorno.Append("</div></div></div>");
+                retorno.Append("</li>");
 
             }
 
@@ -152,7 +149,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         {
             veiculos.FecharConexao2();
         }
-        return retorno;
+        return retorno.ToString();
     }
     public String getLojaAtual( String chassi)
     {
@@ -175,7 +172,23 @@ public partial class veiculos_contrato : System.Web.UI.Page
         return retorno;
     }
 
-    private void limpaCampos() 
+    private string Html(object valor)
+    {
+        return HttpUtility.HtmlEncode(Convert.ToString(valor));
+    }
+
+    private string FormatarDataHora(object valor)
+    {
+        DateTime data;
+        if (valor != null && DateTime.TryParse(valor.ToString(), out data))
+        {
+            return data.ToString("dd/MM/yyyy HH:mm");
+        }
+
+        return Html(valor);
+    }
+
+    private void limpaCampos()
     {
         this.txtSerie.Text = "";
         this.txtChassi.Text = "";

@@ -163,6 +163,64 @@ body.patio-modern-page.patio-brand-byd {
   border-top: 1px solid var(--patio-line);
 }
 
+.patio-modern-page .card-footer .btn {
+  min-height: 44px;
+}
+
+.patio-modern-page .card-footer .col-6.offset-3 {
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.patio-modern-page .patio-data-table,
+.patio-modern-page table.dataTable {
+  overflow: hidden;
+  border-color: var(--patio-line) !important;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.patio-modern-page .patio-data-table thead td,
+.patio-modern-page table.dataTable thead th,
+.patio-modern-page table.dataTable thead td {
+  border-bottom: 1px solid var(--patio-line) !important;
+  background: #f7fafc;
+  color: var(--patio-muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.patio-modern-page .patio-data-table tbody td,
+.patio-modern-page table.dataTable tbody td {
+  color: var(--patio-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.patio-modern-page .patio-history-item {
+  margin-bottom: 10px;
+  border: 1px solid var(--patio-line);
+  border-left: 4px solid var(--patio-brand);
+  border-radius: 8px !important;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .06);
+}
+
+.patio-modern-page .patio-history-item .widget-heading {
+  color: var(--patio-ink);
+  font-weight: 900;
+}
+
+.patio-modern-page .patio-history-item .widget-subheading {
+  color: var(--patio-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .patio-modern-page .input-group {
   align-items: stretch;
 }
@@ -361,24 +419,59 @@ body.patio-modern-page.patio-brand-byd {
   animation: patioSpin .7s linear infinite;
 }
 
-.patio-modern-page .patio-home-action {
+.patio-modern-page .patio-home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.patio-modern-page .patio-home-card {
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  gap: 4px 14px;
+  min-height: 112px;
+  padding: 18px;
+  border: 1px solid var(--patio-line);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #fff, #f8fbff);
+  color: var(--patio-ink);
+  text-decoration: none !important;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, .08);
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.patio-modern-page .patio-home-card:hover {
+  border-color: rgba(94, 127, 66, .42);
+  color: var(--patio-ink);
+  transform: translateY(-2px);
+  box-shadow: 0 20px 44px rgba(15, 23, 42, .13);
+}
+
+.patio-modern-page .patio-home-icon {
+  grid-row: 1 / 3;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  min-height: 132px;
-  gap: 10px;
-  white-space: normal;
-  text-align: center;
-}
-
-.patio-modern-page .patio-home-action i {
-  margin: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  background: var(--patio-brand-soft);
   color: var(--patio-brand);
+  font-size: 20px;
 }
 
-.patio-modern-page .patio-home-action:hover i {
-  color: #fff;
+.patio-modern-page .patio-home-card strong {
+  align-self: end;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.patio-modern-page .patio-home-card small {
+  align-self: start;
+  color: var(--patio-muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 @keyframes patioToastIn {
@@ -416,6 +509,11 @@ body.patio-modern-page.patio-brand-byd {
   .patio-modern-page .card-body,
   .patio-modern-page .card-footer {
     padding: 14px;
+  }
+
+  .patio-modern-page .card-footer .col-6.offset-3 {
+    width: 100%;
+    max-width: 100%;
   }
 
   .patio-modern-page footer.fixed-bottom {
