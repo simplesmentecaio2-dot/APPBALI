@@ -166,6 +166,10 @@ public class App : Dao
         }
 
         LoginLegado(procedureLegada, id, senha, out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo);
+        if (usuario != "N" && (String.IsNullOrWhiteSpace(usuarioCodigo) || usuarioCodigo == "0"))
+        {
+            usuarioCodigo = BuscarUsuarioCodigoSeguro(id, usuario, email, "");
+        }
     }
 
     private void LoginLegado(string procedure, string id, string senha, out string usuario, out string tipo, out string email, out string ramal, out string celular, out string empresa, out string usuarioCodigo)

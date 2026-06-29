@@ -10,6 +10,7 @@ public partial class sessao_renovar : System.Web.UI.Page
         Response.ContentType = "application/json; charset=utf-8";
         Response.Cache.SetCacheability(HttpCacheability.NoCache);
         Response.Cache.SetNoStore();
+        Response.TrySkipIisCustomErrors = true;
 
         if (Session["usuario"] == null || Convert.ToString(Session["usuario"]).Trim().Length == 0)
         {
