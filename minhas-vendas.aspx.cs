@@ -427,6 +427,7 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
 
     private void ExportarExcel(DataTable vendas, DateTime dataInicial, DateTime dataFinal)
     {
+        IndicadoresVendas indicadores = CalcularIndicadores(vendas);
         string nomeArquivo = String.Format(
             CultureInfo.InvariantCulture,
             "minhas-vendas-{0}-{1:yyyyMMdd}-{2:yyyyMMdd}.xls",
@@ -447,6 +448,38 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         Response.Write("<p>Periodo: ");
         Response.Write(HttpUtility.HtmlEncode(String.Format(ptBr, "{0:dd/MM/yyyy} a {1:dd/MM/yyyy}", dataInicial, dataFinal)));
         Response.Write("</p>");
+
+        Response.Write("<table border=\"1\"><tbody>");
+        Response.Write("<tr><th>Vendedor</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(Convert.ToString(Session["usuario"])));
+        Response.Write("</td><th>Codigo</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(Convert.ToString(Session["usuario_codigo"])));
+        Response.Write("</td></tr>");
+        Response.Write("<tr><th>Unidades liquidas</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(indicadores.UnidadesLiquidas.ToString("N0", ptBr)));
+        Response.Write("</td><th>Valor liquido</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(indicadores.ValorLiquido.ToString("C2", ptBr)));
+        Response.Write("</td></tr>");
+        Response.Write("<tr><th>Ticket medio</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(indicadores.TicketMedio.ToString("C2", ptBr)));
+        Response.Write("</td><th>Margem media</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(indicadores.MargemMedia.ToString("N2", ptBr) + "%"));
+        Response.Write("</td></tr>");
+        Response.Write("<tr><th>Vendas brutas</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(indicadores.VendasBrutas.ToString("N0", ptBr)));
+        Response.Write("</td><th>Devolucoes</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(indicadores.Devolucoes.ToString("N0", ptBr)));
+        Response.Write("</td></tr>");
+        Response.Write("<tr><th>Clientes unicos</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(indicadores.ClientesUnicos.ToString("N0", ptBr)));
+        Response.Write("</td><th>Melhor dia</th><td>");
+        Response.Write(HttpUtility.HtmlEncode(indicadores.TemMelhorDia ? indicadores.MelhorDia.ToString("dd/MM/yyyy", ptBr) : "-"));
+        Response.Write("</td></tr>");
+        Response.Write("<tr><th>Maior venda</th><td colspan=\"3\">");
+        Response.Write(HttpUtility.HtmlEncode(indicadores.TemMaiorVenda ? indicadores.MaiorVenda.ToString("C2", ptBr) + " - " + indicadores.MaiorVendaDetalhe : "-"));
+        Response.Write("</td></tr>");
+        Response.Write("</tbody></table><br />");
+
         Response.Write("<table border=\"1\"><thead><tr>");
 
         string[] titulos = {
