@@ -33,6 +33,16 @@
 
         Session.Timeout = TempoSessaoMinutos;
 
+        AppPermissoes.RegistrarUsuarioAtual(Context);
+        if (!AppPermissoes.ValidarAcessoAtual(Context))
+        {
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            Response.Cache.SetNoStore();
+            Response.Redirect(AppPermissoes.UrlAcessoNegado(Context), false);
+            Context.ApplicationInstance.CompleteRequest();
+            return;
+        }
+
         if (SessaoUnica.ValidarSessaoAtual(Context))
         {
             return;

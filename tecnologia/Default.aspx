@@ -38,7 +38,7 @@
                         <p>Administre sistemas, usu&aacute;rios, permiss&otilde;es e arquivos t&eacute;cnicos em um &uacute;nico painel.</p>
                     </div>
                     <div class="central-summary" aria-label="Resumo dos atalhos">
-                        <div class="central-summary-item"><strong>4</strong><span>atalhos</span></div>
+                        <div class="central-summary-item"><strong>5</strong><span>atalhos</span></div>
                         <div class="central-summary-item"><strong>TI</strong><span>suporte</span></div>
                     </div>
                 </section>
@@ -59,6 +59,10 @@
                         <a class="central-link-card" href="usuarios.aspx" data-icon="users">
                             <span class="central-link-icon"></span>
                             <span><span class="central-link-title">Usu&aacute;rios</span><span class="central-link-caption">Permiss&otilde;es</span></span>
+                        </a>
+                        <a class="central-link-card" href="permissoes.aspx" data-icon="users">
+                            <span class="central-link-icon"></span>
+                            <span><span class="central-link-title">Permiss&otilde;es</span><span class="central-link-caption">Bloqueios por usu&aacute;rio</span></span>
                         </a>
                         <a class="central-link-card" href="download.aspx" data-icon="files">
                             <span class="central-link-icon"></span>
