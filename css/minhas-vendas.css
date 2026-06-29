@@ -656,7 +656,7 @@ body {
 
 .sales-table-tools {
   display: grid;
-  grid-template-columns: minmax(220px, 1.2fr) minmax(130px, .75fr) minmax(120px, .65fr) 96px minmax(150px, .75fr);
+  grid-template-columns: minmax(210px, 1.2fr) minmax(120px, .75fr) minmax(110px, .65fr) minmax(130px, .75fr) 90px minmax(150px, .75fr);
   gap: 10px;
   align-items: end;
 }
@@ -773,6 +773,24 @@ body {
 .sales-return-row td {
   background: #f8fafc;
   color: #64748b;
+}
+
+.sales-low-margin-row td {
+  background: #fff8ed;
+}
+
+.sales-high-margin-row td {
+  background: #f0fdf4;
+}
+
+.sales-low-margin-row td:nth-child(10) {
+  color: #b45309;
+  font-weight: 900;
+}
+
+.sales-high-margin-row td:nth-child(10) {
+  color: #047857;
+  font-weight: 900;
 }
 
 .sales-row-actions {
@@ -1020,7 +1038,8 @@ body {
   .sales-chart-card,
   .sales-table-card,
   .sales-kpi-card,
-  .sales-comparison-card {
+  .sales-comparison-card,
+  .sales-intelligence-card {
     box-shadow: none !important;
     break-inside: avoid;
   }
@@ -1032,6 +1051,7 @@ body {
 
   .sales-dashboard-grid,
   .sales-kpi-grid,
+  .sales-intelligence-grid,
   .sales-comparison-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1047,5 +1067,10 @@ body {
 
   .sales-table tr[hidden] {
     display: table-row !important;
+  }
+
+  .sales-table th:last-child,
+  .sales-table td:last-child {
+    display: none;
   }
 }

@@ -6,8 +6,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Minhas vendas | Grupo Bali</title>
-    <link href="css/minhas-vendas.css?v=20260629-ranking01" rel="stylesheet" />
-    <script src="js/minhas-vendas.js?v=20260629-acoes01" defer="defer"></script>
+    <link href="css/minhas-vendas.css?v=20260629-margem01" rel="stylesheet" />
+    <script src="js/minhas-vendas.js?v=20260629-preferencias01" defer="defer"></script>
 </head>
 <body id="pageBody" runat="server" class="sales-bi-page brand-fiat">
     <form id="form1" runat="server">
@@ -85,7 +85,7 @@
                         <asp:LinkButton ID="lnkUltimos30" runat="server" CssClass="sales-chip" CommandArgument="ultimos30" OnCommand="PeriodoRapido_Command">&Uacute;ltimos 30 dias</asp:LinkButton>
                         <asp:LinkButton ID="lnkHoje" runat="server" CssClass="sales-chip" CommandArgument="hoje" OnCommand="PeriodoRapido_Command">Hoje</asp:LinkButton>
                         <asp:Button ID="btnExportarExcel" runat="server" Text="Exportar Excel" CssClass="sales-secondary-button" OnClick="btnExportarExcel_Click" />
-                        <button type="button" class="sales-secondary-button" onclick="window.print()">Imprimir</button>
+                        <button type="button" class="sales-secondary-button" onclick="window.print()">Imprimir / PDF</button>
                     </div>
                 </section>
 
@@ -235,6 +235,15 @@
                                     <span>Tipo</span>
                                     <select id="salesTypeFilter">
                                         <option value="">Todos</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <span>Margem</span>
+                                    <select id="salesMarginFilter">
+                                        <option value="">Todas</option>
+                                        <option value="low">Aten&ccedil;&atilde;o &lt; 8%</option>
+                                        <option value="ok">Saud&aacute;vel &ge; 8%</option>
+                                        <option value="high">Alta &ge; 15%</option>
                                     </select>
                                 </label>
                                 <label>

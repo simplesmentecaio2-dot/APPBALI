@@ -28,6 +28,7 @@
     var search = document.getElementById('salesTableSearch');
     var storeFilter = document.getElementById('salesStoreFilter');
     var typeFilter = document.getElementById('salesTypeFilter');
+    var marginFilter = document.getElementById('salesMarginFilter');
     var positiveOnly = document.getElementById('salesPositiveOnly');
     var pageSize = document.getElementById('salesPageSize');
     var counter = document.getElementById('salesTableCounter');
@@ -47,6 +48,7 @@
       row.setAttribute('data-store', normalize(row.cells[3] ? row.cells[3].textContent : ''));
       row.setAttribute('data-type', normalize(row.cells[6] ? row.cells[6].textContent : ''));
       row.setAttribute('data-quantity', String(parseNumber(row.cells[7] ? row.cells[7].textContent : '') || 0));
+      row.setAttribute('data-margin', String(parseNumber(row.cells[9] ? row.cells[9].textContent : '') || 0));
     });
 
     headers.forEach(function (header, index) {
@@ -67,19 +69,67 @@
 
     populateFilter(storeFilter, dataRows, 'data-store', 3);
     populateFilter(typeFilter, dataRows, 'data-type', 6);
+    restorePreferences();
 
     function filteredRows() {
       var query = normalize(search ? search.value : '');
       var store = normalize(storeFilter ? storeFilter.value : '');
       var type = normalize(typeFilter ? typeFilter.value : '');
+      var margin = marginFilter ? marginFilter.value : '';
       var onlyPositive = !!(positiveOnly && positiveOnly.checked);
       return dataRows.filter(function (row) {
+        var rowMargin = parseNumber(row.getAttribute('data-margin')) || 0;
         var matchQuery = !query || String(row.getAttribute('data-search') || '').indexOf(query) >= 0;
         var matchStore = !store || row.getAttribute('data-store') === store;
         var matchType = !type || row.getAttribute('data-type') === type;
+        var matchMargin =
+          !margin ||
+          (margin === 'low' && rowMargin > 0 && rowMargin < 8) ||
+          (margin === 'ok' && rowMargin >= 8) ||
+          (margin === 'high' && rowMargin >= 15);
         var matchPositive = !onlyPositive || parseNumber(row.getAttribute('data-quantity')) >= 0;
-        return matchQuery && matchStore && matchType && matchPositive;
+        return matchQuery && matchStore && matchType && matchMargin && matchPositive;
       });
+    }
+
+    function preferenceKey() {
+      return 'grupo-bali-minhas-vendas-table';
+    }
+
+    function savePreferences() {
+      if (!window.localStorage) return;
+      var prefs = {
+        store: storeFilter ? storeFilter.value : '',
+        type: typeFilter ? typeFilter.value : '',
+        margin: marginFilter ? marginFilter.value : '',
+        positiveOnly: !!(positiveOnly && positiveOnly.checked),
+        pageSize: pageSize ? pageSize.value : '25'
+      };
+      try {
+        window.localStorage.setItem(preferenceKey(), JSON.stringify(prefs));
+      } catch (ignore) {}
+    }
+
+    function restorePreferences() {
+      if (!window.localStorage) return;
+      try {
+        var raw = window.localStorage.getItem(preferenceKey());
+        if (!raw) return;
+        var prefs = JSON.parse(raw);
+        setControlValue(storeFilter, prefs.store || '');
+        setControlValue(typeFilter, prefs.type || '');
+        setControlValue(marginFilter, prefs.margin || '');
+        setControlValue(pageSize, prefs.pageSize || '25');
+        if (positiveOnly) positiveOnly.checked = !!prefs.positiveOnly;
+      } catch (ignore) {}
+    }
+
+    function setControlValue(control, value) {
+      if (!control) return;
+      var exists = Array.prototype.some.call(control.options || [], function (option) {
+        return option.value === value;
+      });
+      if (exists) control.value = value;
     }
 
     function populateFilter(select, rows, attr, cellIndex) {
@@ -190,14 +240,16 @@
     if (pageSize) {
       pageSize.addEventListener('change', function () {
         currentPage = 1;
+        savePreferences();
         render();
       });
     }
 
-    [storeFilter, typeFilter, positiveOnly].forEach(function (control) {
+    [storeFilter, typeFilter, marginFilter, positiveOnly].forEach(function (control) {
       if (!control) return;
       control.addEventListener('change', function () {
         currentPage = 1;
+        savePreferences();
         render();
       });
     });

@@ -145,7 +145,29 @@ public partial class minhas_vendas : System.Web.UI.Page
         decimal qtde = ToDecimal(DataBinder.Eval(e.Row.DataItem, "qtde"));
         if (qtde < 0)
         {
-            e.Row.CssClass = "sales-return-row";
+            AdicionarClasseLinha(e.Row, "sales-return-row");
+        }
+
+        decimal margem = ToDecimal(DataBinder.Eval(e.Row.DataItem, "Margem"));
+        if (qtde > 0 && margem > 0 && margem < 8)
+        {
+            AdicionarClasseLinha(e.Row, "sales-low-margin-row");
+        }
+        else if (qtde > 0 && margem >= 15)
+        {
+            AdicionarClasseLinha(e.Row, "sales-high-margin-row");
+        }
+    }
+
+    private void AdicionarClasseLinha(TableRow linha, string classe)
+    {
+        if (String.IsNullOrWhiteSpace(linha.CssClass))
+        {
+            linha.CssClass = classe;
+        }
+        else if ((" " + linha.CssClass + " ").IndexOf(" " + classe + " ", StringComparison.Ordinal) < 0)
+        {
+            linha.CssClass += " " + classe;
         }
     }
 
