@@ -55,6 +55,46 @@ public partial class minhas_vendas : System.Web.UI.Page
         CarregarDados();
     }
 
+    protected void btnExportarExcel_Click(object sender, EventArgs e)
+    {
+        if (!UsuarioLogado())
+        {
+            Response.Redirect(UrlLogin(marcaAtual), true);
+            return;
+        }
+
+        DateTime dataInicial;
+        DateTime dataFinal;
+        if (!TentarLerPeriodo(out dataInicial, out dataFinal))
+        {
+            pnlConteudo.Visible = false;
+            return;
+        }
+
+        int codigoUsuario = ObterCodigoUsuarioLogado();
+        if (codigoUsuario <= 0)
+        {
+            ExibirAviso("Sess\u00e3o sem c\u00f3digo de vendedor. Entre novamente para exportar suas vendas.");
+            pnlConteudo.Visible = false;
+            return;
+        }
+
+        try
+        {
+            DataTable vendas = ConsultarVendas(dataInicial, dataFinal, codigoUsuario);
+            ExportarExcel(vendas, dataInicial, dataFinal);
+        }
+        catch (System.Threading.ThreadAbortException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            ExibirAviso("N\u00e3o foi poss\u00edvel exportar suas vendas agora. Tente novamente em alguns instantes.");
+            RegistrarErro("exportar-minhas-vendas", ex);
+        }
+    }
+
     protected void PeriodoRapido_Command(object sender, CommandEventArgs e)
     {
         string comando = Convert.ToString(e.CommandArgument);
@@ -378,6 +418,116 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         int dias = (dataFinal.Date - dataInicial.Date).Days + 1;
         dataFinalAnterior = dataInicial.Date.AddDays(-1);
         dataInicialAnterior = dataFinalAnterior.AddDays(-(dias - 1));
+    }
+
+    private void ExportarExcel(DataTable vendas, DateTime dataInicial, DateTime dataFinal)
+    {
+        string nomeArquivo = String.Format(
+            CultureInfo.InvariantCulture,
+            "minhas-vendas-{0}-{1:yyyyMMdd}-{2:yyyyMMdd}.xls",
+            marcaAtual,
+            dataInicial,
+            dataFinal);
+
+        Response.Clear();
+        Response.Buffer = true;
+        Response.ContentEncoding = Encoding.UTF8;
+        Response.ContentType = "application/vnd.ms-excel";
+        Response.AddHeader("Content-Disposition", "attachment; filename=" + nomeArquivo);
+        Response.Write("\uFEFF");
+        Response.Write("<html><head><meta charset=\"utf-8\" /></head><body>");
+        Response.Write("<h2>Minhas vendas - ");
+        Response.Write(HttpUtility.HtmlEncode(marcaAtual.ToUpperInvariant()));
+        Response.Write("</h2>");
+        Response.Write("<p>Periodo: ");
+        Response.Write(HttpUtility.HtmlEncode(String.Format(ptBr, "{0:dd/MM/yyyy} a {1:dd/MM/yyyy}", dataInicial, dataFinal)));
+        Response.Write("</p>");
+        Response.Write("<table border=\"1\"><thead><tr>");
+
+        string[] titulos = {
+            "Data",
+            "Nota fiscal",
+            "Pedido",
+            "Loja",
+            "Cliente",
+            "CPF/CNPJ",
+            "Telefone",
+            "E-mail",
+            "Modelo",
+            "Marca",
+            "Fam\u00edlia",
+            "Cor",
+            "Tipo estoque",
+            "Estoque",
+            "Qtde",
+            "Valor de venda",
+            "Margem %",
+            "Chassi",
+            "Placa",
+            "Dias em estoque"
+        };
+
+        for (int i = 0; i < titulos.Length; i++)
+        {
+            Response.Write("<th>");
+            Response.Write(HttpUtility.HtmlEncode(titulos[i]));
+            Response.Write("</th>");
+        }
+
+        Response.Write("</tr></thead><tbody>");
+        for (int i = 0; i < vendas.Rows.Count; i++)
+        {
+            DataRow row = vendas.Rows[i];
+            Response.Write("<tr>");
+            EscreverCelulaExcel(FormatarDataExcel(row["datavenda"]));
+            EscreverCelulaExcel(row["notafiscal"]);
+            EscreverCelulaExcel(row["pedidodoveiculo"]);
+            EscreverCelulaExcel(row["loja"]);
+            EscreverCelulaExcel(row["NomeCliente"]);
+            EscreverCelulaExcel(row["CPFCliente"]);
+            EscreverCelulaExcel(row["TelefoneCliente"]);
+            EscreverCelulaExcel(row["emailcliente"]);
+            EscreverCelulaExcel(row["modeloveiculo"]);
+            EscreverCelulaExcel(row["marcaveiculo"]);
+            EscreverCelulaExcel(row["familiaveiculo"]);
+            EscreverCelulaExcel(row["corveiculo"]);
+            EscreverCelulaExcel(row["tipoestoque"]);
+            EscreverCelulaExcel(row["estoqueveiculo"]);
+            EscreverCelulaExcel(ToDecimal(row["qtde"]).ToString("N0", ptBr));
+            EscreverCelulaExcel(ToDecimal(row["ValordeVenda"]).ToString("C2", ptBr));
+            EscreverCelulaExcel(ToDecimal(row["Margem"]).ToString("N2", ptBr) + "%");
+            EscreverCelulaExcel(row["chassi"]);
+            EscreverCelulaExcel(row["placa"]);
+            EscreverCelulaExcel(row["diasdeestoque"]);
+            Response.Write("</tr>");
+        }
+
+        Response.Write("</tbody></table></body></html>");
+        Response.Flush();
+        Response.End();
+    }
+
+    private void EscreverCelulaExcel(object valor)
+    {
+        Response.Write("<td>");
+        Response.Write(HttpUtility.HtmlEncode(Convert.ToString(valor)));
+        Response.Write("</td>");
+    }
+
+    private string FormatarDataExcel(object valor)
+    {
+        if (valor == null || valor == DBNull.Value)
+        {
+            return "";
+        }
+
+        DateTime data;
+        if (!DateTime.TryParse(Convert.ToString(valor), out data))
+        {
+            return Convert.ToString(valor);
+        }
+
+        return data.ToString("dd/MM/yyyy", ptBr);
     }
 
     private void PreencherGraficos(DataTable vendas, DateTime dataInicial, DateTime dataFinal)

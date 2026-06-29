@@ -121,6 +121,7 @@ body {
 .sales-light-button,
 .sales-logout-button,
 .sales-primary-button,
+.sales-secondary-button,
 .sales-chip {
   min-height: 40px;
   display: inline-flex;
@@ -138,10 +139,18 @@ body {
 }
 
 .sales-light-button:hover,
-.sales-chip:hover {
+.sales-chip:hover,
+.sales-secondary-button:hover {
   border-color: rgba(var(--accent-rgb), 0.35);
   box-shadow: 0 10px 24px rgba(var(--accent-rgb), 0.12);
   transform: translateY(-1px);
+}
+
+.sales-secondary-button {
+  min-height: 34px;
+  border-color: rgba(var(--accent-rgb), 0.24);
+  color: var(--accent-strong);
+  font-size: 0.82rem;
 }
 
 .sales-logout-button,
@@ -747,5 +756,56 @@ body {
 
   .sales-table-wrap {
     max-height: none;
+  }
+}
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+
+  .sales-shell {
+    width: 100%;
+    padding: 0;
+  }
+
+  .sales-topbar,
+  .sales-filter-card,
+  .sales-table-tools,
+  .sales-table-footer {
+    display: none !important;
+  }
+
+  .sales-hero,
+  .sales-chart-card,
+  .sales-table-card,
+  .sales-kpi-card,
+  .sales-comparison-card {
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+
+  .sales-main,
+  .sales-content {
+    gap: 10px;
+  }
+
+  .sales-dashboard-grid,
+  .sales-kpi-grid,
+  .sales-comparison-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sales-table-wrap {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .sales-table {
+    min-width: 0;
+  }
+
+  .sales-table tr[hidden] {
+    display: table-row !important;
   }
 }
