@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Usu&aacute;rios | Tecnologia</title>
-    <link href="../css/bali-tecnologia.css?v=20260629-usuarios01" rel="stylesheet" />
+    <link href="../css/bali-tecnologia.css?v=20260629-usuarios02" rel="stylesheet" />
 </head>
 <body class="bali-tech-page">
     <form id="form1" runat="server" autocomplete="off">
@@ -52,12 +52,26 @@
                                 <div>
                                     <span class="tech-panel-kicker">Consulta</span>
                                     <h2>Usu&aacute;rios cadastrados</h2>
-                                    <p>Selecione um usu&aacute;rio para carregar edi&ccedil;&atilde;o, sistemas liberados e perfis vinculados.</p>
+                                    <p>Selecione um usu&aacute;rio para carregar edi&ccedil;&atilde;o ou marque v&aacute;rios registros para inativar em lote.</p>
+                                </div>
+                                <div class="tech-bulk-actions">
+                                    <span>Manuten&ccedil;&atilde;o em lote</span>
+                                    <asp:Button ID="btnDesativarSelecionados" runat="server" Text="Inativar selecionados" CssClass="tech-danger-button" OnClick="btnDesativarSelecionados_Click" OnClientClick="return confirmarInativacaoUsuarios();" />
                                 </div>
                             </div>
 
-                            <asp:GridView ID="gvConsultaUsuarios" runat="server" AutoGenerateColumns="False" CssClass="tech-gridview" DataKeyNames="Login" DataSourceID="sqldsConsultaUsuarios" AllowPaging="True" PageSize="20" GridLines="None" OnSelectedIndexChanged="gvConsultaUsuarios_SelectedIndexChanged" EmptyDataText="Nenhum usu&aacute;rio encontrado.">
+                            <asp:GridView ID="gvConsultaUsuarios" runat="server" AutoGenerateColumns="False" CssClass="tech-gridview" DataKeyNames="Login,Nome,tipo,Ativo" DataSourceID="sqldsConsultaUsuarios" AllowPaging="True" PageSize="20" GridLines="None" OnSelectedIndexChanged="gvConsultaUsuarios_SelectedIndexChanged" EmptyDataText="Nenhum usu&aacute;rio encontrado.">
                                 <Columns>
+                                    <asp:TemplateField HeaderText="">
+                                        <HeaderTemplate>
+                                            <input type="checkbox" data-tech-select-all="usuarios" title="Selecionar todos os usu&aacute;rios vis&iacute;veis" />
+                                        </HeaderTemplate>
+                                        <ItemTemplate>
+                                            <asp:CheckBox ID="chkSelecionarUsuario" runat="server" CssClass="tech-user-bulk-check" />
+                                        </ItemTemplate>
+                                        <HeaderStyle CssClass="tech-grid-check" />
+                                        <ItemStyle CssClass="tech-grid-check" />
+                                    </asp:TemplateField>
                                     <asp:CommandField ShowSelectButton="True" SelectText="Selecionar" />
                                     <asp:BoundField DataField="Nome" HeaderText="Nome" SortExpression="Nome" />
                                     <asp:BoundField DataField="Login" HeaderText="Login" ReadOnly="True" SortExpression="Login" />
@@ -286,5 +300,42 @@
         </main>
     </form>
     <script src="../js/bali-tecnologia.js?v=20260627-tech01"></script>
+    <script>
+        (function () {
+            function checksTodos() {
+                return Array.prototype.slice.call(document.querySelectorAll('.tech-gridview .tech-user-bulk-check input[type="checkbox"]'));
+            }
+
+            function checksVisiveis() {
+                return Array.prototype.slice.call(document.querySelectorAll('.tech-gridview tr:not(.tech-filter-hidden) .tech-user-bulk-check input[type="checkbox"]'));
+            }
+
+            window.confirmarInativacaoUsuarios = function () {
+                var marcados = checksTodos().filter(function (check) { return check.checked; });
+                if (marcados.length === 0) {
+                    alert('Selecione pelo menos um usu\u00e1rio para inativar.');
+                    return false;
+                }
+
+                return confirm('Confirma a inativa\u00e7\u00e3o de ' + marcados.length + ' usu\u00e1rio(s) selecionado(s)?');
+            };
+
+            var selecionarTodos = document.querySelector('[data-tech-select-all="usuarios"]');
+            if (!selecionarTodos) return;
+
+            selecionarTodos.addEventListener('change', function () {
+                checksVisiveis().forEach(function (check) {
+                    check.checked = selecionarTodos.checked;
+                });
+            });
+
+            var busca = document.getElementById('techSearchUsers');
+            if (busca) {
+                busca.addEventListener('input', function () {
+                    selecionarTodos.checked = false;
+                });
+            }
+        })();
+    </script>
 </body>
 </html>

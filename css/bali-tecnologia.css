@@ -416,6 +416,34 @@ body.bali-tech-page {
   line-height: 1.4;
 }
 
+.tech-bulk-actions {
+  display: grid;
+  justify-items: end;
+  gap: 7px;
+  min-width: 190px;
+}
+
+.tech-bulk-actions span {
+  color: var(--tech-muted);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.bali-tech-page input[type="submit"].tech-danger-button,
+.bali-tech-page input[type="button"].tech-danger-button {
+  border-color: rgba(180, 35, 24, .24);
+  background: #fff;
+  color: #b42318;
+}
+
+.bali-tech-page input[type="submit"].tech-danger-button:hover,
+.bali-tech-page input[type="button"].tech-danger-button:hover {
+  background: rgba(180, 35, 24, .06);
+  box-shadow: 0 12px 24px rgba(180, 35, 24, .10);
+}
+
 .tech-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -605,6 +633,22 @@ body.bali-tech-page {
   font-weight: 950 !important;
   letter-spacing: .04em;
   text-transform: uppercase;
+}
+
+.tech-gridview .tech-grid-check {
+  width: 52px;
+  padding-left: 14px !important;
+  padding-right: 8px !important;
+  text-align: center !important;
+}
+
+.tech-gridview .tech-grid-check input[type="checkbox"],
+.tech-user-bulk-check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--tech-brand);
+  cursor: pointer;
 }
 
 .tech-gridview a {

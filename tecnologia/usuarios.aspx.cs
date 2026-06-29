@@ -107,6 +107,86 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
         }
     }
 
+    protected void btnDesativarSelecionados_Click(object sender, EventArgs e)
+    {
+        if (!UsuarioTecnologiaValido())
+        {
+            return;
+        }
+
+        int selecionados = 0;
+        int desativados = 0;
+        int jaInativos = 0;
+        int protegidos = 0;
+        int falhas = 0;
+        StringBuilder detalhesFalhas = new StringBuilder();
+        string usuarioAtual = Convert.ToString(Session["id"]).Trim();
+        App oApp = new App();
+
+        foreach (GridViewRow row in gvConsultaUsuarios.Rows)
+        {
+            if (row.RowType != DataControlRowType.DataRow)
+            {
+                continue;
+            }
+
+            CheckBox check = row.FindControl("chkSelecionarUsuario") as CheckBox;
+            if (check == null || !check.Checked)
+            {
+                continue;
+            }
+
+            selecionados++;
+            string login = ValorDataKey(row, "Login");
+            string nome = ValorDataKey(row, "Nome");
+            string tipo = ValorDataKey(row, "tipo");
+            string ativoAtual = ValorDataKey(row, "Ativo");
+
+            if (!EmailValido(login))
+            {
+                falhas++;
+                AdicionarFalha(detalhesFalhas, login, "login inválido");
+                continue;
+            }
+
+            if (String.Equals(login, usuarioAtual, StringComparison.OrdinalIgnoreCase))
+            {
+                protegidos++;
+                continue;
+            }
+
+            if (UsuarioJaInativo(ativoAtual))
+            {
+                jaInativos++;
+                continue;
+            }
+
+            try
+            {
+                string obs;
+                oApp.UpdateUsuario(login, nome, "N", tipo, out obs);
+                if (OperacaoSucesso(obs, "alterado"))
+                {
+                    desativados++;
+                }
+                else
+                {
+                    falhas++;
+                    AdicionarFalha(detalhesFalhas, login, NormalizarMensagem(obs));
+                }
+            }
+            catch (Exception ex)
+            {
+                falhas++;
+                AdicionarFalha(detalhesFalhas, login, ex.Message);
+            }
+        }
+
+        gvConsultaUsuarios.DataBind();
+        TabContainerUsuarios.ActiveTabIndex = 0;
+        ExibirMensagem(MontarResumoInativacao(selecionados, desativados, jaInativos, protegidos, falhas, detalhesFalhas.ToString()));
+    }
+
     protected void btnAlterar_Click(object sender, EventArgs e)
     {
         if (!UsuarioTecnologiaValido())
@@ -341,6 +421,99 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
         txtConfirmacaoAlterar.Text = "";
         txtSenhaAlterar.Attributes["value"] = "";
         txtConfirmacaoAlterar.Attributes["value"] = "";
+    }
+
+    private string ValorDataKey(GridViewRow row, string campo)
+    {
+        if (gvConsultaUsuarios.DataKeys == null || row.RowIndex < 0 || row.RowIndex >= gvConsultaUsuarios.DataKeys.Count)
+        {
+            return "";
+        }
+
+        object valor = gvConsultaUsuarios.DataKeys[row.RowIndex].Values[campo];
+        return HttpUtility.HtmlDecode(Convert.ToString(valor)).Trim();
+    }
+
+    private bool UsuarioJaInativo(string ativo)
+    {
+        string valor = RemoverAcentos(Convert.ToString(ativo)).Trim().ToUpperInvariant();
+        return valor == "N"
+            || valor == "NAO"
+            || valor == "INATIVO"
+            || valor == "0"
+            || valor == "FALSE";
+    }
+
+    private void AdicionarFalha(StringBuilder detalhes, string login, string motivo)
+    {
+        if (detalhes.Length > 0)
+        {
+            detalhes.Append("\\n");
+        }
+
+        detalhes.Append(String.IsNullOrWhiteSpace(login) ? "Usuário sem login" : login);
+        detalhes.Append(": ");
+        detalhes.Append(String.IsNullOrWhiteSpace(motivo) ? "não foi possível inativar" : motivo);
+    }
+
+    private string MontarResumoInativacao(int selecionados, int desativados, int jaInativos, int protegidos, int falhas, string detalhesFalhas)
+    {
+        if (selecionados == 0)
+        {
+            return "Selecione pelo menos um usuário para inativar.";
+        }
+
+        StringBuilder resumo = new StringBuilder();
+        resumo.Append(desativados);
+        resumo.Append(" usuário(s) inativado(s) com sucesso.");
+
+        if (jaInativos > 0)
+        {
+            resumo.Append("\\n");
+            resumo.Append(jaInativos);
+            resumo.Append(" usuário(s) já estavam inativos.");
+        }
+
+        if (protegidos > 0)
+        {
+            resumo.Append("\\n");
+            resumo.Append(protegidos);
+            resumo.Append(" registro(s) ignorado(s) para proteger o usuário logado.");
+        }
+
+        if (falhas > 0)
+        {
+            resumo.Append("\\n");
+            resumo.Append(falhas);
+            resumo.Append(" usuário(s) não foram inativados.");
+            if (!String.IsNullOrWhiteSpace(detalhesFalhas))
+            {
+                resumo.Append("\\n");
+                resumo.Append(detalhesFalhas);
+            }
+        }
+
+        return resumo.ToString();
+    }
+
+    private string RemoverAcentos(string texto)
+    {
+        if (String.IsNullOrEmpty(texto))
+        {
+            return "";
+        }
+
+        string normalizado = texto.Normalize(NormalizationForm.FormD);
+        StringBuilder sb = new StringBuilder();
+        foreach (char c in normalizado)
+        {
+            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark)
+            {
+                sb.Append(c);
+            }
+        }
+
+        return sb.ToString().Normalize(NormalizationForm.FormC);
     }
 
     private void ExibirMensagem(string mensagem)
