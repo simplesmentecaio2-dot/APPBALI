@@ -188,7 +188,11 @@
   }
 
   function shouldHideShortcutSearch() {
-    return document.body && document.body.getAttribute('data-hide-shortcut-search') === 'true';
+    if (!document.body) {
+      return true;
+    }
+
+    return document.body.getAttribute('data-hide-shortcut-search') !== 'false';
   }
 
   function uniqueSearchName() {

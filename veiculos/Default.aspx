@@ -6,9 +6,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Central Fiat | Grupo Bali</title>
-    <link href="../css/central-links.css?v=20260629-sem-busca-lojas" rel="stylesheet" />
+    <link href="../css/central-links.css?v=20260629-sem-busca-centrais" rel="stylesheet" />
     <script src="../js/central-links-icons.js?v=20260628-minhasvendas" defer="defer"></script>
-    <script src="../js/central-links-maintenance.js?v=20260629-sem-busca-lojas" defer="defer"></script>
+    <script src="../js/central-links-maintenance.js?v=20260629-sem-busca-centrais" defer="defer"></script>
 </head>
 <body class="central-links-page brand-fiat" data-brand-name="Fiat" data-links-api="central-links.ashx?AspxAutoDetectCookieSupport=1" data-hide-shortcut-search="true">
     <form id="form1" runat="server">

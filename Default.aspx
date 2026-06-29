@@ -6,12 +6,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>APP Bali | Central de aplicativos</title>
-    <link href="css/central-links.css?v=20260628-home-footer" rel="stylesheet" />
+    <link href="css/central-links.css?v=20260629-sem-busca-centrais" rel="stylesheet" />
     <script src="js/bali-app-home.js?v=20260627-maint01" defer="defer"></script>
     <script src="js/central-links-icons.js?v=20260627-maint01" defer="defer"></script>
-    <script src="js/central-links-maintenance.js?v=20260627-maint01" defer="defer"></script>
+    <script src="js/central-links-maintenance.js?v=20260629-sem-busca-centrais" defer="defer"></script>
 </head>
-<body class="central-links-page brand-app" data-brand-name="APP Bali" data-links-api="central-links.ashx?AspxAutoDetectCookieSupport=1" data-icon-base="img/central-icons/">
+<body class="central-links-page brand-app" data-brand-name="APP Bali" data-links-api="central-links.ashx?AspxAutoDetectCookieSupport=1" data-icon-base="img/central-icons/" data-hide-shortcut-search="true">
     <form id="form1" runat="server">
         <div class="central-shell">
             <header class="central-topbar">
