@@ -6,8 +6,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Minhas vendas | Grupo Bali</title>
-    <link href="css/minhas-vendas.css?v=20260629-margem01" rel="stylesheet" />
-    <script src="js/minhas-vendas.js?v=20260629-preferencias01" defer="defer"></script>
+    <link href="css/minhas-vendas.css?v=20260629-ux01" rel="stylesheet" />
+    <script src="js/minhas-vendas.js?v=20260629-ux01" defer="defer"></script>
 </head>
 <body id="pageBody" runat="server" class="sales-bi-page brand-fiat">
     <form id="form1" runat="server">
@@ -259,6 +259,7 @@
                                     <input id="salesPositiveOnly" type="checkbox" />
                                     <span>Ocultar devolu&ccedil;&otilde;es</span>
                                 </label>
+                                <button id="salesClearTablePrefs" type="button" class="sales-table-reset">Limpar filtros</button>
                             </div>
                         </div>
                         <div class="sales-table-wrap">

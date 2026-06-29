@@ -656,7 +656,7 @@ body {
 
 .sales-table-tools {
   display: grid;
-  grid-template-columns: minmax(210px, 1.2fr) minmax(120px, .75fr) minmax(110px, .65fr) minmax(130px, .75fr) 90px minmax(150px, .75fr);
+  grid-template-columns: minmax(190px, 1.1fr) minmax(110px, .65fr) minmax(100px, .55fr) minmax(120px, .7fr) 84px minmax(145px, .75fr) 110px;
   gap: 10px;
   align-items: end;
 }
@@ -710,6 +710,24 @@ body {
   font-size: 0.8rem !important;
   line-height: 1.2;
   text-transform: none !important;
+}
+
+.sales-table-reset {
+  min-height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 900;
+  padding: 0 12px;
+}
+
+.sales-table-reset:hover {
+  border-color: rgba(var(--accent-rgb), 0.35);
+  box-shadow: 0 8px 18px rgba(var(--accent-rgb), 0.10);
 }
 
 .sales-table-tools input:focus,

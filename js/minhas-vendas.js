@@ -18,6 +18,39 @@
     return isNaN(number) ? null : number;
   }
 
+  function parseDateInput(value) {
+    if (!value) return null;
+    var parts = String(value).split('-');
+    if (parts.length !== 3) return null;
+    var date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    return isNaN(date.getTime()) ? null : date;
+  }
+
+  function initPeriodGuard() {
+    var form = document.getElementById('form1');
+    var start = document.getElementById('txtDataInicial');
+    var end = document.getElementById('txtDataFinal');
+    if (!form || !start || !end) return;
+
+    form.addEventListener('submit', function (event) {
+      var startDate = parseDateInput(start.value);
+      var endDate = parseDateInput(end.value);
+      if (!startDate || !endDate) return;
+
+      var days = Math.round((endDate.getTime() - startDate.getTime()) / 86400000) + 1;
+      if (days <= 0) {
+        event.preventDefault();
+        window.alert('A data final precisa ser maior ou igual \u00e0 data inicial.');
+        return;
+      }
+
+      if (days > 32) {
+        event.preventDefault();
+        window.alert('Selecione um per\u00edodo de at\u00e9 32 dias para manter o BI r\u00e1pido.');
+      }
+    });
+  }
+
   function initSalesTable() {
     var table = document.querySelector('.sales-table');
     if (!table || !table.tBodies || !table.tBodies.length) return;
@@ -31,6 +64,7 @@
     var marginFilter = document.getElementById('salesMarginFilter');
     var positiveOnly = document.getElementById('salesPositiveOnly');
     var pageSize = document.getElementById('salesPageSize');
+    var clearPrefs = document.getElementById('salesClearTablePrefs');
     var counter = document.getElementById('salesTableCounter');
     var prev = document.getElementById('salesPrevPage');
     var next = document.getElementById('salesNextPage');
@@ -268,6 +302,24 @@
       });
     }
 
+    if (clearPrefs) {
+      clearPrefs.addEventListener('click', function () {
+        if (window.localStorage) {
+          try {
+            window.localStorage.removeItem(preferenceKey());
+          } catch (ignore) {}
+        }
+        setControlValue(storeFilter, '');
+        setControlValue(typeFilter, '');
+        setControlValue(marginFilter, '');
+        setControlValue(pageSize, '25');
+        if (positiveOnly) positiveOnly.checked = false;
+        if (search) search.value = '';
+        currentPage = 1;
+        render();
+      });
+    }
+
     render();
   }
 
@@ -363,9 +415,11 @@
     document.addEventListener('DOMContentLoaded', function () {
       initSalesTable();
       initSalesActions();
+      initPeriodGuard();
     });
   } else {
     initSalesTable();
     initSalesActions();
+    initPeriodGuard();
   }
 })();
