@@ -1,0 +1,86 @@
+  				/*DINNextLTPro-Bold.ttf*/
+                    @font-face {
+                    font-family: din-bold;
+                    src: url('https://app.bali.com.br/gerador-assinatura/resources/fonts/DINNextLTPro-Bold.ttf');
+                    }
+
+                    /*DINNextLTPro-Medium.ttf*/
+                    @font-face {
+                    font-family: din-medium;
+                    src: url('https://app.bali.com.br/gerador-assinatura/resources/fonts/fonnts.com-DINNextLTPro-Medium.ttf') format('truetype');
+                    }
+
+                    /*DINNextLTPro-Regular.ttf*/
+                    @font-face {
+                    font-family: din-regular;
+                    src: url('https://app.bali.com.br/gerador-assinatura/resources/fonts/fonnts.com-DINNextLTPro-Regular.ttf') format('truetype');
+                    }
+
+                    .assinatura-grupo-bali {
+                    background-image: url('https://app.bali.com.br/gerador-assinatura/resources/headers/grupobali.jpg');
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    height: 110px;
+                    width: 600px;
+                    }
+
+                    body {
+                    margin: 0;
+                    padding: 0;
+                    }
+
+                    .nome-grupo-bali {
+			height: 40px;
+                    width: 200px;
+
+                    position: absolute;
+                    left: 266px;
+                    top: 14px;
+                    font-size: 0.97rem;
+                    font-family: din-medium;
+
+                    /*não deixa o texto quebrar a linha*/
+                    white-space: nowrap;
+                    letter-spacing:  0.5;
+                    /*estica o texto verticalmente*/
+                    transform: scaleY(1.0);
+		    
+                    }
+
+                    .cargo-grupo-bali {
+                    text-transform: uppercase;
+                    position: absolute;
+                    left: 266px;
+                    top: 34px;
+                    font-size: 10px;
+                    font-family: din-medium;
+                    color: gray;
+                    /*espaço entre as letras*/
+                    letter-spacing: 2px;
+
+                    white-space: nowrap;
+
+                    }
+
+                    .ddd-grupo-bali {
+                    position: absolute;
+                    left: 481px;
+                    top: 25px;
+                    font-size: 10px;
+                    font-weight: bold;
+                    font-family: din-bold;
+
+                    white-space: nowrap;
+                    }
+
+                    .telefone-grupo-bali {
+                    position: absolute;
+                    left: 493px;
+                    top: 23px;
+                    font-size: 15px;
+                    font-weight: bold;
+                    font-family: din-bold;
+
+                    white-space: nowrap;
+                    }
