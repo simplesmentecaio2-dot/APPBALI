@@ -789,8 +789,13 @@ body {
 }
 
 .sales-return-row td {
-  background: #f8fafc;
-  color: #64748b;
+  background: #fff1f2;
+  color: #9f1239;
+}
+
+.sales-return-row td:nth-child(8),
+.sales-return-row td:nth-child(9) {
+  font-weight: 900;
 }
 
 .sales-low-margin-row td {
