@@ -386,6 +386,41 @@
       }
     }
 
+    function copyText(text, button, label) {
+      if (!text) return;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          if (!button) return;
+          var original = button.textContent;
+          button.textContent = label || 'Copiado';
+          window.setTimeout(function () { button.textContent = original; }, 1400);
+        });
+      } else {
+        window.prompt('Copie o texto:', text);
+      }
+    }
+
+    function textById(id) {
+      var element = document.getElementById(id);
+      return element ? String(element.textContent || '').trim() : '-';
+    }
+
+    function copySummary(button) {
+      var lines = [
+        'Minhas vendas - Grupo Bali',
+        textById('lblPeriodo'),
+        'Vendedor: ' + textById('lblUsuario') + ' | C\u00f3digo: ' + textById('lblCodigoVendedor'),
+        'Unidades l\u00edquidas: ' + textById('lblTotalUnidades'),
+        'Valor l\u00edquido: ' + textById('lblValorTotal'),
+        'Ticket m\u00e9dio: ' + textById('lblTicketMedio'),
+        'Margem m\u00e9dia: ' + textById('lblMargemMedia'),
+        'Devolu\u00e7\u00f5es: ' + textById('lblDevolucoes'),
+        'Maior venda: ' + textById('lblMaiorVenda')
+      ];
+      copyText(lines.join('\n'), button, 'Resumo copiado');
+    }
+
     function registerPrint() {
       try {
         var data = new FormData();
@@ -415,6 +450,12 @@
       var copy = event.target.closest('[data-copy-contact]');
       if (copy) {
         copyContact(copy);
+        return;
+      }
+
+      var summary = event.target.closest('[data-copy-sales-summary]');
+      if (summary) {
+        copySummary(summary);
         return;
       }
 
