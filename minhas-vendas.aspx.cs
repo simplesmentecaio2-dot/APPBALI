@@ -123,7 +123,13 @@ public partial class minhas_vendas : System.Web.UI.Page
         try
         {
             DataTable vendas = ConsultarVendas(dataInicial, dataFinal, codigoUsuario);
+            DateTime dataInicialAnterior;
+            DateTime dataFinalAnterior;
+            ObterPeriodoAnterior(dataInicial, dataFinal, out dataInicialAnterior, out dataFinalAnterior);
+            DataTable vendasPeriodoAnterior = ConsultarVendas(dataInicialAnterior, dataFinalAnterior, codigoUsuario);
+
             PreencherResumo(vendas, dataInicial, dataFinal);
+            PreencherComparativo(vendas, vendasPeriodoAnterior, dataInicialAnterior, dataFinalAnterior);
             PreencherGraficos(vendas, dataInicial, dataFinal);
             PreencherTabela(vendas);
         }
@@ -201,17 +207,98 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
 
     private void PreencherResumo(DataTable vendas, DateTime dataInicial, DateTime dataFinal)
     {
-        decimal totalUnidades = 0;
-        decimal valorTotal = 0;
+        IndicadoresVendas indicadores = CalcularIndicadores(vendas);
+
+        lblPeriodo.Text = String.Format(ptBr, "Per\u00edodo analisado: {0:dd/MM/yyyy} a {1:dd/MM/yyyy}", dataInicial, dataFinal);
+        lblTotalUnidades.Text = indicadores.UnidadesLiquidas.ToString("N0", ptBr);
+        lblValorTotal.Text = indicadores.ValorLiquido.ToString("C0", ptBr);
+        lblTicketMedio.Text = indicadores.TicketMedio.ToString("C0", ptBr);
+        lblMargemMedia.Text = indicadores.MargemMedia.ToString("N1", ptBr) + "%";
+        lblQtdNotas.Text = indicadores.Notas.ToString("N0", ptBr);
+        lblDiasAtivos.Text = indicadores.DiasAtivos.ToString("N0", ptBr);
+        lblVendasBrutas.Text = indicadores.VendasBrutas.ToString("N0", ptBr);
+        lblDevolucoes.Text = indicadores.Devolucoes.ToString("N0", ptBr);
+        lblClientesUnicos.Text = indicadores.ClientesUnicos.ToString("N0", ptBr);
+        lblMelhorDia.Text = indicadores.TemMelhorDia ? String.Format(ptBr, "{0:dd/MM}", indicadores.MelhorDia) : "-";
+        lblMaiorVenda.Text = indicadores.TemMaiorVenda ? indicadores.MaiorVenda.ToString("C0", ptBr) : "-";
+        lblMaiorVendaDetalhe.Text = indicadores.TemMaiorVenda ? indicadores.MaiorVendaDetalhe : "Sem venda positiva no per\u00edodo";
+    }
+
+    private void PreencherComparativo(DataTable vendas, DataTable vendasPeriodoAnterior, DateTime dataInicialAnterior, DateTime dataFinalAnterior)
+    {
+        IndicadoresVendas atual = CalcularIndicadores(vendas);
+        IndicadoresVendas anterior = CalcularIndicadores(vendasPeriodoAnterior);
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<article class=\"sales-comparison-card sales-comparison-info\">");
+        html.Append("<span>Comparativo</span>");
+        html.Append("<strong>Per\u00edodo anterior</strong>");
+        html.Append("<small>");
+        html.Append(HttpUtility.HtmlEncode(String.Format(ptBr, "{0:dd/MM/yyyy} a {1:dd/MM/yyyy}", dataInicialAnterior, dataFinalAnterior)));
+        html.Append("</small></article>");
+        html.Append(RenderizarComparativo("Unidades", atual.UnidadesLiquidas, anterior.UnidadesLiquidas, "N0", ""));
+        html.Append(RenderizarComparativo("Valor l\u00edquido", atual.ValorLiquido, anterior.ValorLiquido, "C0", ""));
+        html.Append(RenderizarComparativo("Ticket m\u00e9dio", atual.TicketMedio, anterior.TicketMedio, "C0", ""));
+        html.Append(RenderizarComparativo("Margem m\u00e9dia", atual.MargemMedia, anterior.MargemMedia, "N1", "%"));
+        litComparativo.Text = html.ToString();
+    }
+
+    private string RenderizarComparativo(string titulo, decimal atual, decimal anterior, string formato, string sufixo)
+    {
+        decimal diferenca = atual - anterior;
+        string classe = diferenca > 0 ? " is-positive" : diferenca < 0 ? " is-negative" : " is-neutral";
+        string sinal = diferenca > 0 ? "+" : "";
+        string percentual = "";
+
+        if (anterior != 0)
+        {
+            decimal variacao = (diferenca / Math.Abs(anterior)) * 100;
+            percentual = " (" + sinal + variacao.ToString("N1", ptBr) + "%)";
+        }
+        else if (atual != 0)
+        {
+            percentual = " (novo)";
+        }
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<article class=\"sales-comparison-card");
+        html.Append(classe);
+        html.Append("\"><span>");
+        html.Append(HttpUtility.HtmlEncode(titulo));
+        html.Append("</span><strong>");
+        html.Append(HttpUtility.HtmlEncode(atual.ToString(formato, ptBr) + sufixo));
+        html.Append("</strong><small>");
+        html.Append(HttpUtility.HtmlEncode(sinal + diferenca.ToString(formato, ptBr) + sufixo + percentual));
+        html.Append("</small></article>");
+        return html.ToString();
+    }
+
+    private IndicadoresVendas CalcularIndicadores(DataTable vendas)
+    {
+        IndicadoresVendas indicadores = new IndicadoresVendas();
         decimal margemSoma = 0;
         int margemQtde = 0;
-        HashSet<DateTime> diasAtivos = new HashSet<DateTime>();
+        Dictionary<DateTime, decimal> porDia = new Dictionary<DateTime, decimal>();
+        HashSet<string> clientes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        indicadores.Notas = vendas.Rows.Count;
 
         for (int i = 0; i < vendas.Rows.Count; i++)
         {
             DataRow linha = vendas.Rows[i];
-            totalUnidades += ToDecimal(linha["qtde"]);
-            valorTotal += ToDecimal(linha["ValordeVenda"]);
+            decimal qtde = ToDecimal(linha["qtde"]);
+            decimal valor = ToDecimal(linha["ValordeVenda"]);
+            indicadores.UnidadesLiquidas += qtde;
+            indicadores.ValorLiquido += valor;
+
+            if (qtde > 0)
+            {
+                indicadores.VendasBrutas += qtde;
+            }
+            else if (qtde < 0)
+            {
+                indicadores.Devolucoes += Math.Abs(qtde);
+            }
 
             decimal margem = ToDecimal(linha["Margem"]);
             if (linha["Margem"] != DBNull.Value)
@@ -222,20 +309,75 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
 
             if (linha["datavenda"] != DBNull.Value)
             {
-                diasAtivos.Add(Convert.ToDateTime(linha["datavenda"]).Date);
+                DateTime dia = Convert.ToDateTime(linha["datavenda"]).Date;
+                if (!porDia.ContainsKey(dia))
+                {
+                    porDia[dia] = 0;
+                }
+                porDia[dia] += qtde;
+            }
+
+            string clienteChave = Convert.ToString(linha["CodigoPessoa"]).Trim();
+            if (clienteChave.Length == 0)
+            {
+                clienteChave = Convert.ToString(linha["CPFCliente"]).Trim();
+            }
+            if (clienteChave.Length == 0)
+            {
+                clienteChave = Convert.ToString(linha["NomeCliente"]).Trim();
+            }
+            if (clienteChave.Length > 0)
+            {
+                clientes.Add(clienteChave);
+            }
+
+            if (valor > indicadores.MaiorVenda)
+            {
+                indicadores.MaiorVenda = valor;
+                indicadores.TemMaiorVenda = true;
+                indicadores.MaiorVendaDetalhe = MontarDetalheMaiorVenda(linha);
             }
         }
 
-        decimal ticketMedio = totalUnidades == 0 ? 0 : valorTotal / Math.Abs(totalUnidades);
-        decimal margemMedia = margemQtde == 0 ? 0 : margemSoma / margemQtde;
+        indicadores.DiasAtivos = porDia.Count;
+        indicadores.ClientesUnicos = clientes.Count;
+        indicadores.TicketMedio = indicadores.UnidadesLiquidas == 0 ? 0 : indicadores.ValorLiquido / Math.Abs(indicadores.UnidadesLiquidas);
+        indicadores.MargemMedia = margemQtde == 0 ? 0 : margemSoma / margemQtde;
 
-        lblPeriodo.Text = String.Format(ptBr, "Per\u00edodo analisado: {0:dd/MM/yyyy} a {1:dd/MM/yyyy}", dataInicial, dataFinal);
-        lblTotalUnidades.Text = totalUnidades.ToString("N0", ptBr);
-        lblValorTotal.Text = valorTotal.ToString("C0", ptBr);
-        lblTicketMedio.Text = ticketMedio.ToString("C0", ptBr);
-        lblMargemMedia.Text = margemMedia.ToString("N1", ptBr) + "%";
-        lblQtdNotas.Text = vendas.Rows.Count.ToString("N0", ptBr);
-        lblDiasAtivos.Text = diasAtivos.Count.ToString("N0", ptBr);
+        foreach (KeyValuePair<DateTime, decimal> item in porDia)
+        {
+            if (!indicadores.TemMelhorDia || item.Value > indicadores.MelhorDiaQtde)
+            {
+                indicadores.TemMelhorDia = true;
+                indicadores.MelhorDia = item.Key;
+                indicadores.MelhorDiaQtde = item.Value;
+            }
+        }
+
+        return indicadores;
+    }
+
+    private string MontarDetalheMaiorVenda(DataRow linha)
+    {
+        string cliente = Convert.ToString(linha["NomeCliente"]).Trim();
+        string modelo = Convert.ToString(linha["modeloveiculo"]).Trim();
+        DateTime data;
+        string dataTexto = linha["datavenda"] != DBNull.Value && DateTime.TryParse(Convert.ToString(linha["datavenda"]), out data)
+            ? data.ToString("dd/MM/yyyy", ptBr)
+            : "";
+
+        List<string> partes = new List<string>();
+        if (cliente.Length > 0) partes.Add(cliente);
+        if (modelo.Length > 0) partes.Add(modelo);
+        if (dataTexto.Length > 0) partes.Add(dataTexto);
+        return partes.Count == 0 ? "Detalhe n\u00e3o informado" : String.Join(" | ", partes.ToArray());
+    }
+
+    private void ObterPeriodoAnterior(DateTime dataInicial, DateTime dataFinal, out DateTime dataInicialAnterior, out DateTime dataFinalAnterior)
+    {
+        int dias = (dataFinal.Date - dataInicial.Date).Days + 1;
+        dataFinalAnterior = dataInicial.Date.AddDays(-1);
+        dataInicialAnterior = dataFinalAnterior.AddDays(-(dias - 1));
     }
 
     private void PreencherGraficos(DataTable vendas, DateTime dataInicial, DateTime dataFinal)
@@ -649,5 +791,24 @@ ORDER BY
         catch
         {
         }
+    }
+
+    private class IndicadoresVendas
+    {
+        public decimal UnidadesLiquidas;
+        public decimal ValorLiquido;
+        public decimal TicketMedio;
+        public decimal MargemMedia;
+        public decimal VendasBrutas;
+        public decimal Devolucoes;
+        public int Notas;
+        public int DiasAtivos;
+        public int ClientesUnicos;
+        public bool TemMelhorDia;
+        public DateTime MelhorDia;
+        public decimal MelhorDiaQtde;
+        public bool TemMaiorVenda;
+        public decimal MaiorVenda;
+        public string MaiorVendaDetalhe = "";
     }
 }

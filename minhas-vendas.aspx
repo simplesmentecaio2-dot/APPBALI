@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Minhas vendas | Grupo Bali</title>
-    <link href="css/minhas-vendas.css?v=20260628-01" rel="stylesheet" />
+    <link href="css/minhas-vendas.css?v=20260629-insights01" rel="stylesheet" />
 </head>
 <body id="pageBody" runat="server" class="sales-bi-page brand-fiat">
     <form id="form1" runat="server">
@@ -75,6 +75,10 @@
                         <asp:Label ID="lblPeriodo" runat="server" />
                     </div>
 
+                    <section class="sales-comparison-grid" aria-label="Comparativo com per&iacute;odo anterior">
+                        <asp:Literal ID="litComparativo" runat="server" />
+                    </section>
+
                     <section class="sales-kpi-grid" aria-label="Resumo de vendas">
                         <article class="sales-kpi-card">
                             <span>Unidades l&iacute;quidas</span>
@@ -105,6 +109,31 @@
                             <span>Dias com venda</span>
                             <strong><asp:Label ID="lblDiasAtivos" runat="server" /></strong>
                             <small>Atividade no per&iacute;odo</small>
+                        </article>
+                        <article class="sales-kpi-card">
+                            <span>Vendas brutas</span>
+                            <strong><asp:Label ID="lblVendasBrutas" runat="server" /></strong>
+                            <small>Antes de devolu&ccedil;&otilde;es</small>
+                        </article>
+                        <article class="sales-kpi-card">
+                            <span>Devolu&ccedil;&otilde;es</span>
+                            <strong><asp:Label ID="lblDevolucoes" runat="server" /></strong>
+                            <small>Notas de retorno</small>
+                        </article>
+                        <article class="sales-kpi-card">
+                            <span>Clientes</span>
+                            <strong><asp:Label ID="lblClientesUnicos" runat="server" /></strong>
+                            <small>Clientes diferentes no per&iacute;odo</small>
+                        </article>
+                        <article class="sales-kpi-card">
+                            <span>Melhor dia</span>
+                            <strong><asp:Label ID="lblMelhorDia" runat="server" /></strong>
+                            <small>Maior volume l&iacute;quido</small>
+                        </article>
+                        <article class="sales-kpi-card sales-kpi-card-wide">
+                            <span>Maior venda</span>
+                            <strong><asp:Label ID="lblMaiorVenda" runat="server" /></strong>
+                            <small><asp:Label ID="lblMaiorVendaDetalhe" runat="server" /></small>
                         </article>
                     </section>
 
