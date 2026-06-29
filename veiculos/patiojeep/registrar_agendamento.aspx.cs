@@ -55,7 +55,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
         else
         {
-            Response.Redirect("./login.aspx");
+            Response.Redirect("./login.aspx?voltar=" + Server.UrlEncode(Request.RawUrl));
         }
 
     }
@@ -126,7 +126,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         if (Session["usuario"] == null || Session["usuario"].Equals(""))
         {
-            Response.Redirect("./login.aspx");
+            Response.Redirect("./login.aspx?voltar=" + Server.UrlEncode(Request.RawUrl));
         }
         else
         {
