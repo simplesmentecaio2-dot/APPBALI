@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Minhas vendas | Grupo Bali</title>
-    <link href="css/minhas-vendas.css?v=20260629-insights01" rel="stylesheet" />
+    <link href="css/minhas-vendas.css?v=20260629-ranking01" rel="stylesheet" />
     <script src="js/minhas-vendas.js?v=20260629-acoes01" defer="defer"></script>
 </head>
 <body id="pageBody" runat="server" class="sales-bi-page brand-fiat">
@@ -154,6 +154,12 @@
                             <strong><asp:Label ID="lblMaiorVenda" runat="server" /></strong>
                             <small><asp:Label ID="lblMaiorVendaDetalhe" runat="server" /></small>
                         </article>
+                    </section>
+
+                    <section class="sales-intelligence-grid" aria-label="Indicadores inteligentes">
+                        <asp:Literal ID="litMetaMensal" runat="server" />
+                        <asp:Literal ID="litRanking" runat="server" />
+                        <asp:Literal ID="litAlertas" runat="server" />
                     </section>
 
                     <section class="sales-dashboard-grid">

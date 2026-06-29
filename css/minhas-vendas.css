@@ -420,6 +420,65 @@ body {
   grid-column: span 2;
 }
 
+.sales-intelligence-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sales-intelligence-card {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.055);
+  padding: 16px;
+}
+
+.sales-intelligence-card span {
+  display: block;
+  color: #52637d;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.sales-intelligence-card strong {
+  display: block;
+  margin: 8px 0;
+  color: var(--accent-strong);
+  font-size: clamp(1.2rem, 2vw, 1.7rem);
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.sales-intelligence-card small,
+.sales-alert-card li {
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.sales-progress {
+  height: 9px;
+  border-radius: 999px;
+  background: #edf2f7;
+  overflow: hidden;
+}
+
+.sales-progress i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), rgba(var(--accent-rgb), 0.58));
+}
+
+.sales-alert-card ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
 .sales-dashboard-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.75fr);
@@ -865,6 +924,10 @@ body {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .sales-intelligence-grid {
+    grid-template-columns: 1fr;
+  }
+
   .sales-comparison-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -913,6 +976,7 @@ body {
   }
 
   .sales-filter-grid,
+  .sales-intelligence-grid,
   .sales-kpi-grid,
   .sales-comparison-grid {
     grid-template-columns: 1fr;

@@ -181,9 +181,11 @@ public partial class minhas_vendas : System.Web.UI.Page
             DateTime dataFinalAnterior;
             ObterPeriodoAnterior(dataInicial, dataFinal, out dataInicialAnterior, out dataFinalAnterior);
             DataTable vendasPeriodoAnterior = ConsultarVendasComCache(dataInicialAnterior, dataFinalAnterior, codigoUsuario, tipoFiltro, lojaFiltro);
+            DataTable ranking = ConsultarRankingComCache(dataInicial, dataFinal, tipoFiltro, lojaFiltro);
 
             PreencherResumo(vendas, dataInicial, dataFinal, tipoFiltro, lojaFiltro);
             PreencherComparativo(vendas, vendasPeriodoAnterior, dataInicialAnterior, dataFinalAnterior);
+            PreencherInteligencia(vendas, ranking, dataInicial, dataFinal, codigoUsuario);
             PreencherGraficos(vendas, dataInicial, dataFinal);
             PreencherTabela(vendas);
             RegistrarAuditoria("consulta", dataInicial, dataFinal, codigoUsuario, tipoFiltro, lojaFiltro, vendas.Rows.Count);
@@ -295,6 +297,72 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         return tabela;
     }
 
+    private DataTable ConsultarRankingComCache(DateTime dataInicial, DateTime dataFinal, string tipoFiltro, string lojaFiltro)
+    {
+        string chave = String.Format(
+            CultureInfo.InvariantCulture,
+            "minhas-vendas-ranking:{0}:{1:yyyyMMdd}:{2:yyyyMMdd}:{3}:{4}",
+            marcaAtual,
+            dataInicial.Date,
+            dataFinal.Date,
+            NormalizarTipoFiltro(tipoFiltro),
+            NormalizarTextoFiltro(lojaFiltro));
+
+        DataTable cached = HttpRuntime.Cache[chave] as DataTable;
+        if (cached != null)
+        {
+            return cached.Copy();
+        }
+
+        DataTable tabela = ConsultarRanking(dataInicial, dataFinal, tipoFiltro, lojaFiltro);
+        HttpRuntime.Cache.Insert(
+            chave,
+            tabela.Copy(),
+            null,
+            DateTime.Now.AddMinutes(MinhasVendasCacheMinutos),
+            Cache.NoSlidingExpiration,
+            CacheItemPriority.Normal,
+            null);
+
+        return tabela;
+    }
+
+    private DataTable ConsultarRanking(DateTime dataInicial, DateTime dataFinal, string tipoFiltro, string lojaFiltro)
+    {
+        DataTable tabela = new DataTable();
+
+        using (SqlConnection conexao = new SqlConnection(DealernetConnectionString))
+        using (SqlCommand comando = conexao.CreateCommand())
+        {
+            comando.CommandTimeout = 45;
+            comando.CommandText = @"
+SELECT TOP 50
+    NotaFiscal_UsuCodVendedor AS codigo,
+    MAX(Notafiscal_usunomvendedor) AS vendedor,
+    SUM(CASE v.notafiscal_grupomovimento WHEN 'VEN' THEN 1 WHEN 'DVE' THEN -1 ELSE 0 END) AS unidades,
+    SUM(CASE WHEN v.notafiscal_grupomovimento = 'DVE' THEN (-Valor_Venda) WHEN v.notafiscal_grupomovimento = 'VEN' THEN Valor_Venda ELSE 0 END) AS valor
+FROM VendasVeiculos v
+WHERE v.NotaFiscal_DataEmissao >= @datainicial
+  AND v.NotaFiscal_DataEmissao < DATEADD(DAY, 1, @datafinal)
+  AND (@tipo_estoque = '' OR UPPER(LTRIM(RTRIM(ISNULL(v.notafiscal_estoquetipo, '')))) = @tipo_estoque)
+  AND (@loja = '' OR UPPER(LTRIM(RTRIM(ISNULL(v.NotaFiscal_EmpresaNom, '')))) = @loja)
+  AND ISNULL(NotaFiscal_UsuCodVendedor, 0) > 0
+GROUP BY NotaFiscal_UsuCodVendedor
+ORDER BY unidades DESC, valor DESC;";
+            comando.Parameters.Add("@datainicial", SqlDbType.DateTime).Value = dataInicial.Date;
+            comando.Parameters.Add("@datafinal", SqlDbType.DateTime).Value = dataFinal.Date;
+            comando.Parameters.Add("@tipo_estoque", SqlDbType.VarChar, 12).Value = NormalizarTipoFiltro(tipoFiltro);
+            comando.Parameters.Add("@loja", SqlDbType.VarChar, 120).Value = NormalizarTextoFiltro(lojaFiltro);
+
+            using (SqlDataAdapter adaptador = new SqlDataAdapter(comando))
+            {
+                adaptador.Fill(tabela);
+            }
+        }
+
+        return tabela;
+    }
+
     private DataTable FiltrarVendasPorLoja(DataTable vendas, string lojaFiltro)
     {
         string lojaNormalizada = NormalizarTextoFiltro(lojaFiltro);
@@ -394,6 +462,143 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         html.Append(RenderizarComparativo("Ticket m\u00e9dio", atual.TicketMedio, anterior.TicketMedio, "C0", ""));
         html.Append(RenderizarComparativo("Margem m\u00e9dia", atual.MargemMedia, anterior.MargemMedia, "N1", "%"));
         litComparativo.Text = html.ToString();
+    }
+
+    private void PreencherInteligencia(DataTable vendas, DataTable ranking, DateTime dataInicial, DateTime dataFinal, int codigoUsuario)
+    {
+        IndicadoresVendas indicadores = CalcularIndicadores(vendas);
+        litMetaMensal.Text = RenderizarMetaMensal(indicadores, dataInicial, dataFinal);
+        litRanking.Text = RenderizarRanking(ranking, codigoUsuario);
+        litAlertas.Text = RenderizarAlertas(vendas, indicadores);
+    }
+
+    private string RenderizarMetaMensal(IndicadoresVendas indicadores, DateTime dataInicial, DateTime dataFinal)
+    {
+        int metaMesReferencia = ObterMetaReferenciaMensal();
+        int diasPeriodo = (dataFinal.Date - dataInicial.Date).Days + 1;
+        int diasMes = DateTime.DaysInMonth(dataInicial.Year, dataInicial.Month);
+        decimal metaPeriodo = Math.Max(1, Math.Round(metaMesReferencia * (diasPeriodo / (decimal)diasMes), 0));
+        decimal realizado = indicadores.VendasBrutas;
+        decimal percentual = Math.Min(100, metaPeriodo == 0 ? 0 : (realizado / metaPeriodo) * 100);
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<article class=\"sales-intelligence-card\"><span>Meta referencial</span><strong>");
+        html.Append(HttpUtility.HtmlEncode(realizado.ToString("N0", ptBr)));
+        html.Append(" / ");
+        html.Append(HttpUtility.HtmlEncode(metaPeriodo.ToString("N0", ptBr)));
+        html.Append("</strong><div class=\"sales-progress\"><i style=\"width:");
+        html.Append(percentual.ToString("0.##", CultureInfo.InvariantCulture));
+        html.Append("%\"></i></div><small>");
+        html.Append(HttpUtility.HtmlEncode(percentual.ToString("N0", ptBr)));
+        html.Append("% do ritmo esperado para o per\u00edodo</small></article>");
+        return html.ToString();
+    }
+
+    private int ObterMetaReferenciaMensal()
+    {
+        if (marcaAtual == "byd")
+        {
+            return 15;
+        }
+        if (marcaAtual == "jeep")
+        {
+            return 18;
+        }
+        return 20;
+    }
+
+    private string RenderizarRanking(DataTable ranking, int codigoUsuario)
+    {
+        if (ranking.Rows.Count == 0)
+        {
+            return "<article class=\"sales-intelligence-card\"><span>Ranking</span><strong>-</strong><small>Sem vendas no per&iacute;odo filtrado.</small></article>";
+        }
+
+        int posicao = 0;
+        DataRow linhaUsuario = null;
+        for (int i = 0; i < ranking.Rows.Count; i++)
+        {
+            if (Convert.ToInt32(ranking.Rows[i]["codigo"]) == codigoUsuario)
+            {
+                posicao = i + 1;
+                linhaUsuario = ranking.Rows[i];
+                break;
+            }
+        }
+
+        if (linhaUsuario == null)
+        {
+            return "<article class=\"sales-intelligence-card\"><span>Ranking</span><strong>Fora do top 50</strong><small>Sem volume suficiente no filtro atual.</small></article>";
+        }
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<article class=\"sales-intelligence-card\"><span>Ranking no per&iacute;odo</span><strong>");
+        html.Append(HttpUtility.HtmlEncode(posicao.ToString(ptBr)));
+        html.Append("&ordm; lugar</strong><small>");
+        html.Append(HttpUtility.HtmlEncode(ToDecimal(linhaUsuario["unidades"]).ToString("N0", ptBr)));
+        html.Append(" unidade(s) | ");
+        html.Append(HttpUtility.HtmlEncode(ToDecimal(linhaUsuario["valor"]).ToString("C0", ptBr)));
+        html.Append("</small></article>");
+        return html.ToString();
+    }
+
+    private string RenderizarAlertas(DataTable vendas, IndicadoresVendas indicadores)
+    {
+        List<string> alertas = new List<string>();
+        if (indicadores.Devolucoes > 0)
+        {
+            alertas.Add(indicadores.Devolucoes.ToString("N0", ptBr) + " devolu\u00e7\u00e3o(\u00f5es) no per\u00edodo.");
+        }
+        if (indicadores.MargemMedia > 0 && indicadores.MargemMedia < 8)
+        {
+            alertas.Add("Margem m\u00e9dia abaixo de 8%.");
+        }
+        int contatosIncompletos = ContarContatosIncompletos(vendas);
+        if (contatosIncompletos > 0)
+        {
+            alertas.Add(contatosIncompletos.ToString("N0", ptBr) + " venda(s) com contato incompleto.");
+        }
+        if (indicadores.VendasBrutas == 0)
+        {
+            alertas.Add("Nenhuma venda positiva no filtro atual.");
+        }
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<article class=\"sales-intelligence-card sales-alert-card\"><span>Alertas</span>");
+        if (alertas.Count == 0)
+        {
+            html.Append("<strong>Sem pontos cr&iacute;ticos</strong><small>Dados consistentes para o filtro atual.</small>");
+        }
+        else
+        {
+            html.Append("<strong>");
+            html.Append(HttpUtility.HtmlEncode(alertas.Count.ToString(ptBr)));
+            html.Append(" ponto(s) de aten&ccedil;&atilde;o</strong><ul>");
+            for (int i = 0; i < alertas.Count; i++)
+            {
+                html.Append("<li>");
+                html.Append(HttpUtility.HtmlEncode(alertas[i]));
+                html.Append("</li>");
+            }
+            html.Append("</ul>");
+        }
+        html.Append("</article>");
+        return html.ToString();
+    }
+
+    private int ContarContatosIncompletos(DataTable vendas)
+    {
+        int total = 0;
+        for (int i = 0; i < vendas.Rows.Count; i++)
+        {
+            string telefone = Convert.ToString(vendas.Rows[i]["TelefoneCliente"]).Trim();
+            string email = Convert.ToString(vendas.Rows[i]["emailcliente"]).Trim();
+            if (ToDecimal(vendas.Rows[i]["qtde"]) > 0 && telefone.Length == 0 && email.Length == 0)
+            {
+                total++;
+            }
+        }
+        return total;
     }
 
     private string RenderizarComparativo(string titulo, decimal atual, decimal anterior, string formato, string sufixo)
