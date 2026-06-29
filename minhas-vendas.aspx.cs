@@ -110,6 +110,11 @@ public partial class minhas_vendas : System.Web.UI.Page
             txtDataInicial.Text = hoje.AddDays(-29).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             txtDataFinal.Text = hoje.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         }
+        else if (comando == "ultimos7")
+        {
+            txtDataInicial.Text = hoje.AddDays(-6).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            txtDataFinal.Text = hoje.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        }
         else if (comando == "mesAnterior")
         {
             DateTime primeiroMesAtual = new DateTime(hoje.Year, hoje.Month, 1);

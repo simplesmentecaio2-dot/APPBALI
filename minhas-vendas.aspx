@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Minhas vendas | Grupo Bali</title>
-    <link href="css/minhas-vendas.css?v=20260629-export01" rel="stylesheet" />
+    <link href="css/minhas-vendas.css?v=20260629-filtros01" rel="stylesheet" />
     <script src="js/minhas-vendas.js?v=20260629-tabela01" defer="defer"></script>
 </head>
 <body id="pageBody" runat="server" class="sales-bi-page brand-fiat">
@@ -66,6 +66,7 @@
                     <div class="sales-filter-actions">
                         <asp:LinkButton ID="lnkMesAtual" runat="server" CssClass="sales-chip" CommandArgument="mes" OnCommand="PeriodoRapido_Command">Este m&ecirc;s</asp:LinkButton>
                         <asp:LinkButton ID="lnkMesAnterior" runat="server" CssClass="sales-chip" CommandArgument="mesAnterior" OnCommand="PeriodoRapido_Command">M&ecirc;s anterior</asp:LinkButton>
+                        <asp:LinkButton ID="lnkUltimos7" runat="server" CssClass="sales-chip" CommandArgument="ultimos7" OnCommand="PeriodoRapido_Command">&Uacute;ltimos 7 dias</asp:LinkButton>
                         <asp:LinkButton ID="lnkUltimos30" runat="server" CssClass="sales-chip" CommandArgument="ultimos30" OnCommand="PeriodoRapido_Command">&Uacute;ltimos 30 dias</asp:LinkButton>
                         <asp:LinkButton ID="lnkHoje" runat="server" CssClass="sales-chip" CommandArgument="hoje" OnCommand="PeriodoRapido_Command">Hoje</asp:LinkButton>
                         <asp:Button ID="btnExportarExcel" runat="server" Text="Exportar Excel" CssClass="sales-secondary-button" OnClick="btnExportarExcel_Click" />
