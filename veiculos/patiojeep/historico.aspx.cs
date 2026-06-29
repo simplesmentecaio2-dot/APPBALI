@@ -43,7 +43,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             if (txtSerie.Text.Length != 7)
             {
                 limpaCampos();
-                executarJavaScript("alert('O número de série deve conter 7 digitos!')");
+                executarJavaScript("alert('O n\\u00famero de s\\u00e9rie deve conter 7 d\\u00edgitos.')");
                 txtSerie.Focus();
             }
             else
@@ -80,7 +80,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 }
                 catch
                 {
-                    executarJavaScript("alert('Erro ao carregar dados!')");
+                    executarJavaScript("alert('N\\u00e3o foi poss\\u00edvel carregar os dados do ve\\u00edculo agora.')");
                 }
                 finally
                 {
@@ -91,7 +91,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         else
         {
             limpaCampos();
-            executarJavaScript("alert('Campo série Obrigatório!')");
+            executarJavaScript("alert('Informe a s\\u00e9rie antes de pesquisar.')");
         }
     }
 

@@ -24,7 +24,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
             //{
                 usuarioLogado.Text = Session["usuario"].ToString();
                 txtSerie.Focus();
-                //btnRegistrar.Visible = false;
+                if (!IsPostBack)
+                {
+                    btnRegistrar.Visible = false;
+                }
                 txtCor.Enabled = false;
                 txtModelo.Enabled = false;
                 txtChassi.Enabled = false;
@@ -43,7 +46,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 }
                 catch
                 {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Codigo de barras não se refere a um chassi!')", true);
+                    btnRegistrar.Visible = false;
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('C\\u00f3digo de barras n\\u00e3o se refere a um chassi.')", true);
                 }
             //}
             //else
@@ -69,7 +73,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 txtCor.Text = "";
                 txtCodVec.Text = "";
                 txtNUMERONF.Text = "";
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('O número de série deve conter 7 digitos!');$('#myModal').modal('show');", true);
+                btnRegistrar.Visible = false;
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('O n\\u00famero de s\\u00e9rie deve conter 7 d\\u00edgitos.');$('#myModal').modal('show');", true);
                 txtSerie.Focus();
             }
             else
@@ -102,6 +107,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                         txtCor.Text = "";
                         txtCodVec.Text = "";
                         txtNUMERONF.Text = "";
+                        btnRegistrar.Visible = false;
                         ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Dados não encontrados!')", true);
 
                     }
@@ -109,7 +115,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 }
                 catch
                 {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Erro ao carregar dados!')", true);
+                    btnRegistrar.Visible = false;
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('N\\u00e3o foi poss\\u00edvel carregar os dados do ve\\u00edculo agora.')", true);
                 }
                 finally
                 {
@@ -124,7 +131,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
             txtCor.Text = "";
             txtCodVec.Text = "";
             txtNUMERONF.Text = "";
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Campo série Obrigatório!')", true);
+            btnRegistrar.Visible = false;
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Informe a s\\u00e9rie antes de pesquisar.')", true);
         }
     }
 
@@ -170,6 +178,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     txtCor.Text = "";
                     txtCodVec.Text = "";
                     txtNUMERONF.Text = "";
+                    btnRegistrar.Visible = false;
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Veículo já cadastrado!')", true);
                 }
                 else
@@ -180,6 +189,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     txtCor.Text = "";
                     txtCodVec.Text = "";
                     txtNUMERONF.Text = "";
+                    txtSerie.Text = "";
+                    btnRegistrar.Visible = false;
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Dados gravados com sucesso.')", true);
 
                 }

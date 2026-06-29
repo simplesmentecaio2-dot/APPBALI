@@ -53,7 +53,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 txtModelo.Text = "";
                 txtCor.Text = "";
                 txtCodVec.Text = "";
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('O número de série deve conter 7 digitos!')", true);
+                btnRegistrar.Visible = false;
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('O n\\u00famero de s\\u00e9rie deve conter 7 d\\u00edgitos.')", true);
                 txtSerie.Focus();
             }
             else
@@ -85,6 +86,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                         txtModelo.Text = "";
                         txtCor.Text = "";
                         txtCodVec.Text = "";
+                        btnRegistrar.Visible = false;
                         ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Dados não encontrados!')", true);
 
                     }
@@ -92,7 +94,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 }
                 catch
                 {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Erro ao carregar dados!')", true);
+                    btnRegistrar.Visible = false;
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('N\\u00e3o foi poss\\u00edvel carregar os dados do ve\\u00edculo agora.')", true);
                 }
                 finally
                 {
@@ -106,7 +109,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
             txtModelo.Text = "";
             txtCor.Text = "";
             txtCodVec.Text = "";
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Campo série Obrigatório!')", true);
+            btnRegistrar.Visible = false;
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Informe a s\\u00e9rie antes de pesquisar.')", true);
         }
     }
 
@@ -157,6 +161,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     txtCodVec.Text = "";
                     PatioJeepAuditoria.Registrar("TRANSFERIR_SUCESSO", Session["usuario"], txtSerie.Text, "Origem=" + ddlOrigem.Value + "; Destino=" + ddlDestino.Value);
                     txtSerie.Text = "";
+                    btnRegistrar.Visible = false;
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Transferência realizada com sucesso.')", true);
 
 
