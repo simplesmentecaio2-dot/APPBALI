@@ -1048,7 +1048,7 @@ ORDER BY unidades DESC, valor DESC;";
         litGraficoValorDiario.Text = RenderizarGraficoValorDiario(vendas, dataInicial, dataFinal);
         litLojas.Text = RenderizarBarras(vendas, "loja", "qtde", "Nenhuma loja encontrada.");
         litTipos.Text = RenderizarBarras(vendas, "tipoestoque", "qtde", "Nenhum tipo de estoque encontrado.");
-        litTopModelos.Text = RenderizarBarras(vendas, "modeloveiculo", "qtde", "Nenhum modelo encontrado.");
+        litTopModelos.Text = RenderizarBarras(vendas, "modeloveiculo", "qtde", "Nenhum modelo encontrado.", "N0", 20);
         litTopClientes.Text = RenderizarBarras(vendas, "NomeCliente", "ValordeVenda", "Nenhum cliente encontrado.", "C0");
         litFollowUp.Text = RenderizarFollowUp(vendas);
     }
@@ -1260,10 +1260,15 @@ ORDER BY unidades DESC, valor DESC;";
 
     private string RenderizarBarras(DataTable vendas, string campoGrupo, string campoValor, string mensagemVazio)
     {
-        return RenderizarBarras(vendas, campoGrupo, campoValor, mensagemVazio, "N0");
+        return RenderizarBarras(vendas, campoGrupo, campoValor, mensagemVazio, "N0", 0);
     }
 
     private string RenderizarBarras(DataTable vendas, string campoGrupo, string campoValor, string mensagemVazio, string formatoValor)
+    {
+        return RenderizarBarras(vendas, campoGrupo, campoValor, mensagemVazio, formatoValor, 0);
+    }
+
+    private string RenderizarBarras(DataTable vendas, string campoGrupo, string campoValor, string mensagemVazio, string formatoValor, int limiteRotulo)
     {
         Dictionary<string, decimal> grupos = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
 
@@ -1315,9 +1320,13 @@ ORDER BY unidades DESC, valor DESC;";
             decimal valor = itens[i].Value;
             decimal percentual = Math.Min(100, (Math.Abs(valor) / maximo) * 100);
             string classe = valor < 0 ? " sales-bar-negative" : "";
+            string rotuloCompleto = itens[i].Key;
+            string rotuloVisual = LimitarRotulo(rotuloCompleto, limiteRotulo);
             html.Append("<div class=\"sales-bar-row\">");
-            html.Append("<div class=\"sales-bar-label\"><span>");
-            html.Append(HttpUtility.HtmlEncode(itens[i].Key));
+            html.Append("<div class=\"sales-bar-label\"><span title=\"");
+            html.Append(Atributo(rotuloCompleto));
+            html.Append("\">");
+            html.Append(HttpUtility.HtmlEncode(rotuloVisual));
             html.Append("</span><strong>");
             html.Append(HttpUtility.HtmlEncode(valor.ToString(formatoValor, ptBr)));
             html.Append("</strong></div>");
@@ -1329,6 +1338,22 @@ ORDER BY unidades DESC, valor DESC;";
         }
         html.Append("</div>");
         return html.ToString();
+    }
+
+    private string LimitarRotulo(string texto, int limite)
+    {
+        texto = (texto ?? "").Trim();
+        if (limite <= 0 || texto.Length <= limite)
+        {
+            return texto;
+        }
+
+        if (limite <= 3)
+        {
+            return texto.Substring(0, limite);
+        }
+
+        return texto.Substring(0, limite - 3).TrimEnd() + "...";
     }
 
     private string RenderizarFollowUp(DataTable vendas)
