@@ -155,18 +155,6 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="./registrar_agendamento.aspx">
-                                        <i class="metismenu-icon far fa-calendar-plus"></i>
-                                        Agendar Entrega
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="./consultar_agendamento.aspx">
-                                        <i class="metismenu-icon far fa-calendar-check"></i>
-                                        Consultar Agenda
-                                    </a>
-                                </li>
-                                <li>
                                     <a href="./acompanhamento.aspx">
                                         <i class="metismenu-icon fas fa-tasks"></i>
                                         Acompanhamento
@@ -190,7 +178,7 @@
                                                 <b>Início</b>
 
                                                 <div class="page-title-subheading">
-                                                    Operações de pátio, agendamento e consulta de veículos.
+                                                    Operações de pátio e consulta de veículos.
                                                 </div>
                                             </div>
                                         </div>
@@ -223,16 +211,6 @@
                                                         <span class="patio-home-icon"><i class="fa fa-history"></i></span>
                                                         <strong>Histórico</strong>
                                                         <small>Consulte o caminho percorrido pelo veículo.</small>
-                                                    </a>
-                                                    <a class="patio-home-card" href="./registrar_agendamento.aspx">
-                                                        <span class="patio-home-icon"><i class="fa fa-calendar-plus"></i></span>
-                                                        <strong>Agendar entrega</strong>
-                                                        <small>Registre previsão de entrega vinculada ao chassi.</small>
-                                                    </a>
-                                                    <a class="patio-home-card" href="./consultar_agendamento.aspx">
-                                                        <span class="patio-home-icon"><i class="fa fa-search"></i></span>
-                                                        <strong>Consultar agenda</strong>
-                                                        <small>Veja os agendamentos por data de entrega.</small>
                                                     </a>
                                                     <a class="patio-home-card" href="./acompanhamento.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-tasks"></i></span>

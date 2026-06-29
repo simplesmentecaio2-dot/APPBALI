@@ -177,19 +177,6 @@
                                         Consultar
                                     </a>
                                 </li>
-                                <li class="app-sidebar__heading">Entrega</li>
-                                <li>
-                                    <a href="./registrar_agendamento.aspx">
-                                        <i class="metismenu-icon fa fa-calendar-plus"></i>
-                                        Registrar Agendamento
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="./consultar_agendamento.aspx">
-                                        <i class="metismenu-icon fa fa-calendar-alt"></i>
-                                        Consultar Agendamento
-                                    </a>
-                                </li>
                                 <li>
                                     <a href="./acompanhamento.aspx" class="mm-active">
                                         <i class="metismenu-icon fa fa-tasks"></i>
