@@ -15,6 +15,14 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
 
         lblUsuario.Text = Convert.ToString(Session["usuario"]);
         lblTipo.Text = Session["usuario_codigo"] == null ? "-" : Convert.ToString(Session["usuario_codigo"]);
+        AplicarFiltroSituacaoUsuarios();
+    }
+
+    protected void ddlFiltroSituacaoUsuarios_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        gvConsultaUsuarios.PageIndex = 0;
+        AplicarFiltroSituacaoUsuarios();
+        gvConsultaUsuarios.DataBind();
     }
 
     protected void btnSalvar_Click(object sender, EventArgs e)
@@ -351,6 +359,23 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
         }
 
         return true;
+    }
+
+    private void AplicarFiltroSituacaoUsuarios()
+    {
+        string situacao = Convert.ToString(ddlFiltroSituacaoUsuarios.SelectedValue);
+        if (situacao == "ativo")
+        {
+            sqldsConsultaUsuarios.FilterExpression = "Ativo = 'Sim'";
+        }
+        else if (situacao == "inativo")
+        {
+            sqldsConsultaUsuarios.FilterExpression = "Ativo = 'N\u00e3o'";
+        }
+        else
+        {
+            sqldsConsultaUsuarios.FilterExpression = "";
+        }
     }
 
     private void RedirecionarLogin()

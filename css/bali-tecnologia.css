@@ -423,6 +423,28 @@ body.bali-tech-page {
   min-width: 190px;
 }
 
+.tech-panel-actions {
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tech-status-filter {
+  display: grid;
+  gap: 7px;
+  min-width: 150px;
+}
+
+.tech-status-filter span {
+  color: var(--tech-muted);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
 .tech-bulk-actions span {
   color: var(--tech-muted);
   font-size: 10px;
@@ -748,6 +770,18 @@ body.bali-tech-page {
   .tech-system-row,
   .tech-profile-row {
     grid-template-columns: 1fr;
+  }
+
+  .tech-panel-head,
+  .tech-panel-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .tech-bulk-actions,
+  .tech-status-filter {
+    justify-items: stretch;
+    width: 100%;
   }
 }
 

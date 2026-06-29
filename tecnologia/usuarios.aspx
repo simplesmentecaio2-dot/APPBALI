@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Usu&aacute;rios | Tecnologia</title>
-    <link href="../css/bali-tecnologia.css?v=20260629-usuarios02" rel="stylesheet" />
+    <link href="../css/bali-tecnologia.css?v=20260629-usuarios03" rel="stylesheet" />
 </head>
 <body class="bali-tech-page">
     <form id="form1" runat="server" autocomplete="off">
@@ -54,9 +54,19 @@
                                     <h2>Usu&aacute;rios cadastrados</h2>
                                     <p>Selecione um usu&aacute;rio para carregar edi&ccedil;&atilde;o ou marque v&aacute;rios registros para inativar em lote.</p>
                                 </div>
-                                <div class="tech-bulk-actions">
-                                    <span>Manuten&ccedil;&atilde;o em lote</span>
-                                    <asp:Button ID="btnDesativarSelecionados" runat="server" Text="Inativar selecionados" CssClass="tech-danger-button" OnClick="btnDesativarSelecionados_Click" OnClientClick="return confirmarInativacaoUsuarios();" />
+                                <div class="tech-panel-actions">
+                                    <label class="tech-status-filter">
+                                        <span>Situa&ccedil;&atilde;o</span>
+                                        <asp:DropDownList ID="ddlFiltroSituacaoUsuarios" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ddlFiltroSituacaoUsuarios_SelectedIndexChanged">
+                                            <asp:ListItem Value="">Todos</asp:ListItem>
+                                            <asp:ListItem Value="ativo">Ativos</asp:ListItem>
+                                            <asp:ListItem Value="inativo">Inativos</asp:ListItem>
+                                        </asp:DropDownList>
+                                    </label>
+                                    <div class="tech-bulk-actions">
+                                        <span>Manuten&ccedil;&atilde;o em lote</span>
+                                        <asp:Button ID="btnDesativarSelecionados" runat="server" Text="Inativar selecionados" CssClass="tech-danger-button" OnClick="btnDesativarSelecionados_Click" OnClientClick="return confirmarInativacaoUsuarios();" />
+                                    </div>
                                 </div>
                             </div>
 
