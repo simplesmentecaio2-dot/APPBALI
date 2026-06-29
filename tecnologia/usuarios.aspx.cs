@@ -29,9 +29,9 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
         string senha = txtSenha.Text;
         string confirmacao = txtConfirmacao.Text;
 
-        if (!EmailValido(email))
+        if (!IdentificadorUsuarioValido(email))
         {
-            ExibirMensagem("Informe um e-mail válido para usar como login.");
+            ExibirMensagem("Informe um login válido para o usuário.");
             return;
         }
 
@@ -142,10 +142,10 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
             string tipo = ValorDataKey(row, "tipo");
             string ativoAtual = ValorDataKey(row, "Ativo");
 
-            if (!EmailValido(login))
+            if (!IdentificadorUsuarioValido(login))
             {
                 falhas++;
-                AdicionarFalha(detalhesFalhas, login, "login inválido");
+                AdicionarFalha(detalhesFalhas, login, "identificador vazio ou inválido");
                 continue;
             }
 
@@ -197,7 +197,7 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
         string nome = txtNomeAlterar.Text.Trim();
         string email = txtEmailAlterar.Text.Trim();
 
-        if (!EmailValido(email))
+        if (!IdentificadorUsuarioValido(email))
         {
             ExibirMensagem("Selecione um usuário válido na aba Consulta antes de alterar.");
             return;
@@ -248,7 +248,7 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
         string email = txtEmailAlterarPerfil.Text.Trim();
         int idSistema;
 
-        if (!EmailValido(email))
+        if (!IdentificadorUsuarioValido(email))
         {
             ExibirMensagem("Selecione um usuário válido na aba Consulta antes de alterar o perfil.");
             return;
@@ -283,7 +283,7 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
         string senha = txtSenhaAlterar.Text;
         string confirmacao = txtConfirmacaoAlterar.Text;
 
-        if (!EmailValido(email))
+        if (!IdentificadorUsuarioValido(email))
         {
             ExibirMensagem("Selecione um usuário válido na aba Consulta antes de alterar a senha.");
             return;
@@ -359,9 +359,19 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
         Context.ApplicationInstance.CompleteRequest();
     }
 
-    private bool EmailValido(string email)
+    private bool IdentificadorUsuarioValido(string identificador)
     {
-        return !String.IsNullOrWhiteSpace(email) && email.Contains("@") && email.Contains(".");
+        if (String.IsNullOrWhiteSpace(identificador))
+        {
+            return false;
+        }
+
+        string valor = identificador.Trim();
+        return valor.Length <= 120
+            && valor.IndexOf('<') < 0
+            && valor.IndexOf('>') < 0
+            && valor.IndexOf('"') < 0
+            && valor.IndexOf('\'') < 0;
     }
 
     private bool SenhaValida(string senha, string confirmacao)
@@ -448,7 +458,7 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
     {
         if (detalhes.Length > 0)
         {
-            detalhes.Append("\\n");
+            detalhes.Append(Environment.NewLine);
         }
 
         detalhes.Append(String.IsNullOrWhiteSpace(login) ? "Usuário sem login" : login);
@@ -469,26 +479,26 @@ public partial class tecnologia_usuarios : System.Web.UI.Page
 
         if (jaInativos > 0)
         {
-            resumo.Append("\\n");
+            resumo.Append(Environment.NewLine);
             resumo.Append(jaInativos);
             resumo.Append(" usuário(s) já estavam inativos.");
         }
 
         if (protegidos > 0)
         {
-            resumo.Append("\\n");
+            resumo.Append(Environment.NewLine);
             resumo.Append(protegidos);
             resumo.Append(" registro(s) ignorado(s) para proteger o usuário logado.");
         }
 
         if (falhas > 0)
         {
-            resumo.Append("\\n");
+            resumo.Append(Environment.NewLine);
             resumo.Append(falhas);
             resumo.Append(" usuário(s) não foram inativados.");
             if (!String.IsNullOrWhiteSpace(detalhesFalhas))
             {
-                resumo.Append("\\n");
+                resumo.Append(Environment.NewLine);
                 resumo.Append(detalhesFalhas);
             }
         }
