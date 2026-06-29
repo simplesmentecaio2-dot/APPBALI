@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Minhas vendas | Grupo Bali</title>
-    <link href="css/minhas-vendas.css?v=20260629-grafico-valor01" rel="stylesheet" />
+    <link href="css/minhas-vendas.css?v=20260629-tipo01" rel="stylesheet" />
     <script src="js/minhas-vendas.js?v=20260629-acoes01" defer="defer"></script>
 </head>
 <body id="pageBody" runat="server" class="sales-bi-page brand-fiat">
@@ -60,6 +60,15 @@
                         <label>
                             <span>Data final</span>
                             <asp:TextBox ID="txtDataFinal" runat="server" TextMode="Date" CssClass="sales-input" />
+                        </label>
+                        <label>
+                            <span>Tipo</span>
+                            <asp:DropDownList ID="ddlTipoFiltro" runat="server" CssClass="sales-input">
+                                <asp:ListItem Value="">Todos os tipos</asp:ListItem>
+                                <asp:ListItem Value="VN">Novo</asp:ListItem>
+                                <asp:ListItem Value="VU">Usado</asp:ListItem>
+                                <asp:ListItem Value="VD">Venda direta</asp:ListItem>
+                            </asp:DropDownList>
                         </label>
                         <asp:Button ID="btnFiltrar" runat="server" Text="Atualizar BI" CssClass="sales-primary-button" OnClick="btnFiltrar_Click" />
                     </div>

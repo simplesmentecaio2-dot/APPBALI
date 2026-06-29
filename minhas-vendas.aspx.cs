@@ -81,8 +81,9 @@ public partial class minhas_vendas : System.Web.UI.Page
 
         try
         {
-            DataTable vendas = ConsultarVendas(dataInicial, dataFinal, codigoUsuario);
-            ExportarExcel(vendas, dataInicial, dataFinal);
+            string tipoFiltro = ObterTipoFiltroSelecionado();
+            DataTable vendas = ConsultarVendas(dataInicial, dataFinal, codigoUsuario, tipoFiltro);
+            ExportarExcel(vendas, dataInicial, dataFinal, tipoFiltro);
         }
         catch (System.Threading.ThreadAbortException)
         {
@@ -167,13 +168,14 @@ public partial class minhas_vendas : System.Web.UI.Page
 
         try
         {
-            DataTable vendas = ConsultarVendas(dataInicial, dataFinal, codigoUsuario);
+            string tipoFiltro = ObterTipoFiltroSelecionado();
+            DataTable vendas = ConsultarVendas(dataInicial, dataFinal, codigoUsuario, tipoFiltro);
             DateTime dataInicialAnterior;
             DateTime dataFinalAnterior;
             ObterPeriodoAnterior(dataInicial, dataFinal, out dataInicialAnterior, out dataFinalAnterior);
-            DataTable vendasPeriodoAnterior = ConsultarVendas(dataInicialAnterior, dataFinalAnterior, codigoUsuario);
+            DataTable vendasPeriodoAnterior = ConsultarVendas(dataInicialAnterior, dataFinalAnterior, codigoUsuario, tipoFiltro);
 
-            PreencherResumo(vendas, dataInicial, dataFinal);
+            PreencherResumo(vendas, dataInicial, dataFinal, tipoFiltro);
             PreencherComparativo(vendas, vendasPeriodoAnterior, dataInicialAnterior, dataFinalAnterior);
             PreencherGraficos(vendas, dataInicial, dataFinal);
             PreencherTabela(vendas);
@@ -186,7 +188,7 @@ public partial class minhas_vendas : System.Web.UI.Page
         }
     }
 
-    private DataTable ConsultarVendas(DateTime dataInicial, DateTime dataFinal, int codigoUsuario)
+    private DataTable ConsultarVendas(DateTime dataInicial, DateTime dataFinal, int codigoUsuario, string tipoFiltro)
     {
         DataTable tabela = new DataTable();
 
@@ -236,10 +238,12 @@ INNER JOIN usuario u ON u.usuario_codigo = v.NotaFiscal_UsuCodVendedor
 WHERE v.NotaFiscal_DataEmissao >= @datainicial
   AND v.NotaFiscal_DataEmissao < DATEADD(DAY, 1, @datafinal)
   AND v.NotaFiscal_UsuCodVendedor = @codigo_usuario
+  AND (@tipo_estoque = '' OR UPPER(LTRIM(RTRIM(ISNULL(v.notafiscal_estoquetipo, '')))) = @tipo_estoque)
 ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
             comando.Parameters.Add("@datainicial", SqlDbType.DateTime).Value = dataInicial.Date;
             comando.Parameters.Add("@datafinal", SqlDbType.DateTime).Value = dataFinal.Date;
             comando.Parameters.Add("@codigo_usuario", SqlDbType.Int).Value = codigoUsuario;
+            comando.Parameters.Add("@tipo_estoque", SqlDbType.VarChar, 12).Value = NormalizarTipoFiltro(tipoFiltro);
 
             using (SqlDataAdapter adaptador = new SqlDataAdapter(comando))
             {
@@ -250,11 +254,11 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         return tabela;
     }
 
-    private void PreencherResumo(DataTable vendas, DateTime dataInicial, DateTime dataFinal)
+    private void PreencherResumo(DataTable vendas, DateTime dataInicial, DateTime dataFinal, string tipoFiltro)
     {
         IndicadoresVendas indicadores = CalcularIndicadores(vendas);
 
-        lblPeriodo.Text = String.Format(ptBr, "Per\u00edodo analisado: {0:dd/MM/yyyy} a {1:dd/MM/yyyy}", dataInicial, dataFinal);
+        lblPeriodo.Text = String.Format(ptBr, "Per\u00edodo analisado: {0:dd/MM/yyyy} a {1:dd/MM/yyyy} | Tipo: {2}", dataInicial, dataFinal, DescreverTipoFiltro(tipoFiltro));
         lblTotalUnidades.Text = indicadores.UnidadesLiquidas.ToString("N0", ptBr);
         lblValorTotal.Text = indicadores.ValorLiquido.ToString("C0", ptBr);
         lblTicketMedio.Text = indicadores.TicketMedio.ToString("C0", ptBr);
@@ -425,7 +429,32 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         dataInicialAnterior = dataFinalAnterior.AddDays(-(dias - 1));
     }
 
-    private void ExportarExcel(DataTable vendas, DateTime dataInicial, DateTime dataFinal)
+    private string ObterTipoFiltroSelecionado()
+    {
+        return NormalizarTipoFiltro(ddlTipoFiltro.SelectedValue);
+    }
+
+    private string NormalizarTipoFiltro(string tipo)
+    {
+        tipo = (tipo ?? "").Trim().ToUpperInvariant();
+        if (tipo == "VN" || tipo == "VU" || tipo == "VD")
+        {
+            return tipo;
+        }
+
+        return "";
+    }
+
+    private string DescreverTipoFiltro(string tipo)
+    {
+        tipo = NormalizarTipoFiltro(tipo);
+        if (tipo == "VN") return "Novo";
+        if (tipo == "VU") return "Usado";
+        if (tipo == "VD") return "Venda direta";
+        return "Todos os tipos";
+    }
+
+    private void ExportarExcel(DataTable vendas, DateTime dataInicial, DateTime dataFinal, string tipoFiltro)
     {
         IndicadoresVendas indicadores = CalcularIndicadores(vendas);
         string nomeArquivo = String.Format(
@@ -447,6 +476,9 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         Response.Write("</h2>");
         Response.Write("<p>Periodo: ");
         Response.Write(HttpUtility.HtmlEncode(String.Format(ptBr, "{0:dd/MM/yyyy} a {1:dd/MM/yyyy}", dataInicial, dataFinal)));
+        Response.Write("</p>");
+        Response.Write("<p>Tipo: ");
+        Response.Write(HttpUtility.HtmlEncode(DescreverTipoFiltro(tipoFiltro)));
         Response.Write("</p>");
 
         Response.Write("<table border=\"1\"><tbody>");

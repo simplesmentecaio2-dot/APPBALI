@@ -271,7 +271,7 @@ body {
 
 .sales-filter-grid {
   display: grid;
-  grid-template-columns: minmax(180px, 240px) minmax(180px, 240px) auto;
+  grid-template-columns: minmax(170px, 220px) minmax(170px, 220px) minmax(160px, 210px) auto;
   align-items: end;
   gap: 12px;
 }
