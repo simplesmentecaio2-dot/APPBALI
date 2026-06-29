@@ -1232,6 +1232,109 @@ body.bali-tech-page {
   padding: 16px;
 }
 
+.password-generator-main {
+  max-width: 1060px;
+}
+
+.password-generator-hero {
+  align-items: stretch;
+}
+
+.password-generator-score {
+  border: 1px solid rgba(47, 111, 189, .20);
+  border-radius: var(--tech-radius);
+  background: linear-gradient(180deg, #fff, #f8fbff);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, .07);
+  padding: 18px;
+}
+
+.password-generator-score span {
+  display: block;
+  color: var(--tech-muted);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.password-generator-score strong {
+  display: block;
+  color: var(--tech-ink);
+  font-size: 26px;
+  font-weight: 950;
+  line-height: 1;
+  margin-top: 9px;
+}
+
+.password-generator-score small {
+  display: block;
+  color: var(--tech-muted);
+  font-size: 12px;
+  font-weight: 780;
+  line-height: 1.4;
+  margin-top: 8px;
+}
+
+.password-generator-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  max-width: 680px;
+}
+
+.password-generator-form input[type="email"],
+.password-generator-form input[type="text"] {
+  min-height: 46px;
+  border: 1px solid var(--tech-line);
+  border-radius: var(--tech-radius);
+  background: #fff;
+  color: var(--tech-ink);
+  font-size: 15px;
+  font-weight: 800;
+  outline: none;
+  padding: 0 13px;
+}
+
+.password-generator-form input[type="email"]:focus,
+.password-generator-form input[type="text"]:focus {
+  border-color: rgba(47, 111, 189, .58);
+  box-shadow: 0 0 0 3px rgba(47, 111, 189, .12);
+}
+
+.password-generator-note {
+  border: 1px dashed rgba(47, 111, 189, .26);
+  border-radius: var(--tech-radius);
+  background: #f8fbff;
+  padding: 12px;
+}
+
+.password-generator-note strong {
+  display: block;
+  color: var(--tech-brand-strong);
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.password-generator-note p {
+  color: var(--tech-muted);
+  font-size: 12px;
+  font-weight: 760;
+  line-height: 1.45;
+  margin: 6px 0 0;
+}
+
+.password-generator-alert.is-success {
+  border-color: rgba(25, 169, 116, .25);
+  background: #ecfdf3;
+  color: #047857;
+}
+
+.password-generator-alert.is-error {
+  border-color: rgba(220, 38, 38, .20);
+  background: #fff1f2;
+  color: #9f1239;
+}
+
 @media (max-width: 820px) {
   .permission-form-grid,
   .permission-summary {

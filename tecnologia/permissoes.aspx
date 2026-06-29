@@ -125,6 +125,7 @@
                             <asp:ListItem Value="/veiculos/*">Fiat inteira</asp:ListItem>
                             <asp:ListItem Value="/jeep/*">Jeep inteira</asp:ListItem>
                             <asp:ListItem Value="/byd/*">BYD inteira</asp:ListItem>
+                            <asp:ListItem Value="/gerador-senha/*">Gerador de senha</asp:ListItem>
                             <asp:ListItem Value="/veiculos/contrato.aspx">Contratos Fiat</asp:ListItem>
                             <asp:ListItem Value="/jeep/contrato.aspx">Contratos Jeep</asp:ListItem>
                             <asp:ListItem Value="/byd/contrato.aspx">Contratos BYD</asp:ListItem>
@@ -160,6 +161,7 @@
                                 <asp:ListItem Value="/tecnologia/sistemas.aspx">Tecnologia - Sistemas</asp:ListItem>
                                 <asp:ListItem Value="/tecnologia/sessoes.aspx">Tecnologia - Sess&otilde;es</asp:ListItem>
                                 <asp:ListItem Value="/tecnologia/permissoes.aspx">Tecnologia - Permiss&otilde;es</asp:ListItem>
+                                <asp:ListItem Value="/gerador-senha/default.aspx">Tecnologia - Gerador de senha</asp:ListItem>
                                 <asp:ListItem Value="/CI/default.aspx">CI - Comunica&ccedil;&atilde;o Interna</asp:ListItem>
                                 <asp:ListItem Value="/RAMAIS/default.aspx">Ramais</asp:ListItem>
                                 <asp:ListItem Value="/veiculos/Default.aspx">Fiat - Central</asp:ListItem>
@@ -174,6 +176,7 @@
                                 <asp:ListItem Value="/veiculos/*">Fiat - Toda a pasta</asp:ListItem>
                                 <asp:ListItem Value="/jeep/*">Jeep - Toda a pasta</asp:ListItem>
                                 <asp:ListItem Value="/byd/*">BYD - Toda a pasta</asp:ListItem>
+                                <asp:ListItem Value="/gerador-senha/*">Gerador de senha - Toda a pasta</asp:ListItem>
                                 <asp:ListItem Value="/tecnologia/*">Tecnologia - Toda a pasta</asp:ListItem>
                                 <asp:ListItem Value="*">Todos os recursos</asp:ListItem>
                             </asp:DropDownList>
