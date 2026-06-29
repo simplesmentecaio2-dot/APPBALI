@@ -32,8 +32,8 @@ public partial class tecnologia_permissoes : System.Web.UI.Page
             return;
         }
 
-        int idUsuarioLocal;
-        if (!Int32.TryParse(ddlUsuarioLocal.SelectedValue, out idUsuarioLocal) || idUsuarioLocal <= 0)
+        int idUsuarioLocal = ObterUsuarioSelecionado();
+        if (idUsuarioLocal <= 0)
         {
             ExibirMensagem("Selecione um usu\u00e1rio para aplicar a regra.");
             return;
@@ -53,7 +53,7 @@ public partial class tecnologia_permissoes : System.Web.UI.Page
         }
 
         bool bloquear = ddlTipoRegra.SelectedValue == "bloquear";
-        if (bloquear && UsuarioSelecionadoEhAtual(idUsuarioLocal) && String.Equals(recurso, "/tecnologia/permissoes.aspx", StringComparison.OrdinalIgnoreCase))
+        if (bloquear && UsuarioSelecionadoEhAtual(idUsuarioLocal) && RecursoBloqueiaTelaPermissoes(recurso))
         {
             ExibirMensagem("Por seguran\u00e7a, n\u00e3o bloqueei seu pr\u00f3prio acesso \u00e0 tela de permiss\u00f5es.");
             return;
@@ -82,6 +82,74 @@ public partial class tecnologia_permissoes : System.Web.UI.Page
 
         CarregarTela();
         ExibirMensagem("Tela atualizada.");
+    }
+
+    protected void btnAplicarRecursos_Command(object sender, CommandEventArgs e)
+    {
+        if (!UsuarioTecnologiaValido())
+        {
+            return;
+        }
+
+        int idUsuarioLocal = ObterUsuarioSelecionado();
+        if (idUsuarioLocal <= 0)
+        {
+            ExibirMensagem("Selecione um usu\u00e1rio antes de aplicar os acessos.");
+            return;
+        }
+
+        bool bloquear = String.Equals(Convert.ToString(e.CommandArgument), "bloquear", StringComparison.OrdinalIgnoreCase);
+        int selecionados = 0;
+        int aplicados = 0;
+        int ignorados = 0;
+
+        try
+        {
+            foreach (ListItem item in cblRecursosRapidos.Items)
+            {
+                if (!item.Selected) continue;
+
+                selecionados++;
+                string recurso = AppPermissoes.NormalizarRecurso(item.Value);
+                if (recurso.Length == 0)
+                {
+                    ignorados++;
+                    continue;
+                }
+
+                if (bloquear && UsuarioSelecionadoEhAtual(idUsuarioLocal) && RecursoBloqueiaTelaPermissoes(recurso))
+                {
+                    ignorados++;
+                    continue;
+                }
+
+                AppPermissoes.SalvarRegra(idUsuarioLocal, recurso, "VISUALIZAR", bloquear, txtMotivo.Text, HttpContext.Current);
+                aplicados++;
+                item.Selected = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            ExibirMensagem("N\u00e3o foi poss\u00edvel aplicar as regras selecionadas: " + ex.Message);
+            return;
+        }
+
+        if (selecionados == 0)
+        {
+            ExibirMensagem("Marque pelo menos um acesso para aplicar a regra.");
+            return;
+        }
+
+        txtMotivo.Text = "";
+        CarregarTela();
+
+        string tipo = bloquear ? "bloqueio" : "libera\u00e7\u00e3o";
+        string mensagem = aplicados.ToString("N0") + " regra(s) de " + tipo + " aplicada(s) com sucesso.";
+        if (ignorados > 0)
+        {
+            mensagem += " " + ignorados.ToString("N0") + " item(ns) foram ignorados por seguran\u00e7a.";
+        }
+        ExibirMensagem(mensagem);
     }
 
     protected void rptPermissoes_ItemCommand(object source, RepeaterCommandEventArgs e)
@@ -137,6 +205,17 @@ SELECT
 FROM dbo.app_usuario_local WITH (READPAST)
 ORDER BY COALESCE(NULLIF(usuario_nome, N''), usuario_id), usuario_id;");
 
+        if (!usuarios.Columns.Contains("iniciais"))
+        {
+            usuarios.Columns.Add("iniciais", typeof(string));
+        }
+
+        foreach (DataRow row in usuarios.Rows)
+        {
+            row["texto"] = CorrigirAcentos(Convert.ToString(row["texto"]));
+            row["iniciais"] = Iniciais(Convert.ToString(row["texto"]));
+        }
+
         ddlUsuarioLocal.DataSource = usuarios;
         ddlUsuarioLocal.DataTextField = "texto";
         ddlUsuarioLocal.DataValueField = "id_usuario_local";
@@ -147,10 +226,16 @@ ORDER BY COALESCE(NULLIF(usuario_nome, N''), usuario_id), usuario_id;");
             item.Text = CorrigirAcentos(item.Text);
         }
 
+        rptUsuarios.DataSource = usuarios;
+        rptUsuarios.DataBind();
+        pnlSemUsuarios.Visible = usuarios.Rows.Count == 0;
+
         if (ddlUsuarioLocal.Items.Count == 0)
         {
             ddlUsuarioLocal.Items.Add(new ListItem("Nenhum usu\u00e1rio espelhado ainda", "0"));
         }
+
+        SincronizarUsuarioSelecionado(usuarios);
     }
 
     private void CarregarResumo()
@@ -262,10 +347,99 @@ WHERE id_usuario_local = @id_usuario_local
         }
     }
 
+    private bool RecursoBloqueiaTelaPermissoes(string recurso)
+    {
+        recurso = AppPermissoes.NormalizarRecurso(recurso);
+        return String.Equals(recurso, "*", StringComparison.OrdinalIgnoreCase)
+            || String.Equals(recurso, "/tecnologia/*", StringComparison.OrdinalIgnoreCase)
+            || String.Equals(recurso, "/tecnologia/permissoes.aspx", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private int ObterUsuarioSelecionado()
+    {
+        int idUsuarioLocal;
+        if (Int32.TryParse(hdnUsuarioLocal.Value, out idUsuarioLocal) && idUsuarioLocal > 0)
+        {
+            ListItem itemSelecionado = ddlUsuarioLocal.Items.FindByValue(idUsuarioLocal.ToString());
+            if (itemSelecionado != null)
+            {
+                ddlUsuarioLocal.ClearSelection();
+                itemSelecionado.Selected = true;
+            }
+            return idUsuarioLocal;
+        }
+
+        if (Int32.TryParse(ddlUsuarioLocal.SelectedValue, out idUsuarioLocal) && idUsuarioLocal > 0)
+        {
+            hdnUsuarioLocal.Value = idUsuarioLocal.ToString();
+            return idUsuarioLocal;
+        }
+
+        return 0;
+    }
+
+    private void SincronizarUsuarioSelecionado(DataTable usuarios)
+    {
+        int idUsuarioLocal = ObterUsuarioSelecionado();
+
+        if (idUsuarioLocal <= 0)
+        {
+            string codigoAtual = Convert.ToString(Session["usuario_codigo"]).Trim();
+            string idAtual = Convert.ToString(Session["id"]).Trim();
+
+            foreach (DataRow row in usuarios.Rows)
+            {
+                string texto = Convert.ToString(row["texto"]);
+                if ((codigoAtual.Length > 0 && texto.IndexOf(codigoAtual, StringComparison.OrdinalIgnoreCase) >= 0)
+                    || (idAtual.Length > 0 && texto.IndexOf(idAtual, StringComparison.OrdinalIgnoreCase) >= 0))
+                {
+                    idUsuarioLocal = Convert.ToInt32(row["id_usuario_local"]);
+                    break;
+                }
+            }
+        }
+
+        if (idUsuarioLocal <= 0 && usuarios.Rows.Count > 0)
+        {
+            idUsuarioLocal = Convert.ToInt32(usuarios.Rows[0]["id_usuario_local"]);
+        }
+
+        if (idUsuarioLocal > 0)
+        {
+            hdnUsuarioLocal.Value = idUsuarioLocal.ToString();
+            ListItem itemSelecionado = ddlUsuarioLocal.Items.FindByValue(idUsuarioLocal.ToString());
+            if (itemSelecionado != null)
+            {
+                ddlUsuarioLocal.ClearSelection();
+                itemSelecionado.Selected = true;
+                litUsuarioSelecionado.Text = Server.HtmlEncode(itemSelecionado.Text);
+                return;
+            }
+        }
+
+        litUsuarioSelecionado.Text = "Nenhum usu\u00e1rio selecionado";
+    }
+
+    private string Iniciais(string texto)
+    {
+        if (String.IsNullOrWhiteSpace(texto)) return "?";
+
+        string[] partes = texto.Trim().Split(new char[] { ' ', '.', '@', '|', '-' }, StringSplitOptions.RemoveEmptyEntries);
+        if (partes.Length == 0) return "?";
+        if (partes.Length == 1) return partes[0].Substring(0, Math.Min(2, partes[0].Length)).ToUpperInvariant();
+        return (partes[0].Substring(0, 1) + partes[1].Substring(0, 1)).ToUpperInvariant();
+    }
+
     protected string Html(object valor)
     {
         string texto = Convert.ToString(valor);
         return Server.HtmlEncode(String.IsNullOrWhiteSpace(texto) ? "-" : CorrigirAcentos(texto.Trim()));
+    }
+
+    protected string HtmlAttr(object valor)
+    {
+        string texto = Convert.ToString(valor);
+        return HttpUtility.HtmlAttributeEncode(String.IsNullOrWhiteSpace(texto) ? "" : CorrigirAcentos(texto.Trim()));
     }
 
     private string CorrigirAcentos(string texto)

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Permiss&otilde;es | Tecnologia</title>
-    <link href="../css/bali-tecnologia.css?v=20260629-permissoes01" rel="stylesheet" />
+    <link href="../css/bali-tecnologia.css?v=20260629-permissoes02" rel="stylesheet" />
 </head>
 <body class="bali-tech-page">
     <form id="form1" runat="server">
@@ -69,80 +69,144 @@
                 </article>
             </section>
 
-            <section class="tech-panel">
+            <section class="tech-panel permission-builder-panel">
                 <div class="tech-panel-head">
                     <div>
                         <span class="tech-panel-kicker">Nova regra</span>
-                        <h2>Bloquear ou liberar acesso</h2>
-                        <p>Escolha um usu&aacute;rio, recurso e a&ccedil;&atilde;o. Para a navega&ccedil;&atilde;o das p&aacute;ginas, use a a&ccedil;&atilde;o Visualizar.</p>
+                        <h2>Aplicar permiss&otilde;es de forma r&aacute;pida</h2>
+                        <p>Escolha o usu&aacute;rio uma vez, marque os acessos e aplique tudo em lote. Para casos especiais, use o modo avan&ccedil;ado abaixo.</p>
                     </div>
                 </div>
 
-                <div class="permission-form-grid">
-                    <div class="tech-field is-full">
-                        <span>Usu&aacute;rio</span>
-                        <asp:DropDownList ID="ddlUsuarioLocal" runat="server"></asp:DropDownList>
+                <asp:HiddenField ID="hdnUsuarioLocal" runat="server" />
+
+                <div class="permission-wizard">
+                    <div class="permission-step">
+                        <div class="permission-step-head">
+                            <span>1</span>
+                            <div>
+                                <strong>Escolha o usu&aacute;rio</strong>
+                                <small>Use a busca e clique no cart&atilde;o. O usu&aacute;rio selecionado ser&aacute; usado em todas as a&ccedil;&otilde;es abaixo.</small>
+                            </div>
+                        </div>
+                        <div class="permission-search-row">
+                            <input type="search" id="permissionUserSearch" class="permission-user-search" placeholder="Buscar por nome, login ou c&oacute;digo" autocomplete="off" />
+                            <div class="permission-selected-user">Selecionado: <strong id="permissionSelectedUser"><asp:Literal ID="litUsuarioSelecionado" runat="server" /></strong></div>
+                        </div>
+                        <div id="permissionUserList" class="permission-user-list">
+                            <asp:Repeater ID="rptUsuarios" runat="server">
+                                <ItemTemplate>
+                                    <button type="button" class="permission-user-card" data-user-id='<%# Eval("id_usuario_local") %>' data-user-label='<%# HtmlAttr(Eval("texto")) %>'>
+                                        <span class="permission-user-avatar"><%# Html(Eval("iniciais")) %></span>
+                                        <strong><%# Html(Eval("texto")) %></strong>
+                                        <small>Clique para selecionar</small>
+                                    </button>
+                                </ItemTemplate>
+                            </asp:Repeater>
+                            <asp:Panel ID="pnlSemUsuarios" runat="server" CssClass="tech-empty" Visible="false">Nenhum usu&aacute;rio espelhado ainda. O espelho &eacute; criado quando o usu&aacute;rio acessa o sistema.</asp:Panel>
+                        </div>
                     </div>
-                    <div class="tech-field">
-                        <span>Recurso comum</span>
-                        <asp:DropDownList ID="ddlRecurso" runat="server">
+
+                    <div class="permission-step">
+                        <div class="permission-step-head">
+                            <span>2</span>
+                            <div>
+                                <strong>Marque os acessos</strong>
+                                <small>Para navega&ccedil;&atilde;o, o sistema aplica a a&ccedil;&atilde;o Visualizar automaticamente.</small>
+                            </div>
+                        </div>
+                        <asp:CheckBoxList ID="cblRecursosRapidos" runat="server" CssClass="permission-resource-list" RepeatLayout="UnorderedList">
                             <asp:ListItem Value="/Default.aspx">P&aacute;gina inicial</asp:ListItem>
-                            <asp:ListItem Value="/tecnologia/Default.aspx">Tecnologia - Central</asp:ListItem>
-                            <asp:ListItem Value="/tecnologia/usuarios.aspx">Tecnologia - Usu&aacute;rios</asp:ListItem>
-                            <asp:ListItem Value="/tecnologia/sistemas.aspx">Tecnologia - Sistemas</asp:ListItem>
-                            <asp:ListItem Value="/tecnologia/sessoes.aspx">Tecnologia - Sess&otilde;es</asp:ListItem>
-                            <asp:ListItem Value="/tecnologia/permissoes.aspx">Tecnologia - Permiss&otilde;es</asp:ListItem>
-                            <asp:ListItem Value="/CI/default.aspx">CI - Comunica&ccedil;&atilde;o Interna</asp:ListItem>
+                            <asp:ListItem Value="/tecnologia/*">Tecnologia inteira</asp:ListItem>
+                            <asp:ListItem Value="/tecnologia/usuarios.aspx">Usu&aacute;rios</asp:ListItem>
+                            <asp:ListItem Value="/tecnologia/permissoes.aspx">Permiss&otilde;es</asp:ListItem>
+                            <asp:ListItem Value="/CI/default.aspx">CI</asp:ListItem>
                             <asp:ListItem Value="/RAMAIS/default.aspx">Ramais</asp:ListItem>
-                            <asp:ListItem Value="/veiculos/Default.aspx">Fiat - Central</asp:ListItem>
-                            <asp:ListItem Value="/jeep/principal.aspx">Jeep - Central</asp:ListItem>
-                            <asp:ListItem Value="/byd/principal.aspx">BYD - Central</asp:ListItem>
-                            <asp:ListItem Value="/veiculos/contrato.aspx">Fiat - Contratos</asp:ListItem>
-                            <asp:ListItem Value="/jeep/contrato.aspx">Jeep - Contratos</asp:ListItem>
-                            <asp:ListItem Value="/byd/contrato.aspx">BYD - Contratos</asp:ListItem>
+                            <asp:ListItem Value="/veiculos/*">Fiat inteira</asp:ListItem>
+                            <asp:ListItem Value="/jeep/*">Jeep inteira</asp:ListItem>
+                            <asp:ListItem Value="/byd/*">BYD inteira</asp:ListItem>
+                            <asp:ListItem Value="/veiculos/contrato.aspx">Contratos Fiat</asp:ListItem>
+                            <asp:ListItem Value="/jeep/contrato.aspx">Contratos Jeep</asp:ListItem>
+                            <asp:ListItem Value="/byd/contrato.aspx">Contratos BYD</asp:ListItem>
+                            <asp:ListItem Value="/admfinanceiro/*">Adm. Financeiro</asp:ListItem>
                             <asp:ListItem Value="/minhas-vendas.aspx">Minhas vendas</asp:ListItem>
-                            <asp:ListItem Value="/admfinanceiro/Default.aspx">Adm. Financeiro - Central</asp:ListItem>
-                            <asp:ListItem Value="/admfinanceiro/Recibo/recibo.aspx">Adm. Financeiro - Recibo</asp:ListItem>
-                            <asp:ListItem Value="/veiculos/*">Fiat - Toda a pasta</asp:ListItem>
-                            <asp:ListItem Value="/jeep/*">Jeep - Toda a pasta</asp:ListItem>
-                            <asp:ListItem Value="/byd/*">BYD - Toda a pasta</asp:ListItem>
-                            <asp:ListItem Value="/tecnologia/*">Tecnologia - Toda a pasta</asp:ListItem>
-                            <asp:ListItem Value="*">Todos os recursos</asp:ListItem>
-                        </asp:DropDownList>
+                        </asp:CheckBoxList>
                     </div>
-                    <div class="tech-field">
-                        <span>Recurso manual opcional</span>
-                        <asp:TextBox ID="txtRecursoManual" runat="server" MaxLength="260" placeholder="/pasta/pagina.aspx ou /pasta/*"></asp:TextBox>
-                    </div>
-                    <div class="tech-field">
-                        <span>A&ccedil;&atilde;o</span>
-                        <asp:DropDownList ID="ddlAcao" runat="server">
-                            <asp:ListItem Value="VISUALIZAR">Visualizar</asp:ListItem>
-                            <asp:ListItem Value="CRIAR">Criar</asp:ListItem>
-                            <asp:ListItem Value="EDITAR">Editar</asp:ListItem>
-                            <asp:ListItem Value="EXCLUIR">Excluir</asp:ListItem>
-                            <asp:ListItem Value="IMPRIMIR">Imprimir</asp:ListItem>
-                            <asp:ListItem Value="EXPORTAR">Exportar</asp:ListItem>
-                            <asp:ListItem Value="ADMINISTRAR">Administrar</asp:ListItem>
-                            <asp:ListItem Value="*">Todas</asp:ListItem>
-                        </asp:DropDownList>
-                    </div>
-                    <div class="tech-field">
-                        <span>Tipo de regra</span>
-                        <asp:DropDownList ID="ddlTipoRegra" runat="server">
-                            <asp:ListItem Value="bloquear">Bloquear</asp:ListItem>
-                            <asp:ListItem Value="liberar">Liberar</asp:ListItem>
-                        </asp:DropDownList>
-                    </div>
+
                     <div class="tech-field is-full">
                         <span>Motivo / observa&ccedil;&atilde;o</span>
                         <asp:TextBox ID="txtMotivo" runat="server" MaxLength="300" placeholder="Ex.: bloqueio solicitado pelo gestor"></asp:TextBox>
                     </div>
-                    <div class="tech-actions-row is-full">
-                        <asp:Button ID="btnSalvarRegra" runat="server" Text="Salvar regra" OnClick="btnSalvarRegra_Click" />
+                    <div class="tech-actions-row is-full permission-primary-actions">
+                        <asp:Button ID="btnBloquearSelecionados" runat="server" Text="Bloquear acessos marcados" CommandArgument="bloquear" OnCommand="btnAplicarRecursos_Command" />
+                        <asp:Button ID="btnLiberarSelecionados" runat="server" Text="Liberar acessos marcados" CssClass="tech-button-secondary" CommandArgument="liberar" OnCommand="btnAplicarRecursos_Command" />
                         <asp:Button ID="btnAtualizar" runat="server" Text="Atualizar tela" CssClass="tech-button-secondary" OnClick="btnAtualizar_Click" />
                     </div>
                 </div>
+
+                <details class="permission-advanced">
+                    <summary>Modo avan&ccedil;ado: regra individual, a&ccedil;&atilde;o espec&iacute;fica ou recurso manual</summary>
+                    <div class="permission-form-grid">
+                        <div class="tech-field is-full">
+                            <span>Usu&aacute;rio selecionado</span>
+                            <asp:DropDownList ID="ddlUsuarioLocal" runat="server"></asp:DropDownList>
+                        </div>
+                        <div class="tech-field">
+                            <span>Recurso comum</span>
+                            <asp:DropDownList ID="ddlRecurso" runat="server">
+                                <asp:ListItem Value="/Default.aspx">P&aacute;gina inicial</asp:ListItem>
+                                <asp:ListItem Value="/tecnologia/Default.aspx">Tecnologia - Central</asp:ListItem>
+                                <asp:ListItem Value="/tecnologia/usuarios.aspx">Tecnologia - Usu&aacute;rios</asp:ListItem>
+                                <asp:ListItem Value="/tecnologia/sistemas.aspx">Tecnologia - Sistemas</asp:ListItem>
+                                <asp:ListItem Value="/tecnologia/sessoes.aspx">Tecnologia - Sess&otilde;es</asp:ListItem>
+                                <asp:ListItem Value="/tecnologia/permissoes.aspx">Tecnologia - Permiss&otilde;es</asp:ListItem>
+                                <asp:ListItem Value="/CI/default.aspx">CI - Comunica&ccedil;&atilde;o Interna</asp:ListItem>
+                                <asp:ListItem Value="/RAMAIS/default.aspx">Ramais</asp:ListItem>
+                                <asp:ListItem Value="/veiculos/Default.aspx">Fiat - Central</asp:ListItem>
+                                <asp:ListItem Value="/jeep/principal.aspx">Jeep - Central</asp:ListItem>
+                                <asp:ListItem Value="/byd/principal.aspx">BYD - Central</asp:ListItem>
+                                <asp:ListItem Value="/veiculos/contrato.aspx">Fiat - Contratos</asp:ListItem>
+                                <asp:ListItem Value="/jeep/contrato.aspx">Jeep - Contratos</asp:ListItem>
+                                <asp:ListItem Value="/byd/contrato.aspx">BYD - Contratos</asp:ListItem>
+                                <asp:ListItem Value="/minhas-vendas.aspx">Minhas vendas</asp:ListItem>
+                                <asp:ListItem Value="/admfinanceiro/Default.aspx">Adm. Financeiro - Central</asp:ListItem>
+                                <asp:ListItem Value="/admfinanceiro/Recibo/recibo.aspx">Adm. Financeiro - Recibo</asp:ListItem>
+                                <asp:ListItem Value="/veiculos/*">Fiat - Toda a pasta</asp:ListItem>
+                                <asp:ListItem Value="/jeep/*">Jeep - Toda a pasta</asp:ListItem>
+                                <asp:ListItem Value="/byd/*">BYD - Toda a pasta</asp:ListItem>
+                                <asp:ListItem Value="/tecnologia/*">Tecnologia - Toda a pasta</asp:ListItem>
+                                <asp:ListItem Value="*">Todos os recursos</asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
+                        <div class="tech-field">
+                            <span>Recurso manual opcional</span>
+                            <asp:TextBox ID="txtRecursoManual" runat="server" MaxLength="260" placeholder="/pasta/pagina.aspx ou /pasta/*"></asp:TextBox>
+                        </div>
+                        <div class="tech-field">
+                            <span>A&ccedil;&atilde;o</span>
+                            <asp:DropDownList ID="ddlAcao" runat="server">
+                                <asp:ListItem Value="VISUALIZAR">Visualizar</asp:ListItem>
+                                <asp:ListItem Value="CRIAR">Criar</asp:ListItem>
+                                <asp:ListItem Value="EDITAR">Editar</asp:ListItem>
+                                <asp:ListItem Value="EXCLUIR">Excluir</asp:ListItem>
+                                <asp:ListItem Value="IMPRIMIR">Imprimir</asp:ListItem>
+                                <asp:ListItem Value="EXPORTAR">Exportar</asp:ListItem>
+                                <asp:ListItem Value="ADMINISTRAR">Administrar</asp:ListItem>
+                                <asp:ListItem Value="*">Todas</asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
+                        <div class="tech-field">
+                            <span>Tipo de regra</span>
+                            <asp:DropDownList ID="ddlTipoRegra" runat="server">
+                                <asp:ListItem Value="bloquear">Bloquear</asp:ListItem>
+                                <asp:ListItem Value="liberar">Liberar</asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
+                        <div class="tech-actions-row is-full">
+                            <asp:Button ID="btnSalvarRegra" runat="server" Text="Salvar regra individual" OnClick="btnSalvarRegra_Click" />
+                        </div>
+                    </div>
+                </details>
             </section>
 
             <section class="tech-panel">
@@ -215,6 +279,54 @@
                 </div>
             </section>
         </main>
+        <script>
+            (function () {
+                var hidden = document.getElementById('<%= hdnUsuarioLocal.ClientID %>');
+                var ddl = document.getElementById('<%= ddlUsuarioLocal.ClientID %>');
+                var label = document.getElementById('permissionSelectedUser');
+                var search = document.getElementById('permissionUserSearch');
+                var list = document.getElementById('permissionUserList');
+                if (!hidden || !ddl || !label || !list) return;
+
+                var cards = Array.prototype.slice.call(list.querySelectorAll('.permission-user-card'));
+
+                function selectUser(card) {
+                    if (!card) return;
+                    hidden.value = card.getAttribute('data-user-id') || '';
+                    if (ddl) ddl.value = hidden.value;
+                    label.textContent = card.getAttribute('data-user-label') || card.textContent.trim();
+                    cards.forEach(function (item) { item.classList.remove('is-selected'); });
+                    card.classList.add('is-selected');
+                }
+
+                function selectById(id) {
+                    var match = cards.filter(function (card) {
+                        return card.getAttribute('data-user-id') === id;
+                    })[0];
+                    if (match) selectUser(match);
+                }
+
+                cards.forEach(function (card) {
+                    card.addEventListener('click', function () { selectUser(card); });
+                });
+
+                if (ddl) {
+                    ddl.addEventListener('change', function () { selectById(ddl.value); });
+                }
+
+                if (search) {
+                    search.addEventListener('input', function () {
+                        var term = search.value.toLowerCase().trim();
+                        cards.forEach(function (card) {
+                            var text = (card.getAttribute('data-user-label') || card.textContent).toLowerCase();
+                            card.hidden = term.length > 0 && text.indexOf(term) === -1;
+                        });
+                    });
+                }
+
+                selectById(hidden.value || ddl.value);
+            })();
+        </script>
     </form>
 </body>
 </html>
