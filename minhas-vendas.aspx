@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Minhas vendas | Grupo Bali</title>
-    <link href="css/minhas-vendas.css?v=20260629-acoes01" rel="stylesheet" />
+    <link href="css/minhas-vendas.css?v=20260629-grafico-valor01" rel="stylesheet" />
     <script src="js/minhas-vendas.js?v=20260629-acoes01" defer="defer"></script>
 </head>
 <body id="pageBody" runat="server" class="sales-bi-page brand-fiat">
@@ -162,6 +162,13 @@
                                 <h2>Por tipo</h2>
                             </div>
                             <asp:Literal ID="litTipos" runat="server" />
+                        </article>
+                        <article class="sales-chart-card sales-chart-wide">
+                            <div class="sales-card-heading">
+                                <span>Faturamento</span>
+                                <h2>Valor vendido por dia</h2>
+                            </div>
+                            <asp:Literal ID="litGraficoValorDiario" runat="server" />
                         </article>
                     </section>
 

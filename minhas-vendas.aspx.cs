@@ -545,6 +545,7 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
     private void PreencherGraficos(DataTable vendas, DateTime dataInicial, DateTime dataFinal)
     {
         litGraficoDiario.Text = RenderizarGraficoDiario(vendas, dataInicial, dataFinal);
+        litGraficoValorDiario.Text = RenderizarGraficoValorDiario(vendas, dataInicial, dataFinal);
         litLojas.Text = RenderizarBarras(vendas, "loja", "qtde", "Nenhuma loja encontrada.");
         litTipos.Text = RenderizarBarras(vendas, "tipoestoque", "qtde", "Nenhum tipo de estoque encontrado.");
     }
@@ -648,6 +649,103 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         svg.Append(HttpUtility.HtmlEncode((maximo / 2).ToString("N0", ptBr)));
         svg.Append("</text>");
         svg.Append("<text class=\"sales-y-label\" x=\"36\" y=\"216\">0</text>");
+        svg.AppendFormat(CultureInfo.InvariantCulture, "<polyline class=\"sales-line\" points=\"{0}\"></polyline>", pontos.ToString().Trim());
+        svg.Append("<g class=\"sales-points\">");
+        svg.Append(circulos.ToString());
+        svg.Append("</g><g class=\"sales-x-labels\">");
+        svg.Append(legendas.ToString());
+        svg.Append("</g></svg></div>");
+        return svg.ToString();
+    }
+
+    private string RenderizarGraficoValorDiario(DataTable vendas, DateTime dataInicial, DateTime dataFinal)
+    {
+        SortedDictionary<DateTime, decimal> porDia = new SortedDictionary<DateTime, decimal>();
+        DateTime cursor = dataInicial.Date;
+        while (cursor <= dataFinal.Date)
+        {
+            porDia[cursor] = 0;
+            cursor = cursor.AddDays(1);
+        }
+
+        for (int i = 0; i < vendas.Rows.Count; i++)
+        {
+            DataRow linha = vendas.Rows[i];
+            if (linha["datavenda"] == DBNull.Value)
+            {
+                continue;
+            }
+
+            DateTime dia = Convert.ToDateTime(linha["datavenda"]).Date;
+            if (!porDia.ContainsKey(dia))
+            {
+                porDia[dia] = 0;
+            }
+            porDia[dia] += ToDecimal(linha["ValordeVenda"]);
+        }
+
+        if (porDia.Count == 0)
+        {
+            return "<div class=\"sales-empty-chart\">Sem dados para montar o gr&aacute;fico.</div>";
+        }
+
+        decimal maximo = 0;
+        foreach (KeyValuePair<DateTime, decimal> item in porDia)
+        {
+            decimal valorAbsoluto = Math.Abs(item.Value);
+            if (valorAbsoluto > maximo)
+            {
+                maximo = valorAbsoluto;
+            }
+        }
+        if (maximo <= 0)
+        {
+            maximo = 1;
+        }
+
+        int largura = 920;
+        int altura = 260;
+        int esquerda = 72;
+        int direita = 24;
+        int topo = 28;
+        int baixo = 48;
+        decimal areaLargura = largura - esquerda - direita;
+        decimal areaAltura = altura - topo - baixo;
+        int quantidade = porDia.Count;
+        int indice = 0;
+        int passoLegenda = Math.Max(1, (int)Math.Ceiling(quantidade / 6.0));
+        StringBuilder pontos = new StringBuilder();
+        StringBuilder circulos = new StringBuilder();
+        StringBuilder legendas = new StringBuilder();
+
+        foreach (KeyValuePair<DateTime, decimal> item in porDia)
+        {
+            decimal x = quantidade == 1 ? esquerda + (areaLargura / 2) : esquerda + (areaLargura * indice / (quantidade - 1));
+            decimal y = topo + areaAltura - ((Math.Abs(item.Value) / maximo) * areaAltura);
+            pontos.AppendFormat(CultureInfo.InvariantCulture, "{0:0.##},{1:0.##} ", x, y);
+            circulos.AppendFormat(CultureInfo.InvariantCulture, "<circle cx=\"{0:0.##}\" cy=\"{1:0.##}\" r=\"3.5\"><title>{2}: {3}</title></circle>", x, y, item.Key.ToString("dd/MM/yyyy", ptBr), item.Value.ToString("C0", ptBr));
+
+            if (indice == 0 || indice == quantidade - 1 || indice % passoLegenda == 0)
+            {
+                legendas.AppendFormat(CultureInfo.InvariantCulture, "<text x=\"{0:0.##}\" y=\"235\">{1}</text>", x, HttpUtility.HtmlEncode(item.Key.ToString("dd/MM", ptBr)));
+            }
+
+            indice++;
+        }
+
+        StringBuilder svg = new StringBuilder();
+        svg.Append("<div class=\"sales-line-chart sales-value-line-chart\" role=\"img\" aria-label=\"Evolu&#231;&#227;o di&#225;ria de valor vendido\">");
+        svg.AppendFormat(CultureInfo.InvariantCulture, "<svg viewBox=\"0 0 {0} {1}\" preserveAspectRatio=\"none\">", largura, altura);
+        svg.Append("<line class=\"sales-axis\" x1=\"72\" y1=\"212\" x2=\"896\" y2=\"212\"></line>");
+        svg.Append("<line class=\"sales-grid\" x1=\"72\" y1=\"28\" x2=\"896\" y2=\"28\"></line>");
+        svg.Append("<line class=\"sales-grid\" x1=\"72\" y1=\"120\" x2=\"896\" y2=\"120\"></line>");
+        svg.Append("<text class=\"sales-y-label\" x=\"8\" y=\"32\">");
+        svg.Append(HttpUtility.HtmlEncode(maximo.ToString("C0", ptBr)));
+        svg.Append("</text>");
+        svg.Append("<text class=\"sales-y-label\" x=\"8\" y=\"124\">");
+        svg.Append(HttpUtility.HtmlEncode((maximo / 2).ToString("C0", ptBr)));
+        svg.Append("</text>");
+        svg.Append("<text class=\"sales-y-label\" x=\"52\" y=\"216\">0</text>");
         svg.AppendFormat(CultureInfo.InvariantCulture, "<polyline class=\"sales-line\" points=\"{0}\"></polyline>", pontos.ToString().Trim());
         svg.Append("<g class=\"sales-points\">");
         svg.Append(circulos.ToString());
