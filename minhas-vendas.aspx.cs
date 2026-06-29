@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Text;
 using System.Web;
+using System.Web.Caching;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
@@ -14,6 +15,7 @@ public partial class minhas_vendas : System.Web.UI.Page
     private readonly CultureInfo ptBr = new CultureInfo("pt-BR");
     private const string DealernetConnectionString = "Data Source=129.13.144.8\\wf;Initial Catalog=GrupoBali_DealernetWF;User ID=caio;Password=D6d3h7g711;Connect Timeout=30;";
     private const int DiasMaximosPeriodoBI = 32;
+    private const int MinhasVendasCacheMinutos = 3;
 
     private string marcaAtual = "fiat";
 
@@ -82,8 +84,10 @@ public partial class minhas_vendas : System.Web.UI.Page
         try
         {
             string tipoFiltro = ObterTipoFiltroSelecionado();
-            DataTable vendas = ConsultarVendas(dataInicial, dataFinal, codigoUsuario, tipoFiltro);
-            ExportarExcel(vendas, dataInicial, dataFinal, tipoFiltro);
+            string lojaFiltro = ObterLojaFiltroSelecionada();
+            DataTable vendas = ConsultarVendasComCache(dataInicial, dataFinal, codigoUsuario, tipoFiltro, lojaFiltro);
+            RegistrarAuditoria("exportacao-excel", dataInicial, dataFinal, codigoUsuario, tipoFiltro, lojaFiltro, vendas.Rows.Count);
+            ExportarExcel(vendas, dataInicial, dataFinal, tipoFiltro, lojaFiltro);
         }
         catch (System.Threading.ThreadAbortException)
         {
@@ -169,16 +173,20 @@ public partial class minhas_vendas : System.Web.UI.Page
         try
         {
             string tipoFiltro = ObterTipoFiltroSelecionado();
-            DataTable vendas = ConsultarVendas(dataInicial, dataFinal, codigoUsuario, tipoFiltro);
+            string lojaFiltro = ObterLojaFiltroSelecionada();
+            DataTable vendasBase = ConsultarVendasComCache(dataInicial, dataFinal, codigoUsuario, tipoFiltro, "");
+            PreencherFiltroLojas(vendasBase, lojaFiltro);
+            DataTable vendas = FiltrarVendasPorLoja(vendasBase, lojaFiltro);
             DateTime dataInicialAnterior;
             DateTime dataFinalAnterior;
             ObterPeriodoAnterior(dataInicial, dataFinal, out dataInicialAnterior, out dataFinalAnterior);
-            DataTable vendasPeriodoAnterior = ConsultarVendas(dataInicialAnterior, dataFinalAnterior, codigoUsuario, tipoFiltro);
+            DataTable vendasPeriodoAnterior = ConsultarVendasComCache(dataInicialAnterior, dataFinalAnterior, codigoUsuario, tipoFiltro, lojaFiltro);
 
-            PreencherResumo(vendas, dataInicial, dataFinal, tipoFiltro);
+            PreencherResumo(vendas, dataInicial, dataFinal, tipoFiltro, lojaFiltro);
             PreencherComparativo(vendas, vendasPeriodoAnterior, dataInicialAnterior, dataFinalAnterior);
             PreencherGraficos(vendas, dataInicial, dataFinal);
             PreencherTabela(vendas);
+            RegistrarAuditoria("consulta", dataInicial, dataFinal, codigoUsuario, tipoFiltro, lojaFiltro, vendas.Rows.Count);
         }
         catch (Exception ex)
         {
@@ -188,7 +196,38 @@ public partial class minhas_vendas : System.Web.UI.Page
         }
     }
 
-    private DataTable ConsultarVendas(DateTime dataInicial, DateTime dataFinal, int codigoUsuario, string tipoFiltro)
+    private DataTable ConsultarVendasComCache(DateTime dataInicial, DateTime dataFinal, int codigoUsuario, string tipoFiltro, string lojaFiltro)
+    {
+        string chave = String.Format(
+            CultureInfo.InvariantCulture,
+            "minhas-vendas:{0}:{1:yyyyMMdd}:{2:yyyyMMdd}:{3}:{4}:{5}",
+            marcaAtual,
+            dataInicial.Date,
+            dataFinal.Date,
+            codigoUsuario,
+            NormalizarTipoFiltro(tipoFiltro),
+            NormalizarTextoFiltro(lojaFiltro));
+
+        DataTable cached = HttpRuntime.Cache[chave] as DataTable;
+        if (cached != null)
+        {
+            return cached.Copy();
+        }
+
+        DataTable tabela = ConsultarVendas(dataInicial, dataFinal, codigoUsuario, tipoFiltro, lojaFiltro);
+        HttpRuntime.Cache.Insert(
+            chave,
+            tabela.Copy(),
+            null,
+            DateTime.Now.AddMinutes(MinhasVendasCacheMinutos),
+            Cache.NoSlidingExpiration,
+            CacheItemPriority.Normal,
+            null);
+
+        return tabela;
+    }
+
+    private DataTable ConsultarVendas(DateTime dataInicial, DateTime dataFinal, int codigoUsuario, string tipoFiltro, string lojaFiltro)
     {
         DataTable tabela = new DataTable();
 
@@ -239,11 +278,13 @@ WHERE v.NotaFiscal_DataEmissao >= @datainicial
   AND v.NotaFiscal_DataEmissao < DATEADD(DAY, 1, @datafinal)
   AND v.NotaFiscal_UsuCodVendedor = @codigo_usuario
   AND (@tipo_estoque = '' OR UPPER(LTRIM(RTRIM(ISNULL(v.notafiscal_estoquetipo, '')))) = @tipo_estoque)
+  AND (@loja = '' OR UPPER(LTRIM(RTRIM(ISNULL(v.NotaFiscal_EmpresaNom, '')))) = @loja)
 ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
             comando.Parameters.Add("@datainicial", SqlDbType.DateTime).Value = dataInicial.Date;
             comando.Parameters.Add("@datafinal", SqlDbType.DateTime).Value = dataFinal.Date;
             comando.Parameters.Add("@codigo_usuario", SqlDbType.Int).Value = codigoUsuario;
             comando.Parameters.Add("@tipo_estoque", SqlDbType.VarChar, 12).Value = NormalizarTipoFiltro(tipoFiltro);
+            comando.Parameters.Add("@loja", SqlDbType.VarChar, 120).Value = NormalizarTextoFiltro(lojaFiltro);
 
             using (SqlDataAdapter adaptador = new SqlDataAdapter(comando))
             {
@@ -254,11 +295,74 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         return tabela;
     }
 
-    private void PreencherResumo(DataTable vendas, DateTime dataInicial, DateTime dataFinal, string tipoFiltro)
+    private DataTable FiltrarVendasPorLoja(DataTable vendas, string lojaFiltro)
+    {
+        string lojaNormalizada = NormalizarTextoFiltro(lojaFiltro);
+        if (String.IsNullOrEmpty(lojaNormalizada))
+        {
+            return vendas.Copy();
+        }
+
+        DataTable filtrada = vendas.Clone();
+        for (int i = 0; i < vendas.Rows.Count; i++)
+        {
+            string lojaLinha = NormalizarTextoFiltro(Convert.ToString(vendas.Rows[i]["loja"]));
+            if (lojaLinha == lojaNormalizada)
+            {
+                filtrada.ImportRow(vendas.Rows[i]);
+            }
+        }
+
+        return filtrada;
+    }
+
+    private void PreencherFiltroLojas(DataTable vendas, string lojaSelecionada)
+    {
+        string lojaSelecionadaNormalizada = NormalizarTextoFiltro(lojaSelecionada);
+        Dictionary<string, string> lojas = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        for (int i = 0; i < vendas.Rows.Count; i++)
+        {
+            string loja = Convert.ToString(vendas.Rows[i]["loja"]).Trim();
+            string chave = NormalizarTextoFiltro(loja);
+            if (loja.Length > 0 && !lojas.ContainsKey(chave))
+            {
+                lojas[chave] = loja;
+            }
+        }
+
+        ddlLojaFiltro.Items.Clear();
+        ddlLojaFiltro.Items.Add(new ListItem("Todas as lojas", ""));
+
+        List<string> chaves = new List<string>(lojas.Keys);
+        chaves.Sort(delegate(string a, string b)
+        {
+            return String.Compare(lojas[a], lojas[b], true, ptBr);
+        });
+
+        bool selecionadaExiste = String.IsNullOrEmpty(lojaSelecionadaNormalizada);
+        for (int i = 0; i < chaves.Count; i++)
+        {
+            ListItem item = new ListItem(lojas[chaves[i]], lojas[chaves[i]]);
+            if (chaves[i] == lojaSelecionadaNormalizada)
+            {
+                item.Selected = true;
+                selecionadaExiste = true;
+            }
+            ddlLojaFiltro.Items.Add(item);
+        }
+
+        if (!selecionadaExiste && lojaSelecionada.Length > 0)
+        {
+            ddlLojaFiltro.Items.Add(new ListItem(lojaSelecionada, lojaSelecionada) { Selected = true });
+        }
+    }
+
+    private void PreencherResumo(DataTable vendas, DateTime dataInicial, DateTime dataFinal, string tipoFiltro, string lojaFiltro)
     {
         IndicadoresVendas indicadores = CalcularIndicadores(vendas);
 
-        lblPeriodo.Text = String.Format(ptBr, "Per\u00edodo analisado: {0:dd/MM/yyyy} a {1:dd/MM/yyyy} | Tipo: {2}", dataInicial, dataFinal, DescreverTipoFiltro(tipoFiltro));
+        lblPeriodo.Text = String.Format(ptBr, "Per\u00edodo analisado: {0:dd/MM/yyyy} a {1:dd/MM/yyyy} | Tipo: {2} | Loja: {3}", dataInicial, dataFinal, DescreverTipoFiltro(tipoFiltro), DescreverLojaFiltro(lojaFiltro));
         lblTotalUnidades.Text = indicadores.UnidadesLiquidas.ToString("N0", ptBr);
         lblValorTotal.Text = indicadores.ValorLiquido.ToString("C0", ptBr);
         lblTicketMedio.Text = indicadores.TicketMedio.ToString("C0", ptBr);
@@ -431,7 +535,14 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
 
     private string ObterTipoFiltroSelecionado()
     {
-        return NormalizarTipoFiltro(ddlTipoFiltro.SelectedValue);
+        string valorPostado = Request.Form[ddlTipoFiltro.UniqueID];
+        return NormalizarTipoFiltro(String.IsNullOrEmpty(valorPostado) ? ddlTipoFiltro.SelectedValue : valorPostado);
+    }
+
+    private string ObterLojaFiltroSelecionada()
+    {
+        string valorPostado = Request.Form[ddlLojaFiltro.UniqueID];
+        return String.IsNullOrEmpty(valorPostado) ? Convert.ToString(ddlLojaFiltro.SelectedValue).Trim() : valorPostado.Trim();
     }
 
     private string NormalizarTipoFiltro(string tipo)
@@ -454,7 +565,18 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         return "Todos os tipos";
     }
 
-    private void ExportarExcel(DataTable vendas, DateTime dataInicial, DateTime dataFinal, string tipoFiltro)
+    private string NormalizarTextoFiltro(string texto)
+    {
+        return (texto ?? "").Trim().ToUpperInvariant();
+    }
+
+    private string DescreverLojaFiltro(string loja)
+    {
+        loja = (loja ?? "").Trim();
+        return loja.Length == 0 ? "Todas as lojas" : loja;
+    }
+
+    private void ExportarExcel(DataTable vendas, DateTime dataInicial, DateTime dataFinal, string tipoFiltro, string lojaFiltro)
     {
         IndicadoresVendas indicadores = CalcularIndicadores(vendas);
         string nomeArquivo = String.Format(
@@ -479,6 +601,9 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         Response.Write("</p>");
         Response.Write("<p>Tipo: ");
         Response.Write(HttpUtility.HtmlEncode(DescreverTipoFiltro(tipoFiltro)));
+        Response.Write("</p>");
+        Response.Write("<p>Loja: ");
+        Response.Write(HttpUtility.HtmlEncode(DescreverLojaFiltro(lojaFiltro)));
         Response.Write("</p>");
 
         Response.Write("<table border=\"1\"><tbody>");
@@ -1116,6 +1241,48 @@ ORDER BY
         catch
         {
         }
+    }
+
+    private void RegistrarAuditoria(string acao, DateTime dataInicial, DateTime dataFinal, int codigoUsuario, string tipoFiltro, string lojaFiltro, int registros)
+    {
+        try
+        {
+            string caminho = Server.MapPath("~/App_Data/minhas-vendas-auditoria.log");
+            string linha = String.Format(
+                CultureInfo.InvariantCulture,
+                "{0:yyyy-MM-dd HH:mm:ss} | acao={1} | usuario={2} | codigo={3} | marca={4} | periodo={5:yyyy-MM-dd}:{6:yyyy-MM-dd} | tipo={7} | loja={8} | registros={9} | ip={10}{11}",
+                DateTime.Now,
+                acao,
+                Convert.ToString(Session["usuario"]),
+                codigoUsuario,
+                marcaAtual,
+                dataInicial.Date,
+                dataFinal.Date,
+                NormalizarTipoFiltro(tipoFiltro),
+                DescreverLojaFiltro(lojaFiltro),
+                registros,
+                ObterIpCliente(),
+                Environment.NewLine);
+            System.IO.File.AppendAllText(caminho, linha, Encoding.UTF8);
+        }
+        catch
+        {
+        }
+    }
+
+    private string ObterIpCliente()
+    {
+        string encaminhado = Convert.ToString(Request.ServerVariables["HTTP_X_FORWARDED_FOR"]);
+        if (!String.IsNullOrWhiteSpace(encaminhado))
+        {
+            string[] partes = encaminhado.Split(',');
+            if (partes.Length > 0)
+            {
+                return partes[0].Trim();
+            }
+        }
+
+        return Convert.ToString(Request.ServerVariables["REMOTE_ADDR"]);
     }
 
     private class IndicadoresVendas
