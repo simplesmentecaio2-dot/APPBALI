@@ -6,8 +6,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Minhas vendas | Grupo Bali</title>
-    <link href="css/minhas-vendas.css?v=20260629-filtros01" rel="stylesheet" />
-    <script src="js/minhas-vendas.js?v=20260629-tabela01" defer="defer"></script>
+    <link href="css/minhas-vendas.css?v=20260629-acoes01" rel="stylesheet" />
+    <script src="js/minhas-vendas.js?v=20260629-acoes01" defer="defer"></script>
 </head>
 <body id="pageBody" runat="server" class="sales-bi-page brand-fiat">
     <form id="form1" runat="server">
@@ -177,6 +177,18 @@
                                     <input id="salesTableSearch" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Cliente, chassi, placa, nota ou pedido" />
                                 </label>
                                 <label>
+                                    <span>Loja</span>
+                                    <select id="salesStoreFilter">
+                                        <option value="">Todas</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <span>Tipo</span>
+                                    <select id="salesTypeFilter">
+                                        <option value="">Todos</option>
+                                    </select>
+                                </label>
+                                <label>
                                     <span>Linhas</span>
                                     <select id="salesPageSize">
                                         <option value="10">10</option>
@@ -184,6 +196,10 @@
                                         <option value="50">50</option>
                                         <option value="all">Todas</option>
                                     </select>
+                                </label>
+                                <label class="sales-toggle-filter">
+                                    <input id="salesPositiveOnly" type="checkbox" />
+                                    <span>Ocultar devolu&ccedil;&otilde;es</span>
                                 </label>
                             </div>
                         </div>
@@ -202,6 +218,30 @@
                                     <asp:BoundField DataField="Margem" HeaderText="Margem" DataFormatString="{0:N2}%" />
                                     <asp:BoundField DataField="chassi" HeaderText="Chassi" />
                                     <asp:BoundField DataField="placa" HeaderText="Placa" />
+                                    <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
+                                        <ItemTemplate>
+                                            <div class="sales-row-actions">
+                                                <button type="button" class="sales-row-action" data-sales-detail="true"
+                                                    data-cliente='<%# Atributo(Eval("NomeCliente")) %>'
+                                                    data-cpf='<%# Atributo(Eval("CPFCliente")) %>'
+                                                    data-telefone='<%# Atributo(Eval("TelefoneCliente")) %>'
+                                                    data-email='<%# Atributo(Eval("emailcliente")) %>'
+                                                    data-modelo='<%# Atributo(Eval("modeloveiculo")) %>'
+                                                    data-marca='<%# Atributo(Eval("marcaveiculo")) %>'
+                                                    data-cor='<%# Atributo(Eval("corveiculo")) %>'
+                                                    data-chassi='<%# Atributo(Eval("chassi")) %>'
+                                                    data-placa='<%# Atributo(Eval("placa")) %>'
+                                                    data-nota='<%# Atributo(Eval("notafiscal")) %>'
+                                                    data-pedido='<%# Atributo(Eval("pedidodoveiculo")) %>'
+                                                    data-loja='<%# Atributo(Eval("loja")) %>'
+                                                    data-valor='<%# Atributo(Eval("ValordeVenda", "{0:C}")) %>'>Detalhes</button>
+                                                <button type="button" class="sales-row-action is-secondary" data-copy-contact="true"
+                                                    data-cliente='<%# Atributo(Eval("NomeCliente")) %>'
+                                                    data-telefone='<%# Atributo(Eval("TelefoneCliente")) %>'
+                                                    data-email='<%# Atributo(Eval("emailcliente")) %>'>Copiar contato</button>
+                                            </div>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
                                 </Columns>
                             </asp:GridView>
                         </div>
@@ -216,6 +256,20 @@
                     </section>
                 </asp:Panel>
             </main>
+        </div>
+
+        <div id="salesDetailModal" class="sales-modal" hidden>
+            <div class="sales-modal-backdrop" data-close-sales-modal="true"></div>
+            <section class="sales-modal-panel" role="dialog" aria-modal="true" aria-labelledby="salesDetailTitle">
+                <div class="sales-modal-header">
+                    <div>
+                        <span>Detalhes da venda</span>
+                        <h2 id="salesDetailTitle">Venda selecionada</h2>
+                    </div>
+                    <button type="button" data-close-sales-modal="true" aria-label="Fechar detalhes">Fechar</button>
+                </div>
+                <div id="salesDetailBody" class="sales-modal-grid"></div>
+            </section>
         </div>
     </form>
 </body>

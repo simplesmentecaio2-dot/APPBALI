@@ -26,6 +26,9 @@
     var allRows = Array.prototype.slice.call(tbody.rows);
     var headers = Array.prototype.slice.call(table.querySelectorAll('th'));
     var search = document.getElementById('salesTableSearch');
+    var storeFilter = document.getElementById('salesStoreFilter');
+    var typeFilter = document.getElementById('salesTypeFilter');
+    var positiveOnly = document.getElementById('salesPositiveOnly');
     var pageSize = document.getElementById('salesPageSize');
     var counter = document.getElementById('salesTableCounter');
     var prev = document.getElementById('salesPrevPage');
@@ -41,9 +44,13 @@
 
     dataRows.forEach(function (row) {
       row.setAttribute('data-search', normalize(row.textContent));
+      row.setAttribute('data-store', normalize(row.cells[3] ? row.cells[3].textContent : ''));
+      row.setAttribute('data-type', normalize(row.cells[6] ? row.cells[6].textContent : ''));
+      row.setAttribute('data-quantity', String(parseNumber(row.cells[7] ? row.cells[7].textContent : '') || 0));
     });
 
     headers.forEach(function (header, index) {
+      if (index === headers.length - 1) return;
       header.setAttribute('role', 'button');
       header.setAttribute('tabindex', '0');
       header.setAttribute('title', 'Ordenar por ' + header.textContent.trim());
@@ -58,10 +65,42 @@
       });
     });
 
+    populateFilter(storeFilter, dataRows, 'data-store', 3);
+    populateFilter(typeFilter, dataRows, 'data-type', 6);
+
     function filteredRows() {
       var query = normalize(search ? search.value : '');
+      var store = normalize(storeFilter ? storeFilter.value : '');
+      var type = normalize(typeFilter ? typeFilter.value : '');
+      var onlyPositive = !!(positiveOnly && positiveOnly.checked);
       return dataRows.filter(function (row) {
-        return !query || String(row.getAttribute('data-search') || '').indexOf(query) >= 0;
+        var matchQuery = !query || String(row.getAttribute('data-search') || '').indexOf(query) >= 0;
+        var matchStore = !store || row.getAttribute('data-store') === store;
+        var matchType = !type || row.getAttribute('data-type') === type;
+        var matchPositive = !onlyPositive || parseNumber(row.getAttribute('data-quantity')) >= 0;
+        return matchQuery && matchStore && matchType && matchPositive;
+      });
+    }
+
+    function populateFilter(select, rows, attr, cellIndex) {
+      if (!select) return;
+
+      var values = {};
+      rows.forEach(function (row) {
+        var key = row.getAttribute(attr) || '';
+        var label = row.cells[cellIndex] ? row.cells[cellIndex].textContent.trim() : '';
+        if (key && label && !values[key]) {
+          values[key] = label;
+        }
+      });
+
+      Object.keys(values).sort(function (a, b) {
+        return values[a].localeCompare(values[b], 'pt-BR', { sensitivity: 'base' });
+      }).forEach(function (key) {
+        var option = document.createElement('option');
+        option.value = key;
+        option.textContent = values[key];
+        select.appendChild(option);
       });
     }
 
@@ -155,6 +194,14 @@
       });
     }
 
+    [storeFilter, typeFilter, positiveOnly].forEach(function (control) {
+      if (!control) return;
+      control.addEventListener('change', function () {
+        currentPage = 1;
+        render();
+      });
+    });
+
     if (prev) {
       prev.addEventListener('click', function () {
         currentPage = Math.max(1, currentPage - 1);
@@ -172,9 +219,101 @@
     render();
   }
 
+  function initSalesActions() {
+    var modal = document.getElementById('salesDetailModal');
+    var body = document.getElementById('salesDetailBody');
+    var title = document.getElementById('salesDetailTitle');
+
+    function field(label, value) {
+      value = String(value || '').trim() || '-';
+      return '<div><span>' + label + '</span><strong>' + escapeHtml(value) + '</strong></div>';
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function closeModal() {
+      if (modal) modal.hidden = true;
+    }
+
+    function openModal(button) {
+      if (!modal || !body || !title) return;
+      var data = button.dataset || {};
+      title.textContent = data.cliente || 'Venda selecionada';
+      body.innerHTML =
+        field('Cliente', data.cliente) +
+        field('CPF/CNPJ', data.cpf) +
+        field('Telefone', data.telefone) +
+        field('E-mail', data.email) +
+        field('Modelo', [data.marca, data.modelo].filter(Boolean).join(' ')) +
+        field('Cor', data.cor) +
+        field('Chassi', data.chassi) +
+        field('Placa', data.placa) +
+        field('Nota fiscal', data.nota) +
+        field('Pedido', data.pedido) +
+        field('Loja', data.loja) +
+        field('Valor', data.valor);
+      modal.hidden = false;
+    }
+
+    function copyContact(button) {
+      var data = button.dataset || {};
+      var text = [
+        data.cliente || '',
+        data.telefone ? 'Telefone: ' + data.telefone : '',
+        data.email ? 'E-mail: ' + data.email : ''
+      ].filter(Boolean).join('\n');
+
+      if (!text) return;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          button.textContent = 'Copiado';
+          window.setTimeout(function () { button.textContent = 'Copiar contato'; }, 1400);
+        });
+      } else {
+        window.prompt('Copie o contato:', text);
+      }
+    }
+
+    document.addEventListener('click', function (event) {
+      var detail = event.target.closest('[data-sales-detail]');
+      if (detail) {
+        openModal(detail);
+        return;
+      }
+
+      var copy = event.target.closest('[data-copy-contact]');
+      if (copy) {
+        copyContact(copy);
+        return;
+      }
+
+      if (event.target.closest('[data-close-sales-modal]')) {
+        closeModal();
+      }
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSalesTable);
+    document.addEventListener('DOMContentLoaded', function () {
+      initSalesTable();
+      initSalesActions();
+    });
   } else {
     initSalesTable();
+    initSalesActions();
   }
 })();

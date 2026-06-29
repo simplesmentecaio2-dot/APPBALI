@@ -535,6 +535,13 @@ ORDER BY notafiscal_dataemissao DESC, notafiscal_numero DESC;";
         return data.ToString("dd/MM/yyyy", ptBr);
     }
 
+    protected string Atributo(object valor)
+    {
+        string texto = Convert.ToString(valor);
+        texto = HttpUtility.HtmlAttributeEncode(String.IsNullOrWhiteSpace(texto) ? "" : texto.Trim());
+        return texto.Replace("'", "&#39;");
+    }
+
     private void PreencherGraficos(DataTable vendas, DateTime dataInicial, DateTime dataFinal)
     {
         litGraficoDiario.Text = RenderizarGraficoDiario(vendas, dataInicial, dataFinal);
