@@ -823,7 +823,7 @@ ORDER BY unidades DESC, valor DESC;";
         Response.Write("<h2>Minhas vendas - ");
         Response.Write(HttpUtility.HtmlEncode(marcaAtual.ToUpperInvariant()));
         Response.Write("</h2>");
-        Response.Write("<p>Periodo: ");
+        Response.Write("<p>Per\u00edodo: ");
         Response.Write(HttpUtility.HtmlEncode(String.Format(ptBr, "{0:dd/MM/yyyy} a {1:dd/MM/yyyy}", dataInicial, dataFinal)));
         Response.Write("</p>");
         Response.Write("<p>Tipo: ");

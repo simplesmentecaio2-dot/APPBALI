@@ -254,7 +254,7 @@
         counter.textContent = rows.length + ' venda(s) exibida(s) de ' + dataRows.length;
       }
       if (pageInfo) {
-        pageInfo.textContent = rows.length ? ('Pagina ' + currentPage + ' de ' + totalPages) : 'Sem resultados';
+        pageInfo.textContent = rows.length ? ('P\u00e1gina ' + currentPage + ' de ' + totalPages) : 'Sem resultados';
       }
       if (prev) {
         prev.disabled = currentPage <= 1 || rows.length === 0;
