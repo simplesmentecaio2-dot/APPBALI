@@ -219,6 +219,7 @@ public class App : Dao
                       INNER JOIN fiatnet_prod..tab_fun f ON u.id_usuario = f.fun_email
                       INNER JOIN fiatnet_prod..tab_funemp femp ON f.fun_cd = femp.fun_cd AND funemp_default = 'S'
                      WHERE u.id_usuario = @id_usuario
+                       AND ISNULL(u.ativo, 'S') = 'S'
                        AND f.fun_dtsai IS NULL) > 0
                 BEGIN
                     SELECT TOP 1 u.id_usuario,
@@ -238,6 +239,7 @@ public class App : Dao
                       INNER JOIN fiatnet_prod..tab_fun f ON u.id_usuario = f.fun_email
                       INNER JOIN fiatnet_prod..tab_funemp femp ON f.fun_cd = femp.fun_cd AND funemp_default = 'S'
                      WHERE u.id_usuario = @id_usuario
+                       AND ISNULL(u.ativo, 'S') = 'S'
                        AND f.fun_dtsai IS NULL;
                 END
                 ELSE IF (SELECT COUNT(1)
