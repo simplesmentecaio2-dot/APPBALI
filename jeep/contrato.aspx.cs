@@ -350,9 +350,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
         return texto.ToString();
     }
 
-    private bool ExisteContratoSemelhante(string tipo, out string contratoEncontrado)
+    private bool ExisteContratoSemelhante(string tipo, out string contratoEncontrado, out bool chassiDiferente)
     {
         contratoEncontrado = "";
+        chassiDiferente = false;
         string cpf = NormalizarChave(txtCPFCNPJ.Text);
         string chassi = NormalizarChave(txtChassiPlaca.Text);
         string modelo = (txtModelo.Text ?? "").Trim().ToUpperInvariant();
@@ -370,18 +371,19 @@ public partial class veiculos_contrato : System.Web.UI.Page
             {
                 oCmd.Connection = vec.oCon;
                 oCmd.CommandTimeout = TimeoutConsultaSegundos;
-                oCmd.CommandText = @"select top 1 id, [data], cliente, modelo, vendedor, valorveiculo
+                string chassiNormalizadoSql = "upper(replace(replace(replace(replace(isnull(chassiplaca, ''), ' ', ''), '-', ''), '.', ''), '/', ''))";
+                oCmd.CommandText = @"select top 1 id, [data], cliente, modelo, vendedor, valorveiculo, chassiplaca
                                      from " + TabelaContratosBI + @"
                                      where [data] >= dateadd(day, -30, getdate())
                                        and tipo = @tipo
                                        and (
-                                            (@chassi <> '' and upper(replace(replace(replace(replace(isnull(chassiplaca, ''), ' ', ''), '-', ''), '.', ''), '/', '')) = @chassi)
-                                            or
-                                            (@cpf <> '' and upper(replace(replace(replace(replace(isnull(cpfcnpj, ''), '.', ''), '-', ''), '/', ''), ' ', '')) = @cpf
-                                             and @modelo <> '' and upper(ltrim(rtrim(isnull(modelo, '')))) = @modelo
-                                             and abs(isnull(valorveiculo, 0) - @valor) <= 1)
-                                           )
-                                     order by [data] desc, id desc";
+                                             (@chassi <> '' and " + chassiNormalizadoSql + @" = @chassi)
+                                             or
+                                             (@cpf <> '' and upper(replace(replace(replace(replace(isnull(cpfcnpj, ''), '.', ''), '-', ''), '/', ''), ' ', '')) = @cpf
+                                              and @modelo <> '' and upper(ltrim(rtrim(isnull(modelo, '')))) = @modelo
+                                              and abs(isnull(valorveiculo, 0) - @valor) <= 1)
+                                            )
+                                      order by case when @chassi <> '' and " + chassiNormalizadoSql + @" = @chassi then 0 else 1 end, [data] desc, id desc";
                 oCmd.CommandType = CommandType.Text;
                 oCmd.Parameters.Add("@tipo", SqlDbType.VarChar).Value = tipo ?? "";
                 oCmd.Parameters.Add("@cpf", SqlDbType.VarChar).Value = cpf;
@@ -395,10 +397,13 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     {
                         string data = reader["data"] == DBNull.Value ? "" : Convert.ToDateTime(reader["data"]).ToString("dd/MM/yyyy");
                         decimal valor = reader["valorveiculo"] == DBNull.Value ? 0M : Convert.ToDecimal(reader["valorveiculo"]);
+                        string chassiEncontrado = NormalizarChave(Convert.ToString(reader["chassiplaca"]));
+                        chassiDiferente = chassi.Length > 0 && chassiEncontrado.Length > 0 && chassi != chassiEncontrado;
                         contratoEncontrado = "Contrato " + reader["id"]
                             + (data.Length > 0 ? ", data " + data : "")
                             + ", cliente " + Convert.ToString(reader["cliente"])
                             + ", modelo " + Convert.ToString(reader["modelo"])
+                            + (chassiEncontrado.Length > 0 ? ", chassi/placa " + Convert.ToString(reader["chassiplaca"]) : "")
                             + ", vendedor " + Convert.ToString(reader["vendedor"])
                             + ", valor " + valor.ToString("C", CulturaBrasil);
                         return true;
@@ -427,9 +432,14 @@ public partial class veiculos_contrato : System.Web.UI.Page
         if (!chkConferePagamento.Checked) erros.Add("Confirme que a forma de pagamento foi conferida.");
 
         string contratoSemelhante;
-        if (erros.Count == 0 && ExisteContratoSemelhante(tipo, out contratoSemelhante))
+        bool chassiDiferente;
+        if (erros.Count == 0 && ExisteContratoSemelhante(tipo, out contratoSemelhante, out chassiDiferente))
         {
-            if (!chkConfirmarDuplicidade.Checked)
+            if (chassiDiferente)
+            {
+                RegistrarContratoOperacao("DUPLICIDADE_CHASSI_DIFERENTE_LIBERADA", "Contrato semelhante=" + contratoSemelhante + "; CPF/CNPJ=" + MascararDocumentoLog(txtCPFCNPJ.Text) + "; Chassi/Placa atual=" + txtChassiPlaca.Text + "; Tipo=" + tipo);
+            }
+            else if (!chkConfirmarDuplicidade.Checked)
             {
                 erros.Add("Existe um contrato semelhante recente: " + contratoSemelhante + ". Se for uma nova compra legítima do mesmo cliente, marque a ciência de duplicidade para continuar.");
             }
