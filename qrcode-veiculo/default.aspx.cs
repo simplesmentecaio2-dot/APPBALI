@@ -49,9 +49,9 @@ public partial class qrcode_veiculo_default : System.Web.UI.Page
             RenderizarResultado(veiculo, consultaUrl);
             ExibirMensagem("QR Code gerado com sucesso. Confira a pr\u00e9via antes de imprimir.", false);
         }
-        catch (Exception ex)
+        catch
         {
-            ExibirMensagem("N\u00e3o foi poss\u00edvel gerar o QR Code agora. Detalhe t\u00e9cnico: " + HttpUtility.HtmlEncode(ex.Message), true);
+            ExibirMensagem("N\u00e3o foi poss\u00edvel gerar o QR Code agora. Confira a placa ou o chassi e tente novamente.", true);
             pnlResultado.Visible = false;
         }
     }
