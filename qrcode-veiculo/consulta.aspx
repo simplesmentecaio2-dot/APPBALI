@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
     <title>Consulta de Ve&iacute;culo | Grupo Bali</title>
-    <link href="../css/qrcode-veiculo.css?v=20260701-03" rel="stylesheet" />
+    <link href="../css/qrcode-veiculo.css?v=20260701-04" rel="stylesheet" />
 </head>
 <body class="qr-page qr-public-page">
     <form id="form1" runat="server">
@@ -21,7 +21,14 @@
             <asp:Panel ID="pnlVeiculo" runat="server" Visible="false">
                 <section class="vehicle-hero">
                     <div class="vehicle-hero-top">
-                        <img src="../img/logobali.png" alt="Grupo Bali" />
+                        <div class="vehicle-brand">
+                            <strong>GRUPO BALI</strong>
+                            <div class="vehicle-brand-logos" aria-label="Marcas do Grupo Bali">
+                                <img src="../img/logobali.png" alt="Bali Fiat" />
+                                <img src="../img/logojeep.png" alt="Bali Jeep" />
+                                <img src="../img/BYD.png" alt="Bali BYD" />
+                            </div>
+                        </div>
                         <span><asp:Label ID="lblLojaHero" runat="server" /></span>
                     </div>
                     <div class="vehicle-hero-content">

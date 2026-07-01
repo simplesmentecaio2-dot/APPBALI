@@ -45,6 +45,7 @@ public partial class qrcode_veiculo_consulta : System.Web.UI.Page
     {
         pnlNaoEncontrado.Visible = false;
         pnlVeiculo.Visible = true;
+        pnlVeiculo.CssClass = "vehicle-result " + ObterClasseTemaLoja(veiculo.Loja);
 
         lblLojaHero.Text = Texto(veiculo.Loja);
         lblFabricanteHero.Text = Texto(veiculo.Fabricante);
@@ -319,6 +320,28 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC";
     private string Texto(string valor)
     {
         return ValorOuTraco(valor);
+    }
+
+    private string ObterClasseTemaLoja(string loja)
+    {
+        string nome = (loja ?? "").Trim().ToUpperInvariant();
+
+        if (nome == "FIAT SIA" || nome == "FIAT SCIA" || nome == "FIAT SAAN")
+        {
+            return "vehicle-theme-fiat";
+        }
+
+        if (nome == "BALI BYD")
+        {
+            return "vehicle-theme-byd";
+        }
+
+        if (nome == "PARK SUL" || nome == "JEEP SAAN")
+        {
+            return "vehicle-theme-jeep";
+        }
+
+        return "vehicle-theme-neutral";
     }
 
     private class VeiculoQrDados

@@ -448,6 +448,24 @@ body.qr-public-page {
   box-shadow: var(--qr-shadow);
 }
 
+.vehicle-theme-fiat .vehicle-hero {
+  background:
+    radial-gradient(circle at 86% 12%, rgba(255, 255, 255, .18), transparent 30%),
+    linear-gradient(135deg, #7f1d1d 0%, #b42318 52%, #dc3f34 100%);
+}
+
+.vehicle-theme-byd .vehicle-hero {
+  background:
+    radial-gradient(circle at 86% 12%, rgba(255, 255, 255, .18), transparent 30%),
+    linear-gradient(135deg, #0f2f5f 0%, #1d4ed8 52%, #2e90fa 100%);
+}
+
+.vehicle-theme-jeep .vehicle-hero {
+  background:
+    radial-gradient(circle at 86% 12%, rgba(255, 255, 255, .18), transparent 30%),
+    linear-gradient(135deg, #14532d 0%, #138a58 52%, #1fa46c 100%);
+}
+
 .vehicle-hero-top {
   display: flex;
   align-items: center;
@@ -455,10 +473,37 @@ body.qr-public-page {
   gap: 18px;
 }
 
-.vehicle-hero-top img {
+.vehicle-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.vehicle-brand > strong {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 950;
+  letter-spacing: .03em;
+  white-space: nowrap;
+}
+
+.vehicle-brand-logos {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .92);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, .16);
+}
+
+.vehicle-brand-logos img {
   width: auto;
-  max-width: 132px;
-  max-height: 42px;
+  max-width: 74px;
+  max-height: 28px;
   object-fit: contain;
 }
 
@@ -690,18 +735,52 @@ body.qr-public-page {
       linear-gradient(145deg, #101828 0%, #1d2939 48%, #0f766e 100%);
   }
 
+  .vehicle-theme-fiat .vehicle-hero {
+    background:
+      radial-gradient(circle at 88% 7%, rgba(255, 255, 255, .17), transparent 30%),
+      linear-gradient(145deg, #7f1d1d 0%, #b42318 52%, #dc3f34 100%);
+  }
+
+  .vehicle-theme-byd .vehicle-hero {
+    background:
+      radial-gradient(circle at 88% 7%, rgba(255, 255, 255, .17), transparent 30%),
+      linear-gradient(145deg, #0f2f5f 0%, #1d4ed8 52%, #2e90fa 100%);
+  }
+
+  .vehicle-theme-jeep .vehicle-hero {
+    background:
+      radial-gradient(circle at 88% 7%, rgba(255, 255, 255, .17), transparent 30%),
+      linear-gradient(145deg, #14532d 0%, #138a58 52%, #1fa46c 100%);
+  }
+
   .vehicle-hero-top {
+    flex-wrap: wrap;
     align-items: flex-start;
     gap: 10px;
   }
 
-  .vehicle-hero-top img {
-    max-width: 104px;
-    max-height: 34px;
+  .vehicle-brand {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .vehicle-brand > strong {
+    font-size: 17px;
+  }
+
+  .vehicle-brand-logos {
+    min-height: 38px;
+    padding: 6px 8px;
+  }
+
+  .vehicle-brand-logos img {
+    max-width: 58px;
+    max-height: 23px;
   }
 
   .vehicle-hero-top > span {
-    max-width: 54%;
+    max-width: 100%;
     padding: 7px 10px;
     text-align: right;
     line-height: 1.2;
