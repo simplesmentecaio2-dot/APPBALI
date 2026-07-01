@@ -289,11 +289,11 @@ body.qr-public-page {
   color: #fff;
 }
 
-.qr-print-header img {
-  width: auto;
-  max-width: 118px;
-  max-height: 38px;
-  object-fit: contain;
+.qr-print-header strong {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 950;
+  letter-spacing: .04em;
 }
 
 .qr-print-header span,
@@ -357,8 +357,10 @@ body.qr-public-page {
 }
 
 .qr-print-footer {
-  align-items: flex-start;
+  align-items: center;
   flex-direction: column;
+  justify-content: center;
+  text-align: center;
   background: #f8fafc;
   color: var(--qr-ink);
 }

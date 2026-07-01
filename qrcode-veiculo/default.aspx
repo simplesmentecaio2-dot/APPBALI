@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gerador de QR Code de Ve&iacute;culo | Grupo Bali</title>
-    <link href="../css/qrcode-veiculo.css?v=20260701-01" rel="stylesheet" />
+    <link href="../css/qrcode-veiculo.css?v=20260701-02" rel="stylesheet" />
 </head>
 <body class="qr-page qr-generator-page">
     <form id="form1" runat="server">
@@ -47,7 +47,7 @@
                 <asp:Panel ID="pnlResultado" runat="server" CssClass="qr-result" Visible="false">
                     <article class="qr-print-card" aria-label="QR Code para impress&atilde;o">
                         <div class="qr-print-header">
-                            <img src="../img/logobali.png" alt="Grupo Bali" />
+                            <strong>GRUPO BALI</strong>
                             <span>Consulta digital do ve&iacute;culo</span>
                         </div>
                         <div class="qr-print-body">
