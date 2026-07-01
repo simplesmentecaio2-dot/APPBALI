@@ -100,9 +100,7 @@ public partial class qrcode_veiculo_default : System.Web.UI.Page
 
     private string MontarUrlConsulta(string identificador)
     {
-        string caminho = ResolveUrl("~/qrcode-veiculo/consulta.aspx?v=" + HttpUtility.UrlEncode(identificador ?? ""));
-        Uri baseUri = Request.Url;
-        return new Uri(baseUri, caminho).ToString();
+        return "https://app.bali.com.br/qrcode-veiculo/consulta.aspx?v=" + HttpUtility.UrlEncode(identificador ?? "");
     }
 
     private VeiculoQrDados ConsultarVeiculo(string buscaNormalizada)
