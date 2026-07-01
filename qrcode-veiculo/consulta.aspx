@@ -47,6 +47,23 @@
                     </div>
                 </section>
 
+                <section class="vehicle-data-card vehicle-values-card">
+                    <div class="vehicle-section-title">
+                        <span>Valores</span>
+                        <h2>Valores do ve&iacute;culo</h2>
+                    </div>
+                    <div class="vehicle-data-grid vehicle-values-grid">
+                        <div><span>Valor atual</span><strong><asp:Label ID="lblValorAtualDetalhe" runat="server" /></strong></div>
+                        <div><span>Valor normal</span><strong><asp:Label ID="lblValorNormalDetalhe" runat="server" /></strong></div>
+                        <div><span>Valor usado</span><strong><asp:Label ID="lblValorUsado" runat="server" /></strong></div>
+                        <div><span>Promo&ccedil;&atilde;o</span><strong><asp:Label ID="lblValorPromocaoDetalhe" runat="server" /></strong></div>
+                        <div><span>Tabela novo</span><strong><asp:Label ID="lblValorNovoTabela" runat="server" /></strong></div>
+                        <div><span>Valor NF</span><strong><asp:Label ID="lblValorNF" runat="server" /></strong></div>
+                        <div><span>Vig&ecirc;ncia usado</span><strong><asp:Label ID="lblValorUsadoVigencia" runat="server" /></strong></div>
+                        <div><span>Status usado</span><strong><asp:Label ID="lblValorUsadoStatus" runat="server" /></strong></div>
+                    </div>
+                </section>
+
                 <section class="vehicle-data-card">
                     <div class="vehicle-section-title">
                         <span>Dados principais</span>
@@ -55,6 +72,7 @@
                     <div class="vehicle-data-grid">
                         <div><span>Loja</span><strong><asp:Label ID="lblLoja" runat="server" /></strong></div>
                         <div><span>Estoque</span><strong><asp:Label ID="lblEstoque" runat="server" /></strong></div>
+                        <div><span>Tipo estoque</span><strong><asp:Label ID="lblEstoqueTipo" runat="server" /></strong></div>
                         <div><span>Fabricante</span><strong><asp:Label ID="lblFabricante" runat="server" /></strong></div>
                         <div><span>Modelo</span><strong><asp:Label ID="lblModelo" runat="server" /></strong></div>
                         <div><span>Ano/Modelo</span><strong><asp:Label ID="lblAno" runat="server" /></strong></div>

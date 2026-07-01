@@ -53,12 +53,22 @@ public partial class qrcode_veiculo_consulta : System.Web.UI.Page
         lblChipPlaca.Text = Texto(ValorOuTraco(veiculo.Placa));
         lblChipAno.Text = Texto(ValorOuTraco(veiculo.AnoModelo));
         lblChipKm.Text = Texto(FormatarKm(veiculo.Km));
-        lblValorPromocao.Text = Texto(FormatarValorPrincipal(veiculo.ValorPromocao, veiculo.ValorVendaNormal));
+        lblValorPromocao.Text = Texto(FormatarValorPrincipal(veiculo.ValorVendaAtual, veiculo.ValorVendaNormal));
         lblValorNormal.Text = Texto(FormatarValorNormal(veiculo.ValorVendaNormal));
-        lblValorObservacao.Text = Texto(FormatarValorObservacao(veiculo.ValorPromocao, veiculo.ValorVendaNormal));
+        lblValorObservacao.Text = Texto(FormatarValorObservacao(veiculo.ValorVendaAtual, veiculo.ValorVendaNormal, veiculo.ValorVendaUsado));
+
+        lblValorAtualDetalhe.Text = Texto(FormatarValorNormal(veiculo.ValorVendaAtual));
+        lblValorNormalDetalhe.Text = Texto(FormatarValorNormal(veiculo.ValorVendaNormal));
+        lblValorUsado.Text = Texto(FormatarValorOpcional(veiculo.ValorVendaUsado));
+        lblValorPromocaoDetalhe.Text = Texto(FormatarValorOpcional(veiculo.ValorVendaPromocao));
+        lblValorNovoTabela.Text = Texto(FormatarValorOpcional(veiculo.ValorVendaNovoTabela));
+        lblValorNF.Text = Texto(FormatarValorOpcional(veiculo.ValorNF));
+        lblValorUsadoVigencia.Text = Texto(FormatarDataOpcional(veiculo.ValorVendaUsadoDataVigencia));
+        lblValorUsadoStatus.Text = Texto(ValorOuTraco(veiculo.ValorVendaUsadoStatus));
 
         lblLoja.Text = Texto(veiculo.Loja);
         lblEstoque.Text = Texto(veiculo.Estoque);
+        lblEstoqueTipo.Text = Texto(ValorOuTraco(veiculo.EstoqueTipo));
         lblFabricante.Text = Texto(veiculo.Fabricante);
         lblModelo.Text = Texto(veiculo.Modelo);
         lblAno.Text = Texto(veiculo.AnoModelo);
@@ -111,6 +121,7 @@ public partial class qrcode_veiculo_consulta : System.Web.UI.Page
         {
             Loja = LerTexto(reader, "Loja"),
             Estoque = LerTexto(reader, "Estoque_Descricao"),
+            EstoqueTipo = LerTexto(reader, "Estoque_Tipo"),
             Fabricante = LerTexto(reader, "Fabricante"),
             Modelo = LerTexto(reader, "Modelo"),
             Km = LerDecimal(reader, "KM"),
@@ -123,8 +134,15 @@ public partial class qrcode_veiculo_consulta : System.Web.UI.Page
             Chassi = LerTexto(reader, "Chassi"),
             Renavam = LerTexto(reader, "Renavam"),
             Cor = LerTexto(reader, "Cor"),
+            Alienado = LerTexto(reader, "Alienado"),
+            ValorNF = LerDecimal(reader, "Valor_NF"),
+            ValorVendaUsado = LerDecimal(reader, "Valor_Venda_Usado"),
+            ValorVendaNovoTabela = LerDecimal(reader, "Valor_Venda_Novo_Tabela"),
             ValorVendaNormal = LerDecimal(reader, "Valor_Venda_Normal"),
-            ValorPromocao = LerDecimal(reader, "Valor_Promocao")
+            ValorVendaPromocao = LerDecimal(reader, "Valor_Venda_Promocao"),
+            ValorVendaAtual = LerDecimal(reader, "Valor_Venda_Atual"),
+            ValorVendaUsadoDataVigencia = LerTexto(reader, "VeiculoPrecoUsado_DataVigencia"),
+            ValorVendaUsadoStatus = LerTexto(reader, "VeiculoPrecoUsado_Status")
         };
     }
 
@@ -142,6 +160,7 @@ SELECT TOP 1
         WHEN '07' THEN 'FIAT SAAN'
     END AS Loja,
     dbo.Estoque.Estoque_Descricao,
+    dbo.Estoque.Estoque_Tipo,
     Marca_Descricao AS Fabricante,
     ModeloVeiculo_Descricao AS Modelo,
     Veiculo.Veiculo_Km AS KM,
@@ -154,8 +173,19 @@ SELECT TOP 1
     Veiculo.Veiculo_Chassi AS Chassi,
     Veiculo.Veiculo_NroRenavam AS Renavam,
     Cor.Cor_Descricao AS Cor,
-    COALESCE(PrecoEmpresa.ModeloVeiculoPrecoEmpresa_ValorVenda, PrecoGeral.ModeloVeiculoPreco_ValorVenda, 0) AS Valor_Venda_Normal,
-    COALESCE(Promo.VeiculoPromocao_Valor, PrecoEmpresa.ModeloVeiculoPrecoEmpresa_ValorVenda, PrecoGeral.ModeloVeiculoPreco_ValorVenda, 0) AS Valor_Promocao
+    '' AS Alienado,
+    NFCompra.NotaFiscal_ValorTotal AS Valor_NF,
+    PrecoUsado.VeiculoPrecoUsado_ValorVenda AS Valor_Venda_Usado,
+    COALESCE(PrecoEmpresa.ModeloVeiculoPrecoEmpresa_ValorVenda, PrecoGeral.ModeloVeiculoPreco_ValorVenda, 0) AS Valor_Venda_Novo_Tabela,
+    COALESCE(PrecoUsado.VeiculoPrecoUsado_ValorVenda, PrecoEmpresa.ModeloVeiculoPrecoEmpresa_ValorVenda, PrecoGeral.ModeloVeiculoPreco_ValorVenda, 0) AS Valor_Venda_Normal,
+    Promo.VeiculoPromocao_Valor AS Valor_Venda_Promocao,
+    COALESCE(Promo.VeiculoPromocao_Valor, PrecoUsado.VeiculoPrecoUsado_ValorVenda, PrecoEmpresa.ModeloVeiculoPrecoEmpresa_ValorVenda, PrecoGeral.ModeloVeiculoPreco_ValorVenda, 0) AS Valor_Venda_Atual,
+    CONVERT(CHAR(10), PrecoUsado.VeiculoPrecoUsado_DataVigencia, 103) AS VeiculoPrecoUsado_DataVigencia,
+    PrecoUsado.VeiculoPrecoUsado_Status,
+    Promo.VeiculoPromocao_Codigo,
+    Promo.VeiculoPromocao_DataInicial,
+    Promo.VeiculoPromocao_DataFinal,
+    Promo.VeiculoPromocao_Status
 FROM dbo.fn_EstoqueVeiculos(GETDATE()) VecEst
 JOIN dbo.Estoque ON dbo.Estoque.Estoque_Codigo = VecEst.VeiculoEstoque_EstoqueCod
 JOIN dbo.Veiculo ON dbo.Veiculo.Veiculo_Codigo = VecEst.VeiculoEstoque_VeiculoCod
@@ -169,6 +199,18 @@ JOIN dbo.NotaFiscalItem NFICompra
     ON NFICompra.NotaFiscal_Codigo = VecEst.VeiculoEstoque_NotaFiscalCodCompra
    AND NFICompra.NotaFiscalItem_VeiculoCod = VecEst.VeiculoEstoque_VeiculoCod
 JOIN dbo.NotaFiscal NFCompra ON NFCompra.NotaFiscal_Codigo = NFICompra.NotaFiscal_Codigo
+OUTER APPLY (
+    SELECT TOP 1
+        VPU.VeiculoPrecoUsado_ValorVenda,
+        VPU.VeiculoPrecoUsado_DataVigencia,
+        VPU.VeiculoPrecoUsado_Status
+    FROM dbo.VeiculoPrecoUsado VPU WITH (NOLOCK)
+    WHERE VPU.Veiculo_Codigo = dbo.Veiculo.Veiculo_Codigo
+      AND VPU.VeiculoPrecoUsado_Status = 'AUT'
+      AND VPU.VeiculoPrecoUsado_DataVigencia <= GETDATE()
+      AND VPU.VeiculoPrecoUsado_ValorVenda <> 0
+    ORDER BY VPU.VeiculoPrecoUsado_DataVigencia DESC
+) PrecoUsado
 OUTER APPLY (
     SELECT TOP 1 MVPE.ModeloVeiculoPrecoEmpresa_ValorVenda
     FROM dbo.ModeloVeiculoPrecoEmpresa MVPE WITH (NOLOCK)
@@ -248,9 +290,24 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC";
         return valorNormal > 0 ? valorNormal.ToString("C", CulturaBrasil) : "Consulte a loja";
     }
 
-    private string FormatarValorObservacao(decimal valorPromocao, decimal valorNormal)
+    private string FormatarValorOpcional(decimal valor)
     {
-        if (valorPromocao > 0 && valorNormal > 0 && valorPromocao != valorNormal)
+        return valor > 0 ? valor.ToString("C", CulturaBrasil) : "-";
+    }
+
+    private string FormatarDataOpcional(string valor)
+    {
+        return String.IsNullOrWhiteSpace(valor) ? "-" : valor.Trim();
+    }
+
+    private string FormatarValorObservacao(decimal valorAtual, decimal valorNormal, decimal valorUsado)
+    {
+        if (valorUsado > 0 && valorAtual == valorUsado)
+        {
+            return "Valor de usado vigente sujeito a confirma\u00e7\u00e3o na loja.";
+        }
+
+        if (valorAtual > 0 && valorNormal > 0 && valorAtual != valorNormal)
         {
             return "Oferta ou promo\u00e7\u00e3o sujeita a confirma\u00e7\u00e3o na loja.";
         }
@@ -277,6 +334,7 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC";
     {
         public string Loja { get; set; }
         public string Estoque { get; set; }
+        public string EstoqueTipo { get; set; }
         public string Fabricante { get; set; }
         public string Modelo { get; set; }
         public decimal Km { get; set; }
@@ -289,7 +347,14 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC";
         public string Chassi { get; set; }
         public string Renavam { get; set; }
         public string Cor { get; set; }
+        public string Alienado { get; set; }
+        public decimal ValorNF { get; set; }
+        public decimal ValorVendaUsado { get; set; }
+        public decimal ValorVendaNovoTabela { get; set; }
         public decimal ValorVendaNormal { get; set; }
-        public decimal ValorPromocao { get; set; }
+        public decimal ValorVendaPromocao { get; set; }
+        public decimal ValorVendaAtual { get; set; }
+        public string ValorVendaUsadoDataVigencia { get; set; }
+        public string ValorVendaUsadoStatus { get; set; }
     }
 }

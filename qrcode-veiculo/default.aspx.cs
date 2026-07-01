@@ -170,6 +170,7 @@ public partial class qrcode_veiculo_default : System.Web.UI.Page
         {
             Loja = LerTexto(reader, "Loja"),
             Estoque = LerTexto(reader, "Estoque_Descricao"),
+            EstoqueTipo = LerTexto(reader, "Estoque_Tipo"),
             Fabricante = LerTexto(reader, "Fabricante"),
             Modelo = LerTexto(reader, "Modelo"),
             Km = LerDecimal(reader, "KM"),
@@ -183,7 +184,8 @@ public partial class qrcode_veiculo_default : System.Web.UI.Page
             Renavam = LerTexto(reader, "Renavam"),
             Cor = LerTexto(reader, "Cor"),
             ValorVendaNormal = LerDecimal(reader, "Valor_Venda_Normal"),
-            ValorPromocao = LerDecimal(reader, "Valor_Promocao")
+            ValorPromocao = LerDecimal(reader, "Valor_Venda_Atual"),
+            ValorVendaUsado = LerDecimal(reader, "Valor_Venda_Usado")
         };
     }
 
@@ -201,6 +203,7 @@ SELECT TOP 1
         WHEN '07' THEN 'FIAT SAAN'
     END AS Loja,
     dbo.Estoque.Estoque_Descricao,
+    dbo.Estoque.Estoque_Tipo,
     Marca_Descricao AS Fabricante,
     ModeloVeiculo_Descricao AS Modelo,
     Veiculo.Veiculo_Km AS KM,
@@ -213,8 +216,19 @@ SELECT TOP 1
     Veiculo.Veiculo_Chassi AS Chassi,
     Veiculo.Veiculo_NroRenavam AS Renavam,
     Cor.Cor_Descricao AS Cor,
-    COALESCE(PrecoEmpresa.ModeloVeiculoPrecoEmpresa_ValorVenda, PrecoGeral.ModeloVeiculoPreco_ValorVenda, 0) AS Valor_Venda_Normal,
-    COALESCE(Promo.VeiculoPromocao_Valor, PrecoEmpresa.ModeloVeiculoPrecoEmpresa_ValorVenda, PrecoGeral.ModeloVeiculoPreco_ValorVenda, 0) AS Valor_Promocao
+    '' AS Alienado,
+    NFCompra.NotaFiscal_ValorTotal AS Valor_NF,
+    PrecoUsado.VeiculoPrecoUsado_ValorVenda AS Valor_Venda_Usado,
+    COALESCE(PrecoEmpresa.ModeloVeiculoPrecoEmpresa_ValorVenda, PrecoGeral.ModeloVeiculoPreco_ValorVenda, 0) AS Valor_Venda_Novo_Tabela,
+    COALESCE(PrecoUsado.VeiculoPrecoUsado_ValorVenda, PrecoEmpresa.ModeloVeiculoPrecoEmpresa_ValorVenda, PrecoGeral.ModeloVeiculoPreco_ValorVenda, 0) AS Valor_Venda_Normal,
+    Promo.VeiculoPromocao_Valor AS Valor_Venda_Promocao,
+    COALESCE(Promo.VeiculoPromocao_Valor, PrecoUsado.VeiculoPrecoUsado_ValorVenda, PrecoEmpresa.ModeloVeiculoPrecoEmpresa_ValorVenda, PrecoGeral.ModeloVeiculoPreco_ValorVenda, 0) AS Valor_Venda_Atual,
+    PrecoUsado.VeiculoPrecoUsado_DataVigencia,
+    PrecoUsado.VeiculoPrecoUsado_Status,
+    Promo.VeiculoPromocao_Codigo,
+    Promo.VeiculoPromocao_DataInicial,
+    Promo.VeiculoPromocao_DataFinal,
+    Promo.VeiculoPromocao_Status
 FROM dbo.fn_EstoqueVeiculos(GETDATE()) VecEst
 JOIN dbo.Estoque ON dbo.Estoque.Estoque_Codigo = VecEst.VeiculoEstoque_EstoqueCod
 JOIN dbo.Veiculo ON dbo.Veiculo.Veiculo_Codigo = VecEst.VeiculoEstoque_VeiculoCod
@@ -228,6 +242,18 @@ JOIN dbo.NotaFiscalItem NFICompra
     ON NFICompra.NotaFiscal_Codigo = VecEst.VeiculoEstoque_NotaFiscalCodCompra
    AND NFICompra.NotaFiscalItem_VeiculoCod = VecEst.VeiculoEstoque_VeiculoCod
 JOIN dbo.NotaFiscal NFCompra ON NFCompra.NotaFiscal_Codigo = NFICompra.NotaFiscal_Codigo
+OUTER APPLY (
+    SELECT TOP 1
+        VPU.VeiculoPrecoUsado_ValorVenda,
+        VPU.VeiculoPrecoUsado_DataVigencia,
+        VPU.VeiculoPrecoUsado_Status
+    FROM dbo.VeiculoPrecoUsado VPU WITH (NOLOCK)
+    WHERE VPU.Veiculo_Codigo = dbo.Veiculo.Veiculo_Codigo
+      AND VPU.VeiculoPrecoUsado_Status = 'AUT'
+      AND VPU.VeiculoPrecoUsado_DataVigencia <= GETDATE()
+      AND VPU.VeiculoPrecoUsado_ValorVenda <> 0
+    ORDER BY VPU.VeiculoPrecoUsado_DataVigencia DESC
+) PrecoUsado
 OUTER APPLY (
     SELECT TOP 1 MVPE.ModeloVeiculoPrecoEmpresa_ValorVenda
     FROM dbo.ModeloVeiculoPrecoEmpresa MVPE WITH (NOLOCK)
@@ -322,6 +348,7 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC";
     {
         public string Loja { get; set; }
         public string Estoque { get; set; }
+        public string EstoqueTipo { get; set; }
         public string Fabricante { get; set; }
         public string Modelo { get; set; }
         public decimal Km { get; set; }
@@ -336,5 +363,6 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC";
         public string Cor { get; set; }
         public decimal ValorVendaNormal { get; set; }
         public decimal ValorPromocao { get; set; }
+        public decimal ValorVendaUsado { get; set; }
     }
 }
