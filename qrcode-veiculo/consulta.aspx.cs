@@ -62,13 +62,9 @@ public partial class qrcode_veiculo_consulta : System.Web.UI.Page
         lblValorUsado.Text = Texto(FormatarValorOpcional(veiculo.ValorVendaUsado));
         lblValorPromocaoDetalhe.Text = Texto(FormatarValorOpcional(veiculo.ValorVendaPromocao));
         lblValorNovoTabela.Text = Texto(FormatarValorOpcional(veiculo.ValorVendaNovoTabela));
-        lblValorNF.Text = Texto(FormatarValorOpcional(veiculo.ValorNF));
-        lblValorUsadoVigencia.Text = Texto(FormatarDataOpcional(veiculo.ValorVendaUsadoDataVigencia));
-        lblValorUsadoStatus.Text = Texto(ValorOuTraco(veiculo.ValorVendaUsadoStatus));
 
         lblLoja.Text = Texto(veiculo.Loja);
         lblEstoque.Text = Texto(veiculo.Estoque);
-        lblEstoqueTipo.Text = Texto(ValorOuTraco(veiculo.EstoqueTipo));
         lblFabricante.Text = Texto(veiculo.Fabricante);
         lblModelo.Text = Texto(veiculo.Modelo);
         lblAno.Text = Texto(veiculo.AnoModelo);
@@ -293,11 +289,6 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC";
     private string FormatarValorOpcional(decimal valor)
     {
         return valor > 0 ? valor.ToString("C", CulturaBrasil) : "-";
-    }
-
-    private string FormatarDataOpcional(string valor)
-    {
-        return String.IsNullOrWhiteSpace(valor) ? "-" : valor.Trim();
     }
 
     private string FormatarValorObservacao(decimal valorAtual, decimal valorNormal, decimal valorUsado)

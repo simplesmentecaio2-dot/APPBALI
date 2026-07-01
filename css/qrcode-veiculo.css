@@ -543,7 +543,7 @@ body.qr-public-page {
 }
 
 .vehicle-price-card.is-featured > span {
-  color: #1d4ed8;
+  color: #087443;
 }
 
 .vehicle-price-card strong {
@@ -556,7 +556,7 @@ body.qr-public-page {
 }
 
 .vehicle-price-card.is-featured strong {
-  color: #b42318;
+  color: #0f8f5f;
   font-size: clamp(30px, 5vw, 46px);
 }
 

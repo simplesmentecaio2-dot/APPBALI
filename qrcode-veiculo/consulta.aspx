@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
     <title>Consulta de Ve&iacute;culo | Grupo Bali</title>
-    <link href="../css/qrcode-veiculo.css?v=20260701-02" rel="stylesheet" />
+    <link href="../css/qrcode-veiculo.css?v=20260701-03" rel="stylesheet" />
 </head>
 <body class="qr-page qr-public-page">
     <form id="form1" runat="server">
@@ -58,9 +58,6 @@
                         <div><span>Valor usado</span><strong><asp:Label ID="lblValorUsado" runat="server" /></strong></div>
                         <div><span>Promo&ccedil;&atilde;o</span><strong><asp:Label ID="lblValorPromocaoDetalhe" runat="server" /></strong></div>
                         <div><span>Tabela novo</span><strong><asp:Label ID="lblValorNovoTabela" runat="server" /></strong></div>
-                        <div><span>Valor NF</span><strong><asp:Label ID="lblValorNF" runat="server" /></strong></div>
-                        <div><span>Vig&ecirc;ncia usado</span><strong><asp:Label ID="lblValorUsadoVigencia" runat="server" /></strong></div>
-                        <div><span>Status usado</span><strong><asp:Label ID="lblValorUsadoStatus" runat="server" /></strong></div>
                     </div>
                 </section>
 
@@ -72,7 +69,6 @@
                     <div class="vehicle-data-grid">
                         <div><span>Loja</span><strong><asp:Label ID="lblLoja" runat="server" /></strong></div>
                         <div><span>Estoque</span><strong><asp:Label ID="lblEstoque" runat="server" /></strong></div>
-                        <div><span>Tipo estoque</span><strong><asp:Label ID="lblEstoqueTipo" runat="server" /></strong></div>
                         <div><span>Fabricante</span><strong><asp:Label ID="lblFabricante" runat="server" /></strong></div>
                         <div><span>Modelo</span><strong><asp:Label ID="lblModelo" runat="server" /></strong></div>
                         <div><span>Ano/Modelo</span><strong><asp:Label ID="lblAno" runat="server" /></strong></div>
