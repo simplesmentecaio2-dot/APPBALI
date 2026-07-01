@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
     <title>Consulta de Ve&iacute;culo | Grupo Bali</title>
-    <link href="../css/qrcode-veiculo.css?v=20260701-01" rel="stylesheet" />
+    <link href="../css/qrcode-veiculo.css?v=20260701-02" rel="stylesheet" />
 </head>
 <body class="qr-page qr-public-page">
     <form id="form1" runat="server">
@@ -28,11 +28,22 @@
                         <span class="vehicle-eyebrow"><asp:Label ID="lblFabricanteHero" runat="server" /></span>
                         <h1><asp:Label ID="lblModeloHero" runat="server" /></h1>
                         <p><asp:Label ID="lblResumoHero" runat="server" /></p>
+                        <div class="vehicle-quick-facts" aria-label="Resumo r&aacute;pido do ve&iacute;culo">
+                            <span><strong>Placa</strong><asp:Label ID="lblChipPlaca" runat="server" /></span>
+                            <span><strong>Ano</strong><asp:Label ID="lblChipAno" runat="server" /></span>
+                            <span><strong>KM</strong><asp:Label ID="lblChipKm" runat="server" /></span>
+                        </div>
                     </div>
                     <div class="vehicle-price-panel">
-                        <span>Valor anunciado</span>
-                        <strong><asp:Label ID="lblValorPromocao" runat="server" /></strong>
-                        <small><asp:Label ID="lblValorNormal" runat="server" /></small>
+                        <div class="vehicle-price-card is-featured">
+                            <span>Valor anunciado</span>
+                            <strong><asp:Label ID="lblValorPromocao" runat="server" /></strong>
+                        </div>
+                        <div class="vehicle-price-card">
+                            <span>Valor normal</span>
+                            <strong><asp:Label ID="lblValorNormal" runat="server" /></strong>
+                        </div>
+                        <small><asp:Label ID="lblValorObservacao" runat="server" /></small>
                     </div>
                 </section>
 

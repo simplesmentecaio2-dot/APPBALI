@@ -50,8 +50,12 @@ public partial class qrcode_veiculo_consulta : System.Web.UI.Page
         lblFabricanteHero.Text = Texto(veiculo.Fabricante);
         lblModeloHero.Text = Texto(veiculo.Modelo);
         lblResumoHero.Text = Texto(veiculo.AnoModelo + " | " + veiculo.Cor + " | " + FormatarKm(veiculo.Km));
+        lblChipPlaca.Text = Texto(ValorOuTraco(veiculo.Placa));
+        lblChipAno.Text = Texto(ValorOuTraco(veiculo.AnoModelo));
+        lblChipKm.Text = Texto(FormatarKm(veiculo.Km));
         lblValorPromocao.Text = Texto(FormatarValorPrincipal(veiculo.ValorPromocao, veiculo.ValorVendaNormal));
-        lblValorNormal.Text = Texto(FormatarValorSecundario(veiculo.ValorPromocao, veiculo.ValorVendaNormal));
+        lblValorNormal.Text = Texto(FormatarValorNormal(veiculo.ValorVendaNormal));
+        lblValorObservacao.Text = Texto(FormatarValorObservacao(veiculo.ValorPromocao, veiculo.ValorVendaNormal));
 
         lblLoja.Text = Texto(veiculo.Loja);
         lblEstoque.Text = Texto(veiculo.Estoque);
@@ -239,11 +243,16 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC";
         return valor > 0 ? valor.ToString("C", CulturaBrasil) : "Consulte a loja";
     }
 
-    private string FormatarValorSecundario(decimal valorPromocao, decimal valorNormal)
+    private string FormatarValorNormal(decimal valorNormal)
+    {
+        return valorNormal > 0 ? valorNormal.ToString("C", CulturaBrasil) : "Consulte a loja";
+    }
+
+    private string FormatarValorObservacao(decimal valorPromocao, decimal valorNormal)
     {
         if (valorPromocao > 0 && valorNormal > 0 && valorPromocao != valorNormal)
         {
-            return "Valor normal: " + valorNormal.ToString("C", CulturaBrasil);
+            return "Oferta ou promo\u00e7\u00e3o sujeita a confirma\u00e7\u00e3o na loja.";
         }
 
         return "Valor sujeito a confirma\u00e7\u00e3o na loja";
