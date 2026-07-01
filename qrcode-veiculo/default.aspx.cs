@@ -11,10 +11,15 @@ using QRCoder;
 
 public partial class qrcode_veiculo_default : System.Web.UI.Page
 {
+    private const string UrlBaseConsulta = "https://app.bali.com.br/qrcode-veiculo/consulta.aspx?v=";
     private static readonly CultureInfo CulturaBrasil = new CultureInfo("pt-BR");
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        Response.Cache.SetCacheability(HttpCacheability.NoCache);
+        Response.Cache.SetNoStore();
+        Response.Cache.SetExpires(DateTime.UtcNow.AddMinutes(-1));
+
         if (!UsuarioLogado())
         {
             Response.Redirect("../login.aspx", false);
@@ -65,6 +70,7 @@ public partial class qrcode_veiculo_default : System.Web.UI.Page
 
     private void RenderizarResultado(VeiculoQrDados veiculo, string consultaUrl)
     {
+        consultaUrl = NormalizarUrlQr(consultaUrl);
         pnlResultado.Visible = true;
         imgQrCode.ImageUrl = GerarImagemQrCode(consultaUrl);
         lnkConsulta.NavigateUrl = consultaUrl;
@@ -85,8 +91,9 @@ public partial class qrcode_veiculo_default : System.Web.UI.Page
 
     private string GerarImagemQrCode(string url)
     {
+        url = NormalizarUrlQr(url);
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
-        QRCodeGenerator.QRCode qrCode = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+        QRCodeGenerator.QRCode qrCode = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.H);
 
         using (Bitmap bitmap = qrCode.GetGraphic(18))
         {
@@ -100,7 +107,36 @@ public partial class qrcode_veiculo_default : System.Web.UI.Page
 
     private string MontarUrlConsulta(string identificador)
     {
-        return "https://app.bali.com.br/qrcode-veiculo/consulta.aspx?v=" + HttpUtility.UrlEncode(identificador ?? "");
+        string chave = NormalizarBusca(identificador);
+        return UrlBaseConsulta + Uri.EscapeDataString(chave);
+    }
+
+    private string NormalizarUrlQr(string url)
+    {
+        string valor = (url ?? "").Trim()
+            .Replace("htt's://", "https://")
+            .Replace("htt\u2019s://", "https://")
+            .Replace("http's://", "https://")
+            .Replace("http\u2019s://", "https://");
+
+        if (valor.StartsWith("http://app.bali.com.br/", StringComparison.OrdinalIgnoreCase))
+        {
+            valor = "https://" + valor.Substring("http://".Length);
+        }
+
+        if (!valor.StartsWith(UrlBaseConsulta, StringComparison.OrdinalIgnoreCase))
+        {
+            string chave = "";
+            int indice = valor.IndexOf("?v=", StringComparison.OrdinalIgnoreCase);
+            if (indice >= 0)
+            {
+                chave = NormalizarBusca(HttpUtility.UrlDecode(valor.Substring(indice + 3)));
+            }
+
+            valor = UrlBaseConsulta + Uri.EscapeDataString(chave);
+        }
+
+        return valor;
     }
 
     private VeiculoQrDados ConsultarVeiculo(string buscaNormalizada)
