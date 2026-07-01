@@ -473,20 +473,33 @@ body.qr-public-page {
 .vehicle-brand-logos {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 7px 9px;
+  justify-content: center;
+  gap: 14px;
+  min-height: 48px;
+  padding: 8px 14px;
   border: 1px solid rgba(255, 255, 255, .22);
-  border-radius: 999px;
+  border-radius: 18px;
   background: #fff;
   box-shadow: 0 14px 30px rgba(15, 23, 42, .16);
 }
 
 .vehicle-brand-logos img {
   width: auto;
-  max-width: 74px;
-  max-height: 28px;
+  max-width: 118px;
+  max-height: 30px;
   object-fit: contain;
+}
+
+.vehicle-brand-logos .vehicle-logo-fiat {
+  max-width: 102px;
+}
+
+.vehicle-brand-logos .vehicle-logo-jeep {
+  max-width: 108px;
+}
+
+.vehicle-brand-logos .vehicle-logo-byd {
+  max-width: 120px;
 }
 
 .vehicle-hero-top > span {
@@ -734,13 +747,30 @@ body.qr-public-page {
   }
 
   .vehicle-brand-logos {
-    min-height: 38px;
-    padding: 6px 8px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 9px;
+    min-height: 40px;
+    max-width: 100%;
+    padding: 7px 9px;
+    border-radius: 14px;
   }
 
   .vehicle-brand-logos img {
-    max-width: 58px;
-    max-height: 23px;
+    max-width: 86px;
+    max-height: 24px;
+  }
+
+  .vehicle-brand-logos .vehicle-logo-fiat {
+    max-width: 76px;
+  }
+
+  .vehicle-brand-logos .vehicle-logo-jeep {
+    max-width: 80px;
+  }
+
+  .vehicle-brand-logos .vehicle-logo-byd {
+    max-width: 92px;
   }
 
   .vehicle-hero-top > span {
