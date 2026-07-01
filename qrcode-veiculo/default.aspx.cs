@@ -20,14 +20,7 @@ public partial class qrcode_veiculo_default : System.Web.UI.Page
         Response.Cache.SetNoStore();
         Response.Cache.SetExpires(DateTime.UtcNow.AddMinutes(-1));
 
-        if (!UsuarioLogado())
-        {
-            Response.Redirect("../login.aspx", false);
-            Context.ApplicationInstance.CompleteRequest();
-            return;
-        }
-
-        lblUsuario.Text = Convert.ToString(Session["usuario"]);
+        lblUsuario.Text = Session["usuario"] == null ? "Acesso livre" : Convert.ToString(Session["usuario"]);
         lblCodigo.Text = Session["usuario_codigo"] == null ? "-" : Convert.ToString(Session["usuario_codigo"]);
     }
 
@@ -61,11 +54,6 @@ public partial class qrcode_veiculo_default : System.Web.UI.Page
             ExibirMensagem("N\u00e3o foi poss\u00edvel gerar o QR Code agora. Detalhe t\u00e9cnico: " + HttpUtility.HtmlEncode(ex.Message), true);
             pnlResultado.Visible = false;
         }
-    }
-
-    private bool UsuarioLogado()
-    {
-        return Session["id"] != null || Session["usuario"] != null;
     }
 
     private void RenderizarResultado(VeiculoQrDados veiculo, string consultaUrl)
