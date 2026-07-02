@@ -10,6 +10,15 @@ public partial class qrcode_veiculo_consulta : System.Web.UI.Page
 {
     private static readonly CultureInfo CulturaBrasil = new CultureInfo("pt-BR");
 
+    protected override object LoadPageStateFromPersistenceMedium()
+    {
+        return null;
+    }
+
+    protected override void SavePageStateToPersistenceMedium(object state)
+    {
+    }
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (IsPostBack)

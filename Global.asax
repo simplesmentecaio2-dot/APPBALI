@@ -68,6 +68,15 @@
     void Application_Error(object sender, EventArgs e)
     {
         Exception erro = Server.GetLastError();
+        if (EhErroDeValidacaoRequest(erro) && EhPaginaConsultaQrCode())
+        {
+            Server.ClearError();
+            Response.Clear();
+            Response.Redirect(VirtualPathUtility.ToAbsolute("~/qrcode-veiculo/consulta.aspx"), false);
+            Context.ApplicationInstance.CompleteRequest();
+            return;
+        }
+
         if (!EhErroDeViewState(erro) || !EhPaginaProtegidaContraViewState())
         {
             return;
@@ -81,6 +90,24 @@
 
         Response.Redirect(destino, false);
         Context.ApplicationInstance.CompleteRequest();
+    }
+
+    void Application_PreSendRequestHeaders(object sender, EventArgs e)
+    {
+        try
+        {
+            if (!EhPaginaConsultaQrCode()) return;
+
+            Response.Headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+            Response.Headers["Referrer-Policy"] = "no-referrer";
+            Response.Headers["X-Content-Type-Options"] = "nosniff";
+            Response.Headers["X-Frame-Options"] = "DENY";
+            Response.Headers.Remove("X-AspNet-Version");
+            Response.Headers.Remove("X-Powered-By");
+        }
+        catch
+        {
+        }
     }
 
     private bool EhErroDeViewState(Exception erro)
@@ -102,6 +129,25 @@
         }
 
         return false;
+    }
+
+    private bool EhErroDeValidacaoRequest(Exception erro)
+    {
+        for (Exception atual = erro; atual != null; atual = atual.InnerException)
+        {
+            if (atual is HttpRequestValidationException)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool EhPaginaConsultaQrCode()
+    {
+        string caminho = Request.AppRelativeCurrentExecutionFilePath ?? "";
+        return caminho.Equals("~/qrcode-veiculo/consulta.aspx", StringComparison.OrdinalIgnoreCase);
     }
 
     private bool EhPaginaProtegidaContraViewState()
