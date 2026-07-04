@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="default.aspx.cs" Inherits="veiculos_contrato" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="default.aspx.cs" Inherits="veiculos_contrato" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
@@ -9,7 +9,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head id="Head1" runat="server">
-    <title>INÍCIO | Pátio</title>
+    <title>INÍCIO | P&aacute;tio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <!-- STYLE MARCIO       ////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
     <script src="../assets/jquery-1.9.1.min.js"></script>
@@ -130,10 +130,10 @@
                                 <li>
                                     <a href="./" class="mm-active">
                                         <i class="metismenu-icon fas fa-home"></i>
-                                        Início
+                                        In&iacute;cio
                                     </a>
                                 </li>
-                                <li class="app-sidebar__heading">Funções</li>
+                                <li class="app-sidebar__heading">Fun&ccedil;&otilde;es</li>
                                 <li>
                                     <a href="./registrar.aspx" >
                                         <i class="metismenu-icon fa fa-folder-plus"></i>
@@ -157,7 +157,7 @@
                                 <li>
                                     <a href="./relatorios.aspx">
                                         <i class="metismenu-icon fas fa-chart-line"></i>
-                                        Relatórios
+                                        Relat&oacute;rios
                                     </a>
                                 </li>
                                 <li>
@@ -187,10 +187,10 @@
                                                 <i class="fas fa-home text-white"></i>
                                             </div>
                                             <div>
-                                                <b>Início</b>
+                                                <b>In&iacute;cio</b>
 
                                                 <div class="page-title-subheading">
-                                                    Operações de pátio e consulta de veículos.
+                                                    Opera&ccedil;&otilde;es de p&aacute;tio e consulta de ve&iacute;culos.
                                                 </div>
                                             </div>
                                         </div>
@@ -204,35 +204,35 @@
                                             <div class="card-header-tab card-header-tab-animation card-header">
                                                 <div class="card-header-title">
                                                     <i class="header-icon lnr-apartment icon-gradient bg-love-kiss"></i>
-                                                    Funções                                       
+                                                    Fun&ccedil;&otilde;es                                       
                                                 </div>
                                             </div>
                                             <div class="card-body">
                                                 <div class="patio-home-grid">
                                                     <a class="patio-home-card" href="./registrar.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-folder-plus"></i></span>
-                                                        <strong>Registrar veículo</strong>
-                                                        <small>Inclua a localização inicial do veículo no pátio.</small>
+                                                        <strong>Registrar ve&iacute;culo</strong>
+                                                        <small>Inclua a localiza&ccedil;&atilde;o inicial do ve&iacute;culo no p&aacute;tio.</small>
                                                     </a>
                                                     <a class="patio-home-card" href="./transferir.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-exchange-alt"></i></span>
                                                         <strong>Transferir</strong>
-                                                        <small>Mova o veículo entre lojas ou áreas operacionais.</small>
+                                                        <small>Mova o ve&iacute;culo entre lojas ou áreas operacionais.</small>
                                                     </a>
                                                     <a class="patio-home-card" href="./historico.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-history"></i></span>
                                                         <strong>Histórico</strong>
-                                                        <small>Consulte o caminho percorrido pelo veículo.</small>
+                                                        <small>Consulte o caminho percorrido pelo ve&iacute;culo.</small>
                                                     </a>
                                                     <a class="patio-home-card" href="./relatorios.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-chart-line"></i></span>
-                                                        <strong>Relatórios</strong>
-                                                        <small>Veja indicadores, entradas, estoque por loja e movimentações.</small>
+                                                        <strong>Relat&oacute;rios</strong>
+                                                        <small>Veja indicadores, entradas, estoque por loja e movimenta&ccedil;&otilde;es.</small>
                                                     </a>
                                                     <a class="patio-home-card" href="./lojas.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-store"></i></span>
                                                         <strong>Lojas</strong>
-                                                        <small>Cadastre, edite, ative e desative lojas do pátio.</small>
+                                                        <small>Cadastre, edite, ative e desative lojas do p&aacute;tio.</small>
                                                     </a>
                                                     <a class="patio-home-card" href="./barcode-logs.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-clipboard-list"></i></span>

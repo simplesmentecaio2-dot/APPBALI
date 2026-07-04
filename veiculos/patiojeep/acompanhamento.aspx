@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="acompanhamento.aspx.cs" Inherits="veiculos_contrato" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="acompanhamento.aspx.cs" Inherits="veiculos_contrato" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
@@ -9,7 +9,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head id="Head1" runat="server">
-    <title>ACOMPANHAMENTO | Pátio</title>
+    <title>ACOMPANHAMENTO | P&aacute;tio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <!-- STYLE MARCIO       ////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
     <script src="../assets/jquery-1.9.1.min.js"></script>
@@ -154,10 +154,10 @@
                                 <li>
                                     <a href="./">
                                         <i class="metismenu-icon fas fa-home"></i>
-                                        Início
+                                        In&iacute;cio
                                     </a>
                                 </li>
-                                <li class="app-sidebar__heading">Pátio</li>
+                                <li class="app-sidebar__heading">P&aacute;tio</li>
                                 <li>
                                     <a href="./registrar.aspx">
                                         <i class="metismenu-icon fa fa-folder-plus"></i>
@@ -180,7 +180,7 @@
                                 <li>
                                     <a href="./relatorios.aspx">
                                         <i class="metismenu-icon fas fa-chart-line"></i>
-                                        Relatórios
+                                        Relat&oacute;rios
                                     </a>
                                 </li>
                                 <li>
@@ -213,7 +213,7 @@
                                                 <b>Acompanhamento</b>
 
                                                 <div class="page-title-subheading">
-                                                    Acompanhe preparação, pendências e status do veículo.
+                                                    Acompanhe preparação, pendências e status do ve&iacute;culo.
                                                 </div>
                                             </div>
                                         </div>
@@ -301,7 +301,7 @@
                                                                 </div>
                                                                 <div class="card-body">
                                                                     <p class="card-text">
-                                                                        Veículo está agendado para 
+                                                                        Ve&iacute;culo está agendado para 
                                                                         <h5 class="card-title">
                                                                             <asp:Literal ID="literalDataAgendamento" runat="server"></asp:Literal></h5>
                                                                         para o 
@@ -323,7 +323,7 @@
                                                                     Localização
                                                                 </div>
                                                                 <div class="card-body">
-                                                                    <p class="card-text">Veículo está localizado no:</p>
+                                                                    <p class="card-text">Ve&iacute;culo está localizado no:</p>
                                                                     <h5 class="card-title">
                                                                         <asp:Literal ID="literaLocalizacao" runat="server"></asp:Literal></h5>
                                                                 </div>
@@ -344,7 +344,7 @@
                                                                 <div class="card-body">
                                                                     <div id="divRevisaoIniciada" runat="server">
                                                                         <p class="card-text">
-                                                                            <i class="fas fa-calendar"></i>Início:
+                                                                            <i class="fas fa-calendar"></i>In&iacute;cio:
                                                                             <asp:Literal ID="literalRevisaoInicio" runat="server"></asp:Literal>
                                                                         </p>
                                                                         <p class="card-text">
@@ -399,7 +399,7 @@
                                                                 <div id="divInstalAcessorioIniciado" runat="server">
                                                                     <p class="card-text">
 
-                                                                        <i class="fas fa-calendar"></i>Início:
+                                                                        <i class="fas fa-calendar"></i>In&iacute;cio:
                                                                                 <asp:Literal ID="literalInicioInstalAcessorio" runat="server"></asp:Literal>
                                                                     </p>
                                                                     <p class="card-text">
@@ -431,7 +431,7 @@
 
                                                                 <div id="divServicoTerceiroIniciado" runat="server">
                                                                     <p class="card-text">
-                                                                        <i class="fas fa-calendar"></i>Início:
+                                                                        <i class="fas fa-calendar"></i>In&iacute;cio:
                                                                                 <asp:Literal ID="literalServicoTerceiroInicio" runat="server"></asp:Literal>
                                                                     </p>
                                                                     <p class="card-text">

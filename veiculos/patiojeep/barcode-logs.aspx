@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
-    <title>LOGS DO LEITOR | Pátio</title>
+    <title>LOGS DO LEITOR | P&aacute;tio</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <script src="../assets/jquery-1.9.1.min.js"></script>
@@ -130,12 +130,12 @@
                     <div class="scrollbar-sidebar bg-dark">
                         <div class="app-sidebar__inner">
                             <ul class="vertical-nav-menu">
-                                <li><a href="./"><i class="metismenu-icon fas fa-home"></i>Início</a></li>
-                                <li class="app-sidebar__heading">Funções</li>
+                                <li><a href="./"><i class="metismenu-icon fas fa-home"></i>In&iacute;cio</a></li>
+                                <li class="app-sidebar__heading">Fun&ccedil;&otilde;es</li>
                                 <li><a href="./registrar.aspx"><i class="metismenu-icon fa fa-folder-plus"></i>Registrar</a></li>
                                 <li><a href="./transferir.aspx"><i class="metismenu-icon fas fa-exchange-alt"></i>Transferir</a></li>
                                 <li><a href="./historico.aspx"><i class="metismenu-icon fas fa-history"></i>Consultar</a></li>
-                                <li><a href="./relatorios.aspx"><i class="metismenu-icon fas fa-chart-line"></i>Relatórios</a></li>
+                                <li><a href="./relatorios.aspx"><i class="metismenu-icon fas fa-chart-line"></i>Relat&oacute;rios</a></li>
                                 <li><a href="./lojas.aspx"><i class="metismenu-icon fas fa-store"></i>Lojas</a></li>
                                 <li><a href="./barcode-logs.aspx" class="mm-active"><i class="metismenu-icon fas fa-clipboard-list"></i>Logs do leitor</a></li>
                             </ul>

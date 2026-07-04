@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="historico.aspx.cs" Inherits="veiculos_contrato" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="historico.aspx.cs" Inherits="veiculos_contrato" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
@@ -130,10 +130,10 @@
                                 <li>
                                     <a href="./">
                                         <i class="metismenu-icon fas fa-home"></i>
-                                        Início
+                                        In&iacute;cio
                                     </a>
                                 </li>
-                                <li class="app-sidebar__heading">Funções</li>
+                                <li class="app-sidebar__heading">Fun&ccedil;&otilde;es</li>
                                 <li>
                                     <a href="./registrar.aspx" >
                                         <i class="metismenu-icon fa fa-folder-plus"></i>
@@ -157,7 +157,7 @@
                                 <li>
                                     <a href="./relatorios.aspx">
                                         <i class="metismenu-icon fas fa-chart-line"></i>
-                                        Relatórios
+                                        Relat&oacute;rios
                                     </a>
                                 </li>
                                 <li>
@@ -190,7 +190,7 @@
                                                 <b>Consultar</b>
 
                                                 <div class="page-title-subheading">
-                                                    Consulte a localização atual e o histórico de movimentações.
+                                                    Consulte a localiza&ccedil;&atilde;o atual e o histórico de movimenta&ccedil;&otilde;es.
                                                 </div>
                                             </div>
                                         </div>

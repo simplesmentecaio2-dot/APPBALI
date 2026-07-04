@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
-    <title>LOJAS | Pátio</title>
+    <title>LOJAS | P&aacute;tio</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <script src="../assets/jquery-1.9.1.min.js"></script>
@@ -233,12 +233,12 @@
                     <div class="scrollbar-sidebar bg-dark">
                         <div class="app-sidebar__inner">
                             <ul class="vertical-nav-menu">
-                                <li><a href="./"><i class="metismenu-icon fas fa-home"></i>Início</a></li>
-                                <li class="app-sidebar__heading">Funções</li>
+                                <li><a href="./"><i class="metismenu-icon fas fa-home"></i>In&iacute;cio</a></li>
+                                <li class="app-sidebar__heading">Fun&ccedil;&otilde;es</li>
                                 <li><a href="./registrar.aspx"><i class="metismenu-icon fa fa-folder-plus"></i>Registrar</a></li>
                                 <li><a href="./transferir.aspx"><i class="metismenu-icon fas fa-exchange-alt"></i>Transferir</a></li>
                                 <li><a href="./historico.aspx"><i class="metismenu-icon fas fa-history"></i>Consultar</a></li>
-                                <li><a href="./relatorios.aspx"><i class="metismenu-icon fas fa-chart-line"></i>Relatórios</a></li>
+                                <li><a href="./relatorios.aspx"><i class="metismenu-icon fas fa-chart-line"></i>Relat&oacute;rios</a></li>
                                 <li><a href="./lojas.aspx" class="mm-active"><i class="metismenu-icon fas fa-store"></i>Lojas</a></li>
                                 <li><a href="./barcode-logs.aspx"><i class="metismenu-icon fas fa-clipboard-list"></i>Logs do leitor</a></li>
                             </ul>
@@ -257,7 +257,7 @@
                                             </div>
                                             <div>
                                                 <b>Cadastro de lojas</b>
-                                                <div class="page-title-subheading">Inclua lojas do pátio, edite descrições e controle lojas ativas.</div>
+                                                <div class="page-title-subheading">Inclua lojas do p&aacute;tio, edite descri&ccedil;&otilde;es e controle lojas ativas.</div>
                                             </div>
                                         </div>
                                     </div>
@@ -273,7 +273,7 @@
                                     <asp:Literal ID="litResumo" runat="server"></asp:Literal>
                                     <div class="lojas-panel">
                                         <div class="lojas-panel-header">
-                                            <strong><i class="fa fa-store mr-1"></i> Manutenção de lojas</strong>
+                                            <strong><i class="fa fa-store mr-1"></i> Manuten&ccedil;&atilde;o de lojas</strong>
                                             <asp:LinkButton ID="btnNovo" runat="server" CssClass="btn btn-light" OnClick="btnNovo_Click"><i class="fa fa-plus mr-1"></i> Novo</asp:LinkButton>
                                         </div>
                                         <asp:HiddenField ID="hfLojaId" runat="server" />
@@ -283,7 +283,7 @@
                                                 <asp:TextBox ID="txtDescricao" runat="server" CssClass="form-control" MaxLength="50" placeholder="Ex.: Park Sul"></asp:TextBox>
                                             </div>
                                             <div>
-                                                <label>Senha de manutenção</label>
+                                                <label>Senha de manuten&ccedil;&atilde;o</label>
                                                 <asp:TextBox ID="txtSenha" runat="server" CssClass="form-control" TextMode="Password" placeholder="Obrigatória para editar/ativar/desativar"></asp:TextBox>
                                             </div>
                                             <asp:LinkButton ID="btnSalvar" runat="server" CssClass="btn btn-success" OnClick="btnSalvar_Click"><i class="fa fa-save mr-1"></i> Salvar</asp:LinkButton>
@@ -330,7 +330,7 @@
                                     </div>
                                     <div class="lojas-panel">
                                         <div class="lojas-panel-header">
-                                            <strong><i class="fa fa-history mr-1"></i> Últimas alterações</strong>
+                                            <strong><i class="fa fa-history mr-1"></i> &Uacute;ltimas alterações</strong>
                                         </div>
                                         <div class="lojas-table-wrap">
                                             <asp:Literal ID="litLogs" runat="server"></asp:Literal>

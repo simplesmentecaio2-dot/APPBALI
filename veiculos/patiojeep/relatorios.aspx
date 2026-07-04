@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head id="Head1" runat="server">
-    <title>RELATÓRIOS | Pátio</title>
+    <title>RELAT&Oacute;RIOS | P&aacute;tio</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <script src="../assets/jquery-1.9.1.min.js"></script>
@@ -242,12 +242,12 @@
                     <div class="scrollbar-sidebar bg-dark">
                         <div class="app-sidebar__inner">
                             <ul class="vertical-nav-menu">
-                                <li><a href="./"><i class="metismenu-icon fas fa-home"></i>Início</a></li>
-                                <li class="app-sidebar__heading">Funções</li>
+                                <li><a href="./"><i class="metismenu-icon fas fa-home"></i>In&iacute;cio</a></li>
+                                <li class="app-sidebar__heading">Fun&ccedil;&otilde;es</li>
                                 <li><a href="./registrar.aspx"><i class="metismenu-icon fa fa-folder-plus"></i>Registrar</a></li>
                                 <li><a href="./transferir.aspx"><i class="metismenu-icon fas fa-exchange-alt"></i>Transferir</a></li>
                                 <li><a href="./historico.aspx"><i class="metismenu-icon fas fa-history"></i>Consultar</a></li>
-                                <li><a href="./relatorios.aspx" class="mm-active"><i class="metismenu-icon fas fa-chart-line"></i>Relatórios</a></li>
+                                <li><a href="./relatorios.aspx" class="mm-active"><i class="metismenu-icon fas fa-chart-line"></i>Relat&oacute;rios</a></li>
                                 <li><a href="./lojas.aspx"><i class="metismenu-icon fas fa-store"></i>Lojas</a></li>
                                 <li><a href="./barcode-logs.aspx"><i class="metismenu-icon fas fa-clipboard-list"></i>Logs do leitor</a></li>
                             </ul>
@@ -265,8 +265,8 @@
                                                 <i class="fas fa-chart-line text-white"></i>
                                             </div>
                                             <div>
-                                                <b>Relatórios</b>
-                                                <div class="page-title-subheading">BI operacional do pátio: estoque por loja, entradas e movimentações recentes.</div>
+                                                <b>Relat&oacute;rios</b>
+                                                <div class="page-title-subheading">BI operacional do p&aacute;tio: estoque por loja, entradas e movimenta&ccedil;&otilde;es recentes.</div>
                                             </div>
                                         </div>
                                         <div class="page-title-actions">
@@ -279,7 +279,7 @@
                                     <div class="patio-bi-grid">
                                         <div class="patio-bi-panel">
                                             <div class="patio-bi-panel-header">
-                                                <strong><i class="fa fa-store mr-1"></i> Veículos por loja</strong>
+                                                <strong><i class="fa fa-store mr-1"></i> Ve&iacute;culos por loja</strong>
                                                 <small>posição atual</small>
                                             </div>
                                             <div class="patio-bi-panel-body">
@@ -318,7 +318,7 @@
                                     </div>
                                     <div class="patio-bi-panel">
                                         <div class="patio-bi-panel-header">
-                                            <strong><i class="fa fa-exchange-alt mr-1"></i> Últimas movimentações</strong>
+                                            <strong><i class="fa fa-exchange-alt mr-1"></i> &Uacute;ltimas movimenta&ccedil;&otilde;es</strong>
                                             <small>transferências recentes</small>
                                         </div>
                                         <div class="patio-bi-panel-body patio-bi-table-wrap">
@@ -327,8 +327,8 @@
                                     </div>
                                     <div class="patio-bi-panel">
                                         <div class="patio-bi-panel-header">
-                                            <strong><i class="fa fa-car mr-1"></i> Últimos veículos cadastrados</strong>
-                                            <small>entradas recentes no pátio</small>
+                                            <strong><i class="fa fa-car mr-1"></i> Últimos ve&iacute;culos cadastrados</strong>
+                                            <small>entradas recentes no p&aacute;tio</small>
                                         </div>
                                         <div class="patio-bi-panel-body patio-bi-table-wrap">
                                             <asp:Literal ID="litUltimosCadastros" runat="server"></asp:Literal>

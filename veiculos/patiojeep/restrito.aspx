@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="restrito.aspx.cs" Inherits="veiculos_contrato" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="restrito.aspx.cs" Inherits="veiculos_contrato" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
 
@@ -9,7 +9,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head id="Head1" runat="server">
-    <title>RESTRITO | Pátio</title>
+    <title>RESTRITO | P&aacute;tio</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <!-- STYLE MARCIO       ////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
     <script src="../assets/jquery-1.9.1.min.js"></script>
@@ -130,10 +130,10 @@
                                 <li>
                                     <a href="./" class="mm-active">
                                         <i class="metismenu-icon fas fa-home"></i>
-                                        Início
+                                        In&iacute;cio
                                     </a>
                                 </li>
-                                <li class="app-sidebar__heading">Funções</li>
+                                <li class="app-sidebar__heading">Fun&ccedil;&otilde;es</li>
                                 <li>
                                     <a href="./registrar.aspx" >
                                         <i class="metismenu-icon fa fa-folder-plus"></i>
@@ -157,7 +157,7 @@
                                 <li>
                                     <a href="./relatorios.aspx">
                                         <i class="metismenu-icon fas fa-chart-line"></i>
-                                        Relatórios
+                                        Relat&oacute;rios
                                     </a>
                                 </li>
                             </ul>
