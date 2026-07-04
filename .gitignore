@@ -50,6 +50,8 @@ Bin/
 bin/
 App_Data/*.log
 App_Data/*.tmp
+App_Data/*.local.config
+App_Data/*.secrets.config
 App_Data/wkhtmltoimage/
 *.pdb
 

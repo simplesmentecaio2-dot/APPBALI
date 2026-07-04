@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 
 public partial class gerador_senha_default : System.Web.UI.Page
@@ -202,6 +203,12 @@ public partial class gerador_senha_default : System.Web.UI.Page
 
     private string Config(string chave, string padrao)
     {
+        string valorAmbiente = Environment.GetEnvironmentVariable("APPBALI_" + Regex.Replace(chave.ToUpperInvariant(), "[^A-Z0-9]+", "_"));
+        if (!String.IsNullOrWhiteSpace(valorAmbiente))
+        {
+            return valorAmbiente.Trim();
+        }
+
         string valor = ConfigurationManager.AppSettings[chave];
         return String.IsNullOrWhiteSpace(valor) ? padrao : valor.Trim();
     }
