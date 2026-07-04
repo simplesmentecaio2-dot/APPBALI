@@ -73,7 +73,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     else
                     {
                         limpaCampos();
-                        executarJavaScript("alert('Dados não encontrados!')");
+                        executarJavaScript("alert('Dados n\\u00e3o encontrados!')");
 
                     }
 

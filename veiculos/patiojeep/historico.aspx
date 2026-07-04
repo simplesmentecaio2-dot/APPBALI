@@ -9,7 +9,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head id="Head1" runat="server">
-    <title>CONSULTAR | Histórico</title>
+    <title>CONSULTAR | Hist&oacute;rico</title>
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <!-- STYLE MARCIO       ////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
     <script src="../assets/jquery-1.9.1.min.js"></script>
@@ -190,7 +191,7 @@
                                                 <b>Consultar</b>
 
                                                 <div class="page-title-subheading">
-                                                    Consulte a localiza&ccedil;&atilde;o atual e o histórico de movimenta&ccedil;&otilde;es.
+                                                    Consulte a localiza&ccedil;&atilde;o atual e o hist&oacute;rico de movimenta&ccedil;&otilde;es.
                                                 </div>
                                             </div>
                                         </div>
@@ -212,7 +213,7 @@
 
                                                     <div class="input-group col-sm-12 col-md-6 col-lg-6 col-xl-3">
                                                         <div class="input-group-prepend">
-                                                            <span class="input-group-text" id="basic-addon1"><b>Série</b></span>
+                                                            <span class="input-group-text" id="basic-addon1"><b>S&eacute;rie</b></span>
                                                         </div>
                                                         <asp:TextBox ID="txtSerie" CssClass="form-control" runat="server" required="true"  OnTextChanged="serieOnTextChanged"   AutoPostBack="true"></asp:TextBox>
                                                         <div class="input-group-append">
@@ -228,7 +229,7 @@
                                                         
                                                         <div class="input-group col-sm-12 col-md-6 col-lg-6 col-xl-3 mb-3">
                                                             <div class="input-group-prepend">
-                                                                <span class="input-group-text" id="Span4"><b>Cód. Veíc.</b></span>
+                                                                <span class="input-group-text" id="Span4"><b>C&oacute;d. Ve&iacute;c.</b></span>
                                                             </div>
                                                             <asp:TextBox type="text" ID="txtCodVec" CssClass="form-control bg-white  " runat="server" ></asp:TextBox>
 
@@ -264,7 +265,7 @@
                                             <div class="card-header-tab card-header-tab-animation card-header">
                                                 <div class="card-header-title">
                                                     <i class="header-icon lnr-apartment icon-gradient bg-love-kiss"></i>
-                                                    Localização atual                                       
+                                                    Localiza&ccedil;&atilde;o atual
                                                 </div>
                                             </div>
                                             <div class="card-body">
@@ -279,7 +280,7 @@
                                             <div class="card-header-tab card-header-tab-animation card-header">
                                                 <div class="card-header-title">
                                                     <i class="header-icon lnr-apartment icon-gradient bg-love-kiss"></i>
-                                                    Histórico                                       
+                                                    Hist&oacute;rico
                                                 </div>
                                             </div>
                                             <div class="card-body">
