@@ -160,6 +160,12 @@
                                         Acompanhamento
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="./barcode-logs.aspx">
+                                        <i class="metismenu-icon fas fa-clipboard-list"></i>
+                                        Logs do leitor
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -216,6 +222,11 @@
                                                         <span class="patio-home-icon"><i class="fa fa-tasks"></i></span>
                                                         <strong>Acompanhamento</strong>
                                                         <small>Acompanhe pendências e preparação dos veículos.</small>
+                                                    </a>
+                                                    <a class="patio-home-card" href="./barcode-logs.aspx">
+                                                        <span class="patio-home-icon"><i class="fa fa-clipboard-list"></i></span>
+                                                        <strong>Logs do leitor</strong>
+                                                        <small>Audite leituras por câmera, digitação manual e diagnósticos.</small>
                                                     </a>
                                                 </div>
                                             </div>

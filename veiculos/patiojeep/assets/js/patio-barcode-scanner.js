@@ -50,6 +50,7 @@
         el.switchCamera = byId('scannerSwitchCamera');
         el.zoomGroup = byId('scannerZoomGroup');
         el.zoom = byId('scannerZoom');
+        el.diagnostics = byId('scannerDiagnostics');
     }
 
     function setVisible(node, visible) {
@@ -81,19 +82,19 @@
         }
     }
 
-    function onlyDigits(value) {
-        return (value || '').toString().replace(/\D/g, '');
+    function normalizeSerie(value) {
+        return (value || '').toString().toUpperCase().replace(/[^A-Z0-9]/g, '');
     }
 
     function extractSerie(rawValue) {
-        var digits = onlyDigits(rawValue);
+        var serie = normalizeSerie(rawValue);
 
-        if (digits.length === 7) {
-            return digits;
+        if (serie.length === 7) {
+            return serie;
         }
 
-        if (digits.length >= 17) {
-            return digits.substring(10, 17);
+        if (serie.length >= 17) {
+            return serie.substring(10, 17);
         }
 
         return '';
@@ -323,7 +324,7 @@
         var now = Date.now();
 
         if (!serie) {
-            setStatus('Código lido, mas não foi possível identificar a série de 7 dígitos. Aproxime ou digite manualmente.', 'warning');
+            setStatus('Código lido, mas não foi possível identificar a série de 7 caracteres. Aproxime ou digite manualmente.', 'warning');
             setResult('', rawValue);
 
             if (now - lastInvalidLog > 3000) {
@@ -684,10 +685,10 @@
     }
 
     function applyManualSerie() {
-        var serie = onlyDigits(el.manual && el.manual.value);
+        var serie = normalizeSerie(el.manual && el.manual.value);
 
         if (serie.length !== 7) {
-            setStatus('Digite exatamente os 7 dígitos da série para consultar.', 'error');
+            setStatus('Digite exatamente os 7 caracteres da série para consultar.', 'error');
             logEvent('serie_manual_invalida', { source: 'manual', serie: serie });
             if (el.manual) {
                 el.manual.focus();
@@ -783,6 +784,20 @@
             el.zoom.addEventListener('change', applyZoom);
         }
 
+        if (el.diagnostics && !el.diagnostics.getAttribute('data-scanner-bound')) {
+            el.diagnostics.setAttribute('data-scanner-bound', '1');
+            el.diagnostics.addEventListener('click', function () {
+                logEvent('diagnostico_manual', {
+                    detail: 'usuario acionou diagnostico; engine=' + currentEngine + '; running=' + running + '; cameras=' + availableCameras.length
+                });
+                if (window.patioToast) {
+                    window.patioToast('Diagnóstico enviado para a equipe de TI.', 'info');
+                } else {
+                    setStatus('Diagnóstico enviado para a equipe de TI.', 'success');
+                }
+            });
+        }
+
         if (el.applyManual && !el.applyManual.getAttribute('data-scanner-bound')) {
             el.applyManual.setAttribute('data-scanner-bound', '1');
             el.applyManual.addEventListener('click', applyManualSerie);
@@ -798,7 +813,7 @@
             });
 
             el.manual.addEventListener('input', function () {
-                el.manual.value = onlyDigits(el.manual.value).substring(0, 7);
+                el.manual.value = normalizeSerie(el.manual.value).substring(0, 7);
 
                 if (manualAutoTimer) {
                     window.clearTimeout(manualAutoTimer);
@@ -823,13 +838,14 @@
         el.input.addEventListener('input', function () {
             if (suppressMainAutoSearch) return;
 
-            var cleaned = onlyDigits(el.input.value).substring(0, 7);
+            var cleaned = normalizeSerie(el.input.value).substring(0, 7);
             if (el.input.value !== cleaned) {
                 el.input.value = cleaned;
             }
 
             if (mainInputTimer) {
                 window.clearTimeout(mainInputTimer);
+                mainInputTimer = null;
             }
 
             if (cleaned.length === 7) {

@@ -241,6 +241,216 @@
             margin-top: .85rem;
         }
 
+        .patio-operation-alert {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            gap: .85rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: .9rem 1rem;
+            border-radius: 16px;
+            border: 1px solid #dbe4ef;
+            background: #fff;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, .08);
+        }
+
+        .patio-operation-alert i {
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: #eef2ff;
+            color: #1e3a8a;
+            font-size: 1.2rem;
+        }
+
+        .patio-operation-alert strong {
+            display: block;
+            color: #0f172a;
+            font-size: 1rem;
+        }
+
+        .patio-operation-alert span {
+            display: block;
+            color: #475569;
+            font-weight: 700;
+        }
+
+        .patio-operation-alert-success {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+        }
+
+        .patio-operation-alert-success i {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .patio-operation-alert-warning {
+            border-color: #fde68a;
+            background: #fffbeb;
+        }
+
+        .patio-operation-alert-warning i {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .patio-operation-alert-error {
+            border-color: #fecaca;
+            background: #fef2f2;
+        }
+
+        .patio-operation-alert-error i {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .patio-found-card {
+            position: relative;
+            margin: .25rem 0 1.1rem;
+            padding: 1rem;
+            border: 1px solid #bbf7d0;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #f0fdf4, #ffffff);
+            box-shadow: 0 16px 36px rgba(22, 101, 52, .10);
+        }
+
+        .patio-found-card.is-warning {
+            border-color: #fde68a;
+            background: linear-gradient(135deg, #fffbeb, #ffffff);
+        }
+
+        .patio-found-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .75rem;
+            flex-wrap: wrap;
+            margin-bottom: .9rem;
+        }
+
+        .patio-found-title {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            color: #0f172a;
+        }
+
+        .patio-found-title i {
+            width: 44px;
+            height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .patio-found-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .45rem .7rem;
+            border-radius: 999px;
+            background: #dcfce7;
+            color: #14532d;
+            font-weight: 900;
+            font-size: .82rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .patio-found-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(120px, 1fr));
+            gap: .7rem;
+        }
+
+        .patio-found-item {
+            padding: .72rem .8rem;
+            border-radius: 14px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+        }
+
+        .patio-found-item small {
+            display: block;
+            color: #64748b;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            font-size: .72rem;
+        }
+
+        .patio-found-item span {
+            display: block;
+            margin-top: .2rem;
+            color: #0f172a;
+            font-weight: 900;
+            overflow-wrap: anywhere;
+        }
+
+        .patio-field-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 .2rem rgba(239, 68, 68, .16) !important;
+        }
+
+        .patio-recent-card {
+            margin-top: 1rem;
+            border: 1px solid #dbe4ef;
+            border-radius: 18px;
+            background: #fff;
+            overflow: hidden;
+            box-shadow: 0 14px 34px rgba(15, 23, 42, .08);
+        }
+
+        .patio-recent-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .75rem;
+            padding: .85rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .patio-recent-header strong {
+            color: #0f172a;
+        }
+
+        .patio-recent-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .patio-recent-list li {
+            display: grid;
+            grid-template-columns: minmax(110px, .8fr) minmax(0, 1.4fr) minmax(90px, .6fr) auto;
+            gap: .75rem;
+            align-items: center;
+            padding: .75rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            font-weight: 800;
+        }
+
+        .patio-recent-list li:last-child {
+            border-bottom: 0;
+        }
+
+        .patio-recent-list small {
+            color: #64748b;
+            font-weight: 800;
+        }
+
+        .patio-mobile-action {
+            display: none;
+        }
+
         @media (max-width: 767.98px) {
             .barcode-modal .modal-dialog {
                 width: 100%;
@@ -273,6 +483,40 @@
 
             .scanner-zoom {
                 grid-template-columns: 1fr;
+            }
+
+            .patio-found-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .patio-recent-list li {
+                grid-template-columns: 1fr;
+                gap: .25rem;
+            }
+
+            .patio-mobile-action {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 1030;
+                display: block;
+                padding: .75rem;
+                background: rgba(255, 255, 255, .94);
+                border-top: 1px solid #dbe4ef;
+                box-shadow: 0 -16px 40px rgba(15, 23, 42, .18);
+                backdrop-filter: blur(12px);
+            }
+
+            .patio-mobile-action .btn {
+                width: 100%;
+                min-height: 50px;
+                border-radius: 14px;
+                font-weight: 900;
+            }
+
+            body[data-patio-page="registrar.aspx"] {
+                padding-bottom: 86px;
             }
         }
     </style>
@@ -412,6 +656,12 @@
                                         Acompanhamento
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="./barcode-logs.aspx">
+                                        <i class="metismenu-icon fas fa-clipboard-list"></i>
+                                        Logs do leitor
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -438,6 +688,21 @@
                                         </div>
                                     </div>
                                 </div>
+                                <asp:Panel ID="pnlFeedback" runat="server" CssClass="patio-operation-alert patio-operation-alert-info" Visible="false">
+                                    <i id="feedbackIcon" runat="server" class="fa fa-info-circle"></i>
+                                    <div>
+                                        <strong><asp:Literal ID="litFeedbackTitulo" runat="server"></asp:Literal></strong>
+                                        <span><asp:Literal ID="litFeedbackMensagem" runat="server"></asp:Literal></span>
+                                    </div>
+                                </asp:Panel>
+                                <asp:Panel ID="pnlNovaLeitura" runat="server" CssClass="patio-operation-alert patio-operation-alert-success" Visible="false">
+                                    <i class="fa fa-check-circle"></i>
+                                    <div>
+                                        <strong>Registro concluído</strong>
+                                        <span><asp:Literal ID="litNovaLeitura" runat="server"></asp:Literal></span>
+                                        <button type="button" class="btn btn-success mt-2" data-toggle="modal" data-target="#myModal"><i class="fa fa-barcode mr-1"></i> Nova leitura</button>
+                                    </div>
+                                </asp:Panel>
                                 <div class="row">
                                     <div class="col-12 mb-2">
                                         <div class="mb-3 card">
@@ -454,7 +719,7 @@
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text" id="basic-addon1"><b>Série</b></span>
                                                         </div>
-                                                        <asp:TextBox ID="txtSerie" CssClass="form-control" runat="server" required="true" MaxLength="7" inputmode="numeric" pattern="[0-9]*" placeholder="Digite ou leia a série" OnTextChanged="serieOnTextChanged" AutoPostBack="true"></asp:TextBox>
+                                                        <asp:TextBox ID="txtSerie" CssClass="form-control" runat="server" required="true" MaxLength="7" inputmode="text" pattern="[A-Za-z0-9]*" placeholder="Digite ou leia a série" OnTextChanged="serieOnTextChanged" AutoPostBack="true"></asp:TextBox>
                                                         <div class="input-group-append">
                                                             <asp:LinkButton runat="server" ID="btnSearch" OnClick="serieOnTextChanged" CssClass="btn btn-primary"><i class="fa fa-search-location"></i></asp:LinkButton>
                                                         </div>
@@ -471,6 +736,40 @@
                                                         </select>
                                                     </div>
                                                 </div>
+                                            <asp:Panel ID="pnlVeiculoEncontrado" runat="server" CssClass="patio-found-card" Visible="false">
+                                                <div class="patio-found-header">
+                                                    <div class="patio-found-title">
+                                                        <i class="fa fa-car"></i>
+                                                        <div>
+                                                            <strong><asp:Literal ID="litVeiculoTitulo" runat="server"></asp:Literal></strong>
+                                                            <div class="text-muted"><asp:Literal ID="litVeiculoSubtitulo" runat="server"></asp:Literal></div>
+                                                        </div>
+                                                    </div>
+                                                    <span class="patio-found-badge"><i class="fa fa-check-circle"></i><asp:Literal ID="litVeiculoStatus" runat="server"></asp:Literal></span>
+                                                </div>
+                                                <div class="patio-found-grid">
+                                                    <div class="patio-found-item">
+                                                        <small>Série</small>
+                                                        <span><asp:Literal ID="litResumoSerie" runat="server"></asp:Literal></span>
+                                                    </div>
+                                                    <div class="patio-found-item">
+                                                        <small>Chassi</small>
+                                                        <span><asp:Literal ID="litResumoChassi" runat="server"></asp:Literal></span>
+                                                    </div>
+                                                    <div class="patio-found-item">
+                                                        <small>Modelo</small>
+                                                        <span><asp:Literal ID="litResumoModelo" runat="server"></asp:Literal></span>
+                                                    </div>
+                                                    <div class="patio-found-item">
+                                                        <small>Cor</small>
+                                                        <span><asp:Literal ID="litResumoCor" runat="server"></asp:Literal></span>
+                                                    </div>
+                                                    <div class="patio-found-item">
+                                                        <small>Número NF</small>
+                                                        <span><asp:Literal ID="litResumoNf" runat="server"></asp:Literal></span>
+                                                    </div>
+                                                </div>
+                                            </asp:Panel>
                                             <div class="form-row">
                                                 <div class="input-group col-sm-12 col-md-6 col-lg-6 col-xl-3 mb-3">
                                                     <div class="input-group-prepend">
@@ -515,9 +814,19 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <asp:Panel ID="pnlHistoricoRecente" runat="server" CssClass="patio-recent-card" Visible="false">
+                                            <div class="patio-recent-header">
+                                                <strong><i class="fa fa-clock mr-1"></i> Últimos registros desta sessão</strong>
+                                                <small>Conferência rápida</small>
+                                            </div>
+                                            <asp:Literal ID="litHistoricoRecente" runat="server"></asp:Literal>
+                                        </asp:Panel>
                                     </div>
 
                                 </div>
+                                <asp:Panel ID="pnlMobileAction" runat="server" CssClass="patio-mobile-action" Visible="false">
+                                    <asp:LinkButton ID="btnRegistrarMobile" runat="server" CssClass="btn btn-success" OnClick="btnRegistrar_Click"><i class="far fa-save mr-1"></i> Salvar registro</asp:LinkButton>
+                                </asp:Panel>
                             </div>
                         </ContentTemplate>
                     </asp:UpdatePanel>
@@ -574,7 +883,7 @@
         </label>
         <div id="scannerStatus" class="scanner-status" aria-live="polite">Ao permitir a câmera, a leitura começa automaticamente.</div>
         <div class="scanner-manual">
-            <input type="text" id="scannerManualSerie" class="form-control" inputmode="numeric" pattern="[0-9]*" maxlength="7" placeholder="Digitar série manualmente" autocomplete="off" />
+            <input type="text" id="scannerManualSerie" class="form-control" inputmode="text" pattern="[A-Za-z0-9]*" maxlength="7" placeholder="Digitar série manualmente" autocomplete="off" autocapitalize="characters" spellcheck="false" />
             <button type="button" id="scannerApplyManual" class="btn btn-success"><i class="fa fa-check mr-1"></i> Usar série</button>
         </div>
         <details class="scanner-help">
@@ -583,7 +892,7 @@
                 <li>Limpe a lente da câmera e evite reflexo direto no código.</li>
                 <li>Aproxime devagar até o código preencher a faixa central.</li>
                 <li>Se o celular abrir a câmera errada, use Trocar câmera.</li>
-                <li>Se ainda falhar, digite manualmente os 7 dígitos da série.</li>
+                <li>Se ainda falhar, digite manualmente os 7 caracteres da série.</li>
             </ul>
         </details>
         <div class="scanner-actions">
@@ -594,6 +903,7 @@
             <div>
                 <button type="button" id="scannerTorch" class="btn btn-outline-secondary is-hidden"><i class="fa fa-lightbulb mr-1"></i> Luz</button>
                 <button type="button" id="scannerRetry" class="btn btn-outline-dark"><i class="fa fa-redo mr-1"></i> Reiniciar</button>
+                <button type="button" id="scannerDiagnostics" class="btn btn-outline-info"><i class="fa fa-stethoscope mr-1"></i> Enviar diagnóstico</button>
             </div>
         </div>
       </div>
