@@ -75,7 +75,7 @@ LEFT JOIN dbo.veiculos_patio_loja l
     ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
 WHERE p.baixado_venda = 0
 GROUP BY COALESCE(l.ds, 'Sem loja')
-ORDER BY COUNT(1) DESC, COALESCE(l.ds, 'Sem loja');"), "Nenhum ve\u00edculo ativo no p\u00e1tio.");
+ORDER BY COUNT(1) DESC, COALESCE(l.ds, 'Sem loja');"), "Nenhum ve&iacute;culo ativo no p&aacute;tio.");
 
         litEntradasDia.Text = RenderizarBarras(Consultar(@"
 SELECT
@@ -85,7 +85,7 @@ FROM dbo.veiculos_patio_locacao
 WHERE baixado_venda = 0
   AND dt_cad >= DATEADD(day, -13, CONVERT(date, GETDATE()))
 GROUP BY CONVERT(date, dt_cad)
-ORDER BY CONVERT(date, dt_cad);"), "Nenhuma entrada ativa nos \u00faltimos 14 dias.");
+ORDER BY CONVERT(date, dt_cad);"), "Nenhuma entrada ativa nos &uacute;ltimos 14 dias.");
 
         litMovimentacoesDia.Text = RenderizarBarras(Consultar(@"
 SELECT
@@ -97,7 +97,7 @@ INNER JOIN dbo.veiculos_patio_locacao p
    AND p.baixado_venda = 0
 WHERE t.dt_transf >= DATEADD(day, -13, CONVERT(date, GETDATE()))
 GROUP BY CONVERT(date, t.dt_transf)
-ORDER BY CONVERT(date, t.dt_transf);"), "Nenhuma movimenta\u00e7\u00e3o ativa nos \u00faltimos 14 dias.");
+ORDER BY CONVERT(date, t.dt_transf);"), "Nenhuma movimenta&ccedil;&atilde;o ativa nos &uacute;ltimos 14 dias.");
 
         litUsuarios.Text = RenderizarBarras(Consultar(@"
 SELECT TOP 8
@@ -107,7 +107,7 @@ FROM dbo.veiculos_patio_locacao
 WHERE baixado_venda = 0
   AND dt_cad >= DATEADD(day, -30, GETDATE())
 GROUP BY COALESCE(NULLIF(LTRIM(RTRIM(fun_cad)), ''), 'Sem usuario')
-ORDER BY COUNT(1) DESC, COALESCE(NULLIF(LTRIM(RTRIM(fun_cad)), ''), 'Sem usuario');"), "Nenhuma entrada ativa nos \u00faltimos 30 dias.");
+ORDER BY COUNT(1) DESC, COALESCE(NULLIF(LTRIM(RTRIM(fun_cad)), ''), 'Sem usuario');"), "Nenhuma entrada ativa nos &uacute;ltimos 30 dias.");
 
         litUltimasMovimentacoes.Text = RenderizarMovimentacoes(Consultar(@"
 SELECT TOP 20
@@ -202,14 +202,14 @@ ORDER BY p.dt_baixa_venda DESC, p.ve_nr DESC;"));
 
         StringBuilder html = new StringBuilder();
         html.Append("<div class=\"patio-bi-kpis\">");
-        html.Append(CardKpi("Ve\u00edculos no p\u00e1tio", Numero(r, "total_patio"), "ativos agora"));
-        html.Append(CardKpi("Baixados por venda", Numero(r, "baixados_venda"), "fora do p\u00e1tio"));
-        html.Append(CardKpi("Baixas hoje", Numero(r, "baixas_hoje"), "sincroniza\u00e7\u00e3o autom\u00e1tica"));
-        html.Append(CardKpi("Lojas com ve\u00edculos", Numero(r, "lojas_com_veiculos"), "lojas ativas ou usadas"));
+        html.Append(CardKpi("Ve&iacute;culos no p&aacute;tio", Numero(r, "total_patio"), "ativos agora"));
+        html.Append(CardKpi("Baixados por venda", Numero(r, "baixados_venda"), "fora do p&aacute;tio"));
+        html.Append(CardKpi("Baixas hoje", Numero(r, "baixas_hoje"), "sincroniza&ccedil;&atilde;o autom&aacute;tica"));
+        html.Append(CardKpi("Lojas com ve&iacute;culos", Numero(r, "lojas_com_veiculos"), "lojas ativas ou usadas"));
         html.Append(CardKpi("Entradas hoje", Numero(r, "entradas_hoje"), "cadastros ativos"));
         html.Append(CardKpi("Entradas 7 dias", Numero(r, "entradas_7_dias"), "janela recente"));
-        html.Append(CardKpi("Mov. no m\u00eas", Numero(m, "movimentos_mes"), "transfer\u00eancias ativas"));
-        html.Append(CardKpi("\u00daltima entrada", DataCurta(r, "ultima_entrada"), "registro ativo mais recente"));
+        html.Append(CardKpi("Mov. no m&ecirc;s", Numero(m, "movimentos_mes"), "transfer&ecirc;ncias ativas"));
+        html.Append(CardKpi("&Uacute;ltima entrada", DataCurta(r, "ultima_entrada"), "registro ativo mais recente"));
         html.Append(CardKpi("Baixados agora", Numero(sincronizacao, "baixados_agora"), "ao abrir este BI"));
         html.Append("</div>");
         litResumo.Text = html.ToString();
@@ -219,7 +219,7 @@ ORDER BY p.dt_baixa_venda DESC, p.ve_nr DESC;"));
     {
         if (sincronizacao == null)
         {
-            litBaixaVendaStatus.Text = "<div class=\"patio-sync-status is-warning\"><i class=\"fa fa-exclamation-triangle\"></i><span>N\u00e3o foi poss\u00edvel sincronizar baixas por venda agora. O BI foi carregado com os dados existentes.</span></div>";
+            litBaixaVendaStatus.Text = "<div class=\"patio-sync-status is-warning\"><i class=\"fa fa-exclamation-triangle\"></i><span>N&atilde;o foi poss&iacute;vel sincronizar baixas por venda agora. O BI foi carregado com os dados existentes.</span></div>";
             return;
         }
 
@@ -227,22 +227,22 @@ ORDER BY p.dt_baixa_venda DESC, p.ve_nr DESC;"));
         int ativos = Inteiro(sincronizacao["ativos_patio"]);
         int baixadosTotal = Inteiro(sincronizacao["baixados_total"]);
         string mensagem = baixadosAgora > 0
-            ? baixadosAgora.ToString("N0") + " ve\u00edculo(s) baixado(s) automaticamente por venda nesta atualiza\u00e7\u00e3o."
-            : "Vendas conferidas. Nenhuma baixa nova encontrada nesta atualiza\u00e7\u00e3o.";
+            ? baixadosAgora.ToString("N0") + " ve&iacute;culo(s) baixado(s) automaticamente por venda nesta atualiza&ccedil;&atilde;o."
+            : "Vendas conferidas. Nenhuma baixa nova encontrada nesta atualiza&ccedil;&atilde;o.";
 
-        litBaixaVendaStatus.Text = "<div class=\"patio-sync-status\"><i class=\"fa fa-check-circle\"></i><span>" + Html(mensagem) + "</span><strong>" + ativos.ToString("N0") + " ativos / " + baixadosTotal.ToString("N0") + " baixados</strong></div>";
+        litBaixaVendaStatus.Text = "<div class=\"patio-sync-status\"><i class=\"fa fa-check-circle\"></i><span>" + mensagem + "</span><strong>" + ativos.ToString("N0") + " ativos / " + baixadosTotal.ToString("N0") + " baixados</strong></div>";
     }
 
     private string CardKpi(string titulo, string valor, string legenda)
     {
-        return "<div class=\"patio-bi-kpi\"><small>" + Html(titulo) + "</small><strong>" + Html(valor) + "</strong><span>" + Html(legenda) + "</span></div>";
+        return "<div class=\"patio-bi-kpi\"><small>" + titulo + "</small><strong>" + Html(valor) + "</strong><span>" + legenda + "</span></div>";
     }
 
     private string RenderizarBarras(DataTable tabela, string vazio)
     {
         if (tabela.Rows.Count == 0)
         {
-            return "<div class=\"patio-bi-empty\">" + Html(vazio) + "</div>";
+            return "<div class=\"patio-bi-empty\">" + vazio + "</div>";
         }
 
         int maximo = 0;
@@ -275,12 +275,12 @@ ORDER BY p.dt_baixa_venda DESC, p.ve_nr DESC;"));
     {
         if (tabela.Rows.Count == 0)
         {
-            return "<div class=\"patio-bi-empty\">Nenhuma movimenta\u00e7\u00e3o ativa registrada at\u00e9 agora.</div>";
+            return "<div class=\"patio-bi-empty\">Nenhuma movimenta&ccedil;&atilde;o ativa registrada at&eacute; agora.</div>";
         }
 
         StringBuilder html = new StringBuilder();
         html.Append("<table class=\"table table-striped table-hover patio-bi-table\"><thead><tr>");
-        html.Append("<th>Data</th><th>Ve\u00edculo</th><th>Rota</th><th>Usu\u00e1rio</th>");
+        html.Append("<th>Data</th><th>Ve&iacute;culo</th><th>Rota</th><th>Usu&aacute;rio</th>");
         html.Append("</tr></thead><tbody>");
         foreach (DataRow row in tabela.Rows)
         {
@@ -299,12 +299,12 @@ ORDER BY p.dt_baixa_venda DESC, p.ve_nr DESC;"));
     {
         if (tabela.Rows.Count == 0)
         {
-            return "<div class=\"patio-bi-empty\">Nenhum ve\u00edculo ativo cadastrado no p\u00e1tio.</div>";
+            return "<div class=\"patio-bi-empty\">Nenhum ve&iacute;culo ativo cadastrado no p&aacute;tio.</div>";
         }
 
         StringBuilder html = new StringBuilder();
         html.Append("<table class=\"table table-striped table-hover patio-bi-table\"><thead><tr>");
-        html.Append("<th>Data</th><th>Ve\u00edculo</th><th>Loja atual</th><th>Usu\u00e1rio</th>");
+        html.Append("<th>Data</th><th>Ve&iacute;culo</th><th>Loja atual</th><th>Usu&aacute;rio</th>");
         html.Append("</tr></thead><tbody>");
         foreach (DataRow row in tabela.Rows)
         {
@@ -323,12 +323,12 @@ ORDER BY p.dt_baixa_venda DESC, p.ve_nr DESC;"));
     {
         if (tabela.Rows.Count == 0)
         {
-            return "<div class=\"patio-bi-empty\">Nenhuma baixa por venda registrada at\u00e9 agora.</div>";
+            return "<div class=\"patio-bi-empty\">Nenhuma baixa por venda registrada at&eacute; agora.</div>";
         }
 
         StringBuilder html = new StringBuilder();
         html.Append("<table class=\"table table-striped table-hover patio-bi-table\"><thead><tr>");
-        html.Append("<th>Data da baixa</th><th>Ve\u00edculo</th><th>Chassi</th><th>\u00daltima loja</th>");
+        html.Append("<th>Data da baixa</th><th>Ve&iacute;culo</th><th>Chassi</th><th>&Uacute;ltima loja</th>");
         html.Append("</tr></thead><tbody>");
         foreach (DataRow row in tabela.Rows)
         {
