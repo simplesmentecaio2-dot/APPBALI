@@ -77,6 +77,12 @@
             return;
         }
 
+        if (EhErroDeValidacaoRequest(erro))
+        {
+            RenderizarErroSeguro("Requisição inválida", "Confira os dados informados e tente novamente.");
+            return;
+        }
+
         if (EhPaginaLogin())
         {
             RenderizarErroLoginSeguro();
@@ -177,6 +183,11 @@
 
     private void RenderizarErroLoginSeguro()
     {
+        RenderizarErroSeguro("Não foi possível processar o login", "Confira os dados informados e tente novamente.");
+    }
+
+    private void RenderizarErroSeguro(string titulo, string mensagem)
+    {
         Server.ClearError();
         Response.Clear();
         Response.TrySkipIisCustomErrors = true;
@@ -184,7 +195,7 @@
         Response.ContentType = "text/html; charset=utf-8";
         Response.Cache.SetCacheability(HttpCacheability.NoCache);
         Response.Cache.SetNoStore();
-        Response.Write("<!doctype html><html lang=\"pt-BR\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Login indisponivel</title></head><body style=\"font-family:Arial,sans-serif;background:#f5f7fb;color:#111827;padding:32px\"><main style=\"max-width:520px;margin:60px auto;background:#fff;border:1px solid #dbe3ee;border-radius:10px;padding:28px;text-align:center\"><h1 style=\"margin:0 0 12px;font-size:22px\">Nao foi possivel processar o login</h1><p style=\"margin:0 0 20px;color:#475569\">Confira os dados informados e tente novamente.</p><button type=\"button\" onclick=\"history.back()\" style=\"border:0;border-radius:8px;background:#111827;color:#fff;padding:11px 18px;font-weight:700;cursor:pointer\">Voltar</button></main></body></html>");
+        Response.Write("<!doctype html><html lang=\"pt-BR\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Requisição inválida</title></head><body style=\"font-family:Arial,sans-serif;background:#f5f7fb;color:#111827;padding:32px\"><main style=\"max-width:520px;margin:60px auto;background:#fff;border:1px solid #dbe3ee;border-radius:10px;padding:28px;text-align:center\"><h1 style=\"margin:0 0 12px;font-size:22px\">" + HttpUtility.HtmlEncode(titulo) + "</h1><p style=\"margin:0 0 20px;color:#475569\">" + HttpUtility.HtmlEncode(mensagem) + "</p><button type=\"button\" onclick=\"history.back()\" style=\"border:0;border-radius:8px;background:#111827;color:#fff;padding:11px 18px;font-weight:700;cursor:pointer\">Voltar</button></main></body></html>");
         Context.ApplicationInstance.CompleteRequest();
     }
 

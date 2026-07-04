@@ -22,7 +22,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
         else
         {
 
-            if (Request.QueryString["id"] == null || Request.QueryString["id"].ToString().Equals(""))
+            string idSeguro = ObterIdSeguro();
+            if (String.IsNullOrEmpty(idSeguro))
             {
                 Response.Redirect("./restrito.aspx");
             }
@@ -32,12 +33,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
             }
         }
 
-        string id = "";
-        if (Request.QueryString["id"] != null)
+        string id = ObterIdSeguro();
+        if (!String.IsNullOrEmpty(id))
         {
             try
             {
-                id = Request.QueryString["id"].ToString();
                 Veiculos vec = new Veiculos();
                 string cliente, telefone, email, classificacao, vendedor, loja, nome_evento, equipe;
                 DateTime data_cadastro;
@@ -94,8 +94,13 @@ public partial class veiculos_contrato : System.Web.UI.Page
     }
     protected void ibtnDadosCliente_Click(object sender, EventArgs e)
     {
-        string id = "";
-        id = Request.QueryString["id"].ToString();
+        string id = ObterIdSeguro();
+        if (String.IsNullOrEmpty(id))
+        {
+            fluxoCorreto.Visible = false;
+            fluxoErro.Visible = true;
+            return;
+        }
         Veiculos vec = new Veiculos();
         vec.update_fluxoprospeccao(id);
         divBtnConfirmaFluxo.Visible = false;
@@ -103,6 +108,13 @@ public partial class veiculos_contrato : System.Web.UI.Page
         // ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
         // "alert('FLUXO CONFIRMADO COM SUCESSO!! ');", true);
 
+    }
+
+    private string ObterIdSeguro()
+    {
+        string id = (Request.QueryString["id"] ?? "").Trim();
+        int numero;
+        return Int32.TryParse(id, out numero) && numero > 0 ? numero.ToString() : "";
     }
 }
    

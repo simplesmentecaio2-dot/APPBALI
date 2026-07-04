@@ -12,28 +12,39 @@ using QRCoder;
 public partial class veiculos_contrato : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
-    {   
-        string code = "";
-        if (Request.QueryString["code"] != null)
+    {
+        string code = ObterCodigoSeguro();
+        bool codigoEncontrado = false;
+        if (!String.IsNullOrEmpty(code))
         {
-            code = Request.QueryString["code"].ToString();
-            string cliente, vendedor, loja, equipe,evento;
+            string cliente, vendedor, loja, equipe, evento, data;
             Veiculos vec = new Veiculos();
-            vec.select_prospeccao_qrcode(code, out cliente, out vendedor, out loja, out equipe,out evento);
-            lblCliente.Text = cliente;
-            lblvendedor.Text = vendedor;
-            lblloja.Text = loja;
-            lblequipe.Text = equipe;
-            lblevento.Text = evento;
-
+            try
+            {
+                vec.select_prospeccao_qrcode(code, out cliente, out vendedor, out loja, out equipe, out evento, out data);
+                lblCliente.Text = cliente;
+                lblvendedor.Text = vendedor;
+                lblloja.Text = loja;
+                lblequipe.Text = equipe;
+                lblevento.Text = evento;
+                codigoEncontrado = true;
+            }
+            catch
+            {
+                lblCliente.Text = "Código não localizado.";
+            }
         }
         else
         {
-            
+            lblCliente.Text = "Código inválido.";
         }
-       
 
-        
+        if (!codigoEncontrado)
+        {
+            return;
+        }
+
+
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
         QRCodeGenerator.QRCode qrcode = qrGenerator.CreateQrCode("http://app.bali.com.br/veiculos/confirmafluxo.aspx?id=" + code, QRCodeGenerator.ECCLevel.Q);
         System.Web.UI.WebControls.Image imgQRcode = new System.Web.UI.WebControls.Image();
@@ -65,6 +76,13 @@ public partial class veiculos_contrato : System.Web.UI.Page
     protected void btnProcessar4_Click(object sender, EventArgs e)
     {
 
+    }
+
+    private string ObterCodigoSeguro()
+    {
+        string code = (Request.QueryString["code"] ?? "").Trim();
+        int numero;
+        return Int32.TryParse(code, out numero) && numero > 0 ? numero.ToString() : "";
     }
 }
    

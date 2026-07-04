@@ -480,10 +480,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 imgQR = "data:image/png;base64," + Convert.ToBase64String(byteimage);
             }
         }
-        string cliente, vendedor, loja, equipe, evento;
+        string cliente, vendedor, loja, equipe, evento, data;
         Veiculos vec = new Veiculos();
         string code = "" + id;
-        vec.select_prospeccao_qrcode(code, out cliente, out vendedor, out loja, out equipe, out evento);
+        vec.select_prospeccao_qrcode(code, out cliente, out vendedor, out loja, out equipe, out evento, out data);
         ConviteQrCode qr = new ConviteQrCode { Cliente = cliente, QrCode = imgQR, Vendedor = vendedor, Loja = loja, Equipe = equipe, Evento = evento };
         return qr;
     }

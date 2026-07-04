@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.IO;
+using System.Text.RegularExpressions;
 
 public partial class veiculos_Seminovos_Painel_de_Controle : System.Web.UI.Page
 {
@@ -35,16 +37,60 @@ public partial class veiculos_Seminovos_Painel_de_Controle : System.Web.UI.Page
             //string srcPath = fileName.ToString();
             if (FileUpload1.FileName != "")
             {
-                string uploadPath = Server.MapPath("~\\veiculos\\img-veiculos\\");
-                FileUpload1.SaveAs(uploadPath + txtCodVec.Text + ".jpg");
-                //FileUpload1.SaveAs(uploadPath + FileUpload1.FileName);
-                string pth = Server.MapPath("~\\veiculos\\img-veiculos\\" + txtCodVec.Text + ".jpg");
+                string codigoVeiculo = (txtCodVec.Text ?? "").Trim();
+                if (!Regex.IsMatch(codigoVeiculo, @"^[A-Za-z0-9_-]{1,40}$"))
+                {
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
+                                                                              "alert('Código do veículo inválido para upload de imagem.');", true);
+                    return;
+                }
 
-                //Redefine altura e largura da imagem e Salva o arquivo + prefixo 
+                if (FileUpload1.PostedFile.ContentLength <= 0 || FileUpload1.PostedFile.ContentLength > 5242880)
+                {
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
+                                                                              "alert('Imagem inválida ou maior que 5 MB.');", true);
+                    return;
+                }
+
+                string extensao = Path.GetExtension(FileUpload1.FileName).ToLowerInvariant();
+                if (extensao != ".jpg" && extensao != ".jpeg" && extensao != ".png")
+                {
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
+                                                                              "alert('Envie apenas imagem JPG ou PNG.');", true);
+                    return;
+                }
+
+                string uploadPath = Server.MapPath("~\\veiculos\\img-veiculos\\");
+                string pth = Path.GetFullPath(Path.Combine(uploadPath, codigoVeiculo + ".jpg"));
+                if (!pth.StartsWith(Path.GetFullPath(uploadPath), StringComparison.OrdinalIgnoreCase))
+                {
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
+                                                                              "alert('Caminho de upload inválido.');", true);
+                    return;
+                }
+
+                try
+                {
+                    using (System.Drawing.Image.FromStream(FileUpload1.PostedFile.InputStream))
+                    {
+                    }
+                    FileUpload1.PostedFile.InputStream.Position = 0;
+                }
+                catch
+                {
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
+                                                                              "alert('Arquivo enviado não é uma imagem válida.');", true);
+                    return;
+                }
+
+                FileUpload1.SaveAs(pth);
+                //FileUpload1.SaveAs(uploadPath + FileUpload1.FileName);
+
+                //Redefine altura e largura da imagem e Salva o arquivo + prefixo
 
                 Redefinir.Resize(pth, pth, 440, 340);
                 Veiculos vec = new Veiculos();
-                vec.inser_img_VU(txtCodVec.Text);
+                vec.inser_img_VU(codigoVeiculo);
                 //Page_Load(sender, e);
                 //ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
                 //                                                                  "alert('Imagem inserida com sucesso!');", true);

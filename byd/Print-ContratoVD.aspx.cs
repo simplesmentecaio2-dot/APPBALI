@@ -17,15 +17,14 @@ public partial class veiculos_Pint_Contrato : System.Web.UI.Page
         {
             lblUsuario.Text = Session["usuario"].ToString();
         }
-        string contrato = "";
-        if (Request.QueryString["contrato"] != null)
-        {
-            contrato = Request.QueryString["contrato"].ToString();
-        }
-        else
+        string contrato = (Request.QueryString["contrato"] ?? "").Trim();
+        int contratoNumero;
+        if (!Int32.TryParse(contrato, out contratoNumero) || contratoNumero <= 0)
         {
             Response.Write("Contrato não localizado!");
+            return;
         }
+        contrato = contratoNumero.ToString();
         string cliente; string endereco;        string cep;        string bairro;        string cidade;        string UF;
         string cpfcnpj;        string RGIE;        string nascimento;        string tel_residencial;        string tel_comercial;
         string tel_celular;        string email;        string marca;        string modelo;        string cor_ext;        string chassiplaca;

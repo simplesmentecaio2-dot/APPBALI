@@ -96,7 +96,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     }
 
                 }
-                catch(Exception ex) { ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('" + ex.Message + "');", true); }
+                catch { ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Não foi possível carregar os dados da equipe.');", true); }
                 finally { vec1.FecharConexao(); }
 
                 try
@@ -120,7 +120,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     }
 
                 }
-                catch (Exception ex) { ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('" + ex.Message + "');", true); }
+                catch { ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Não foi possível carregar os dados da equipe.');", true); }
                 finally { vec1.FecharConexao(); }
                 try
                 {
@@ -142,7 +142,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     }
 
                 }
-                catch (Exception ex) { ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('" + ex.Message + "');", true); }
+                catch { ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Não foi possível carregar os dados da equipe.');", true); }
                 finally { vec1.FecharConexao(); }
                 try
                 {
@@ -169,7 +169,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
 
                 }
-                catch (Exception ex) { ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('" + ex.Message + "');", true); }
+                catch { ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Não foi possível carregar os totais da equipe.');", true); }
                 finally { vec1.FecharConexao(); }
                 corpo += "<div class='col-md-6 col-lg-4 col-xl-4 '>" +
                                             "<div class='mb-3 card'>" +
@@ -224,8 +224,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
             this.LiteralCorpoDash.Text = corpo;
 
         }
-        catch (Exception ex) {
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('"+ex.Message+"');", true);
+        catch {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Não foi possível carregar o dashboard agora.');", true);
         }
         finally
         {

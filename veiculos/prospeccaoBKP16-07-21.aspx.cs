@@ -268,7 +268,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             lblPercFrios.Text = "0%";
             lblPercQuentes.Text = "0%";
             tableLeadsVendedor.Text = "<i class='text-danger h3'>SEM DADOS<i/>";
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('" + ex.Message + "');", true);
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Não foi possível carregar os dados agora.');", true);
         }
         finally { vec.oCon.Close(); }
 
@@ -482,7 +482,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('"+ex.Message+"');", true);
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Não foi possível carregar os dados agora.');", true);
             equipesRanking.Text = "<div class='text-danger m-5 h3'>SEM DADOS</div>";
         }
         finally
@@ -612,7 +612,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 no_lead.Visible = false;
                 no_logado.Visible = false;
                 error_lead.Visible = true;
-                erroMessage.Text = e.Message;
+                erroMessage.Text = "Não foi possível carregar os dados agora.";
 
             }
             finally
