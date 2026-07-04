@@ -237,19 +237,16 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     public int getQuantidadeFluxo(String evento, String loja)
     {
-        String sqlLoja = "";
-        if (loja != null && loja != "")
-        {
-            sqlLoja = " and loja = '" + loja + "'";
-        }
-
-        String myQuery = "select COUNT(*) as qtde from APP.dbo.veiculos_prospeccao where Fluxo = 'S' and nome_evento = '" + evento + "' " + sqlLoja;
+        string lojaSelecionada = (loja ?? "").Trim();
+        String myQuery = "select COUNT(*) as qtde from APP.dbo.veiculos_prospeccao where Fluxo = 'S' and nome_evento = @evento and (@loja = '' or loja = @loja)";
         vec.Conexao();
 
         System.Data.SqlClient.SqlCommand oCmd = new System.Data.SqlClient.SqlCommand();
         oCmd.Connection = vec.oCon;
         oCmd.CommandText = myQuery;
         oCmd.CommandType = CommandType.Text;
+        oCmd.Parameters.Add("@evento", SqlDbType.VarChar, 200).Value = (evento ?? "").Trim();
+        oCmd.Parameters.Add("@loja", SqlDbType.VarChar, 50).Value = lojaSelecionada;
         System.Data.SqlClient.SqlDataReader odr = oCmd.ExecuteReader();
         odr.Read();
         int qtde = (int)odr["qtde"];
@@ -261,18 +258,23 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         return (qtdFluxo * 100) / 200;
     }
-    
-    protected String btnShowDataSia(object sender, EventArgs e)
+
+    private System.Data.SqlClient.SqlCommand CriarComandoRankingLoja(string loja)
     {
-        string myQuery = "SELECT loja, equipe, count(*) as qtde FROM [APP].[dbo].[veiculos_prospeccao] " +
-            " where nome_evento = '" + ddlEventoDashEvt.Value + "' and loja = 'SIA' and classificacao is not null  group by loja,equipe order by qtde desc";
-
-        vec.Conexao();
-
         System.Data.SqlClient.SqlCommand oCmd = new System.Data.SqlClient.SqlCommand();
         oCmd.Connection = vec.oCon;
-        oCmd.CommandText = myQuery;
+        oCmd.CommandText = "SELECT loja, equipe, count(*) as qtde FROM [APP].[dbo].[veiculos_prospeccao] where nome_evento = @evento and loja = @loja and classificacao is not null group by loja,equipe order by qtde desc";
         oCmd.CommandType = CommandType.Text;
+        oCmd.Parameters.Add("@evento", SqlDbType.VarChar, 200).Value = (ddlEventoDashEvt.Value ?? "").Trim();
+        oCmd.Parameters.Add("@loja", SqlDbType.VarChar, 50).Value = (loja ?? "").Trim();
+        return oCmd;
+    }
+
+    protected String btnShowDataSia(object sender, EventArgs e)
+    {
+        vec.Conexao();
+
+        System.Data.SqlClient.SqlCommand oCmd = CriarComandoRankingLoja("SIA");
         System.Data.SqlClient.SqlDataReader odr = oCmd.ExecuteReader();
 
         List<String> equipes = new List<String>();
@@ -368,15 +370,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
     }
     protected String btnShowDataSaan(object sender, EventArgs e)
     {
-        string myQuery = "SELECT loja, equipe, count(*) as qtde FROM [APP].[dbo].[veiculos_prospeccao] " +
-            " where nome_evento = '" + ddlEventoDashEvt.Value + "' and loja = 'SAAN'  and classificacao is not null  group by loja,equipe order by qtde desc";
-
         vec.Conexao();
 
-        System.Data.SqlClient.SqlCommand oCmd = new System.Data.SqlClient.SqlCommand();
-        oCmd.Connection = vec.oCon;
-        oCmd.CommandText = myQuery;
-        oCmd.CommandType = CommandType.Text;
+        System.Data.SqlClient.SqlCommand oCmd = CriarComandoRankingLoja("SAAN");
         System.Data.SqlClient.SqlDataReader odr = oCmd.ExecuteReader();
 
         List<String> equipes = new List<String>();
@@ -472,15 +468,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
     }
     protected String btnShowDataScia(object sender, EventArgs e)
     {
-        string myQuery = "SELECT loja, equipe, count(*) as qtde FROM [APP].[dbo].[veiculos_prospeccao] " +
-            " where nome_evento = '" + ddlEventoDashEvt.Value + "' and loja = 'SCIA'  and classificacao is not null  group by loja,equipe order by qtde desc";
-
         vec.Conexao();
 
-        System.Data.SqlClient.SqlCommand oCmd = new System.Data.SqlClient.SqlCommand();
-        oCmd.Connection = vec.oCon;
-        oCmd.CommandText = myQuery;
-        oCmd.CommandType = CommandType.Text;
+        System.Data.SqlClient.SqlCommand oCmd = CriarComandoRankingLoja("SCIA");
         System.Data.SqlClient.SqlDataReader odr = oCmd.ExecuteReader();
 
         List<String> equipes = new List<String>();
@@ -578,7 +568,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         List<TopProspectores> topProspectores = new List<TopProspectores>();
         String retorno = "";
-        string myQuery = "select vendedor, equipe, COUNT(*) as qtde from [APP].[dbo].veiculos_prospeccao where nome_evento = '"+ddlEventoDashEvt.Value+"' and loja = '"+loja+"' group by vendedor,equipe order by qtde desc";
+        string myQuery = "select vendedor, equipe, COUNT(*) as qtde from [APP].[dbo].veiculos_prospeccao where nome_evento = @evento and loja = @loja group by vendedor,equipe order by qtde desc";
 
         vec.Conexao();
 
@@ -586,6 +576,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
         oCmd.Connection = vec.oCon;
         oCmd.CommandText = myQuery;
         oCmd.CommandType = CommandType.Text;
+        oCmd.Parameters.Add("@evento", SqlDbType.VarChar, 200).Value = (ddlEventoDashEvt.Value ?? "").Trim();
+        oCmd.Parameters.Add("@loja", SqlDbType.VarChar, 50).Value = (loja ?? "").Trim();
         System.Data.SqlClient.SqlDataReader odr = oCmd.ExecuteReader();
 
 
