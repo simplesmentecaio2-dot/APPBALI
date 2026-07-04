@@ -154,19 +154,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
         lblseminteresse.Text = qtdeseminteresse;
         lblFluxo.Text = qtdefluxo;
 
-        String loja;
-        bool filtrarLojaDashboard = ddlLojadashboard.Value != null && ddlLojadashboard.Value != "";
-        if (filtrarLojaDashboard)
-        {
-            loja = "and loja = @loja";
-        }
-        else
-        {
-            loja = "";
-        }
+        string lojaDashboard = (ddlLojadashboard.Value ?? "").Trim();
 
         string myQuery = "SELECT vendedor,count(*) as total,  SUM(CASE WHEN classificacao='Quente' THEN 1 ELSE 0 END)  AS quente, SUM(CASE WHEN classificacao='Frio' THEN 1 ELSE 0 END)  AS frio," +
-            " SUM(CASE WHEN classificacao='Sem Interesse' THEN 1 ELSE 0 END)  AS sem_interesse,SUM(CASE WHEN classificacao='Descarte' THEN 1 ELSE 0 END)  AS descarte FROM [APP].[dbo].[veiculos_prospeccao] where nome_evento = @evento " + loja + " group by vendedor order by total desc";
+            " SUM(CASE WHEN classificacao='Sem Interesse' THEN 1 ELSE 0 END)  AS sem_interesse,SUM(CASE WHEN classificacao='Descarte' THEN 1 ELSE 0 END)  AS descarte FROM [APP].[dbo].[veiculos_prospeccao] where nome_evento = @evento and (@loja = '' or loja = @loja) group by vendedor order by total desc";
         vec.Conexao();
 
         System.Data.SqlClient.SqlCommand oCmd = new System.Data.SqlClient.SqlCommand();
@@ -174,10 +165,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         oCmd.CommandText = myQuery;
         oCmd.CommandType = CommandType.Text;
         oCmd.Parameters.Add("@evento", SqlDbType.VarChar).Value = ddlEvento2.Value;
-        if (filtrarLojaDashboard)
-        {
-            oCmd.Parameters.Add("@loja", SqlDbType.VarChar).Value = ddlLojadashboard.Value;
-        }
+        oCmd.Parameters.Add("@loja", SqlDbType.VarChar).Value = lojaDashboard;
         System.Data.SqlClient.SqlDataReader odr = oCmd.ExecuteReader();
 
         string head = @"<table id='tablelvd' class='table table-striped table-bordered dt-responsive nowrap' style='width:100%' id='tblprospeccao'>
@@ -240,19 +228,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     protected void btnShowData(object sender, EventArgs e)
     {
-        String loja;
-        bool filtrarLojaRanking = ddlLojaRanking.Value != null && ddlLojaRanking.Value != "";
-        if (!filtrarLojaRanking)
-        {
-            loja = "";
-        }
-        else
-        {
-            loja = "and loja = @loja";
-        }
+        string lojaRanking = (ddlLojaRanking.Value ?? "").Trim();
 
         Veiculos vec = new Veiculos();
-        string myQuery = "SELECT loja, equipe, count(*) as qtde FROM [APP].[dbo].[veiculos_prospeccao]  where nome_evento = @evento " + loja + " group by loja,equipe order by qtde desc";
+        string myQuery = "SELECT loja, equipe, count(*) as qtde FROM [APP].[dbo].[veiculos_prospeccao]  where nome_evento = @evento and (@loja = '' or loja = @loja) group by loja,equipe order by qtde desc";
         vec.Conexao();
 
         System.Data.SqlClient.SqlCommand oCmd = new System.Data.SqlClient.SqlCommand();
@@ -260,10 +239,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         oCmd.CommandText = myQuery;
         oCmd.CommandType = CommandType.Text;
         oCmd.Parameters.Add("@evento", SqlDbType.VarChar).Value = ddlEventoRanking.Value;
-        if (filtrarLojaRanking)
-        {
-            oCmd.Parameters.Add("@loja", SqlDbType.VarChar).Value = ddlLojaRanking.Value;
-        }
+        oCmd.Parameters.Add("@loja", SqlDbType.VarChar).Value = lojaRanking;
         System.Data.SqlClient.SqlDataReader odr = oCmd.ExecuteReader();
 
         List<String> equipes = new List<String>();
