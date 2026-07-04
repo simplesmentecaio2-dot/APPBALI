@@ -272,7 +272,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
                 SqlDataReader odr = oCmd.ExecuteReader();
                 odr.Read();
-                if (odr["resultado"].ToString().Equals("n"))
+                string resultado = odr["resultado"].ToString();
+                if (resultado.Equals("n"))
                 {
                     PatioJeepAuditoria.Registrar("REGISTRAR_DUPLICADO", Session["usuario"], txtSerie.Text, "Veiculo ja cadastrado");
                     txtChassi.Text = "";
@@ -283,6 +284,18 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     AtualizarBotaoSalvar(false);
                     pnlVeiculoEncontrado.Visible = false;
                     MostrarMensagem("warning", "Veículo já cadastrado", "Este veículo já estava cadastrado no pátio. Use a tela Transferir para alterar a localização.");
+                }
+                else if (resultado.Equals("v"))
+                {
+                    PatioJeepAuditoria.Registrar("REGISTRAR_VEICULO_VENDIDO", Session["usuario"], txtSerie.Text, "Veiculo encontrado em VendasVeiculos e bloqueado no patio");
+                    txtChassi.Text = "";
+                    txtModelo.Text = "";
+                    txtCor.Text = "";
+                    txtCodVec.Text = "";
+                    txtNUMERONF.Text = "";
+                    AtualizarBotaoSalvar(false);
+                    pnlVeiculoEncontrado.Visible = false;
+                    MostrarMensagem("warning", "Veículo já vendido", "Este veículo consta como vendido no sistema interno e foi baixado do pátio automaticamente.");
                 }
                 else
                 {

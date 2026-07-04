@@ -188,6 +188,41 @@
             text-align: center;
         }
 
+        .patio-sync-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .75rem;
+            padding: .9rem 1rem;
+            border: 1px solid #cfe8c7;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #f7fbf4, #eef8e8);
+            color: #203729;
+            font-weight: 850;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, .06);
+        }
+
+        .patio-sync-status i {
+            color: #587a3f;
+            font-size: 1.05rem;
+        }
+
+        .patio-sync-status span {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .patio-sync-status strong {
+            color: #0f172a;
+            white-space: nowrap;
+        }
+
+        .patio-sync-status.is-warning {
+            border-color: #fde68a;
+            background: #fffbeb;
+            color: #92400e;
+        }
+
         @media (max-width: 1200px) {
             .patio-bi-kpis {
                 grid-template-columns: repeat(3, minmax(150px, 1fr));
@@ -198,6 +233,15 @@
             .patio-bi-grid,
             .patio-bi-kpis {
                 grid-template-columns: 1fr;
+            }
+
+            .patio-sync-status {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .patio-sync-status strong {
+                white-space: normal;
             }
 
             .patio-bi-bar-row {
@@ -275,12 +319,13 @@
                                     </div>
                                 </div>
                                 <div class="patio-bi-shell">
+                                    <asp:Literal ID="litBaixaVendaStatus" runat="server"></asp:Literal>
                                     <asp:Literal ID="litResumo" runat="server"></asp:Literal>
                                     <div class="patio-bi-grid">
                                         <div class="patio-bi-panel">
                                             <div class="patio-bi-panel-header">
                                                 <strong><i class="fa fa-store mr-1"></i> Ve&iacute;culos por loja</strong>
-                                                <small>posição atual</small>
+                                                <small>posi&ccedil;&atilde;o atual</small>
                                             </div>
                                             <div class="patio-bi-panel-body">
                                                 <asp:Literal ID="litEstoquePorLoja" runat="server"></asp:Literal>
@@ -289,7 +334,7 @@
                                         <div class="patio-bi-panel">
                                             <div class="patio-bi-panel-header">
                                                 <strong><i class="fa fa-calendar-day mr-1"></i> Entradas por dia</strong>
-                                                <small>últimos 14 dias</small>
+                                                <small>&uacute;ltimos 14 dias</small>
                                             </div>
                                             <div class="patio-bi-panel-body">
                                                 <asp:Literal ID="litEntradasDia" runat="server"></asp:Literal>
@@ -299,8 +344,8 @@
                                     <div class="patio-bi-grid">
                                         <div class="patio-bi-panel">
                                             <div class="patio-bi-panel-header">
-                                                <strong><i class="fa fa-random mr-1"></i> Movimentações por dia</strong>
-                                                <small>últimos 14 dias</small>
+                                                <strong><i class="fa fa-random mr-1"></i> Movimenta&ccedil;&otilde;es por dia</strong>
+                                                <small>&uacute;ltimos 14 dias</small>
                                             </div>
                                             <div class="patio-bi-panel-body">
                                                 <asp:Literal ID="litMovimentacoesDia" runat="server"></asp:Literal>
@@ -308,8 +353,8 @@
                                         </div>
                                         <div class="patio-bi-panel">
                                             <div class="patio-bi-panel-header">
-                                                <strong><i class="fa fa-user-check mr-1"></i> Usuários com mais entradas</strong>
-                                                <small>últimos 30 dias</small>
+                                                <strong><i class="fa fa-user-check mr-1"></i> Usu&aacute;rios com mais entradas</strong>
+                                                <small>&uacute;ltimos 30 dias</small>
                                             </div>
                                             <div class="patio-bi-panel-body">
                                                 <asp:Literal ID="litUsuarios" runat="server"></asp:Literal>
@@ -319,7 +364,7 @@
                                     <div class="patio-bi-panel">
                                         <div class="patio-bi-panel-header">
                                             <strong><i class="fa fa-exchange-alt mr-1"></i> &Uacute;ltimas movimenta&ccedil;&otilde;es</strong>
-                                            <small>transferências recentes</small>
+                                            <small>transfer&ecirc;ncias recentes</small>
                                         </div>
                                         <div class="patio-bi-panel-body patio-bi-table-wrap">
                                             <asp:Literal ID="litUltimasMovimentacoes" runat="server"></asp:Literal>
@@ -327,11 +372,20 @@
                                     </div>
                                     <div class="patio-bi-panel">
                                         <div class="patio-bi-panel-header">
-                                            <strong><i class="fa fa-car mr-1"></i> Últimos ve&iacute;culos cadastrados</strong>
+                                            <strong><i class="fa fa-car mr-1"></i> &Uacute;ltimos ve&iacute;culos cadastrados</strong>
                                             <small>entradas recentes no p&aacute;tio</small>
                                         </div>
                                         <div class="patio-bi-panel-body patio-bi-table-wrap">
                                             <asp:Literal ID="litUltimosCadastros" runat="server"></asp:Literal>
+                                        </div>
+                                    </div>
+                                    <div class="patio-bi-panel">
+                                        <div class="patio-bi-panel-header">
+                                            <strong><i class="fa fa-check-circle mr-1"></i> &Uacute;ltimas baixas por venda</strong>
+                                            <small>sincroniza&ccedil;&atilde;o com vendas</small>
+                                        </div>
+                                        <div class="patio-bi-panel-body patio-bi-table-wrap">
+                                            <asp:Literal ID="litUltimasBaixas" runat="server"></asp:Literal>
                                         </div>
                                     </div>
                                 </div>
