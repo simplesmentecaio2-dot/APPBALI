@@ -17,6 +17,7 @@
             System.Web.UI.Page pagina = Context.CurrentHandler as System.Web.UI.Page;
             if (pagina == null) return;
 
+            pagina.PreInit += AplicarProtecaoViewState;
             pagina.PreRenderComplete += RegistrarTimerSessao;
         }
         catch
@@ -114,6 +115,23 @@
         RenderizarErroSeguro("N\u00e3o foi poss\u00edvel processar a solicita\u00e7\u00e3o", "Tente novamente em instantes. Se o problema continuar, acione a TI.", 500);
     }
 
+    private void AplicarProtecaoViewState(object sender, EventArgs e)
+    {
+        System.Web.UI.Page pagina = sender as System.Web.UI.Page;
+        if (pagina == null || Session == null) return;
+        if (Session["usuario"] == null || Convert.ToString(Session["usuario"]).Trim().Length == 0) return;
+
+        string usuarioChave = Convert.ToString(Session["usuario_codigo"]);
+        if (String.IsNullOrWhiteSpace(usuarioChave))
+        {
+            usuarioChave = Convert.ToString(Session["usuario"]);
+        }
+
+        if (String.IsNullOrWhiteSpace(usuarioChave)) return;
+
+        pagina.ViewStateUserKey = Session.SessionID + "|" + usuarioChave;
+    }
+
     void Application_PreSendRequestHeaders(object sender, EventArgs e)
     {
         try
@@ -135,6 +153,9 @@
 
             Response.Headers["Referrer-Policy"] = EhPaginaConsultaQrCode() || EhPaginaLogin() ? "no-referrer" : "strict-origin-when-cross-origin";
             Response.Headers["X-Content-Type-Options"] = "nosniff";
+            Response.Headers["X-Download-Options"] = "noopen";
+            Response.Headers["X-Permitted-Cross-Domain-Policies"] = "none";
+            Response.Headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
             Response.Headers.Remove("X-AspNet-Version");
             Response.Headers.Remove("X-Powered-By");
         }
