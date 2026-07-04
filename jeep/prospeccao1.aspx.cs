@@ -339,24 +339,18 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     protected void btnShowData(object sender, EventArgs e)
     {
-        String loja;
-        if (ddlLojaRanking.Value == "")
-        {
-            loja = "";
-        }
-        else
-        {
-            loja = "and loja = '" + ddlLojaRanking.Value + "'";
-        }
+        string lojaSelecionada = (ddlLojaRanking.Value ?? "").Trim();
 
         Veiculos vec = new Veiculos();
-        string myQuery = "SELECT loja, equipe, count(*) as qtde FROM [APP].[dbo].[veiculos_prospeccao]  where nome_evento = '" + ddlEventoRanking.Value + "' " + loja + " and classificacao is not null group by loja,equipe order by qtde desc";
+        string myQuery = "SELECT loja, equipe, count(*) as qtde FROM [APP].[dbo].[veiculos_prospeccao] where nome_evento = @evento and (@loja = '' or loja = @loja) and classificacao is not null group by loja,equipe order by qtde desc";
         vec.Conexao();
 
         System.Data.SqlClient.SqlCommand oCmd = new System.Data.SqlClient.SqlCommand();
         oCmd.Connection = vec.oCon;
         oCmd.CommandText = myQuery;
         oCmd.CommandType = CommandType.Text;
+        oCmd.Parameters.Add("@evento", System.Data.SqlDbType.VarChar, 200).Value = (ddlEventoRanking.Value ?? "").Trim();
+        oCmd.Parameters.Add("@loja", System.Data.SqlDbType.VarChar, 50).Value = lojaSelecionada;
         System.Data.SqlClient.SqlDataReader odr = oCmd.ExecuteReader();
 
         List<String> equipes = new List<String>();
