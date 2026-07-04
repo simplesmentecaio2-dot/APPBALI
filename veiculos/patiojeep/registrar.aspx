@@ -10,6 +10,7 @@
 
 <head id="Head1" runat="server">
     <title>REGISTRAR | Pátio</title>
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <!-- STYLE MARCIO       ////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
     <script src="../assets/jquery-1.9.1.min.js"></script>
@@ -25,21 +26,195 @@
     <script type="text/javascript" src="./assets/js/quagga.min.js"></script>
 
     <style>
-        #scanner-container {
-          position: relative;
-          width: 350px;
-          height: 550px;
-          overflow: hidden;
+        .barcode-modal .modal-dialog {
+            max-width: 720px;
         }
 
+        .barcode-modal .modal-content {
+            border: 0;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, .32);
+        }
+
+        .barcode-modal .modal-header {
+            align-items: center;
+            background: linear-gradient(135deg, #10271b, #215c3d);
+            color: #fff;
+            border: 0;
+        }
+
+        .barcode-modal .modal-title {
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            font-weight: 800;
+        }
+
+        .scanner-stage {
+            position: relative;
+            width: 100%;
+            min-height: 420px;
+            overflow: hidden;
+            border-radius: 18px;
+            background: #0f172a;
+        }
+
+        #scanner-video,
+        #scanner-container,
         #scanner-container video,
         #scanner-container canvas {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 350px;
-          height: 550px;
-          object-fit: cover; /* Ajusta a proporção do vídeo */
+            position: absolute;
+            inset: 0;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+        }
+
+        #scanner-video,
+        #scanner-container {
+            display: block;
+        }
+
+        #scanner-video.is-hidden,
+        #scanner-container.is-hidden {
+            display: none;
+        }
+
+        .scanner-reticle {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: min(88%, 560px);
+            height: 132px;
+            transform: translate(-50%, -50%);
+            border: 2px solid rgba(255, 255, 255, .84);
+            border-radius: 20px;
+            box-shadow: 0 0 0 999px rgba(2, 6, 23, .42);
+            pointer-events: none;
+        }
+
+        .scanner-reticle::before {
+            content: "";
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            top: 50%;
+            height: 2px;
+            transform: translateY(-50%);
+            background: linear-gradient(90deg, transparent, #22c55e, transparent);
+            box-shadow: 0 0 18px rgba(34, 197, 94, .85);
+        }
+
+        .scanner-hint {
+            position: absolute;
+            left: 1rem;
+            right: 1rem;
+            bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            gap: .75rem;
+            flex-wrap: wrap;
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, .6);
+            pointer-events: none;
+        }
+
+        .scanner-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .38rem .65rem;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, .74);
+            backdrop-filter: blur(7px);
+        }
+
+        .scanner-status {
+            min-height: 42px;
+            margin: .85rem 0 0;
+            padding: .75rem .9rem;
+            border-radius: 14px;
+            background: #f8fafc;
+            color: #334155;
+            font-weight: 700;
+        }
+
+        .scanner-status--success {
+            color: #14532d;
+            background: #dcfce7;
+        }
+
+        .scanner-status--error {
+            color: #7f1d1d;
+            background: #fee2e2;
+        }
+
+        .scanner-status--warning {
+            color: #713f12;
+            background: #fef3c7;
+        }
+
+        .scanner-status--info {
+            color: #1e3a8a;
+            background: #dbeafe;
+        }
+
+        .is-hidden {
+            display: none !important;
+        }
+
+        .scanner-manual {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: .6rem;
+            margin-top: .85rem;
+        }
+
+        .scanner-manual input {
+            min-height: 46px;
+            border-radius: 14px;
+            font-size: 1.12rem;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-align: center;
+        }
+
+        .scanner-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .6rem;
+            flex-wrap: wrap;
+            margin-top: .85rem;
+        }
+
+        @media (max-width: 767.98px) {
+            .barcode-modal .modal-dialog {
+                width: 100%;
+                max-width: none;
+                height: 100%;
+                margin: 0;
+            }
+
+            .barcode-modal .modal-content {
+                min-height: 100%;
+                border-radius: 0;
+            }
+
+            .scanner-stage {
+                min-height: min(64vh, 560px);
+                border-radius: 16px;
+            }
+
+            .scanner-reticle {
+                height: 112px;
+            }
+
+            .scanner-manual {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -220,13 +395,12 @@
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text" id="basic-addon1"><b>Série</b></span>
                                                         </div>
-                                                        <asp:TextBox ID="txtSerie" CssClass="form-control" runat="server" required="true"  OnTextChanged="serieOnTextChanged"   AutoPostBack="true"></asp:TextBox>
+                                                        <asp:TextBox ID="txtSerie" CssClass="form-control" runat="server" required="true" MaxLength="7" inputmode="numeric" pattern="[0-9]*" placeholder="Digite ou leia a série" OnTextChanged="serieOnTextChanged" AutoPostBack="true"></asp:TextBox>
                                                         <div class="input-group-append">
                                                             <asp:LinkButton runat="server" ID="btnSearch" OnClick="serieOnTextChanged" CssClass="btn btn-primary"><i class="fa fa-search-location"></i></asp:LinkButton>
                                                         </div>
                                                         <div class="input-group-append">
-                                                            <!--<a href="http://zxing.appspot.com/scan?ret=http://app.bali.com.br/veiculos/patiojeep/registrar.aspx?serie={CODE}" class="btn btn-dark"><i class="fa fa-barcode fa-2x"></i></a>-->
-                                                            <a href="#" data-toggle="modal" data-target="#myModal" class="text-decoration-none btn btn-dark"><i class="fa fa-barcode fa-2x"></i></a>
+                                                            <a href="#" id="openBarcodeScanner" data-toggle="modal" data-target="#myModal" class="text-decoration-none btn btn-dark" aria-label="Ler código de barras pela câmera"><i class="fa fa-barcode fa-2x"></i></a>
                                                             
                                                         </div>
                                                     </div>
@@ -310,25 +484,47 @@
     </form>
 
     <!-- The Modal -->
-<div class="modal" id="myModal">
-  <div class="modal-dialog">
+<div class="modal barcode-modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="barcodeModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
 
       <!-- Modal Header -->
       <div class="modal-header">
-        <h4 class="modal-title">Leitor</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title" id="barcodeModalTitle"><i class="fa fa-barcode"></i> Leitor de código de barras</h4>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fechar">&times;</button>
       </div>
 
       <!-- Modal body -->
       <div class="modal-body">
-        <div id="scanner-container"></div>
-        <p>Resultado: <span id="result"></span></p>
+        <div class="scanner-stage">
+            <video id="scanner-video" class="is-hidden" muted autoplay playsinline></video>
+            <div id="scanner-container" class="is-hidden"></div>
+            <div class="scanner-reticle"></div>
+            <div class="scanner-hint">
+                <span class="scanner-pill"><i class="fa fa-mobile-alt"></i> Aproxime o código da faixa central</span>
+                <span class="scanner-pill" id="scannerEngine">Preparando câmera</span>
+            </div>
+        </div>
+        <div id="scannerStatus" class="scanner-status" aria-live="polite">Ao permitir a câmera, a leitura começa automaticamente.</div>
+        <div class="scanner-manual">
+            <input type="text" id="scannerManualSerie" class="form-control" inputmode="numeric" pattern="[0-9]*" maxlength="7" placeholder="Digitar série manualmente" autocomplete="off" />
+            <button type="button" id="scannerApplyManual" class="btn btn-success"><i class="fa fa-check mr-1"></i> Usar série</button>
+        </div>
+        <div class="scanner-actions">
+            <div>
+                <small class="text-muted">Resultado: <strong id="result">aguardando leitura</strong></small>
+                <small class="text-muted d-block">Código lido: <span id="scannerLastRaw">-</span></small>
+            </div>
+            <div>
+                <button type="button" id="scannerTorch" class="btn btn-outline-secondary is-hidden"><i class="fa fa-lightbulb mr-1"></i> Luz</button>
+                <button type="button" id="scannerRetry" class="btn btn-outline-dark"><i class="fa fa-redo mr-1"></i> Reiniciar</button>
+            </div>
+        </div>
       </div>
 
       <!-- Modal footer -->
       <div class="modal-footer">
-        <button type="button" class="btn btn-lg btn-danger" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-lg btn-danger" data-dismiss="modal">Cancelar leitura</button>
       </div>
 
     </div>
@@ -342,63 +538,14 @@
 
     
 
-        <script>
-            var _scannerIsRunning = false;
-
-            function startScanner() {
-                // Inicializa o QuaggaJS
-                Quagga.init({
-                    inputStream: {
-                        type: "LiveStream",
-                        target: document.querySelector("#scanner-container"), // Elemento onde será exibida a câmera
-                        constraints: {
-                            width: 1080,
-                            height: 1920,
-                            facingMode: "environment" // Use a câmera traseira
-                        }
-                    },
-                    decoder: {
-                        readers: ["code_128_reader", "ean_reader","code_39_reader"] // Tipos de códigos de barras suportados
-                    }
-                }, function(err) {
-                    if (err) {
-                        console.error("Erro ao inicializar o Quagga:", err);
-                        return;
-                    }
-                    Quagga.start(); // Inicia a leitura
-                });
-
-                // Processa o código detectado
-                Quagga.onDetected(function(data) {
-                    const resultElement = document.getElementById("result");
-                    var code = data.codeResult.code.substring(10, 17);
-                    resultElement.textContent = code; // Exibe o código detectado
-
-                    //txtSerie
-                    var txtSerie = document.getElementById("txtSerie");
-                    txtSerie.value = code;
-                    
-                    //hide modal
-                    $('#myModal').modal('hide');
-                    txtSerie.onchange();
-                    
-
-                });
-            }
-
-
-           
-
-            //mostrar modal e parar o leitor ao fechar a modal
-            $('#myModal').on('hidden.bs.modal', function () {
-                Quagga.stop();
-            });
-
-            $('#myModal').on('shown.bs.modal', function () {
-                startScanner();
-            });
-
+    <script>
+        window.PatioBarcodeScannerConfig = {
+            serieInputId: '<%= txtSerie.ClientID %>',
+            searchButtonId: '<%= btnSearch.ClientID %>',
+            postBackTarget: '<%= btnSearch.UniqueID %>'
+        };
     </script>
+    <script src="./assets/js/patio-barcode-scanner.js?v=20260704-1" charset="utf-8"></script>
     <script src="./assets/js/patio-jeep-ux.js?v=20260629-1"></script>
 
 </body>

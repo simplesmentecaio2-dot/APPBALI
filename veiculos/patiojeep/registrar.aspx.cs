@@ -27,28 +27,31 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 if (!IsPostBack)
                 {
                     btnRegistrar.Visible = false;
+
+                    try
+                    {
+                        if (Request.QueryString["serie"] != null)
+                        {
+                            string serieLida = ExtrairSerieCodigoBarras(Request.QueryString["serie"].ToString());
+                            if (serieLida.Equals(""))
+                            {
+                                throw new InvalidOperationException("Serie invalida");
+                            }
+
+                            txtSerie.Text = serieLida;
+                            serieOnTextChanged(sender, e);
+                        }
+                    }
+                    catch
+                    {
+                        btnRegistrar.Visible = false;
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('C\\u00f3digo de barras n\\u00e3o se refere a um chassi.')", true);
+                    }
                 }
                 txtCor.Enabled = false;
                 txtModelo.Enabled = false;
                 txtChassi.Enabled = false;
                 txtCodVec.Enabled = false;
-                string serie = "";
-                try
-                {
-                    if (Request.QueryString["serie"] != null)
-                    {
-
-                        serie = Request.QueryString["serie"].ToString();
-                        txtSerie.Text = serie.Substring(10, 7);
-                        serieOnTextChanged( sender, e);
-
-                    }
-                }
-                catch
-                {
-                    btnRegistrar.Visible = false;
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('C\\u00f3digo de barras n\\u00e3o se refere a um chassi.')", true);
-                }
             //}
             //else
             //{
@@ -62,8 +65,47 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     }
 
+    private string SomenteDigitos(string valor)
+    {
+        if (String.IsNullOrWhiteSpace(valor))
+        {
+            return "";
+        }
+
+        List<char> digitos = new List<char>();
+        foreach (char caractere in valor)
+        {
+            if (Char.IsDigit(caractere))
+            {
+                digitos.Add(caractere);
+            }
+        }
+
+        return new String(digitos.ToArray());
+    }
+
+    private string NormalizarSerieFormulario(string valor)
+    {
+        string digitos = SomenteDigitos(valor);
+
+        if (digitos.Length >= 17)
+        {
+            return digitos.Substring(10, 7);
+        }
+
+        return digitos;
+    }
+
+    private string ExtrairSerieCodigoBarras(string valor)
+    {
+        string serie = NormalizarSerieFormulario(valor);
+        return serie.Length == 7 ? serie : "";
+    }
+
     public void serieOnTextChanged(object sender, EventArgs e)
     {
+        txtSerie.Text = NormalizarSerieFormulario(txtSerie.Text);
+
         if (!txtSerie.Text.Equals(""))
         {
             if (txtSerie.Text.Length != 7)
