@@ -11,7 +11,7 @@
     <link href="../assets/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <script src="../assets/dataTables.bootstrap4.min.js"></script>
     <link href="./main.css" rel="stylesheet" />
-    <link href="../../css/bali-patio.css?v=20260624-1" rel="stylesheet" />
+    <link href="../../css/bali-patio.css?v=20260704-1" rel="stylesheet" />
     <link href="../assets/all.min.css" rel="stylesheet" />
     <style>
         .lojas-shell {
@@ -352,6 +352,6 @@
     <script src="../assets/popper.min.js"></script>
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260629-1"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260704-1"></script>
 </body>
 </html>

@@ -69,7 +69,7 @@
     </div>
     <footer class="fixed-bottom bg-dark">
         <div class="container text-center text-white mb-2 mt-2">
-            <b>&copy;TECNOLOGIA</b> | Bali Brasília Automóveis - LTDA
+            <b>TI - GRUPO BALI</b>
         </div>
         <div class="row no-gutters social-container">
         </div>

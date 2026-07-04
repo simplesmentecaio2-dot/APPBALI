@@ -44,6 +44,8 @@
   }
 
   function enhanceAlerts() {
+    if (window.patioToast && window.patioNativeAlert) return;
+
     var nativeAlert = window.alert;
     window.alert = function (message) {
       toast(message, null);
@@ -157,6 +159,8 @@
   function enhanceActions() {
     var form = document.querySelector('form');
     if (!form) return;
+    if (form._patioSubmitBound) return;
+    form._patioSubmitBound = true;
 
     form.addEventListener('submit', function () {
       var active = document.activeElement;
@@ -178,13 +182,168 @@
     }
   }
 
-  ready(function () {
-    if (!document.body.classList.contains('patio-modern-page')) return;
-    enhanceAlerts();
+  function ensureSidebarLinks() {
+    var menus = document.querySelectorAll('.patio-modern-page .vertical-nav-menu');
+    if (!menus.length) return;
+
+    var links = [
+      { href: './', icon: 'fas fa-home', label: 'In\u00edcio' },
+      { href: './registrar.aspx', icon: 'fa fa-folder-plus', label: 'Registrar' },
+      { href: './transferir.aspx', icon: 'fas fa-exchange-alt', label: 'Transferir' },
+      { href: './historico.aspx', icon: 'fas fa-history', label: 'Consultar' },
+      { href: './acompanhamento.aspx', icon: 'fas fa-tasks', label: 'Acompanhamento' },
+      { href: './lojas.aspx', icon: 'fas fa-store', label: 'Lojas' },
+      { href: './barcode-logs.aspx', icon: 'fas fa-clipboard-list', label: 'Logs do leitor' }
+    ];
+
+    for (var m = 0; m < menus.length; m++) {
+      var menu = menus[m];
+      if (!menu.querySelector('.app-sidebar__heading')) {
+        var heading = document.createElement('li');
+        heading.className = 'app-sidebar__heading';
+        heading.textContent = 'Fun\u00e7\u00f5es';
+        menu.appendChild(heading);
+      }
+
+      for (var i = 0; i < links.length; i++) {
+        var item = links[i];
+        var key = item.href === './' ? 'href="./"' : 'href$="' + item.href.replace('./', '') + '"';
+        if (menu.querySelector('a[' + key + ']')) continue;
+
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        var icon = document.createElement('i');
+
+        a.href = item.href;
+        icon.className = 'metismenu-icon ' + item.icon;
+        a.appendChild(icon);
+        a.appendChild(document.createTextNode(item.label));
+        li.appendChild(a);
+        menu.appendChild(li);
+      }
+    }
+  }
+
+  function getField(suffix) {
+    return document.querySelector('input[id$="' + suffix + '"], textarea[id$="' + suffix + '"]');
+  }
+
+  function getFieldValue(suffix) {
+    var field = getField(suffix);
+    return field ? (field.value || '').trim() : '';
+  }
+
+  function makePill(label, value) {
+    var pill = document.createElement('span');
+    pill.className = 'patio-summary-pill';
+
+    var strong = document.createElement('b');
+    strong.textContent = label;
+
+    var text = document.createElement('span');
+    text.textContent = value || '-';
+
+    pill.appendChild(strong);
+    pill.appendChild(text);
+    return pill;
+  }
+
+  function enhanceVehicleSummary() {
+    var firstField = getField('txtSerie') || getField('txtChassi') || getField('txtCodVec');
+    if (!firstField || !firstField.closest) return;
+
+    var card = firstField.closest('.card');
+    if (!card) return;
+
+    var serie = getFieldValue('txtSerie');
+    var codigo = getFieldValue('txtCodVec');
+    var chassi = getFieldValue('txtChassi');
+    var modelo = getFieldValue('txtModelo');
+    var cor = getFieldValue('txtCor');
+    var hasData = serie || codigo || chassi || modelo || cor;
+    var existing = card.querySelector('.patio-vehicle-summary');
+
+    if (!hasData) {
+      if (existing) existing.remove();
+      return;
+    }
+
+    if (!existing) {
+      existing = document.createElement('div');
+      existing.className = 'patio-vehicle-summary';
+
+      var header = card.querySelector('.card-header');
+      if (header && header.parentNode) {
+        header.parentNode.insertBefore(existing, header.nextSibling);
+      } else {
+        card.insertBefore(existing, card.firstChild);
+      }
+    }
+
+    existing.innerHTML = '';
+
+    var info = document.createElement('div');
+    var title = document.createElement('strong');
+    var meta = document.createElement('div');
+
+    title.className = 'patio-vehicle-summary-title';
+    title.textContent = modelo || 'Ve\u00edculo localizado';
+    meta.className = 'patio-vehicle-summary-meta';
+
+    meta.appendChild(makePill('S\u00e9rie', serie));
+    meta.appendChild(makePill('C\u00f3digo', codigo));
+    meta.appendChild(makePill('Chassi', chassi));
+    meta.appendChild(makePill('Cor', cor));
+
+    info.appendChild(title);
+    info.appendChild(meta);
+
+    var action = document.createElement('button');
+    action.type = 'button';
+    action.className = 'patio-summary-action';
+    action.title = 'Copiar resumo do ve\u00edculo';
+    action.setAttribute('aria-label', 'Copiar resumo do ve\u00edculo');
+    action.innerHTML = '<i class="far fa-copy"></i>';
+    action.addEventListener('click', function () {
+      copyText([
+        'S\u00e9rie: ' + (serie || '-'),
+        'C\u00f3digo: ' + (codigo || '-'),
+        'Chassi: ' + (chassi || '-'),
+        'Modelo: ' + (modelo || '-'),
+        'Cor: ' + (cor || '-')
+      ].join(' | '));
+    });
+
+    existing.appendChild(info);
+    existing.appendChild(action);
+  }
+
+  function runEnhancements() {
     enhanceFields();
     enhanceCopyButtons();
     enhanceActions();
     enhanceCurrentPage();
     enhanceDashboardCards();
+    ensureSidebarLinks();
+    enhanceVehicleSummary();
+  }
+
+  function bindAjaxRefresh() {
+    if (!window.Sys || !Sys.WebForms || !Sys.WebForms.PageRequestManager) return;
+
+    var manager = Sys.WebForms.PageRequestManager.getInstance();
+    if (!manager || manager._patioUxBound) return;
+
+    manager.add_endRequest(function () {
+      runEnhancements();
+    });
+    manager._patioUxBound = true;
+  }
+
+  ready(function () {
+    if (!document.body.classList.contains('patio-modern-page')) return;
+    enhanceAlerts();
+    runEnhancements();
+    bindAjaxRefresh();
   });
 })();

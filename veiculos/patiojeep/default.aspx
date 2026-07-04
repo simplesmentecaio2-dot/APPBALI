@@ -18,7 +18,7 @@
     <script src="../assets/dataTables.bootstrap4.min.js"></script>
     <script src="../assets/dataTables.responsive.min.js"></script>
     <link href="./main.css" rel="stylesheet" />
-    <link href="../../css/bali-patio.css?v=20260624-1" rel="stylesheet" />
+    <link href="../../css/bali-patio.css?v=20260704-1" rel="stylesheet" />
     <script src="../ChartJS.js"></script>
     <link href="../assets/all.min.css" rel="stylesheet" />
     <script type="text/javascript" src="../assets/toastr.min.js"></script>
@@ -259,7 +259,7 @@
                     </asp:UpdateProgress>
                     <footer class="fixed-bottom bg-dark">
                         <div class="container text-center text-white mb-2 mt-2">
-                            <b>&copy;Caio Augusto</b> | Bali JEEP - LTDA
+                            <b>TI - GRUPO BALI</b>
                         </div>
                         <div class="row no-gutters social-container">
                         </div>
@@ -272,7 +272,7 @@
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/jspdf.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260629-1"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260704-1"></script>
 
 </body>
 

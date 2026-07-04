@@ -18,7 +18,7 @@
     <script src="./assets/dataTables.bootstrap4.min.js"></script>
     <script src="./assets/dataTables.responsive.min.js"></script>
     <link href="./main.css" rel="stylesheet" />
-    <link href="../../css/bali-patio.css?v=20260624-1" rel="stylesheet" />
+    <link href="../../css/bali-patio.css?v=20260704-1" rel="stylesheet" />
     <script src="../ChartJS.js"></script>
     <link href="../assets/all.min.css" rel="stylesheet" />
     <script type="text/javascript" src="../assets/toastr.min.js"></script>
@@ -181,6 +181,18 @@
                                     <a href="./acompanhamento.aspx" class="mm-active">
                                         <i class="metismenu-icon fa fa-tasks"></i>
                                         Acompanhamento
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="./lojas.aspx">
+                                        <i class="metismenu-icon fas fa-store"></i>
+                                        Lojas
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="./barcode-logs.aspx">
+                                        <i class="metismenu-icon fas fa-clipboard-list"></i>
+                                        Logs do leitor
                                     </a>
                                 </li>
                             </ul>
@@ -491,7 +503,7 @@
                     </asp:UpdateProgress>
                     <footer class="fixed-bottom bg-dark">
                         <div class="container text-center text-white mb-2 mt-2">
-                            <b>&copy;TECNOLOGIA</b> | Bali Brasília Automóveis - LTDA
+                            <b>TI - GRUPO BALI</b>
                         </div>
                         <div class="row no-gutters social-container">
                         </div>
@@ -512,7 +524,7 @@
     <script type="text/javascript">
         $("#dtAgendamento").datetimepicker({ format: 'yyyy-mm-dd', autoclose: true, language: 'pt-BR', todayBtn: true, todayHighlight: true});
     </script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260629-1"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260704-1"></script>
 
 
 </body>
