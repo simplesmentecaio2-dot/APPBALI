@@ -3,6 +3,20 @@
 <script runat="server">
     private const int TempoSessaoMinutos = 15;
 
+    void Application_BeginRequest(object sender, EventArgs e)
+    {
+        try
+        {
+            if (DeveBloquearRecursoSensivel())
+            {
+                BloquearRecursoSensivel();
+            }
+        }
+        catch
+        {
+        }
+    }
+
     void Application_PreRequestHandlerExecute(object sender, EventArgs e)
     {
         try
@@ -183,6 +197,51 @@
         }
 
         return false;
+    }
+
+    private bool DeveBloquearRecursoSensivel()
+    {
+        if (Request == null) return false;
+
+        string caminho = Request.AppRelativeCurrentExecutionFilePath ?? "";
+        string caminhoLower = caminho.ToLowerInvariant();
+
+        if (caminhoLower.IndexOf("/.git", StringComparison.OrdinalIgnoreCase) >= 0 ||
+            caminhoLower.IndexOf("/.github", StringComparison.OrdinalIgnoreCase) >= 0)
+        {
+            return true;
+        }
+
+        string extensao = System.IO.Path.GetExtension(caminhoLower);
+        switch (extensao)
+        {
+            case ".bak":
+            case ".config":
+            case ".cs":
+            case ".csproj":
+            case ".log":
+            case ".old":
+            case ".secrets":
+            case ".sql":
+            case ".suo":
+            case ".user":
+            case ".vb":
+                return true;
+        }
+
+        return false;
+    }
+
+    private void BloquearRecursoSensivel()
+    {
+        Response.Clear();
+        Response.TrySkipIisCustomErrors = true;
+        Response.StatusCode = 404;
+        Response.ContentType = "text/plain; charset=utf-8";
+        Response.Cache.SetCacheability(HttpCacheability.NoCache);
+        Response.Cache.SetNoStore();
+        Response.Write("Recurso nao encontrado.");
+        Context.ApplicationInstance.CompleteRequest();
     }
 
     private bool EhErroDeValidacaoRequest(Exception erro)
