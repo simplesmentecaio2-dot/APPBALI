@@ -657,6 +657,12 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="./lojas.aspx">
+                                        <i class="metismenu-icon fas fa-store"></i>
+                                        Lojas
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="./barcode-logs.aspx">
                                         <i class="metismenu-icon fas fa-clipboard-list"></i>
                                         Logs do leitor

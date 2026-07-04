@@ -136,6 +136,7 @@
                                 <li><a href="./transferir.aspx"><i class="metismenu-icon fas fa-exchange-alt"></i>Transferir</a></li>
                                 <li><a href="./historico.aspx"><i class="metismenu-icon fas fa-history"></i>Consultar</a></li>
                                 <li><a href="./acompanhamento.aspx"><i class="metismenu-icon fas fa-tasks"></i>Acompanhamento</a></li>
+                                <li><a href="./lojas.aspx"><i class="metismenu-icon fas fa-store"></i>Lojas</a></li>
                                 <li><a href="./barcode-logs.aspx" class="mm-active"><i class="metismenu-icon fas fa-clipboard-list"></i>Logs do leitor</a></li>
                             </ul>
                         </div>
