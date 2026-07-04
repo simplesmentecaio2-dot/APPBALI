@@ -49,14 +49,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     public int getQuantidadeFluxo(String evento, String loja)
     {
-        String sqlLoja = "";
-        bool filtrarLoja = loja != null && loja != "";
-        if (filtrarLoja)
-        {
-            sqlLoja = " and loja = @loja";
-        }
+        string lojaSelecionada = (loja ?? "").Trim();
 
-        String myQuery = "select COUNT(*) as qtde from APP.dbo.veiculos_prospeccao where Fluxo = 'S' and nome_evento = @evento " + sqlLoja;
+        String myQuery = "select COUNT(*) as qtde from APP.dbo.veiculos_prospeccao where Fluxo = 'S' and nome_evento = @evento and (@loja = '' or loja = @loja)";
         vec.Conexao();
 
         System.Data.SqlClient.SqlCommand oCmd = new System.Data.SqlClient.SqlCommand();
@@ -64,10 +59,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         oCmd.CommandText = myQuery;
         oCmd.CommandType = CommandType.Text;
         oCmd.Parameters.Add("@evento", SqlDbType.VarChar).Value = evento;
-        if (filtrarLoja)
-        {
-            oCmd.Parameters.Add("@loja", SqlDbType.VarChar).Value = loja;
-        }
+        oCmd.Parameters.Add("@loja", SqlDbType.VarChar).Value = lojaSelecionada;
         System.Data.SqlClient.SqlDataReader odr = oCmd.ExecuteReader();
         odr.Read();
         int qtde = (int)odr["qtde"];
@@ -174,20 +166,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
     protected void btnShowData(object sender, EventArgs e)
     {
         txtTopProspector.Text = "";
-        String loja;
-
-        bool filtrarLojaDash = !(ddlLojaDashEvt.Value == "" || ddlLojaDashEvt.Value == null);
-        if (!filtrarLojaDash)
-        {
-            loja = "";
-        }
-        else
-        {
-            loja = "and loja = @loja";
-        }
+        string lojaSelecionada = (ddlLojaDashEvt.Value ?? "").Trim();
 
         string myQuery = "SELECT loja, equipe, count(*) as qtde FROM [APP].[dbo].[veiculos_prospeccao] " +
-            " where nome_evento = @evento " + loja + " and Fluxo = 's'  group by loja,equipe order by qtde desc";
+            " where nome_evento = @evento and (@loja = '' or loja = @loja) and Fluxo = 's'  group by loja,equipe order by qtde desc";
 
         vec.Conexao();
 
@@ -196,10 +178,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         oCmd.CommandText = myQuery;
         oCmd.CommandType = CommandType.Text;
         oCmd.Parameters.Add("@evento", SqlDbType.VarChar).Value = ddlEventoDashEvt.Value;
-        if (filtrarLojaDash)
-        {
-            oCmd.Parameters.Add("@loja", SqlDbType.VarChar).Value = ddlLojaDashEvt.Value;
-        }
+        oCmd.Parameters.Add("@loja", SqlDbType.VarChar).Value = lojaSelecionada;
         System.Data.SqlClient.SqlDataReader odr = oCmd.ExecuteReader();
 
         List<String> equipes = new List<String>();
