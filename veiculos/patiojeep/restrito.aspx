@@ -155,9 +155,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="./acompanhamento.aspx">
-                                        <i class="metismenu-icon fas fa-tasks"></i>
-                                        Acompanhamento
+                                    <a href="./relatorios.aspx">
+                                        <i class="metismenu-icon fas fa-chart-line"></i>
+                                        Relatórios
                                     </a>
                                 </li>
                             </ul>

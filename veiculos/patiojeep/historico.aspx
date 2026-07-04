@@ -155,9 +155,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="./acompanhamento.aspx">
-                                        <i class="metismenu-icon fas fa-tasks"></i>
-                                        Acompanhamento
+                                    <a href="./relatorios.aspx">
+                                        <i class="metismenu-icon fas fa-chart-line"></i>
+                                        Relatórios
                                     </a>
                                 </li>
                                 <li>
@@ -317,7 +317,7 @@
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/jspdf.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260704-1"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260704-2"></script>
 </body>
 
 </html>

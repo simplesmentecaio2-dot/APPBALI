@@ -178,9 +178,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="./acompanhamento.aspx" class="mm-active">
-                                        <i class="metismenu-icon fa fa-tasks"></i>
-                                        Acompanhamento
+                                    <a href="./relatorios.aspx">
+                                        <i class="metismenu-icon fas fa-chart-line"></i>
+                                        Relatórios
                                     </a>
                                 </li>
                                 <li>
@@ -524,7 +524,7 @@
     <script type="text/javascript">
         $("#dtAgendamento").datetimepicker({ format: 'yyyy-mm-dd', autoclose: true, language: 'pt-BR', todayBtn: true, todayHighlight: true});
     </script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260704-1"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260704-2"></script>
 
 
 </body>

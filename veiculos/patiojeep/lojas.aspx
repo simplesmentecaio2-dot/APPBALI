@@ -238,7 +238,7 @@
                                 <li><a href="./registrar.aspx"><i class="metismenu-icon fa fa-folder-plus"></i>Registrar</a></li>
                                 <li><a href="./transferir.aspx"><i class="metismenu-icon fas fa-exchange-alt"></i>Transferir</a></li>
                                 <li><a href="./historico.aspx"><i class="metismenu-icon fas fa-history"></i>Consultar</a></li>
-                                <li><a href="./acompanhamento.aspx"><i class="metismenu-icon fas fa-tasks"></i>Acompanhamento</a></li>
+                                <li><a href="./relatorios.aspx"><i class="metismenu-icon fas fa-chart-line"></i>Relatórios</a></li>
                                 <li><a href="./lojas.aspx" class="mm-active"><i class="metismenu-icon fas fa-store"></i>Lojas</a></li>
                                 <li><a href="./barcode-logs.aspx"><i class="metismenu-icon fas fa-clipboard-list"></i>Logs do leitor</a></li>
                             </ul>
@@ -352,6 +352,6 @@
     <script src="../assets/popper.min.js"></script>
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260704-1"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260704-2"></script>
 </body>
 </html>

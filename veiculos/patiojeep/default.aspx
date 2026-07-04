@@ -155,9 +155,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="./acompanhamento.aspx">
-                                        <i class="metismenu-icon fas fa-tasks"></i>
-                                        Acompanhamento
+                                    <a href="./relatorios.aspx">
+                                        <i class="metismenu-icon fas fa-chart-line"></i>
+                                        Relatórios
                                     </a>
                                 </li>
                                 <li>
@@ -224,10 +224,10 @@
                                                         <strong>Histórico</strong>
                                                         <small>Consulte o caminho percorrido pelo veículo.</small>
                                                     </a>
-                                                    <a class="patio-home-card" href="./acompanhamento.aspx">
-                                                        <span class="patio-home-icon"><i class="fa fa-tasks"></i></span>
-                                                        <strong>Acompanhamento</strong>
-                                                        <small>Acompanhe pendências e preparação dos veículos.</small>
+                                                    <a class="patio-home-card" href="./relatorios.aspx">
+                                                        <span class="patio-home-icon"><i class="fa fa-chart-line"></i></span>
+                                                        <strong>Relatórios</strong>
+                                                        <small>Veja indicadores, entradas, estoque por loja e movimentações.</small>
                                                     </a>
                                                     <a class="patio-home-card" href="./lojas.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-store"></i></span>
@@ -272,7 +272,7 @@
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/jspdf.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260704-1"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260704-2"></script>
 
 </body>
 

@@ -191,13 +191,19 @@
       { href: './registrar.aspx', icon: 'fa fa-folder-plus', label: 'Registrar' },
       { href: './transferir.aspx', icon: 'fas fa-exchange-alt', label: 'Transferir' },
       { href: './historico.aspx', icon: 'fas fa-history', label: 'Consultar' },
-      { href: './acompanhamento.aspx', icon: 'fas fa-tasks', label: 'Acompanhamento' },
+      { href: './relatorios.aspx', icon: 'fas fa-chart-line', label: 'Relat\u00f3rios' },
       { href: './lojas.aspx', icon: 'fas fa-store', label: 'Lojas' },
       { href: './barcode-logs.aspx', icon: 'fas fa-clipboard-list', label: 'Logs do leitor' }
     ];
 
     for (var m = 0; m < menus.length; m++) {
       var menu = menus[m];
+      var deprecatedLinks = menu.querySelectorAll('a[href$="acompanhamento.aspx"]');
+      for (var d = 0; d < deprecatedLinks.length; d++) {
+        var deprecatedItem = deprecatedLinks[d].closest ? deprecatedLinks[d].closest('li') : deprecatedLinks[d].parentNode;
+        if (deprecatedItem) deprecatedItem.remove();
+      }
+
       if (!menu.querySelector('.app-sidebar__heading')) {
         var heading = document.createElement('li');
         heading.className = 'app-sidebar__heading';

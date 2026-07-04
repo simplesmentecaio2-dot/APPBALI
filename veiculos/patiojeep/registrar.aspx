@@ -651,9 +651,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="./acompanhamento.aspx">
-                                        <i class="metismenu-icon fas fa-tasks"></i>
-                                        Acompanhamento
+                                    <a href="./relatorios.aspx">
+                                        <i class="metismenu-icon fas fa-chart-line"></i>
+                                        Relatórios
                                     </a>
                                 </li>
                                 <li>
@@ -939,7 +939,7 @@
         };
     </script>
     <script src="./assets/js/patio-barcode-scanner.js?v=20260704-2" charset="utf-8"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260704-1"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260704-2"></script>
 
 </body>
 
