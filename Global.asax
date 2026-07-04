@@ -29,6 +29,15 @@
         if (Context == null) return;
         if (SessaoUnica.DeveIgnorarValidacao(Context)) return;
         if (Session == null) return;
+        if (EhPaginaLegadaRestrita() && (Session["usuario"] == null || Convert.ToString(Session["usuario"]).Trim().Length == 0))
+        {
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            Response.Cache.SetNoStore();
+            Response.Redirect(VirtualPathUtility.ToAbsolute("~/login.aspx"), false);
+            Context.ApplicationInstance.CompleteRequest();
+            return;
+        }
+
         if (Session["usuario"] == null || Convert.ToString(Session["usuario"]).Trim().Length == 0) return;
 
         Session.Timeout = TempoSessaoMinutos;
@@ -89,39 +98,43 @@
             return;
         }
 
-        if (!EhErroDeViewState(erro) || !EhPaginaProtegidaContraViewState())
+        if (EhErroDeViewState(erro) && EhPaginaProtegidaContraViewState())
         {
+            Server.ClearError();
+
+            string destino = Request.Url.AbsolutePath + Request.Url.Query;
+            destino += destino.IndexOf("?", StringComparison.Ordinal) >= 0 ? "&" : "?";
+            destino += "viewstate=expired";
+
+            Response.Redirect(destino, false);
+            Context.ApplicationInstance.CompleteRequest();
             return;
         }
 
-        Server.ClearError();
-
-        string destino = Request.Url.AbsolutePath + Request.Url.Query;
-        destino += destino.IndexOf("?", StringComparison.Ordinal) >= 0 ? "&" : "?";
-        destino += "viewstate=expired";
-
-        Response.Redirect(destino, false);
-        Context.ApplicationInstance.CompleteRequest();
+        RenderizarErroSeguro("N\u00e3o foi poss\u00edvel processar a solicita\u00e7\u00e3o", "Tente novamente em instantes. Se o problema continuar, acione a TI.", 500);
     }
 
     void Application_PreSendRequestHeaders(object sender, EventArgs e)
     {
         try
         {
-            if (!EhPaginaConsultaQrCode() && !EhPaginaLogin()) return;
-
             if (EhPaginaConsultaQrCode())
             {
                 Response.Headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+                Response.Headers["X-Frame-Options"] = "DENY";
+            }
+            else if (EhPaginaLogin())
+            {
+                Response.Headers["Content-Security-Policy"] = "base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+                Response.Headers["X-Frame-Options"] = "DENY";
             }
             else
             {
-                Response.Headers["Content-Security-Policy"] = "base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+                Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
             }
 
-            Response.Headers["Referrer-Policy"] = "no-referrer";
+            Response.Headers["Referrer-Policy"] = EhPaginaConsultaQrCode() || EhPaginaLogin() ? "no-referrer" : "strict-origin-when-cross-origin";
             Response.Headers["X-Content-Type-Options"] = "nosniff";
-            Response.Headers["X-Frame-Options"] = "DENY";
             Response.Headers.Remove("X-AspNet-Version");
             Response.Headers.Remove("X-Powered-By");
         }
@@ -188,10 +201,15 @@
 
     private void RenderizarErroSeguro(string titulo, string mensagem)
     {
+        RenderizarErroSeguro(titulo, mensagem, 400);
+    }
+
+    private void RenderizarErroSeguro(string titulo, string mensagem, int statusCode)
+    {
         Server.ClearError();
         Response.Clear();
         Response.TrySkipIisCustomErrors = true;
-        Response.StatusCode = 400;
+        Response.StatusCode = statusCode;
         Response.ContentType = "text/html; charset=utf-8";
         Response.Cache.SetCacheability(HttpCacheability.NoCache);
         Response.Cache.SetNoStore();
@@ -204,6 +222,19 @@
         string caminho = Request.AppRelativeCurrentExecutionFilePath ?? "";
         return caminho.StartsWith("~/CI/", StringComparison.OrdinalIgnoreCase) ||
             caminho.StartsWith("~/Ramais/", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool EhPaginaLegadaRestrita()
+    {
+        string caminho = Request.AppRelativeCurrentExecutionFilePath ?? "";
+        string nome = System.IO.Path.GetFileName(caminho).ToLowerInvariant();
+        string caminhoLower = caminho.ToLowerInvariant();
+        return nome.StartsWith("teste", StringComparison.OrdinalIgnoreCase)
+            || nome.IndexOf("homolog", StringComparison.OrdinalIgnoreCase) >= 0
+            || caminhoLower.IndexOf("/bkp", StringComparison.OrdinalIgnoreCase) >= 0
+            || caminhoLower.IndexOf("backup", StringComparison.OrdinalIgnoreCase) >= 0
+            || caminhoLower.IndexOf("copy of", StringComparison.OrdinalIgnoreCase) >= 0
+            || caminhoLower.IndexOf("prospeccaobkp", StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
     private void RegistrarTimerSessao(object sender, EventArgs e)
