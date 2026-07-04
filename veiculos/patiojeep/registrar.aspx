@@ -161,8 +161,59 @@
             background: #dbeafe;
         }
 
-        .is-hidden {
+        .barcode-modal .is-hidden {
             display: none !important;
+        }
+
+        .scanner-tools {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: .65rem;
+            margin-top: .85rem;
+        }
+
+        .scanner-tools select,
+        .scanner-tools button {
+            min-height: 42px;
+            border-radius: 12px;
+            font-weight: 800;
+        }
+
+        .scanner-zoom {
+            display: grid;
+            grid-template-columns: auto minmax(150px, 1fr);
+            align-items: center;
+            gap: .75rem;
+            margin-top: .75rem;
+            padding: .75rem .9rem;
+            border: 1px solid #dbe4ef;
+            border-radius: 14px;
+            background: #f8fafc;
+            color: #334155;
+            font-weight: 800;
+        }
+
+        .scanner-zoom input {
+            width: 100%;
+        }
+
+        .scanner-help {
+            margin-top: .75rem;
+            padding: .75rem .9rem;
+            border: 1px solid #dbe4ef;
+            border-radius: 14px;
+            background: #fff;
+            color: #334155;
+        }
+
+        .scanner-help summary {
+            cursor: pointer;
+            font-weight: 900;
+        }
+
+        .scanner-help ul {
+            margin: .65rem 0 0;
+            padding-left: 1.1rem;
         }
 
         .scanner-manual {
@@ -213,6 +264,14 @@
             }
 
             .scanner-manual {
+                grid-template-columns: 1fr;
+            }
+
+            .scanner-tools {
+                grid-template-columns: 1fr;
+            }
+
+            .scanner-zoom {
                 grid-template-columns: 1fr;
             }
         }
@@ -505,11 +564,28 @@
                 <span class="scanner-pill" id="scannerEngine">Preparando câmera</span>
             </div>
         </div>
+        <div class="scanner-tools">
+            <select id="scannerCameraSelect" class="form-control is-hidden" aria-label="Selecionar câmera"></select>
+            <button type="button" id="scannerSwitchCamera" class="btn btn-outline-dark is-hidden"><i class="fa fa-sync-alt mr-1"></i> Trocar câmera</button>
+        </div>
+        <label id="scannerZoomGroup" class="scanner-zoom is-hidden">
+            <span>Zoom da câmera</span>
+            <input type="range" id="scannerZoom" min="1" max="1" step="0.1" value="1" />
+        </label>
         <div id="scannerStatus" class="scanner-status" aria-live="polite">Ao permitir a câmera, a leitura começa automaticamente.</div>
         <div class="scanner-manual">
             <input type="text" id="scannerManualSerie" class="form-control" inputmode="numeric" pattern="[0-9]*" maxlength="7" placeholder="Digitar série manualmente" autocomplete="off" />
             <button type="button" id="scannerApplyManual" class="btn btn-success"><i class="fa fa-check mr-1"></i> Usar série</button>
         </div>
+        <details class="scanner-help">
+            <summary>Não conseguiu ler?</summary>
+            <ul>
+                <li>Limpe a lente da câmera e evite reflexo direto no código.</li>
+                <li>Aproxime devagar até o código preencher a faixa central.</li>
+                <li>Se o celular abrir a câmera errada, use Trocar câmera.</li>
+                <li>Se ainda falhar, digite manualmente os 7 dígitos da série.</li>
+            </ul>
+        </details>
         <div class="scanner-actions">
             <div>
                 <small class="text-muted">Resultado: <strong id="result">aguardando leitura</strong></small>
@@ -542,10 +618,11 @@
         window.PatioBarcodeScannerConfig = {
             serieInputId: '<%= txtSerie.ClientID %>',
             searchButtonId: '<%= btnSearch.ClientID %>',
-            postBackTarget: '<%= btnSearch.UniqueID %>'
+            postBackTarget: '<%= btnSearch.UniqueID %>',
+            logEndpoint: './barcode-log.ashx'
         };
     </script>
-    <script src="./assets/js/patio-barcode-scanner.js?v=20260704-1" charset="utf-8"></script>
+    <script src="./assets/js/patio-barcode-scanner.js?v=20260704-2" charset="utf-8"></script>
     <script src="./assets/js/patio-jeep-ux.js?v=20260629-1"></script>
 
 </body>

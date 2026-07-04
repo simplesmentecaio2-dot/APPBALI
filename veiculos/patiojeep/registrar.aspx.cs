@@ -45,6 +45,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     catch
                     {
                         btnRegistrar.Visible = false;
+                        PatioJeepAuditoria.Registrar("REGISTRAR_CODIGO_BARRAS_INVALIDO", Session["usuario"], Request.QueryString["serie"], "Codigo recebido pela URL fora do padrao esperado");
                         ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('C\\u00f3digo de barras n\\u00e3o se refere a um chassi.')", true);
                     }
                 }
@@ -116,6 +117,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 txtCodVec.Text = "";
                 txtNUMERONF.Text = "";
                 btnRegistrar.Visible = false;
+                PatioJeepAuditoria.Registrar("REGISTRAR_SERIE_INVALIDA", Session["usuario"], txtSerie.Text, "Serie informada com tamanho diferente de 7 digitos");
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('O n\\u00famero de s\\u00e9rie deve conter 7 d\\u00edgitos.');$('#myModal').modal('show');", true);
                 txtSerie.Focus();
             }
@@ -150,14 +152,16 @@ public partial class veiculos_contrato : System.Web.UI.Page
                         txtCodVec.Text = "";
                         txtNUMERONF.Text = "";
                         btnRegistrar.Visible = false;
-                        ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Dados não encontrados!')", true);
+                        PatioJeepAuditoria.Registrar("REGISTRAR_SERIE_NAO_ENCONTRADA", Session["usuario"], txtSerie.Text, "Nenhum veiculo retornado pela procedure veiculos_patio_selectRegistrar");
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('S\\u00e9rie " + txtSerie.Text + " n\\u00e3o encontrada no sistema. Confira a etiqueta, tente ler novamente ou digite os 7 d\\u00edgitos manualmente.');", true);
 
                     }
 
                 }
-                catch
+                catch (Exception ex)
                 {
                     btnRegistrar.Visible = false;
+                    PatioJeepAuditoria.Registrar("REGISTRAR_SERIE_ERRO_CONSULTA", Session["usuario"], txtSerie.Text, ex.Message);
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('N\\u00e3o foi poss\\u00edvel carregar os dados do ve\\u00edculo agora.')", true);
                 }
                 finally
@@ -174,6 +178,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             txtCodVec.Text = "";
             txtNUMERONF.Text = "";
             btnRegistrar.Visible = false;
+            PatioJeepAuditoria.Registrar("REGISTRAR_SERIE_VAZIA", Session["usuario"], txtSerie.Text, "Pesquisa acionada sem informar a serie");
             ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Informe a s\\u00e9rie antes de pesquisar.')", true);
         }
     }
