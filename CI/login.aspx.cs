@@ -99,6 +99,7 @@ public partial class ci_login : System.Web.UI.Page
     {
         if (String.IsNullOrWhiteSpace(url)) return false;
         url = url.Trim();
+        if (url.IndexOf('\r') >= 0 || url.IndexOf('\n') >= 0) return false;
         if (url.StartsWith("http:", StringComparison.OrdinalIgnoreCase)) return false;
         if (url.StartsWith("https:", StringComparison.OrdinalIgnoreCase)) return false;
         if (url.StartsWith("//")) return false;

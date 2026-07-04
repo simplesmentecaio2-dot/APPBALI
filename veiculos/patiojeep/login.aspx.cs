@@ -80,6 +80,11 @@ public partial class login : System.Web.UI.Page
         }
 
         string destino = url.Trim();
+        if (destino.IndexOf('\r') >= 0 || destino.IndexOf('\n') >= 0)
+        {
+            return false;
+        }
+
         if (destino.IndexOf("login.aspx", StringComparison.OrdinalIgnoreCase) >= 0)
         {
             return false;

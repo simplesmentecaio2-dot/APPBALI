@@ -77,6 +77,12 @@
             return;
         }
 
+        if (EhPaginaLogin())
+        {
+            RenderizarErroLoginSeguro();
+            return;
+        }
+
         if (!EhErroDeViewState(erro) || !EhPaginaProtegidaContraViewState())
         {
             return;
@@ -96,9 +102,17 @@
     {
         try
         {
-            if (!EhPaginaConsultaQrCode()) return;
+            if (!EhPaginaConsultaQrCode() && !EhPaginaLogin()) return;
 
-            Response.Headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+            if (EhPaginaConsultaQrCode())
+            {
+                Response.Headers["Content-Security-Policy"] = "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+            }
+            else
+            {
+                Response.Headers["Content-Security-Policy"] = "base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+            }
+
             Response.Headers["Referrer-Policy"] = "no-referrer";
             Response.Headers["X-Content-Type-Options"] = "nosniff";
             Response.Headers["X-Frame-Options"] = "DENY";
@@ -148,6 +162,30 @@
     {
         string caminho = Request.AppRelativeCurrentExecutionFilePath ?? "";
         return caminho.Equals("~/qrcode-veiculo/consulta.aspx", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool EhPaginaLogin()
+    {
+        string caminho = Request.AppRelativeCurrentExecutionFilePath ?? "";
+        string nome = System.IO.Path.GetFileName(caminho).ToLowerInvariant();
+        return nome == "login.aspx"
+            || nome == "loginapp.aspx"
+            || nome == "loginappcontrato.aspx"
+            || nome == "loginbi.aspx"
+            || nome == "loginbiwf.aspx";
+    }
+
+    private void RenderizarErroLoginSeguro()
+    {
+        Server.ClearError();
+        Response.Clear();
+        Response.TrySkipIisCustomErrors = true;
+        Response.StatusCode = 400;
+        Response.ContentType = "text/html; charset=utf-8";
+        Response.Cache.SetCacheability(HttpCacheability.NoCache);
+        Response.Cache.SetNoStore();
+        Response.Write("<!doctype html><html lang=\"pt-BR\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Login indisponivel</title></head><body style=\"font-family:Arial,sans-serif;background:#f5f7fb;color:#111827;padding:32px\"><main style=\"max-width:520px;margin:60px auto;background:#fff;border:1px solid #dbe3ee;border-radius:10px;padding:28px;text-align:center\"><h1 style=\"margin:0 0 12px;font-size:22px\">Nao foi possivel processar o login</h1><p style=\"margin:0 0 20px;color:#475569\">Confira os dados informados e tente novamente.</p><button type=\"button\" onclick=\"history.back()\" style=\"border:0;border-radius:8px;background:#111827;color:#fff;padding:11px 18px;font-weight:700;cursor:pointer\">Voltar</button></main></body></html>");
+        Context.ApplicationInstance.CompleteRequest();
     }
 
     private bool EhPaginaProtegidaContraViewState()

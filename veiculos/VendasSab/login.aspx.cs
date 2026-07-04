@@ -53,9 +53,12 @@ public partial class login : System.Web.UI.Page
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Usuário ou Senha Inválida!');", true);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                executarJavaScript("alert('Erro: ');" + ex);
+                txtUsuario.Value = "";
+                txtSenha.Value = "";
+                txtUsuario.Focus();
+                executarJavaScript("alert('N\\u00e3o foi poss\\u00edvel entrar agora. Tente novamente.');");
             }
         }
 

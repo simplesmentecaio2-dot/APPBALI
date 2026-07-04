@@ -12,7 +12,10 @@ using System.Data.SqlClient;
 /// </summary>
 public class App : Dao
 {
-    
+    private const int TamanhoMaximoUsuarioLogin = 120;
+    private const int TamanhoMaximoSenhaLogin = 200;
+    private const int MaximoTentativasLogin = 10;
+    private const int JanelaTentativasLoginMinutos = 10;
 
 	public void login(string id, string senha, out string usuario, out string tipo, out string email, out string ramal, out string celular, out string empresa ) 
 	{
@@ -51,9 +54,21 @@ public class App : Dao
             return false;
         }
 
+        if (id.Length > TamanhoMaximoUsuarioLogin)
+        {
+            mensagem = "Usuário inválido.";
+            return false;
+        }
+
         if (senhaAtual.Length == 0)
         {
             mensagem = "Informe a senha atual.";
+            return false;
+        }
+
+        if (senhaAtual.Length > TamanhoMaximoSenhaLogin || novaSenha.Length > TamanhoMaximoSenhaLogin)
+        {
+            mensagem = "Senha inválida.";
             return false;
         }
 
@@ -110,6 +125,17 @@ public class App : Dao
         id = (id ?? "").Trim();
         senha = senha ?? "";
 
+        if (!CredenciaisComTamanhoSeguro(id, senha))
+        {
+            RegistrarFalhaLoginTemporaria(id);
+            return;
+        }
+
+        if (LoginBloqueadoTemporariamente(id))
+        {
+            return;
+        }
+
         bool existeSenhaLocal = false;
         try
         {
@@ -135,6 +161,7 @@ public class App : Dao
             if (!senhaLocalValida)
             {
                 AppSenhaLocal.RegistrarFalha(id, "login", HttpContext.Current, "senha local incorreta");
+                RegistrarFalhaLoginTemporaria(id);
                 return;
             }
 
@@ -157,10 +184,12 @@ public class App : Dao
                 }
 
                 AppSenhaLocal.RegistrarLoginOk(id, "login", HttpContext.Current);
+                LimparFalhasLoginTemporarias(id);
                 return;
             }
 
             AppSenhaLocal.RegistrarFalha(id, "login", HttpContext.Current, "usuario inativo na origem");
+            RegistrarFalhaLoginTemporaria(id);
             PreencherLoginNegado(out usuario, out tipo, out email, out ramal, out celular, out empresa, out usuarioCodigo);
             return;
         }
@@ -169,6 +198,15 @@ public class App : Dao
         if (usuario != "N" && (String.IsNullOrWhiteSpace(usuarioCodigo) || usuarioCodigo == "0"))
         {
             usuarioCodigo = BuscarUsuarioCodigoSeguro(id, usuario, email, "");
+        }
+
+        if (usuario != "N")
+        {
+            LimparFalhasLoginTemporarias(id);
+        }
+        else
+        {
+            RegistrarFalhaLoginTemporaria(id);
         }
     }
 
@@ -183,8 +221,8 @@ public class App : Dao
             oCmd.Connection = oCon;
             oCmd.CommandText = procedure;
             oCmd.CommandType = CommandType.StoredProcedure;
-            oCmd.Parameters.Add("@id_usuario", SqlDbType.VarChar).Value = id;
-            oCmd.Parameters.Add("@senha", SqlDbType.VarChar).Value = senha;
+            oCmd.Parameters.Add("@id_usuario", SqlDbType.VarChar, TamanhoMaximoUsuarioLogin).Value = id;
+            oCmd.Parameters.Add("@senha", SqlDbType.VarChar, TamanhoMaximoSenhaLogin).Value = senha;
             SqlDataReader odr = oCmd.ExecuteReader();
             if (odr.Read())
             {
@@ -299,7 +337,7 @@ public class App : Dao
                            'N' AS fun_radio,
                            'N' AS emp;
                 END";
-            oCmd.Parameters.Add("@id_usuario", SqlDbType.VarChar, 50).Value = id;
+            oCmd.Parameters.Add("@id_usuario", SqlDbType.VarChar, TamanhoMaximoUsuarioLogin).Value = id;
             oCmd.Parameters.Add("@incluir_usuario_wf", SqlDbType.Bit).Value = incluirUsuarioWf;
 
             SqlDataReader odr = oCmd.ExecuteReader();
@@ -399,6 +437,53 @@ public class App : Dao
     {
         valor = (valor ?? "").Trim();
         return valor.Length == 0 || valor == "N" ? (object)DBNull.Value : valor;
+    }
+
+    private bool CredenciaisComTamanhoSeguro(string id, string senha)
+    {
+        return id.Length > 0
+            && senha.Length > 0
+            && id.Length <= TamanhoMaximoUsuarioLogin
+            && senha.Length <= TamanhoMaximoSenhaLogin;
+    }
+
+    private string ChaveFalhasLogin(string id)
+    {
+        HttpContext contexto = HttpContext.Current;
+        string ip = contexto == null || contexto.Request == null ? "sem-ip" : (contexto.Request.UserHostAddress ?? "sem-ip");
+        string usuario = (id ?? "").Trim().ToLowerInvariant();
+        if (usuario.Length > TamanhoMaximoUsuarioLogin)
+        {
+            usuario = usuario.Substring(0, TamanhoMaximoUsuarioLogin);
+        }
+
+        return "appbali:login:falhas:" + ip + ":" + usuario;
+    }
+
+    private bool LoginBloqueadoTemporariamente(string id)
+    {
+        object valor = HttpRuntime.Cache[ChaveFalhasLogin(id)];
+        int tentativas = valor == null ? 0 : Convert.ToInt32(valor);
+        return tentativas >= MaximoTentativasLogin;
+    }
+
+    private void RegistrarFalhaLoginTemporaria(string id)
+    {
+        string chave = ChaveFalhasLogin(id);
+        object valor = HttpRuntime.Cache[chave];
+        int tentativas = valor == null ? 1 : Convert.ToInt32(valor) + 1;
+        HttpRuntime.Cache.Insert(
+            chave,
+            tentativas,
+            null,
+            DateTime.UtcNow.AddMinutes(JanelaTentativasLoginMinutos),
+            System.Web.Caching.Cache.NoSlidingExpiration
+        );
+    }
+
+    private void LimparFalhasLoginTemporarias(string id)
+    {
+        HttpRuntime.Cache.Remove(ChaveFalhasLogin(id));
     }
 
     private void GuardarUsuarioCodigoSessao(string usuario, string usuarioCodigo)
