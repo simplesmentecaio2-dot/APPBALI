@@ -44,7 +44,15 @@
         if (Context == null) return;
         if (SessaoUnica.DeveIgnorarValidacao(Context)) return;
         if (Session == null) return;
-        if (EhPaginaLegadaRestrita() && (Session["usuario"] == null || Convert.ToString(Session["usuario"]).Trim().Length == 0))
+        bool usuarioLogado = UsuarioLogado();
+
+        if (DeveExigirLoginCentral() && !usuarioLogado)
+        {
+            RedirecionarLoginCentral();
+            return;
+        }
+
+        if (EhPaginaLegadaRestrita() && !usuarioLogado)
         {
             Response.Cache.SetCacheability(HttpCacheability.NoCache);
             Response.Cache.SetNoStore();
@@ -53,7 +61,7 @@
             return;
         }
 
-        if (Session["usuario"] == null || Convert.ToString(Session["usuario"]).Trim().Length == 0) return;
+        if (!usuarioLogado) return;
 
         Session.Timeout = TempoSessaoMinutos;
 
@@ -261,6 +269,49 @@
     {
         string caminho = Request.AppRelativeCurrentExecutionFilePath ?? "";
         return caminho.Equals("~/qrcode-veiculo/consulta.aspx", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool UsuarioLogado()
+    {
+        return Session != null
+            && Session["usuario"] != null
+            && Convert.ToString(Session["usuario"]).Trim().Length > 0;
+    }
+
+    private bool DeveExigirLoginCentral()
+    {
+        if (Request == null) return false;
+
+        string caminho = Request.AppRelativeCurrentExecutionFilePath ?? "";
+        if (!caminho.EndsWith(".aspx", StringComparison.OrdinalIgnoreCase)) return false;
+        if (EhPaginaPublicaSemLogin(caminho)) return false;
+
+        // CI e Ramais possuem login proprio com auditoria especifica do modulo.
+        if (caminho.StartsWith("~/CI/", StringComparison.OrdinalIgnoreCase)) return false;
+        if (caminho.StartsWith("~/RAMAIS/", StringComparison.OrdinalIgnoreCase) ||
+            caminho.StartsWith("~/Ramais/", StringComparison.OrdinalIgnoreCase)) return false;
+
+        return true;
+    }
+
+    private bool EhPaginaPublicaSemLogin(string caminho)
+    {
+        string nome = System.IO.Path.GetFileName(caminho).ToLowerInvariant();
+        if (nome == "sessao-renovar.aspx") return true;
+
+        return caminho.Equals("~/qrcode-veiculo/default.aspx", StringComparison.OrdinalIgnoreCase) ||
+            caminho.Equals("~/qrcode-veiculo/consulta.aspx", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void RedirecionarLoginCentral()
+    {
+        string rawUrl = Request == null ? "/" : (Request.RawUrl ?? "/");
+        string destino = VirtualPathUtility.ToAbsolute("~/login.aspx") + "?voltar=" + HttpUtility.UrlEncode(rawUrl);
+
+        Response.Cache.SetCacheability(HttpCacheability.NoCache);
+        Response.Cache.SetNoStore();
+        Response.Redirect(destino, false);
+        Context.ApplicationInstance.CompleteRequest();
     }
 
     private bool EhPaginaLogin()
