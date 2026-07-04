@@ -113,13 +113,13 @@ public partial class veiculos_patio_barcode_logs : System.Web.UI.Page
         html.Append("<div class=\"barcode-log-summary\">");
         html.Append(Card("Eventos", total.ToString()));
         html.Append(Card("Leituras aceitas", sucesso.ToString()));
-        html.Append(Card("Falhas de câmera", falhasCamera.ToString()));
+        html.Append(Card("Falhas de c\u00e2mera", falhasCamera.ToString()));
         html.Append(Card("Uso manual", manual.ToString()));
         html.Append("</div>");
 
         if (!arquivoExiste)
         {
-            html.Append("<div class=\"alert alert-info mt-3\">Ainda não há logs do leitor. Eles serão criados assim que alguém usar a câmera ou enviar diagnóstico.</div>");
+            html.Append("<div class=\"alert alert-info mt-3\">Ainda n\u00e3o h\u00e1 logs do leitor. Eles ser\u00e3o criados assim que algu\u00e9m usar a c\u00e2mera ou enviar diagn\u00f3stico.</div>");
         }
 
         litResumo.Text = html.ToString();
@@ -134,13 +134,13 @@ public partial class veiculos_patio_barcode_logs : System.Web.UI.Page
     {
         if (logs.Count == 0)
         {
-            litTabela.Text = "<div class=\"alert alert-light mb-0\">Nenhuma leitura registrada até agora.</div>";
+            litTabela.Text = "<div class=\"alert alert-light mb-0\">Nenhuma leitura registrada at\u00e9 agora.</div>";
             return;
         }
 
         StringBuilder html = new StringBuilder();
         html.Append("<table id=\"barcodeLogTable\" class=\"table table-striped table-hover barcode-log-table\">");
-        html.Append("<thead><tr><th>Data</th><th>Evento</th><th>Usuário</th><th>Série</th><th>Detalhes</th><th>IP</th><th>Navegador</th></tr></thead><tbody>");
+        html.Append("<thead><tr><th>Data</th><th>Evento</th><th>Usu\u00e1rio</th><th>S\u00e9rie</th><th>Detalhes</th><th>IP</th><th>Navegador</th></tr></thead><tbody>");
 
         foreach (LogLeitura log in logs)
         {

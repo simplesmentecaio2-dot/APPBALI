@@ -87,7 +87,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                         txtCor.Text = "";
                         txtCodVec.Text = "";
                         btnRegistrar.Visible = false;
-                        ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Dados não encontrados!')", true);
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Dados n\\u00e3o encontrados!')", true);
 
                     }
 
@@ -129,7 +129,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             if (!int.TryParse(txtCodVec.Text, out codVeiculo) || !int.TryParse(ddlOrigem.Value, out lojaOrigem) || !int.TryParse(ddlDestino.Value, out lojaDestino))
             {
                 PatioJeepAuditoria.Registrar("TRANSFERIR_VALIDACAO", Session["usuario"], txtSerie.Text, "Dados obrigatorios ausentes antes da transferencia");
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Pesquise a série e selecione a loja de destino antes de transferir.');", true);
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Pesquise a s\\u00e9rie e selecione a loja de destino antes de transferir.');", true);
                 return;
             }
 
@@ -162,7 +162,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     PatioJeepAuditoria.Registrar("TRANSFERIR_SUCESSO", Session["usuario"], txtSerie.Text, "Origem=" + ddlOrigem.Value + "; Destino=" + ddlDestino.Value);
                     txtSerie.Text = "";
                     btnRegistrar.Visible = false;
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Transferência realizada com sucesso.')", true);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript", "alert('Transfer\\u00eancia realizada com sucesso.')", true);
 
 
 

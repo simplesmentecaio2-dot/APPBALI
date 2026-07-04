@@ -686,7 +686,7 @@
                                                 <b>Registrar</b>
 
                                                 <div class="page-title-subheading">
-                                                    Digite a série, confira os dados retornados e selecione a loja.
+                                                    Digite a s&eacute;rie, confira os dados retornados e selecione a loja.
                                                 </div>
                                             </div>
                                         </div>
@@ -704,7 +704,7 @@
                                 <asp:Panel ID="pnlNovaLeitura" runat="server" CssClass="patio-operation-alert patio-operation-alert-success" Visible="false">
                                     <i class="fa fa-check-circle"></i>
                                     <div>
-                                        <strong>Registro concluído</strong>
+                                        <strong>Registro conclu&iacute;do</strong>
                                         <span><asp:Literal ID="litNovaLeitura" runat="server"></asp:Literal></span>
                                         <button type="button" class="btn btn-success mt-2" data-toggle="modal" data-target="#myModal"><i class="fa fa-barcode mr-1"></i> Nova leitura</button>
                                     </div>
@@ -723,14 +723,14 @@
 
                                                     <div class="input-group col-sm-12 col-md-5 col-lg-3 mb-3">
                                                         <div class="input-group-prepend">
-                                                            <span class="input-group-text" id="basic-addon1"><b>Série</b></span>
+                                                            <span class="input-group-text" id="basic-addon1"><b>S&eacute;rie</b></span>
                                                         </div>
-                                                        <asp:TextBox ID="txtSerie" CssClass="form-control" runat="server" required="true" MaxLength="7" inputmode="text" pattern="[A-Za-z0-9]*" placeholder="Digite ou leia a série" OnTextChanged="serieOnTextChanged" AutoPostBack="true"></asp:TextBox>
+                                                        <asp:TextBox ID="txtSerie" CssClass="form-control" runat="server" required="true" MaxLength="7" inputmode="text" pattern="[A-Za-z0-9]*" placeholder="Digite ou leia a s&eacute;rie" OnTextChanged="serieOnTextChanged" AutoPostBack="true"></asp:TextBox>
                                                         <div class="input-group-append">
                                                             <asp:LinkButton runat="server" ID="btnSearch" OnClick="serieOnTextChanged" CssClass="btn btn-primary"><i class="fa fa-search-location"></i></asp:LinkButton>
                                                         </div>
                                                         <div class="input-group-append">
-                                                            <a href="#" id="openBarcodeScanner" data-toggle="modal" data-target="#myModal" class="text-decoration-none btn btn-dark" aria-label="Ler código de barras pela câmera"><i class="fa fa-barcode fa-2x"></i></a>
+                                                            <a href="#" id="openBarcodeScanner" data-toggle="modal" data-target="#myModal" class="text-decoration-none btn btn-dark" aria-label="Ler c&oacute;digo de barras pela c&acirc;mera"><i class="fa fa-barcode fa-2x"></i></a>
                                                             
                                                         </div>
                                                     </div>
@@ -755,7 +755,7 @@
                                                 </div>
                                                 <div class="patio-found-grid">
                                                     <div class="patio-found-item">
-                                                        <small>Série</small>
+                                                        <small>S&eacute;rie</small>
                                                         <span><asp:Literal ID="litResumoSerie" runat="server"></asp:Literal></span>
                                                     </div>
                                                     <div class="patio-found-item">
@@ -771,7 +771,7 @@
                                                         <span><asp:Literal ID="litResumoCor" runat="server"></asp:Literal></span>
                                                     </div>
                                                     <div class="patio-found-item">
-                                                        <small>Número NF</small>
+                                                        <small>N&uacute;mero NF</small>
                                                         <span><asp:Literal ID="litResumoNf" runat="server"></asp:Literal></span>
                                                     </div>
                                                 </div>
@@ -779,7 +779,7 @@
                                             <div class="form-row">
                                                 <div class="input-group col-sm-12 col-md-6 col-lg-6 col-xl-3 mb-3">
                                                     <div class="input-group-prepend">
-                                                        <span class="input-group-text" id="Span4"><b>Cód. Veíc.</b></span>
+                                                        <span class="input-group-text" id="Span4"><b>C&oacute;d. Ve&iacute;c.</b></span>
                                                     </div>
                                                     <asp:TextBox type="text" ID="txtCodVec" CssClass="form-control bg-white  " runat="server" OnTextChanged="serieOnTextChanged"></asp:TextBox>
 
@@ -807,7 +807,7 @@
                                                     </div>
                                                 <div class="input-group col-sm-12 col-md-6 col-lg-6 col-xl-3 mb-3">
                                                         <div class="input-group-prepend">
-                                                            <span class="input-group-text" id="Span3"><b>Número NF</b></span>
+                                                            <span class="input-group-text" id="Span3"><b>N&uacute;mero NF</b></span>
                                                         </div>
                                                         <asp:TextBox type="text" ID="txtNUMERONF" CssClass="form-control bg-white  " runat="server" OnTextChanged="serieOnTextChanged"></asp:TextBox>
 
@@ -822,8 +822,8 @@
                                         </div>
                                         <asp:Panel ID="pnlHistoricoRecente" runat="server" CssClass="patio-recent-card" Visible="false">
                                             <div class="patio-recent-header">
-                                                <strong><i class="fa fa-clock mr-1"></i> Últimos registros desta sessão</strong>
-                                                <small>Conferência rápida</small>
+                                                <strong><i class="fa fa-clock mr-1"></i> &Uacute;ltimos registros desta sess&atilde;o</strong>
+                                                <small>Confer&ecirc;ncia r&aacute;pida</small>
                                             </div>
                                             <asp:Literal ID="litHistoricoRecente" runat="server"></asp:Literal>
                                         </asp:Panel>
@@ -864,7 +864,7 @@
 
       <!-- Modal Header -->
       <div class="modal-header">
-        <h4 class="modal-title" id="barcodeModalTitle"><i class="fa fa-barcode"></i> Leitor de código de barras</h4>
+        <h4 class="modal-title" id="barcodeModalTitle"><i class="fa fa-barcode"></i> Leitor de c&oacute;digo de barras</h4>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fechar">&times;</button>
       </div>
 
@@ -875,41 +875,41 @@
             <div id="scanner-container" class="is-hidden"></div>
             <div class="scanner-reticle"></div>
             <div class="scanner-hint">
-                <span class="scanner-pill"><i class="fa fa-mobile-alt"></i> Aproxime o código da faixa central</span>
-                <span class="scanner-pill" id="scannerEngine">Preparando câmera</span>
+                <span class="scanner-pill"><i class="fa fa-mobile-alt"></i> Aproxime o c&oacute;digo da faixa central</span>
+                <span class="scanner-pill" id="scannerEngine">Preparando c&acirc;mera</span>
             </div>
         </div>
         <div class="scanner-tools">
-            <select id="scannerCameraSelect" class="form-control is-hidden" aria-label="Selecionar câmera"></select>
-            <button type="button" id="scannerSwitchCamera" class="btn btn-outline-dark is-hidden"><i class="fa fa-sync-alt mr-1"></i> Trocar câmera</button>
+            <select id="scannerCameraSelect" class="form-control is-hidden" aria-label="Selecionar c&acirc;mera"></select>
+            <button type="button" id="scannerSwitchCamera" class="btn btn-outline-dark is-hidden"><i class="fa fa-sync-alt mr-1"></i> Trocar c&acirc;mera</button>
         </div>
         <label id="scannerZoomGroup" class="scanner-zoom is-hidden">
-            <span>Zoom da câmera</span>
+            <span>Zoom da c&acirc;mera</span>
             <input type="range" id="scannerZoom" min="1" max="1" step="0.1" value="1" />
         </label>
-        <div id="scannerStatus" class="scanner-status" aria-live="polite">Ao permitir a câmera, a leitura começa automaticamente.</div>
+        <div id="scannerStatus" class="scanner-status" aria-live="polite">Ao permitir a c&acirc;mera, a leitura come&ccedil;a automaticamente.</div>
         <div class="scanner-manual">
-            <input type="text" id="scannerManualSerie" class="form-control" inputmode="text" pattern="[A-Za-z0-9]*" maxlength="7" placeholder="Digitar série manualmente" autocomplete="off" autocapitalize="characters" spellcheck="false" />
-            <button type="button" id="scannerApplyManual" class="btn btn-success"><i class="fa fa-check mr-1"></i> Usar série</button>
+            <input type="text" id="scannerManualSerie" class="form-control" inputmode="text" pattern="[A-Za-z0-9]*" maxlength="7" placeholder="Digitar s&eacute;rie manualmente" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+            <button type="button" id="scannerApplyManual" class="btn btn-success"><i class="fa fa-check mr-1"></i> Usar s&eacute;rie</button>
         </div>
         <details class="scanner-help">
-            <summary>Não conseguiu ler?</summary>
+            <summary>N&atilde;o conseguiu ler?</summary>
             <ul>
-                <li>Limpe a lente da câmera e evite reflexo direto no código.</li>
-                <li>Aproxime devagar até o código preencher a faixa central.</li>
-                <li>Se o celular abrir a câmera errada, use Trocar câmera.</li>
-                <li>Se ainda falhar, digite manualmente os 7 caracteres da série.</li>
+                <li>Limpe a lente da c&acirc;mera e evite reflexo direto no c&oacute;digo.</li>
+                <li>Aproxime devagar at&eacute; o c&oacute;digo preencher a faixa central.</li>
+                <li>Se o celular abrir a c&acirc;mera errada, use Trocar c&acirc;mera.</li>
+                <li>Se ainda falhar, digite manualmente os 7 caracteres da s&eacute;rie.</li>
             </ul>
         </details>
         <div class="scanner-actions">
             <div>
                 <small class="text-muted">Resultado: <strong id="result">aguardando leitura</strong></small>
-                <small class="text-muted d-block">Código lido: <span id="scannerLastRaw">-</span></small>
+                <small class="text-muted d-block">C&oacute;digo lido: <span id="scannerLastRaw">-</span></small>
             </div>
             <div>
                 <button type="button" id="scannerTorch" class="btn btn-outline-secondary is-hidden"><i class="fa fa-lightbulb mr-1"></i> Luz</button>
                 <button type="button" id="scannerRetry" class="btn btn-outline-dark"><i class="fa fa-redo mr-1"></i> Reiniciar</button>
-                <button type="button" id="scannerDiagnostics" class="btn btn-outline-info"><i class="fa fa-stethoscope mr-1"></i> Enviar diagnóstico</button>
+                <button type="button" id="scannerDiagnostics" class="btn btn-outline-info"><i class="fa fa-stethoscope mr-1"></i> Enviar diagn&oacute;stico</button>
             </div>
         </div>
       </div>

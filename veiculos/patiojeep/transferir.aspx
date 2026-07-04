@@ -10,6 +10,7 @@
 
 <head id="Head1" runat="server">
     <title>TRANSFERIR | P&aacute;tio</title>
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <!-- STYLE MARCIO       ////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
     <script src="../assets/jquery-1.9.1.min.js"></script>
@@ -190,7 +191,7 @@
                                                 <b>Transferir</b>
 
                                                 <div class="page-title-subheading">
-                                                    Localize o ve&iacute;culo e informe a loja de destino da transferência.
+                                                    Localize o ve&iacute;culo e informe a loja de destino da transfer&ecirc;ncia.
                                                 </div>
                                             </div>
                                         </div>
@@ -212,7 +213,7 @@
 
                                                     <div class="input-group col-md-6 mb-3">
                                                         <div class="input-group-prepend">
-                                                            <span class="input-group-text" id="basic-addon1"><b>Série</b></span>
+                                                            <span class="input-group-text" id="basic-addon1"><b>S&eacute;rie</b></span>
                                                         </div>
                                                         <asp:TextBox ID="txtSerie" CssClass="form-control" runat="server" required="true" OnTextChanged="serieOnTextChanged" AutoPostBack="true"></asp:TextBox>
                                                         <div class="input-group-append">
@@ -242,7 +243,7 @@
                                                 <div class="form-row">
                                                 <div class="input-group col-xs-12 col-sm-5 col-md-5 col-lg-2 mb-3">
                                                     <div class="input-group-prepend">
-                                                        <span class="input-group-text" id="Span4"><b>Cód. Veíc.</b></span>
+                                                        <span class="input-group-text" id="Span4"><b>C&oacute;d. Ve&iacute;c.</b></span>
                                                     </div>
                                                     <asp:TextBox type="text" ID="txtCodVec" CssClass="form-control bg-white  " runat="server" OnTextChanged="serieOnTextChanged"></asp:TextBox>
 

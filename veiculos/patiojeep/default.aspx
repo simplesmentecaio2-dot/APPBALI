@@ -9,7 +9,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head id="Head1" runat="server">
-    <title>INÍCIO | P&aacute;tio</title>
+    <title>IN&Iacute;CIO | P&aacute;tio</title>
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <!-- STYLE MARCIO       ////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
     <script src="../assets/jquery-1.9.1.min.js"></script>
@@ -217,11 +218,11 @@
                                                     <a class="patio-home-card" href="./transferir.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-exchange-alt"></i></span>
                                                         <strong>Transferir</strong>
-                                                        <small>Mova o ve&iacute;culo entre lojas ou áreas operacionais.</small>
+                                                        <small>Mova o ve&iacute;culo entre lojas ou &aacute;reas operacionais.</small>
                                                     </a>
                                                     <a class="patio-home-card" href="./historico.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-history"></i></span>
-                                                        <strong>Histórico</strong>
+                                                        <strong>Hist&oacute;rico</strong>
                                                         <small>Consulte o caminho percorrido pelo ve&iacute;culo.</small>
                                                     </a>
                                                     <a class="patio-home-card" href="./relatorios.aspx">
@@ -237,7 +238,7 @@
                                                     <a class="patio-home-card" href="./barcode-logs.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-clipboard-list"></i></span>
                                                         <strong>Logs do leitor</strong>
-                                                        <small>Audite leituras por câmera, digitação manual e diagnósticos.</small>
+                                                        <small>Audite leituras por c&acirc;mera, digita&ccedil;&atilde;o manual e diagn&oacute;sticos.</small>
                                                     </a>
                                                 </div>
                                             </div>

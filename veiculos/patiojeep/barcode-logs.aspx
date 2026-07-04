@@ -152,7 +152,7 @@
                                     </div>
                                     <div>
                                         <b>Logs do leitor</b>
-                                        <div class="page-title-subheading">Auditoria de leituras, câmera, diagnóstico e falhas no celular.</div>
+                                        <div class="page-title-subheading">Auditoria de leituras, c&acirc;mera, diagn&oacute;stico e falhas no celular.</div>
                                     </div>
                                 </div>
                                 <div class="page-title-actions">

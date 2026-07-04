@@ -50,7 +50,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     {
                         AtualizarBotaoSalvar(false);
                         PatioJeepAuditoria.Registrar("REGISTRAR_CODIGO_BARRAS_INVALIDO", Session["usuario"], Request.QueryString["serie"], "Codigo recebido pela URL fora do padrao esperado");
-                        MostrarMensagem("error", "Código inválido", "Código de barras não se refere a um chassi.");
+                        MostrarMensagem("error", "C\u00f3digo inv\u00e1lido", "C\u00f3digo de barras n\u00e3o se refere a um chassi.");
                     }
                 }
                 txtCor.Enabled = false;
@@ -135,7 +135,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                 AtualizarBotaoSalvar(false);
                 pnlVeiculoEncontrado.Visible = false;
                 PatioJeepAuditoria.Registrar("REGISTRAR_SERIE_INVALIDA", Session["usuario"], txtSerie.Text, "Serie informada com tamanho diferente de 7 caracteres");
-                MostrarMensagem("error", "Série inválida", "O número de série deve conter exatamente 7 caracteres.");
+                MostrarMensagem("error", "S\u00e9rie inv\u00e1lida", "O n\u00famero de s\u00e9rie deve conter exatamente 7 caracteres.");
                 ExecutarScript("$('#myModal').modal('show');");
                 txtSerie.Focus();
             }
@@ -165,15 +165,15 @@ public partial class veiculos_contrato : System.Web.UI.Page
                         if (VeiculoJaRegistrado(txtSerie.Text, out lojaAtual))
                         {
                             AtualizarBotaoSalvar(false);
-                            PreencherCardVeiculo("warning", "Veículo já registrado", "Local atual: " + lojaAtual, "Já cadastrado");
-                            MostrarMensagem("warning", "Veículo já cadastrado", "A série " + txtSerie.Text + " já está registrada no pátio. Se precisar movimentar, use a tela Transferir.");
+                            PreencherCardVeiculo("warning", "Ve\u00edculo j\u00e1 registrado", "Local atual: " + lojaAtual, "J\u00e1 cadastrado");
+                            MostrarMensagem("warning", "Ve\u00edculo j\u00e1 cadastrado", "A s\u00e9rie " + txtSerie.Text + " j\u00e1 est\u00e1 registrada no p\u00e1tio. Se precisar movimentar, use a tela Transferir.");
                             PatioJeepAuditoria.Registrar("REGISTRAR_DUPLICADO_PREVIO", Session["usuario"], txtSerie.Text, "Local atual=" + lojaAtual);
                         }
                         else
                         {
                             AtualizarBotaoSalvar(true);
-                            PreencherCardVeiculo("success", "Veículo encontrado", "Confira os dados e selecione a loja antes de salvar.", "Pronto para salvar");
-                            MostrarMensagem("success", "Veículo encontrado", "Dados carregados. Confira a loja e toque em Salvar registro.");
+                            PreencherCardVeiculo("success", "Ve\u00edculo encontrado", "Confira os dados e selecione a loja antes de salvar.", "Pronto para salvar");
+                            MostrarMensagem("success", "Ve\u00edculo encontrado", "Dados carregados. Confira a loja e toque em Salvar registro.");
                             ddlLoja.Focus();
                         }
                     }
@@ -187,7 +187,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                         AtualizarBotaoSalvar(false);
                         pnlVeiculoEncontrado.Visible = false;
                         PatioJeepAuditoria.Registrar("REGISTRAR_SERIE_NAO_ENCONTRADA", Session["usuario"], txtSerie.Text, "Nenhum veiculo retornado pela procedure veiculos_patio_selectRegistrar");
-                        MostrarMensagem("warning", "Série não encontrada", "Série " + txtSerie.Text + " não encontrada no sistema. Confira a etiqueta, tente ler novamente ou digite os 7 caracteres manualmente.");
+                        MostrarMensagem("warning", "S\u00e9rie n\u00e3o encontrada", "S\u00e9rie " + txtSerie.Text + " n\u00e3o encontrada no sistema. Confira a etiqueta, tente ler novamente ou digite os 7 caracteres manualmente.");
 
                     }
 
@@ -197,7 +197,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     AtualizarBotaoSalvar(false);
                     pnlVeiculoEncontrado.Visible = false;
                     PatioJeepAuditoria.Registrar("REGISTRAR_SERIE_ERRO_CONSULTA", Session["usuario"], txtSerie.Text, ex.Message);
-                    MostrarMensagem("error", "Erro na consulta", "Não foi possível carregar os dados do veículo agora. Tente novamente em instantes.");
+                    MostrarMensagem("error", "Erro na consulta", "N\u00e3o foi poss\u00edvel carregar os dados do ve\u00edculo agora. Tente novamente em instantes.");
                 }
                 finally
                 {
@@ -215,7 +215,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             AtualizarBotaoSalvar(false);
             pnlVeiculoEncontrado.Visible = false;
             PatioJeepAuditoria.Registrar("REGISTRAR_SERIE_VAZIA", Session["usuario"], txtSerie.Text, "Pesquisa acionada sem informar a serie");
-            MostrarMensagem("warning", "Informe a série", "Digite a série ou use o leitor antes de pesquisar.");
+            MostrarMensagem("warning", "Informe a s\u00e9rie", "Digite a s\u00e9rie ou use o leitor antes de pesquisar.");
         }
     }
 
@@ -237,7 +237,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             {
                 MarcarLojaComErro();
                 PatioJeepAuditoria.Registrar("REGISTRAR_VALIDACAO", Session["usuario"], txtSerie.Text, "Dados obrigatorios ausentes antes da gravacao");
-                MostrarMensagem("error", "Dados obrigatórios", "Pesquise a série, confira os dados do veículo e selecione a loja antes de salvar.");
+                MostrarMensagem("error", "Dados obrigat\u00f3rios", "Pesquise a s\u00e9rie, confira os dados do ve\u00edculo e selecione a loja antes de salvar.");
                 return;
             }
 
@@ -245,9 +245,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
             if (VeiculoJaRegistrado(txtSerie.Text, out lojaAtual))
             {
                 AtualizarBotaoSalvar(false);
-                PreencherCardVeiculo("warning", "Veículo já registrado", "Local atual: " + lojaAtual, "Já cadastrado");
+                PreencherCardVeiculo("warning", "Ve\u00edculo j\u00e1 registrado", "Local atual: " + lojaAtual, "J\u00e1 cadastrado");
                 PatioJeepAuditoria.Registrar("REGISTRAR_DUPLICADO_BLOQUEADO_ANTES_INSERT", Session["usuario"], txtSerie.Text, "Local atual=" + lojaAtual);
-                MostrarMensagem("warning", "Registro já existente", "Este veículo já está registrado no pátio em " + lojaAtual + ". Use Transferir para alterar a localização.");
+                MostrarMensagem("warning", "Registro j\u00e1 existente", "Este ve\u00edculo j\u00e1 est\u00e1 registrado no p\u00e1tio em " + lojaAtual + ". Use Transferir para alterar a localiza\u00e7\u00e3o.");
                 return;
             }
 
@@ -283,7 +283,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     txtNUMERONF.Text = "";
                     AtualizarBotaoSalvar(false);
                     pnlVeiculoEncontrado.Visible = false;
-                    MostrarMensagem("warning", "Veículo já cadastrado", "Este veículo já estava cadastrado no pátio. Use a tela Transferir para alterar a localização.");
+                    MostrarMensagem("warning", "Ve\u00edculo j\u00e1 cadastrado", "Este ve\u00edculo j\u00e1 estava cadastrado no p\u00e1tio. Use a tela Transferir para alterar a localiza\u00e7\u00e3o.");
                 }
                 else if (resultado.Equals("v"))
                 {
@@ -295,7 +295,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     txtNUMERONF.Text = "";
                     AtualizarBotaoSalvar(false);
                     pnlVeiculoEncontrado.Visible = false;
-                    MostrarMensagem("warning", "Veículo já vendido", "Este veículo consta como vendido no sistema interno e foi baixado do pátio automaticamente.");
+                    MostrarMensagem("warning", "Ve\u00edculo j\u00e1 vendido", "Este ve\u00edculo consta como vendido no sistema interno e foi baixado do p\u00e1tio automaticamente.");
                 }
                 else
                 {
@@ -309,9 +309,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
                     txtSerie.Text = "";
                     AtualizarBotaoSalvar(false);
                     pnlVeiculoEncontrado.Visible = false;
-                    litNovaLeitura.Text = "Veículo " + Html(serieRegistrada) + " registrado em " + Html(lojaRegistrada) + ".";
+                    litNovaLeitura.Text = "Ve\u00edculo " + Html(serieRegistrada) + " registrado em " + Html(lojaRegistrada) + ".";
                     pnlNovaLeitura.Visible = true;
-                    MostrarMensagem("success", "Dados gravados", "Registro salvo com sucesso. Você já pode iniciar uma nova leitura.");
+                    MostrarMensagem("success", "Dados gravados", "Registro salvo com sucesso. Voc\u00ea j\u00e1 pode iniciar uma nova leitura.");
                     RenderizarHistoricoRecente();
 
                 }
@@ -320,7 +320,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
             catch (Exception ex)
             {
                 PatioJeepAuditoria.Registrar("REGISTRAR_ERRO", Session["usuario"], txtSerie.Text, "Erro ao gravar dados no banco: " + ex.Message);
-                MostrarMensagem("error", "Erro ao gravar", "Erro ao gravar dados no banco. Confira a conexão e tente novamente.");
+                MostrarMensagem("error", "Erro ao gravar", "Erro ao gravar dados no banco. Confira a conex\u00e3o e tente novamente.");
             }
             finally
             {
@@ -460,7 +460,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
         foreach (RegistroRecente registro in registros.Take(5))
         {
             html.Append("<li>");
-            html.Append("<span><small>Série</small><br/>" + Html(registro.Serie) + "</span>");
+            html.Append("<span><small>S\u00e9rie</small><br/>" + Html(registro.Serie) + "</span>");
             html.Append("<span><small>Modelo</small><br/>" + Html(registro.Modelo) + "</span>");
             html.Append("<span><small>Loja</small><br/>" + Html(registro.Loja) + "</span>");
             html.Append("<span><small>Hora</small><br/>" + registro.Data.ToString("HH:mm") + "</span>");
