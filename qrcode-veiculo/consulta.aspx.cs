@@ -27,7 +27,7 @@ public partial class qrcode_veiculo_consulta : System.Web.UI.Page
         }
 
         string busca = NormalizarBusca(Request.QueryString["v"]);
-        if (busca.Length < 3)
+        if (!BuscaValida(busca))
         {
             MostrarNaoEncontrado();
             return;
@@ -82,12 +82,6 @@ public partial class qrcode_veiculo_consulta : System.Web.UI.Page
         lblCombustivel.Text = Texto(veiculo.Combustivel);
         lblCor.Text = Texto(veiculo.Cor);
 
-        lblPlaca.Text = Texto(ValorOuTraco(veiculo.Placa));
-        lblChassi.Text = Texto(ValorOuTraco(veiculo.Chassi));
-        lblRenavam.Text = Texto(ValorOuTraco(veiculo.Renavam));
-        lblCodigoVeiculo.Text = Texto(ValorOuTraco(veiculo.CodigoVeiculo));
-        lblDataEntrada.Text = Texto(ValorOuTraco(veiculo.DataEntrada));
-        lblNotaFiscal.Text = Texto(ValorOuTraco(veiculo.NotaFiscal));
     }
 
     private void MostrarNaoEncontrado()
@@ -127,21 +121,15 @@ public partial class qrcode_veiculo_consulta : System.Web.UI.Page
         {
             Loja = LerTexto(reader, "Loja"),
             Estoque = LerTexto(reader, "Estoque_Descricao"),
-            EstoqueTipo = LerTexto(reader, "Estoque_Tipo"),
             Fabricante = LerTexto(reader, "Fabricante"),
             Modelo = LerTexto(reader, "Modelo"),
             Km = LerDecimal(reader, "KM"),
             Combustivel = LerTexto(reader, "Comb"),
-            DataEntrada = LerTexto(reader, "Data_Ent"),
-            NotaFiscal = LerTexto(reader, "Nota_Fiscal"),
             AnoModelo = LerTexto(reader, "Ano_Mod"),
-            CodigoVeiculo = LerTexto(reader, "Veiculo_Codigo"),
             Placa = LerTexto(reader, "Placa"),
             Chassi = LerTexto(reader, "Chassi"),
-            Renavam = LerTexto(reader, "Renavam"),
             Cor = LerTexto(reader, "Cor"),
             Alienado = LerTexto(reader, "Alienado"),
-            ValorNF = LerDecimal(reader, "Valor_NF"),
             ValorVendaUsado = LerDecimal(reader, "Valor_Venda_Usado"),
             ValorVendaNovoTabela = LerDecimal(reader, "Valor_Venda_Novo_Tabela"),
             ValorVendaNormal = LerDecimal(reader, "Valor_Venda_Normal"),
@@ -166,21 +154,15 @@ SELECT TOP 1
         WHEN '07' THEN 'FIAT SAAN'
     END AS Loja,
     dbo.Estoque.Estoque_Descricao,
-    dbo.Estoque.Estoque_Tipo,
     Marca_Descricao AS Fabricante,
     ModeloVeiculo_Descricao AS Modelo,
     Veiculo.Veiculo_Km AS KM,
     Combustivel_Descricao AS Comb,
-    CONVERT(CHAR(10), NFCompra.NotaFiscal_DataMovimento, 103) AS Data_Ent,
-    NFCompra.NotaFiscal_Numero AS Nota_Fiscal,
     VeiculoAno.VeiculoAno_Exibicao AS Ano_Mod,
-    dbo.Veiculo.Veiculo_Codigo AS Veiculo_Codigo,
     ISNULL(Veiculo.Veiculo_Placa, '') AS Placa,
     Veiculo.Veiculo_Chassi AS Chassi,
-    Veiculo.Veiculo_NroRenavam AS Renavam,
     Cor.Cor_Descricao AS Cor,
     '' AS Alienado,
-    NFCompra.NotaFiscal_ValorTotal AS Valor_NF,
     PrecoUsado.VeiculoPrecoUsado_ValorVenda AS Valor_Venda_Usado,
     COALESCE(PrecoEmpresa.ModeloVeiculoPrecoEmpresa_ValorVenda, PrecoGeral.ModeloVeiculoPreco_ValorVenda, 0) AS Valor_Venda_Novo_Tabela,
     COALESCE(PrecoUsado.VeiculoPrecoUsado_ValorVenda, PrecoEmpresa.ModeloVeiculoPrecoEmpresa_ValorVenda, PrecoGeral.ModeloVeiculoPreco_ValorVenda, 0) AS Valor_Venda_Normal,
@@ -272,6 +254,11 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC";
         return texto.ToString();
     }
 
+    private bool BuscaValida(string busca)
+    {
+        return busca.Length == 7 || busca.Length == 17;
+    }
+
     private string LerTexto(SqlDataReader reader, string coluna)
     {
         object valor = reader[coluna];
@@ -335,21 +322,15 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC";
     {
         public string Loja { get; set; }
         public string Estoque { get; set; }
-        public string EstoqueTipo { get; set; }
         public string Fabricante { get; set; }
         public string Modelo { get; set; }
         public decimal Km { get; set; }
         public string Combustivel { get; set; }
-        public string DataEntrada { get; set; }
-        public string NotaFiscal { get; set; }
         public string AnoModelo { get; set; }
-        public string CodigoVeiculo { get; set; }
         public string Placa { get; set; }
         public string Chassi { get; set; }
-        public string Renavam { get; set; }
         public string Cor { get; set; }
         public string Alienado { get; set; }
-        public decimal ValorNF { get; set; }
         public decimal ValorVendaUsado { get; set; }
         public decimal ValorVendaNovoTabela { get; set; }
         public decimal ValorVendaNormal { get; set; }

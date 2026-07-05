@@ -85,21 +85,6 @@
                     </div>
                 </section>
 
-                <section class="vehicle-data-card">
-                    <div class="vehicle-section-title">
-                        <span>Identifica&ccedil;&atilde;o</span>
-                        <h2>Registro do ve&iacute;culo</h2>
-                    </div>
-                    <div class="vehicle-data-grid is-technical">
-                        <div><span>Placa</span><strong><asp:Label ID="lblPlaca" runat="server" /></strong></div>
-                        <div><span>Chassi</span><strong><asp:Label ID="lblChassi" runat="server" /></strong></div>
-                        <div><span>Renavam</span><strong><asp:Label ID="lblRenavam" runat="server" /></strong></div>
-                        <div><span>C&oacute;digo do ve&iacute;culo</span><strong><asp:Label ID="lblCodigoVeiculo" runat="server" /></strong></div>
-                        <div><span>Data de entrada</span><strong><asp:Label ID="lblDataEntrada" runat="server" /></strong></div>
-                        <div><span>Nota fiscal</span><strong><asp:Label ID="lblNotaFiscal" runat="server" /></strong></div>
-                    </div>
-                </section>
-
                 <footer class="vehicle-footer">
                     <strong>GRUPO BALI</strong>
                     <span>Informa&ccedil;&otilde;es atualizadas diretamente do estoque.</span>

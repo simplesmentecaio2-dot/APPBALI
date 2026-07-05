@@ -38,7 +38,7 @@
                     </div>
 
                     <div class="qr-search-row">
-                        <asp:TextBox ID="txtBusca" runat="server" CssClass="qr-input" MaxLength="40" placeholder="Ex.: ABC1D23 ou 9BD..." autocomplete="off" />
+                        <asp:TextBox ID="txtBusca" runat="server" CssClass="qr-input" MaxLength="17" placeholder="Ex.: ABC1D23 ou 9BD..." autocomplete="off" />
                         <asp:Button ID="btnGerar" runat="server" CssClass="qr-primary-button" Text="Gerar QR Code" OnClick="btnGerar_Click" />
                     </div>
                     <asp:Literal ID="litMensagem" runat="server" />
