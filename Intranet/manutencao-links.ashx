@@ -12,6 +12,7 @@ public class IntranetManutencaoLinks : IHttpHandler
     private const string SenhaManutencao = "@bali2025";
     private const int TamanhoMaximoAviso = 8 * 1024 * 1024;
     private static readonly Encoding Utf8SemBom = new UTF8Encoding(false);
+    private static readonly object LogLock = new object();
 
     public bool IsReusable
     {
@@ -53,8 +54,9 @@ public class IntranetManutencaoLinks : IHttpHandler
         }
         catch (Exception ex)
         {
+            RegistrarErroInterno(context, ex);
             context.Response.StatusCode = 500;
-            EscreverJson(context, new { ok = false, message = "Erro ao processar manutenção.", detail = ex.Message });
+            EscreverJson(context, new { ok = false, message = "Erro ao processar manuten\u00e7\u00e3o." });
         }
     }
 
@@ -171,14 +173,29 @@ public class IntranetManutencaoLinks : IHttpHandler
                 return;
             }
 
+            if (!ImagemValida(arquivoEnviado.InputStream, extensao))
+            {
+                context.Response.StatusCode = 400;
+                EscreverJson(context, new { ok = false, message = "Arquivo enviado n\u00e3o parece ser uma imagem v\u00e1lida." });
+                return;
+            }
+
             string pastaImagens = context.Server.MapPath("~/intranet/resources/imagens");
             if (!Directory.Exists(pastaImagens))
             {
                 Directory.CreateDirectory(pastaImagens);
             }
 
-            string nomeArquivo = "aviso-intranet" + extensao;
-            string destino = Path.Combine(pastaImagens, nomeArquivo);
+            string nomeArquivo = "aviso-intranet-" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + extensao;
+            string destino = Path.GetFullPath(Path.Combine(pastaImagens, nomeArquivo));
+            string pastaSegura = Path.GetFullPath(pastaImagens);
+            if (!destino.StartsWith(pastaSegura, StringComparison.OrdinalIgnoreCase))
+            {
+                context.Response.StatusCode = 400;
+                EscreverJson(context, new { ok = false, message = "Caminho de upload inv\u00e1lido." });
+                return;
+            }
+
             arquivoEnviado.SaveAs(destino);
             aviso.image = "resources/imagens/" + nomeArquivo;
         }
@@ -326,6 +343,89 @@ public class IntranetManutencaoLinks : IHttpHandler
     private bool ExtensaoPermitida(string extensao)
     {
         return extensao == ".jpg" || extensao == ".jpeg" || extensao == ".png" || extensao == ".gif" || extensao == ".webp";
+    }
+
+    private bool ImagemValida(Stream stream, string extensao)
+    {
+        if (stream == null || !stream.CanSeek)
+        {
+            return false;
+        }
+
+        long posicaoOriginal = stream.Position;
+        try
+        {
+            byte[] cabecalho = new byte[12];
+            stream.Position = 0;
+            int lidos = stream.Read(cabecalho, 0, cabecalho.Length);
+            stream.Position = 0;
+
+            if ((extensao == ".jpg" || extensao == ".jpeg") && lidos >= 3)
+            {
+                return cabecalho[0] == 0xFF && cabecalho[1] == 0xD8 && cabecalho[2] == 0xFF;
+            }
+
+            if (extensao == ".png" && lidos >= 8)
+            {
+                return cabecalho[0] == 0x89 && cabecalho[1] == 0x50 && cabecalho[2] == 0x4E && cabecalho[3] == 0x47 &&
+                    cabecalho[4] == 0x0D && cabecalho[5] == 0x0A && cabecalho[6] == 0x1A && cabecalho[7] == 0x0A;
+            }
+
+            if (extensao == ".gif" && lidos >= 6)
+            {
+                string assinatura = Encoding.ASCII.GetString(cabecalho, 0, 6);
+                return assinatura == "GIF87a" || assinatura == "GIF89a";
+            }
+
+            if (extensao == ".webp" && lidos >= 12)
+            {
+                string riff = Encoding.ASCII.GetString(cabecalho, 0, 4);
+                string webp = Encoding.ASCII.GetString(cabecalho, 8, 4);
+                return riff == "RIFF" && webp == "WEBP";
+            }
+
+            return false;
+        }
+        finally
+        {
+            stream.Position = posicaoOriginal;
+        }
+    }
+
+    private void RegistrarErroInterno(HttpContext context, Exception erro)
+    {
+        if (context == null || erro == null)
+        {
+            return;
+        }
+
+        try
+        {
+            string pasta = context.Server.MapPath("~/App_Data/logs");
+            if (!Directory.Exists(pasta))
+            {
+                Directory.CreateDirectory(pasta);
+            }
+
+            string caminho = Path.Combine(pasta, "security-errors.log");
+            string usuario = context.Session != null && context.Session["UsuarioLogado"] != null
+                ? context.Session["UsuarioLogado"].ToString()
+                : "-";
+            string linha =
+                "---- " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " MANUTENCAO_INTRANET ----" + Environment.NewLine +
+                "Usuario: " + usuario + Environment.NewLine +
+                "IP: " + context.Request.UserHostAddress + Environment.NewLine +
+                "URL: " + context.Request.RawUrl + Environment.NewLine +
+                "Erro: " + erro + Environment.NewLine;
+
+            lock (LogLock)
+            {
+                File.AppendAllText(caminho, linha, Utf8SemBom);
+            }
+        }
+        catch
+        {
+        }
     }
 
     private bool SecaoValida(string secao)

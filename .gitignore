@@ -49,6 +49,7 @@ Bibliotecas e exemplos/
 Bin/
 bin/
 App_Data/*.log
+App_Data/logs/*.log
 App_Data/*.tmp
 App_Data/*.local.config
 App_Data/*.secrets.config

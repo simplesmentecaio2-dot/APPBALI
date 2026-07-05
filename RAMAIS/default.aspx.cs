@@ -13,6 +13,7 @@ public partial class ramais_default : System.Web.UI.Page
     private const string SenhaManutencaoRamais = "@bali2025";
     private const string ViewStateCookieName = "BaliViewStateKey";
     private const int TimeoutSqlSegundos = 60;
+    private const int TamanhoMaximoImportacaoBytes = 2 * 1024 * 1024;
 
     private string ConnectionString
     {
@@ -156,6 +157,15 @@ public partial class ramais_default : System.Web.UI.Page
             if (!fuImportarRamais.HasFile)
             {
                 MostrarMensagem("Selecione um arquivo CSV para importar.", true);
+                AplicarTela("ramais");
+                return;
+            }
+
+            if (fuImportarRamais.PostedFile == null ||
+                fuImportarRamais.PostedFile.ContentLength <= 0 ||
+                fuImportarRamais.PostedFile.ContentLength > TamanhoMaximoImportacaoBytes)
+            {
+                MostrarMensagem("Envie um arquivo CSV v\u00e1lido com at\u00e9 2 MB.", true);
                 AplicarTela("ramais");
                 return;
             }
