@@ -233,6 +233,82 @@
             color: #64748b;
         }
 
+        .patio-bi-action.is-loading {
+            pointer-events: none;
+            opacity: .82;
+            min-width: 122px;
+        }
+
+        .patio-bi-action .patio-bi-button-spinner {
+            display: none;
+            width: 14px;
+            height: 14px;
+            margin-right: .45rem;
+            border: 2px solid rgba(15, 23, 42, .22);
+            border-top-color: #203729;
+            border-radius: 999px;
+            vertical-align: -2px;
+            animation: patioBiSpin .72s linear infinite;
+        }
+
+        .patio-bi-action.is-loading .patio-bi-button-spinner {
+            display: inline-block;
+        }
+
+        .patio-bi-progress {
+            position: fixed;
+            right: 24px;
+            bottom: 72px;
+            z-index: 1200;
+            display: flex;
+            align-items: center;
+            gap: .85rem;
+            max-width: min(420px, calc(100vw - 32px));
+            padding: .95rem 1.05rem;
+            border: 1px solid rgba(111, 145, 81, .28);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, .98);
+            color: #203729;
+            box-shadow: 0 18px 44px rgba(15, 23, 42, .18);
+        }
+
+        .patio-bi-progress-spinner {
+            flex: 0 0 auto;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(111, 145, 81, .24);
+            border-top-color: #203729;
+            border-radius: 999px;
+            animation: patioBiSpin .72s linear infinite;
+        }
+
+        .patio-bi-progress strong,
+        .patio-bi-progress small {
+            display: block;
+        }
+
+        .patio-bi-progress strong {
+            color: #0f172a;
+            font-weight: 950;
+        }
+
+        .patio-bi-progress small {
+            color: #64748b;
+            font-weight: 800;
+            line-height: 1.25;
+        }
+
+        .patio-bi-refreshing .patio-bi-shell {
+            opacity: .72;
+            transition: opacity .18s ease;
+        }
+
+        @keyframes patioBiSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         @media (max-width: 1200px) {
             .patio-bi-kpis {
                 grid-template-columns: repeat(3, minmax(150px, 1fr));
@@ -261,6 +337,12 @@
 
             .patio-bi-bar-value {
                 text-align: left;
+            }
+
+            .patio-bi-progress {
+                left: 16px;
+                right: 16px;
+                bottom: 68px;
             }
         }
     </style>
@@ -324,7 +406,7 @@
                                             </div>
                                         </div>
                                         <div class="page-title-actions">
-                                            <asp:LinkButton ID="btnAtualizar" runat="server" CssClass="btn btn-light" OnClick="btnAtualizar_Click" ToolTip="Atualizar BI e sincronizar baixas por venda"><i class="fa fa-sync-alt mr-1"></i> Atualizar</asp:LinkButton>
+                                            <asp:LinkButton ID="btnAtualizar" runat="server" CssClass="btn btn-light patio-bi-action" OnClick="btnAtualizar_Click" OnClientClick="if(window.PatioRelatoriosLoading){window.PatioRelatoriosLoading.start();}" ToolTip="Atualizar BI e sincronizar baixas por venda"><span class="patio-bi-button-spinner" aria-hidden="true"></span><i class="fa fa-sync-alt mr-1"></i><span class="patio-bi-action-text">Atualizar</span></asp:LinkButton>
                                         </div>
                                     </div>
                                 </div>
@@ -402,10 +484,14 @@
                             </div>
                         </ContentTemplate>
                     </asp:UpdatePanel>
-                    <asp:UpdateProgress ID="UpdateProgress1" DynamicLayout="true" runat="server" AssociatedUpdatePanelID="updatePanel">
+                    <asp:UpdateProgress ID="UpdateProgress1" DisplayAfter="120" DynamicLayout="true" runat="server" AssociatedUpdatePanelID="updatePanel">
                         <ProgressTemplate>
-                            <div class="progress container text-center">
-                                <div class="loader"></div>
+                            <div class="patio-bi-progress" role="status" aria-live="polite">
+                                <span class="patio-bi-progress-spinner" aria-hidden="true"></span>
+                                <div>
+                                    <strong>Atualizando BI</strong>
+                                    <small>Conferindo vendas e sincronizando baixas. Aguarde alguns instantes.</small>
+                                </div>
                             </div>
                         </ProgressTemplate>
                     </asp:UpdateProgress>
@@ -422,5 +508,47 @@
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
     <script src="./assets/js/patio-jeep-ux.js?v=20260704-2"></script>
+    <script>
+        (function () {
+            var buttonId = '<%= btnAtualizar.ClientID %>';
+
+            function getButton() {
+                return document.getElementById(buttonId);
+            }
+
+            function setLoading(active) {
+                var button = getButton();
+                if (!button) return true;
+
+                var text = button.querySelector('.patio-bi-action-text');
+                button.classList.toggle('is-loading', active);
+                button.setAttribute('aria-busy', active ? 'true' : 'false');
+                if (text) {
+                    text.textContent = active ? 'Atualizando...' : 'Atualizar';
+                }
+                document.body.classList.toggle('patio-bi-refreshing', active);
+                return true;
+            }
+
+            window.PatioRelatoriosLoading = {
+                start: function () {
+                    return setLoading(true);
+                },
+                stop: function () {
+                    return setLoading(false);
+                }
+            };
+
+            if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
+                var manager = Sys.WebForms.PageRequestManager.getInstance();
+                manager.add_beginRequest(function () {
+                    setLoading(true);
+                });
+                manager.add_endRequest(function () {
+                    setLoading(false);
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
