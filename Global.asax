@@ -2,6 +2,7 @@
 
 <script runat="server">
     private const int TempoSessaoMinutos = 15;
+    private static readonly object ErroLogLock = new object();
 
     void Application_BeginRequest(object sender, EventArgs e)
     {
@@ -100,6 +101,7 @@
     void Application_Error(object sender, EventArgs e)
     {
         Exception erro = Server.GetLastError();
+        RegistrarErroInterno(erro);
         if (EhErroDeValidacaoRequest(erro) && EhPaginaConsultaQrCode())
         {
             Server.ClearError();
@@ -111,7 +113,7 @@
 
         if (EhErroDeValidacaoRequest(erro))
         {
-            RenderizarErroSeguro("Requisição inválida", "Confira os dados informados e tente novamente.");
+            RenderizarErroSeguro("Requisi\u00e7\u00e3o inv\u00e1lida", "Confira os dados informados e tente novamente.");
             return;
         }
 
@@ -297,6 +299,7 @@
     private bool EhPaginaPublicaSemLogin(string caminho)
     {
         string nome = System.IO.Path.GetFileName(caminho).ToLowerInvariant();
+        if (nome == "erro.aspx") return true;
         if (nome == "sessao-renovar.aspx") return true;
 
         return caminho.Equals("~/qrcode-veiculo/default.aspx", StringComparison.OrdinalIgnoreCase) ||
@@ -327,7 +330,7 @@
 
     private void RenderizarErroLoginSeguro()
     {
-        RenderizarErroSeguro("Não foi possível processar o login", "Confira os dados informados e tente novamente.");
+        RenderizarErroSeguro("N\u00e3o foi poss\u00edvel processar o login", "Confira os dados informados e tente novamente.");
     }
 
     private void RenderizarErroSeguro(string titulo, string mensagem)
@@ -344,8 +347,48 @@
         Response.ContentType = "text/html; charset=utf-8";
         Response.Cache.SetCacheability(HttpCacheability.NoCache);
         Response.Cache.SetNoStore();
-        Response.Write("<!doctype html><html lang=\"pt-BR\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Requisição inválida</title></head><body style=\"font-family:Arial,sans-serif;background:#f5f7fb;color:#111827;padding:32px\"><main style=\"max-width:520px;margin:60px auto;background:#fff;border:1px solid #dbe3ee;border-radius:10px;padding:28px;text-align:center\"><h1 style=\"margin:0 0 12px;font-size:22px\">" + HttpUtility.HtmlEncode(titulo) + "</h1><p style=\"margin:0 0 20px;color:#475569\">" + HttpUtility.HtmlEncode(mensagem) + "</p><button type=\"button\" onclick=\"history.back()\" style=\"border:0;border-radius:8px;background:#111827;color:#fff;padding:11px 18px;font-weight:700;cursor:pointer\">Voltar</button></main></body></html>");
+        Response.Write("<!doctype html><html lang=\"pt-BR\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Requisi&ccedil;&atilde;o inv&aacute;lida</title></head><body style=\"font-family:Arial,sans-serif;background:#f5f7fb;color:#111827;padding:32px\"><main style=\"max-width:520px;margin:60px auto;background:#fff;border:1px solid #dbe3ee;border-radius:10px;padding:28px;text-align:center\"><h1 style=\"margin:0 0 12px;font-size:22px\">" + HttpUtility.HtmlEncode(titulo) + "</h1><p style=\"margin:0 0 20px;color:#475569\">" + HttpUtility.HtmlEncode(mensagem) + "</p><button type=\"button\" onclick=\"history.back()\" style=\"border:0;border-radius:8px;background:#111827;color:#fff;padding:11px 18px;font-weight:700;cursor:pointer\">Voltar</button></main></body></html>");
         Context.ApplicationInstance.CompleteRequest();
+    }
+
+    private void RegistrarErroInterno(Exception erro)
+    {
+        if (erro == null || Context == null) return;
+
+        try
+        {
+            string pasta = Server.MapPath("~/App_Data/logs");
+            if (!System.IO.Directory.Exists(pasta))
+            {
+                System.IO.Directory.CreateDirectory(pasta);
+            }
+
+            string arquivo = System.IO.Path.Combine(pasta, "security-errors.log");
+            string usuario = Session == null || Session["usuario"] == null ? "-" : Convert.ToString(Session["usuario"]);
+            string codigo = Session == null || Session["usuario_codigo"] == null ? "-" : Convert.ToString(Session["usuario_codigo"]);
+            string ip = Request == null ? "-" : Convert.ToString(Request.UserHostAddress);
+            string metodo = Request == null ? "-" : Convert.ToString(Request.HttpMethod);
+            string url = Request == null ? "-" : Convert.ToString(Request.RawUrl);
+            string agente = Request == null ? "-" : Convert.ToString(Request.UserAgent);
+
+            System.Text.StringBuilder log = new System.Text.StringBuilder();
+            log.AppendLine("================================================================================");
+            log.AppendLine("Data: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            log.AppendLine("Usuario: " + usuario + " | Codigo: " + codigo);
+            log.AppendLine("IP: " + ip + " | Metodo: " + metodo);
+            log.AppendLine("URL: " + url);
+            log.AppendLine("User-Agent: " + agente);
+            log.AppendLine("Erro:");
+            log.AppendLine(erro.ToString());
+
+            lock (ErroLogLock)
+            {
+                System.IO.File.AppendAllText(arquivo, log.ToString(), new System.Text.UTF8Encoding(false));
+            }
+        }
+        catch
+        {
+        }
     }
 
     private bool EhPaginaProtegidaContraViewState()
