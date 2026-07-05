@@ -221,6 +221,7 @@
 
         string caminho = Request.AppRelativeCurrentExecutionFilePath ?? "";
         string caminhoLower = caminho.ToLowerInvariant();
+        string nomeLower = System.IO.Path.GetFileName(caminhoLower);
 
         if (caminhoLower.IndexOf("/.git", StringComparison.OrdinalIgnoreCase) >= 0 ||
             caminhoLower.IndexOf("/.github", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -228,20 +229,47 @@
             return true;
         }
 
+        if (nomeLower.StartsWith("teste", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        if (nomeLower.IndexOf("bkp", StringComparison.OrdinalIgnoreCase) >= 0 ||
+            nomeLower.IndexOf("backup", StringComparison.OrdinalIgnoreCase) >= 0 ||
+            nomeLower.IndexOf("copy", StringComparison.OrdinalIgnoreCase) >= 0 ||
+            nomeLower.IndexOf("copia", StringComparison.OrdinalIgnoreCase) >= 0 ||
+            nomeLower.IndexOf("c\u00f3pia", StringComparison.OrdinalIgnoreCase) >= 0 ||
+            nomeLower.IndexOf("homolog", StringComparison.OrdinalIgnoreCase) >= 0 ||
+            nomeLower == "default1.aspx" ||
+            nomeLower == "registrar1.aspx" ||
+            nomeLower == "registrar_agendamento.aspx" ||
+            nomeLower == "consultar_agendamento.aspx")
+        {
+            return true;
+        }
+
         string extensao = System.IO.Path.GetExtension(caminhoLower);
         switch (extensao)
         {
+            case ".7z":
+            case ".asax":
             case ".bak":
+            case ".backup":
             case ".config":
             case ".cs":
             case ".csproj":
             case ".log":
+            case ".md":
             case ".old":
+            case ".orig":
+            case ".rar":
             case ".secrets":
             case ".sql":
             case ".suo":
+            case ".tmp":
             case ".user":
             case ".vb":
+            case ".zip":
                 return true;
         }
 
@@ -416,6 +444,14 @@
         string nome = System.IO.Path.GetFileName(caminho).ToLowerInvariant();
         string caminhoLower = caminho.ToLowerInvariant();
         return nome.StartsWith("teste", StringComparison.OrdinalIgnoreCase)
+            || nome == "default1.aspx"
+            || nome == "registrar1.aspx"
+            || nome == "registrar_agendamento.aspx"
+            || nome == "consultar_agendamento.aspx"
+            || nome.IndexOf("bkp", StringComparison.OrdinalIgnoreCase) >= 0
+            || nome.IndexOf("copy", StringComparison.OrdinalIgnoreCase) >= 0
+            || nome.IndexOf("copia", StringComparison.OrdinalIgnoreCase) >= 0
+            || nome.IndexOf("c\u00f3pia", StringComparison.OrdinalIgnoreCase) >= 0
             || nome.IndexOf("homolog", StringComparison.OrdinalIgnoreCase) >= 0
             || caminhoLower.IndexOf("/bkp", StringComparison.OrdinalIgnoreCase) >= 0
             || caminhoLower.IndexOf("backup", StringComparison.OrdinalIgnoreCase) >= 0
