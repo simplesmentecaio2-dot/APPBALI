@@ -7,6 +7,9 @@ using System.Web.UI;
 
 public partial class veiculos_patio_relatorios : System.Web.UI.Page
 {
+    private static readonly object EstruturaRelatorioLock = new object();
+    private static bool EstruturaRelatorioVerificada = false;
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["id"] == null)
@@ -19,13 +22,13 @@ public partial class veiculos_patio_relatorios : System.Web.UI.Page
 
         if (!IsPostBack)
         {
-            CarregarRelatorio();
+            CarregarRelatorio(false);
         }
     }
 
     protected void btnAtualizar_Click(object sender, EventArgs e)
     {
-        CarregarRelatorio();
+        CarregarRelatorio(true);
     }
 
     public void btnSair_Click(object sender, EventArgs e)
@@ -37,13 +40,18 @@ public partial class veiculos_patio_relatorios : System.Web.UI.Page
         Context.ApplicationInstance.CompleteRequest();
     }
 
-    private void CarregarRelatorio()
+    private void CarregarRelatorio(bool sincronizarBaixas)
     {
         GarantirEstruturaRelatorio();
-        DataRow sincronizacao = SincronizarBaixasVenda();
-        RenderizarStatusBaixa(sincronizacao);
+        DataRow sincronizacao = sincronizarBaixas ? SincronizarBaixasVenda() : null;
+        RenderizarStatusBaixa(sincronizacao, sincronizarBaixas);
 
-        DataTable resumo = Consultar(@"
+        Jeep banco = new Jeep();
+        try
+        {
+            banco.Conexao2();
+
+            DataTable resumo = Consultar(banco.oCon2, @"
 SELECT
     SUM(CASE WHEN baixado_venda = 0 THEN 1 ELSE 0 END) AS total_patio,
     COUNT(DISTINCT CASE WHEN baixado_venda = 0 THEN COALESCE(NULLIF(loja_atual_id, 0), loja_id) END) AS lojas_com_veiculos,
@@ -54,7 +62,7 @@ SELECT
     SUM(CASE WHEN baixado_venda = 1 AND dt_baixa_venda >= CONVERT(date, GETDATE()) THEN 1 ELSE 0 END) AS baixas_hoje
 FROM dbo.veiculos_patio_locacao;");
 
-        DataTable movimentosResumo = Consultar(@"
+            DataTable movimentosResumo = Consultar(banco.oCon2, @"
 SELECT
     COUNT(1) AS movimentos_mes,
     MAX(t.dt_transf) AS ultima_movimentacao
@@ -64,9 +72,9 @@ INNER JOIN dbo.veiculos_patio_locacao p
    AND p.baixado_venda = 0
 WHERE t.dt_transf >= DATEADD(month, DATEDIFF(month, 0, GETDATE()), 0);");
 
-        RenderizarResumo(resumo, movimentosResumo, sincronizacao);
+            RenderizarResumo(resumo, movimentosResumo, sincronizacao);
 
-        litEstoquePorLoja.Text = RenderizarBarras(Consultar(@"
+            litEstoquePorLoja.Text = RenderizarBarras(Consultar(banco.oCon2, @"
 SELECT TOP 12
     COALESCE(l.ds, 'Sem loja') AS label,
     COUNT(1) AS total
@@ -77,7 +85,7 @@ WHERE p.baixado_venda = 0
 GROUP BY COALESCE(l.ds, 'Sem loja')
 ORDER BY COUNT(1) DESC, COALESCE(l.ds, 'Sem loja');"), "Nenhum ve&iacute;culo ativo no p&aacute;tio.");
 
-        litEntradasDia.Text = RenderizarBarras(Consultar(@"
+            litEntradasDia.Text = RenderizarBarras(Consultar(banco.oCon2, @"
 SELECT
     CONVERT(varchar(10), CONVERT(date, dt_cad), 103) AS label,
     COUNT(1) AS total
@@ -87,7 +95,7 @@ WHERE baixado_venda = 0
 GROUP BY CONVERT(date, dt_cad)
 ORDER BY CONVERT(date, dt_cad);"), "Nenhuma entrada ativa nos &uacute;ltimos 14 dias.");
 
-        litMovimentacoesDia.Text = RenderizarBarras(Consultar(@"
+            litMovimentacoesDia.Text = RenderizarBarras(Consultar(banco.oCon2, @"
 SELECT
     CONVERT(varchar(10), CONVERT(date, t.dt_transf), 103) AS label,
     COUNT(1) AS total
@@ -99,7 +107,7 @@ WHERE t.dt_transf >= DATEADD(day, -13, CONVERT(date, GETDATE()))
 GROUP BY CONVERT(date, t.dt_transf)
 ORDER BY CONVERT(date, t.dt_transf);"), "Nenhuma movimenta&ccedil;&atilde;o ativa nos &uacute;ltimos 14 dias.");
 
-        litUsuarios.Text = RenderizarBarras(Consultar(@"
+            litUsuarios.Text = RenderizarBarras(Consultar(banco.oCon2, @"
 SELECT TOP 8
     COALESCE(NULLIF(LTRIM(RTRIM(fun_cad)), ''), 'Sem usuario') AS label,
     COUNT(1) AS total
@@ -109,7 +117,7 @@ WHERE baixado_venda = 0
 GROUP BY COALESCE(NULLIF(LTRIM(RTRIM(fun_cad)), ''), 'Sem usuario')
 ORDER BY COUNT(1) DESC, COALESCE(NULLIF(LTRIM(RTRIM(fun_cad)), ''), 'Sem usuario');"), "Nenhuma entrada ativa nos &uacute;ltimos 30 dias.");
 
-        litUltimasMovimentacoes.Text = RenderizarMovimentacoes(Consultar(@"
+            litUltimasMovimentacoes.Text = RenderizarMovimentacoes(Consultar(banco.oCon2, @"
 SELECT TOP 20
     t.dt_transf,
     t.ve_nr,
@@ -124,7 +132,7 @@ LEFT JOIN dbo.veiculos_patio_loja orig ON orig.id = t.loja_orig
 LEFT JOIN dbo.veiculos_patio_loja dest ON dest.id = t.loja_dest
 ORDER BY t.dt_transf DESC, t.id DESC;"));
 
-        litUltimosCadastros.Text = RenderizarCadastros(Consultar(@"
+            litUltimosCadastros.Text = RenderizarCadastros(Consultar(banco.oCon2, @"
 SELECT TOP 20
     p.dt_cad,
     p.ve_nr,
@@ -136,7 +144,7 @@ LEFT JOIN dbo.veiculos_patio_loja l
 WHERE p.baixado_venda = 0
 ORDER BY p.dt_cad DESC, p.ve_nr DESC;"));
 
-        litUltimasBaixas.Text = RenderizarBaixas(Consultar(@"
+            litUltimasBaixas.Text = RenderizarBaixas(Consultar(banco.oCon2, @"
 SELECT TOP 20
     p.dt_baixa_venda,
     p.ve_nr,
@@ -147,26 +155,40 @@ LEFT JOIN dbo.veiculos_patio_loja l
     ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
 WHERE p.baixado_venda = 1
 ORDER BY p.dt_baixa_venda DESC, p.ve_nr DESC;"));
-    }
-
-    private DataTable Consultar(string sql)
-    {
-        DataTable tabela = new DataTable();
-        Jeep banco = new Jeep();
-        try
+        }
+        catch (Exception ex)
         {
-            banco.Conexao2();
-            SqlCommand cmd = new SqlCommand(sql, banco.oCon2);
-            cmd.CommandTimeout = 30;
-            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-            adapter.Fill(tabela);
+            PatioJeepAuditoria.Registrar("RELATORIO_BI_ERRO", Session["usuario"], "BI", ex.Message);
+            RenderizarErroRelatorio();
         }
         finally
         {
             banco.FecharConexao2();
         }
+    }
+
+    private DataTable Consultar(SqlConnection conexao, string sql)
+    {
+        DataTable tabela = new DataTable();
+        SqlCommand cmd = new SqlCommand(sql, conexao);
+        cmd.CommandTimeout = 30;
+        SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+        adapter.Fill(tabela);
 
         return tabela;
+    }
+
+    private void RenderizarErroRelatorio()
+    {
+        litBaixaVendaStatus.Text = "<div class=\"patio-sync-status is-warning\"><i class=\"fa fa-exclamation-triangle\"></i><span>N&atilde;o foi poss&iacute;vel carregar o BI agora. Tente novamente em instantes.</span></div>";
+        litResumo.Text = "";
+        litEstoquePorLoja.Text = "<div class=\"patio-bi-empty\">Dados indispon&iacute;veis no momento.</div>";
+        litEntradasDia.Text = "<div class=\"patio-bi-empty\">Dados indispon&iacute;veis no momento.</div>";
+        litMovimentacoesDia.Text = "<div class=\"patio-bi-empty\">Dados indispon&iacute;veis no momento.</div>";
+        litUsuarios.Text = "<div class=\"patio-bi-empty\">Dados indispon&iacute;veis no momento.</div>";
+        litUltimasMovimentacoes.Text = "<div class=\"patio-bi-empty\">Dados indispon&iacute;veis no momento.</div>";
+        litUltimosCadastros.Text = "<div class=\"patio-bi-empty\">Dados indispon&iacute;veis no momento.</div>";
+        litUltimasBaixas.Text = "<div class=\"patio-bi-empty\">Dados indispon&iacute;veis no momento.</div>";
     }
 
     private DataRow SincronizarBaixasVenda()
@@ -204,22 +226,31 @@ ORDER BY p.dt_baixa_venda DESC, p.ve_nr DESC;"));
         html.Append("<div class=\"patio-bi-kpis\">");
         html.Append(CardKpi("Ve&iacute;culos no p&aacute;tio", Numero(r, "total_patio"), "ativos agora"));
         html.Append(CardKpi("Baixados por venda", Numero(r, "baixados_venda"), "fora do p&aacute;tio"));
-        html.Append(CardKpi("Baixas hoje", Numero(r, "baixas_hoje"), "sincroniza&ccedil;&atilde;o autom&aacute;tica"));
+        html.Append(CardKpi("Baixas hoje", Numero(r, "baixas_hoje"), "dados existentes"));
         html.Append(CardKpi("Lojas com ve&iacute;culos", Numero(r, "lojas_com_veiculos"), "lojas ativas ou usadas"));
         html.Append(CardKpi("Entradas hoje", Numero(r, "entradas_hoje"), "cadastros ativos"));
         html.Append(CardKpi("Entradas 7 dias", Numero(r, "entradas_7_dias"), "janela recente"));
         html.Append(CardKpi("Mov. no m&ecirc;s", Numero(m, "movimentos_mes"), "transfer&ecirc;ncias ativas"));
         html.Append(CardKpi("&Uacute;ltima entrada", DataCurta(r, "ultima_entrada"), "registro ativo mais recente"));
-        html.Append(CardKpi("Baixados agora", Numero(sincronizacao, "baixados_agora"), "ao abrir este BI"));
+        if (sincronizacao != null)
+        {
+            html.Append(CardKpi("Baixados agora", Numero(sincronizacao, "baixados_agora"), "nesta atualiza&ccedil;&atilde;o"));
+        }
         html.Append("</div>");
         litResumo.Text = html.ToString();
     }
 
-    private void RenderizarStatusBaixa(DataRow sincronizacao)
+    private void RenderizarStatusBaixa(DataRow sincronizacao, bool sincronizacaoSolicitada)
     {
+        if (!sincronizacaoSolicitada)
+        {
+            litBaixaVendaStatus.Text = "<div class=\"patio-sync-status is-idle\"><i class=\"fa fa-info-circle\"></i><span>BI carregado com os dados existentes. Para conferir vendas e baixar ve&iacute;culos vendidos, clique em Atualizar.</span></div>";
+            return;
+        }
+
         if (sincronizacao == null)
         {
-            litBaixaVendaStatus.Text = "<div class=\"patio-sync-status is-warning\"><i class=\"fa fa-exclamation-triangle\"></i><span>N&atilde;o foi poss&iacute;vel sincronizar baixas por venda agora. O BI foi carregado com os dados existentes.</span></div>";
+            litBaixaVendaStatus.Text = "<div class=\"patio-sync-status is-warning\"><i class=\"fa fa-exclamation-triangle\"></i><span>N&atilde;o foi poss&iacute;vel sincronizar baixas por venda agora. O BI permaneceu com os dados existentes.</span></div>";
             return;
         }
 
@@ -345,11 +376,23 @@ ORDER BY p.dt_baixa_venda DESC, p.ve_nr DESC;"));
 
     private void GarantirEstruturaRelatorio()
     {
-        Jeep banco = new Jeep();
-        try
+        if (EstruturaRelatorioVerificada)
         {
-            banco.Conexao2();
-            SqlCommand cmd = new SqlCommand(@"
+            return;
+        }
+
+        lock (EstruturaRelatorioLock)
+        {
+            if (EstruturaRelatorioVerificada)
+            {
+                return;
+            }
+
+            Jeep banco = new Jeep();
+            try
+            {
+                banco.Conexao2();
+                SqlCommand cmd = new SqlCommand(@"
 IF COL_LENGTH('dbo.veiculos_patio_locacao', 'baixado_venda') IS NULL
 BEGIN
     ALTER TABLE dbo.veiculos_patio_locacao ADD baixado_venda bit NOT NULL CONSTRAINT DF_veiculos_patio_locacao_baixado_venda DEFAULT (0) WITH VALUES;
@@ -418,16 +461,18 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_veiculos_patio_baixa_v
 BEGIN
     CREATE INDEX IX_veiculos_patio_baixa_venda_log_dt ON dbo.veiculos_patio_baixa_venda_log(dt_baixa DESC) INCLUDE (ve_nr, chassi, usuario, origem);
 END;", banco.oCon2);
-            cmd.CommandTimeout = 30;
-            cmd.ExecuteNonQuery();
-        }
-        catch (Exception ex)
-        {
-            PatioJeepAuditoria.Registrar("RELATORIO_ESTRUTURA_ERRO", Session["usuario"], "BI", ex.Message);
-        }
-        finally
-        {
-            banco.FecharConexao2();
+                cmd.CommandTimeout = 30;
+                cmd.ExecuteNonQuery();
+                EstruturaRelatorioVerificada = true;
+            }
+            catch (Exception ex)
+            {
+                PatioJeepAuditoria.Registrar("RELATORIO_ESTRUTURA_ERRO", Session["usuario"], "BI", ex.Message);
+            }
+            finally
+            {
+                banco.FecharConexao2();
+            }
         }
     }
 

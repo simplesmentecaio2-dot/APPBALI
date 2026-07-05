@@ -223,6 +223,16 @@
             color: #92400e;
         }
 
+        .patio-sync-status.is-idle {
+            border-color: #dbe4ef;
+            background: #f8fafc;
+            color: #475569;
+        }
+
+        .patio-sync-status.is-idle i {
+            color: #64748b;
+        }
+
         @media (max-width: 1200px) {
             .patio-bi-kpis {
                 grid-template-columns: repeat(3, minmax(150px, 1fr));
@@ -314,7 +324,7 @@
                                             </div>
                                         </div>
                                         <div class="page-title-actions">
-                                            <asp:LinkButton ID="btnAtualizar" runat="server" CssClass="btn btn-light" OnClick="btnAtualizar_Click"><i class="fa fa-sync-alt mr-1"></i> Atualizar</asp:LinkButton>
+                                            <asp:LinkButton ID="btnAtualizar" runat="server" CssClass="btn btn-light" OnClick="btnAtualizar_Click" ToolTip="Atualizar BI e sincronizar baixas por venda"><i class="fa fa-sync-alt mr-1"></i> Atualizar</asp:LinkButton>
                                         </div>
                                     </div>
                                 </div>
