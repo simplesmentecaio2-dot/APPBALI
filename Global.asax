@@ -175,11 +175,17 @@
                 Response.Headers["X-Frame-Options"] = "SAMEORIGIN";
             }
 
+            if (Request != null && Request.IsSecureConnection)
+            {
+                Response.Headers["Strict-Transport-Security"] = "max-age=15552000";
+            }
+
             Response.Headers["Referrer-Policy"] = EhPaginaConsultaQrCode() || EhPaginaLogin() ? "no-referrer" : "strict-origin-when-cross-origin";
             Response.Headers["X-Content-Type-Options"] = "nosniff";
             Response.Headers["X-Download-Options"] = "noopen";
             Response.Headers["X-Permitted-Cross-Domain-Policies"] = "none";
-            Response.Headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+            Response.Headers["Cross-Origin-Resource-Policy"] = "same-origin";
+            Response.Headers["Permissions-Policy"] = EhPaginaLeitorCodigoBarras() ? "camera=(self), microphone=(), geolocation=()" : "camera=(), microphone=(), geolocation=()";
             Response.Headers.Remove("X-AspNet-Version");
             Response.Headers.Remove("X-Powered-By");
         }
@@ -271,6 +277,12 @@
     {
         string caminho = Request.AppRelativeCurrentExecutionFilePath ?? "";
         return caminho.Equals("~/qrcode-veiculo/consulta.aspx", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool EhPaginaLeitorCodigoBarras()
+    {
+        string caminho = Request.AppRelativeCurrentExecutionFilePath ?? "";
+        return caminho.Equals("~/veiculos/patiojeep/registrar.aspx", StringComparison.OrdinalIgnoreCase);
     }
 
     private bool UsuarioLogado()
