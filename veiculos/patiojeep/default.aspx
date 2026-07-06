@@ -136,29 +136,9 @@
                                 </li>
                                 <li class="app-sidebar__heading">Fun&ccedil;&otilde;es</li>
                                 <li>
-                                    <a href="./registrar.aspx" >
-                                        <i class="metismenu-icon fa fa-folder-plus"></i>
-                                        Registrar
-                                    </a>
-                                </li>
-                                <li>
-
-                                    <a href="./transferir.aspx">
-                                        <i class="metismenu-icon fas fa-exchange-alt"></i>
-                                        Transferir
-                                    </a>
-                                </li>
-                                <li>
-
-                                    <a href="./historico.aspx" >
-                                        <i class="metismenu-icon fas fa-history"></i>
-                                        Consultar
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="./relatorios.aspx">
-                                        <i class="metismenu-icon fas fa-chart-line"></i>
-                                        Relat&oacute;rios
+                                    <a href="./novos.aspx">
+                                        <i class="metismenu-icon fas fa-car"></i>
+                                        Novos
                                     </a>
                                 </li>
                                 <li>
@@ -216,25 +196,10 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="patio-home-grid">
-                                                    <a class="patio-home-card" href="./registrar.aspx">
-                                                        <span class="patio-home-icon"><i class="fa fa-folder-plus"></i></span>
-                                                        <strong>Registrar ve&iacute;culo</strong>
-                                                        <small>Inclua a localiza&ccedil;&atilde;o inicial do ve&iacute;culo no p&aacute;tio.</small>
-                                                    </a>
-                                                    <a class="patio-home-card" href="./transferir.aspx">
-                                                        <span class="patio-home-icon"><i class="fa fa-exchange-alt"></i></span>
-                                                        <strong>Transferir</strong>
-                                                        <small>Mova o ve&iacute;culo entre lojas ou &aacute;reas operacionais.</small>
-                                                    </a>
-                                                    <a class="patio-home-card" href="./historico.aspx">
-                                                        <span class="patio-home-icon"><i class="fa fa-history"></i></span>
-                                                        <strong>Hist&oacute;rico</strong>
-                                                        <small>Consulte o caminho percorrido pelo ve&iacute;culo.</small>
-                                                    </a>
-                                                    <a class="patio-home-card" href="./relatorios.aspx">
-                                                        <span class="patio-home-icon"><i class="fa fa-chart-line"></i></span>
-                                                        <strong>Relat&oacute;rios</strong>
-                                                        <small>Veja indicadores, entradas, estoque por loja e movimenta&ccedil;&otilde;es.</small>
+                                                    <a class="patio-home-card" href="./novos.aspx">
+                                                        <span class="patio-home-icon"><i class="fa fa-car"></i></span>
+                                                        <strong>Novos</strong>
+                                                        <small>Registre, consulte, transfira e acompanhe o p&aacute;tio de ve&iacute;culos novos em abas.</small>
                                                     </a>
                                                     <a class="patio-home-card" href="./seminovos.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-car-side"></i></span>
@@ -284,7 +249,7 @@
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/jspdf.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260706-1"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260706-2"></script>
 
 </body>
 

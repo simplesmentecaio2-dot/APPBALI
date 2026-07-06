@@ -186,12 +186,21 @@
     var menus = document.querySelectorAll('.patio-modern-page .vertical-nav-menu');
     if (!menus.length) return;
 
+    var currentPage = ((location.pathname || '').split('/').pop() || '').toLowerCase();
+    var activeHref = './';
+    if (/^(novos|registrar|transferir|historico|relatorios)\.aspx$/.test(currentPage)) {
+      activeHref = './novos.aspx';
+    } else if (currentPage === 'seminovos.aspx') {
+      activeHref = './seminovos.aspx';
+    } else if (currentPage === 'lojas.aspx') {
+      activeHref = './lojas.aspx';
+    } else if (currentPage === 'barcode-logs.aspx') {
+      activeHref = './barcode-logs.aspx';
+    }
+
     var links = [
       { href: './', icon: 'fas fa-home', label: 'In\u00edcio' },
-      { href: './registrar.aspx', icon: 'fa fa-folder-plus', label: 'Registrar' },
-      { href: './transferir.aspx', icon: 'fas fa-exchange-alt', label: 'Transferir' },
-      { href: './historico.aspx', icon: 'fas fa-history', label: 'Consultar' },
-      { href: './relatorios.aspx', icon: 'fas fa-chart-line', label: 'Relat\u00f3rios' },
+      { href: './novos.aspx', icon: 'fas fa-car', label: 'Novos' },
       { href: './seminovos.aspx', icon: 'fas fa-car-side', label: 'Seminovos' },
       { href: './lojas.aspx', icon: 'fas fa-store', label: 'Lojas' },
       { href: './barcode-logs.aspx', icon: 'fas fa-clipboard-list', label: 'Logs do leitor' }
@@ -199,7 +208,7 @@
 
     for (var m = 0; m < menus.length; m++) {
       var menu = menus[m];
-      var deprecatedLinks = menu.querySelectorAll('a[href$="acompanhamento.aspx"]');
+      var deprecatedLinks = menu.querySelectorAll('a[href$="acompanhamento.aspx"], a[href$="registrar.aspx"], a[href$="transferir.aspx"], a[href$="historico.aspx"], a[href$="relatorios.aspx"]');
       for (var d = 0; d < deprecatedLinks.length; d++) {
         var deprecatedItem = deprecatedLinks[d].closest ? deprecatedLinks[d].closest('li') : deprecatedLinks[d].parentNode;
         if (deprecatedItem) deprecatedItem.remove();
@@ -228,7 +237,72 @@
         li.appendChild(a);
         menu.appendChild(li);
       }
+
+      var anchors = menu.querySelectorAll('a');
+      for (var aIndex = 0; aIndex < anchors.length; aIndex++) {
+        anchors[aIndex].classList.remove('mm-active');
+        var href = anchors[aIndex].getAttribute('href') || '';
+        if (href === activeHref || (activeHref !== './' && href.indexOf(activeHref.replace('./', '')) >= 0)) {
+          anchors[aIndex].classList.add('mm-active');
+        }
+      }
     }
+  }
+
+  function isEmbedMode() {
+    return /(?:\?|&)embed=1(?:&|$)/.test(location.search || '');
+  }
+
+  function enhanceEmbedMode() {
+    if (!isEmbedMode()) return;
+
+    document.body.classList.add('patio-embed-mode');
+
+    if (!document.getElementById('patioEmbedModeStyles')) {
+      var style = document.createElement('style');
+      style.id = 'patioEmbedModeStyles';
+      style.textContent = [
+        'html,body{background:transparent!important;}',
+        'body.patio-embed-mode{overflow-x:hidden!important;padding:0!important;}',
+        'body.patio-embed-mode .app-header,body.patio-embed-mode .app-sidebar,body.patio-embed-mode footer.fixed-bottom{display:none!important;}',
+        'body.patio-embed-mode .app-container,body.patio-embed-mode .app-main,body.patio-embed-mode .app-main__outer,body.patio-embed-mode .app-main__inner{margin:0!important;padding:0!important;width:100%!important;max-width:none!important;min-height:0!important;background:transparent!important;}',
+        'body.patio-embed-mode .app-main{display:block!important;}',
+        'body.patio-embed-mode .app-page-title{display:none!important;}',
+        'body.patio-embed-mode .card,body.patio-embed-mode .patio-bi-panel,body.patio-embed-mode .mb-3.card{box-shadow:none!important;}'
+      ].join('');
+      document.head.appendChild(style);
+    }
+
+    notifyEmbedHeight();
+    setTimeout(notifyEmbedHeight, 300);
+    setTimeout(notifyEmbedHeight, 900);
+
+    if (window.MutationObserver && !document.body._patioEmbedObserver) {
+      var observer = new MutationObserver(function () {
+        clearTimeout(document.body._patioEmbedTimer);
+        document.body._patioEmbedTimer = setTimeout(notifyEmbedHeight, 120);
+      });
+      observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+      document.body._patioEmbedObserver = observer;
+    }
+  }
+
+  function notifyEmbedHeight() {
+    if (!isEmbedMode() || !window.parent || window.parent === window) return;
+
+    var height = Math.max(
+      document.body ? document.body.scrollHeight : 0,
+      document.documentElement ? document.documentElement.scrollHeight : 0,
+      760
+    );
+
+    try {
+      window.parent.postMessage({
+        type: 'patio-embed-height',
+        path: location.pathname,
+        height: height
+      }, location.origin);
+    } catch (e) { }
   }
 
   function getField(suffix) {
@@ -326,6 +400,7 @@
   }
 
   function runEnhancements() {
+    enhanceEmbedMode();
     enhanceFields();
     enhanceCopyButtons();
     enhanceActions();
