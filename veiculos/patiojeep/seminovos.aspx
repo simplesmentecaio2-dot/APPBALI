@@ -985,7 +985,45 @@
                 });
             }
 
+            function bindCopyButtons() {
+                if (document.documentElement.getAttribute('data-semi-copy-bound') === '1') return;
+                document.documentElement.setAttribute('data-semi-copy-bound', '1');
+                document.addEventListener('click', function (event) {
+                    var button = event.target.closest ? event.target.closest('[data-copy]') : null;
+                    if (!button) return;
+                    event.preventDefault();
+
+                    var value = button.getAttribute('data-copy') || '';
+                    var label = button.getAttribute('data-copy-label') || 'Informa\u00e7\u00e3o';
+                    if (!value) return;
+
+                    function notify() {
+                        if (window.patioToast) {
+                            window.patioToast(label + ' copiado.', 'info');
+                        } else {
+                            button.setAttribute('title', label + ' copiado');
+                        }
+                    }
+
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(value).then(notify, notify);
+                    } else {
+                        var temp = document.createElement('textarea');
+                        temp.value = value;
+                        temp.setAttribute('readonly', 'readonly');
+                        temp.style.position = 'fixed';
+                        temp.style.left = '-9999px';
+                        document.body.appendChild(temp);
+                        temp.select();
+                        try { document.execCommand('copy'); } catch (ignore) { }
+                        document.body.removeChild(temp);
+                        notify();
+                    }
+                });
+            }
+
             bindRegistroAutoSearch();
+            bindCopyButtons();
 
             if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
                 var manager = Sys.WebForms.PageRequestManager.getInstance();
@@ -1005,6 +1043,7 @@
                         buttons[i].classList.remove('aspNetDisabled');
                     }
                     bindRegistroAutoSearch();
+                    bindCopyButtons();
                 });
             }
         })();

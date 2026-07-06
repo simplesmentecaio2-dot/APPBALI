@@ -659,17 +659,25 @@ WHERE p.ativo = 1
         {
             string busca = HttpUtility.UrlEncode(Valor(row, "ve_chassi"));
             string id = Valor(row, "id");
+            string chassi = Valor(row, "ve_chassi");
+            string placa = Valor(row, "ve_placa");
+            string renavam = Valor(row, "ve_renavam");
             bool selecionado = detalheId > 0 && id == Convert.ToString(detalheId);
             html.Append("<tr>");
             html.Append("<td data-label=\"A&ccedil;&otilde;es\"><span class=\"semi-row-actions\">");
             html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=consultar&amp;detalhe=").Append(HttpUtility.UrlEncode(id)).Append("\"><i class=\"fa fa-history\"></i>").Append(selecionado ? "Selecionado" : "Hist&oacute;rico").Append("</a>");
             html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=consultar&amp;detalhe=").Append(HttpUtility.UrlEncode(id)).Append("#auditoria\"><i class=\"fa fa-shield-alt\"></i>Auditoria</a>");
             html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=transferir&amp;busca=").Append(busca).Append("\"><i class=\"fa fa-exchange-alt\"></i>Transferir</a>");
+            html.Append("<a class=\"semi-mini-action\" href=\"#\" data-copy=\"").Append(Html(chassi)).Append("\" data-copy-label=\"Chassi\"><i class=\"far fa-copy\"></i>Chassi</a>");
+            if (!String.IsNullOrWhiteSpace(placa))
+            {
+                html.Append("<a class=\"semi-mini-action\" href=\"#\" data-copy=\"").Append(Html(placa)).Append("\" data-copy-label=\"Placa\"><i class=\"far fa-copy\"></i>Placa</a>");
+            }
             html.Append("</span></td>");
             html.Append("<td data-label=\"Ve&iacute;culo\"><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong><small>C&oacute;d. ").Append(Html(Valor(row, "ve_nr"))).Append("</small></td>");
-            html.Append("<td data-label=\"Chassi\">").Append(Html(Valor(row, "ve_chassi"))).Append("</td>");
-            html.Append("<td data-label=\"Placa\">").Append(Html(Valor(row, "ve_placa"))).Append("</td>");
-            html.Append("<td data-label=\"Renavam\">").Append(Html(Valor(row, "ve_renavam"))).Append("</td>");
+            html.Append("<td data-label=\"Chassi\">").Append(Html(chassi)).Append("</td>");
+            html.Append("<td data-label=\"Placa\">").Append(Html(placa)).Append("</td>");
+            html.Append("<td data-label=\"Renavam\">").Append(Html(renavam)).Append("</td>");
             html.Append("<td data-label=\"Cor\">").Append(Html(Valor(row, "cor_ds"))).Append("</td>");
             html.Append("<td data-label=\"Loja atual\"><span class=\"semi-location-pill\"><i class=\"fa fa-map-marker-alt\"></i>").Append(Html(Valor(row, "loja_atual"))).Append("</span></td>");
             html.Append("<td data-label=\"Cadastro\">").Append(DataCurta(row, "dt_cad")).Append("<small>").Append(Html(Valor(row, "fun_cad"))).Append("</small></td>");
@@ -701,6 +709,17 @@ WHERE p.ativo = 1
         if (!String.IsNullOrWhiteSpace(Valor(row, "observacao")))
         {
             html.Append(Pill("Obs.", Valor(row, "observacao")));
+        }
+        html.Append("</div>");
+        html.Append("<div class=\"semi-actions\">");
+        html.Append("<a class=\"semi-btn semi-btn-light\" href=\"#\" data-copy=\"").Append(Html(Valor(row, "ve_chassi"))).Append("\" data-copy-label=\"Chassi\"><i class=\"far fa-copy\"></i>Copiar chassi</a>");
+        if (!String.IsNullOrWhiteSpace(Valor(row, "ve_placa")))
+        {
+            html.Append("<a class=\"semi-btn semi-btn-light\" href=\"#\" data-copy=\"").Append(Html(Valor(row, "ve_placa"))).Append("\" data-copy-label=\"Placa\"><i class=\"far fa-copy\"></i>Copiar placa</a>");
+        }
+        if (!String.IsNullOrWhiteSpace(Valor(row, "ve_renavam")))
+        {
+            html.Append("<a class=\"semi-btn semi-btn-light\" href=\"#\" data-copy=\"").Append(Html(Valor(row, "ve_renavam"))).Append("\" data-copy-label=\"Renavam\"><i class=\"far fa-copy\"></i>Copiar Renavam</a>");
         }
         html.Append("</div>");
         html.Append("<div class=\"semi-history-title\"><span><i class=\"fa fa-route\"></i> Hist&oacute;rico de transfer&ecirc;ncias</span>");
