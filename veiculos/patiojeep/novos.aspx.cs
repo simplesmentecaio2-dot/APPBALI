@@ -803,6 +803,10 @@ ORDER BY t.dt_transf DESC, t.id DESC;",
 
     private string RenderIndicadores()
     {
+        string cacheKey = "patio_novos_indicadores_v3";
+        object cache = HttpRuntime.Cache[cacheKey];
+        if (cache != null) return Convert.ToString(cache);
+
         try
         {
             DataTable tabela = ExecutarSqlTabela(@"
@@ -821,7 +825,9 @@ SELECT
             html.Append(Kpi("Transfer&ecirc;ncias hoje", Numero(row, "transferencias_hoje"), "novos + seminovos"));
             html.Append(Kpi("Entradas hoje", Numero(row, "entradas_hoje"), "ve&iacute;culos novos"));
             html.Append("</div>");
-            return html.ToString();
+            string resultado = html.ToString();
+            HttpRuntime.Cache.Insert(cacheKey, resultado, null, DateTime.Now.AddSeconds(60), System.Web.Caching.Cache.NoSlidingExpiration);
+            return resultado;
         }
         catch
         {

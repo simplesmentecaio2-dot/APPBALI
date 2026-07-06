@@ -59,6 +59,14 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void RenderizarIndicadores()
     {
+        string cacheKey = "patio_home_indicadores_v2";
+        object cache = HttpRuntime.Cache[cacheKey];
+        if (cache != null)
+        {
+            litHomeIndicadores.Text = Convert.ToString(cache);
+            return;
+        }
+
         try
         {
             DataTable tabela = ConsultarTabela(@"
@@ -69,12 +77,14 @@ SELECT
     (SELECT COUNT(1) FROM dbo.veiculos_patio_seminovos_transferencia WITH (NOLOCK) WHERE dt_transf >= CONVERT(date, GETDATE())) AS transferencias_hoje;");
 
             DataRow row = tabela.Rows.Count > 0 ? tabela.Rows[0] : null;
-            litHomeIndicadores.Text =
+            string html =
                 "<div class=\"d-flex flex-wrap mt-2\" style=\"gap:.5rem;\">" +
                 Indicador("Novos", Valor(row, "novos_ativos"), "ativos") +
                 Indicador("Seminovos", Valor(row, "seminovos_ativos"), "ativos") +
                 Indicador("Transfer&ecirc;ncias hoje", Valor(row, "transferencias_hoje"), "movimentos") +
                 "</div>";
+            litHomeIndicadores.Text = html;
+            HttpRuntime.Cache.Insert(cacheKey, html, null, DateTime.Now.AddSeconds(60), System.Web.Caching.Cache.NoSlidingExpiration);
         }
         catch
         {

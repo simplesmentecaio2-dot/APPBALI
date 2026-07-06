@@ -179,6 +179,12 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
             return;
         }
 
+        if (!LojaAtiva(destino))
+        {
+            MostrarMensagem("warning", "Loja inativa", "A loja destino selecionada n\u00e3o est\u00e1 ativa. Atualize a tela e escolha outra loja.");
+            return;
+        }
+
         if (!chkConfirmarTransferencia.Checked)
         {
             MostrarMensagem("warning", "Confirma\u00e7\u00e3o obrigat\u00f3ria", "Marque a confirma\u00e7\u00e3o informando que voc\u00ea est\u00e1 movendo o seminovo para a loja correta.");
@@ -685,6 +691,47 @@ ORDER BY dt DESC, id DESC;"));
             banco.FecharConexao2();
         }
         return tabela;
+    }
+
+    private DataTable ExecutarSqlTabela(string sql, params SqlParameter[] parametros)
+    {
+        DataTable tabela = new DataTable();
+        Jeep banco = new Jeep();
+        try
+        {
+            banco.Conexao2();
+            using (SqlCommand cmd = new SqlCommand(sql, banco.oCon2))
+            {
+                cmd.CommandTimeout = 30;
+                foreach (SqlParameter parametro in parametros)
+                {
+                    cmd.Parameters.Add(parametro);
+                }
+                using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                {
+                    adapter.Fill(tabela);
+                }
+            }
+        }
+        finally
+        {
+            banco.FecharConexao2();
+        }
+        return tabela;
+    }
+
+    private bool LojaAtiva(int lojaId)
+    {
+        if (lojaId <= 0) return false;
+
+        DataTable tabela = ExecutarSqlTabela(@"
+SELECT TOP 1 id
+FROM dbo.veiculos_patio_loja WITH (NOLOCK)
+WHERE id = @id
+  AND ISNULL(ativo, 1) = 1;",
+            Param("@id", SqlDbType.Int, lojaId));
+
+        return tabela.Rows.Count > 0;
     }
 
     private SqlParameter Param(string nome, SqlDbType tipo, object valor)
