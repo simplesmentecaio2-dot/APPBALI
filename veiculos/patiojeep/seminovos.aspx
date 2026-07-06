@@ -670,6 +670,12 @@
                                                         <label class="semi-label" for="<%= ddlTransferenciaDestino.ClientID %>">Loja destino</label>
                                                         <asp:DropDownList ID="ddlTransferenciaDestino" runat="server" CssClass="semi-select"></asp:DropDownList>
                                                     </div>
+                                                    <div class="semi-field is-full">
+                                                        <label class="semi-pill" style="justify-content:flex-start;">
+                                                            <asp:CheckBox ID="chkConfirmarTransferencia" runat="server" />
+                                                            <span><asp:Literal ID="litConfirmacaoTransferencia" runat="server" Text="Pesquise um seminovo para gerar a confirma&ccedil;&atilde;o."></asp:Literal></span>
+                                                        </label>
+                                                    </div>
                                                 </div>
                                                 <div class="semi-actions">
                                                     <asp:LinkButton ID="btnBuscarTransferencia" runat="server" CssClass="semi-btn semi-btn-light" OnClick="btnBuscarTransferencia_Click"><i class="fa fa-search-location"></i>Pesquisar</asp:LinkButton>
@@ -783,6 +789,6 @@
     <script src="../assets/popper.min.js"></script>
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260706-3"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260706-4"></script>
 </body>
 </html>

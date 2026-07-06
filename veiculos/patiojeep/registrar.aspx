@@ -939,7 +939,7 @@
         };
     </script>
     <script src="./assets/js/patio-barcode-scanner.js?v=20260704-2" charset="utf-8"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260706-3"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260706-4"></script>
 
 </body>
 

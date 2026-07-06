@@ -476,7 +476,7 @@
     <script src="../assets/popper.min.js"></script>
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260706-3"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260706-4"></script>
     <script>
         (function () {
             function textOf(el) { return el ? (el.textContent || '').trim() : ''; }

@@ -179,6 +179,12 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
             return;
         }
 
+        if (!chkConfirmarTransferencia.Checked)
+        {
+            MostrarMensagem("warning", "Confirma\u00e7\u00e3o obrigat\u00f3ria", "Marque a confirma\u00e7\u00e3o informando que voc\u00ea est\u00e1 movendo o seminovo para a loja correta.");
+            return;
+        }
+
         DataTable resposta = ExecutarProcedureTabela(
             "dbo.veiculos_patio_seminovos_transferir",
             Param("@seminovo_id", SqlDbType.Int, seminovoId),
@@ -387,6 +393,8 @@ ORDER BY dt DESC, id DESC;"));
 
         hfTransferenciaId.Value = Valor(seminovo, "id");
         btnTransferir.Enabled = true;
+        chkConfirmarTransferencia.Checked = false;
+        litConfirmacaoTransferencia.Text = "Estou movendo o seminovo " + Html(Valor(seminovo, "ve_ds")) + " de " + Html(Valor(seminovo, "loja_atual")) + " para a loja selecionada.";
         litTransferenciaVeiculo.Text = RenderVeiculoCard(seminovo, "success", "Seminovo localizado", "Local atual: " + Valor(seminovo, "loja_atual"));
 
         int id;
@@ -619,6 +627,8 @@ ORDER BY dt DESC, id DESC;"));
         hfTransferenciaId.Value = "";
         litTransferenciaVeiculo.Text = "";
         litTransferenciaHistorico.Text = "";
+        chkConfirmarTransferencia.Checked = false;
+        litConfirmacaoTransferencia.Text = "Pesquise um seminovo para gerar a confirma&ccedil;&atilde;o.";
         btnTransferir.Enabled = false;
         if (limparBusca)
         {

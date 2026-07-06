@@ -165,9 +165,50 @@
     form.addEventListener('submit', function () {
       var active = document.activeElement;
       if (active && /^(A|BUTTON|INPUT)$/i.test(active.tagName)) {
+        if (active.dataset && active.dataset.patioSubmitting === '1') {
+          return false;
+        }
+
+        if (active.dataset) {
+          active.dataset.patioSubmitting = '1';
+          active.dataset.patioOriginalHtml = active.innerHTML || active.value || '';
+        }
+
         active.classList.add('patio-action-loading');
+        active.classList.add('aspNetDisabled');
+        active.setAttribute('aria-disabled', 'true');
+        active.style.pointerEvents = 'none';
+
+        if (/^(A|BUTTON)$/i.test(active.tagName) && active.innerHTML) {
+          active.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i> Processando...';
+        } else if (/^INPUT$/i.test(active.tagName) && active.type && /submit|button/i.test(active.type)) {
+          active.value = 'Processando...';
+        }
       }
     });
+  }
+
+  function restoreSubmitActions() {
+    var locked = document.querySelectorAll('[data-patio-submitting="1"]');
+    for (var i = 0; i < locked.length; i++) {
+      var item = locked[i];
+      var original = item.dataset ? item.dataset.patioOriginalHtml : '';
+
+      item.classList.remove('patio-action-loading');
+      item.classList.remove('aspNetDisabled');
+      item.removeAttribute('aria-disabled');
+      item.style.pointerEvents = '';
+
+      if (original) {
+        if (/^(A|BUTTON)$/i.test(item.tagName)) item.innerHTML = original;
+        else if (/^INPUT$/i.test(item.tagName)) item.value = original;
+      }
+
+      if (item.dataset) {
+        delete item.dataset.patioSubmitting;
+        delete item.dataset.patioOriginalHtml;
+      }
+    }
   }
 
   function enhanceCurrentPage() {
@@ -404,6 +445,7 @@
     if (!manager || manager._patioUxBound) return;
 
     manager.add_endRequest(function () {
+      restoreSubmitActions();
       runEnhancements();
     });
     manager._patioUxBound = true;
