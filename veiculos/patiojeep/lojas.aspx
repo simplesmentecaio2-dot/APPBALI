@@ -352,6 +352,6 @@
     <script src="../assets/popper.min.js"></script>
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260704-2"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260706-1"></script>
 </body>
 </html>

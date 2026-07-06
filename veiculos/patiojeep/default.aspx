@@ -162,6 +162,12 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="./seminovos.aspx">
+                                        <i class="metismenu-icon fas fa-car-side"></i>
+                                        Seminovos
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="./lojas.aspx">
                                         <i class="metismenu-icon fas fa-store"></i>
                                         Lojas
@@ -230,6 +236,11 @@
                                                         <strong>Relat&oacute;rios</strong>
                                                         <small>Veja indicadores, entradas, estoque por loja e movimenta&ccedil;&otilde;es.</small>
                                                     </a>
+                                                    <a class="patio-home-card" href="./seminovos.aspx">
+                                                        <span class="patio-home-icon"><i class="fa fa-car-side"></i></span>
+                                                        <strong>Seminovos</strong>
+                                                        <small>Registre, consulte, transfira e acompanhe o p&aacute;tio de seminovos.</small>
+                                                    </a>
                                                     <a class="patio-home-card" href="./lojas.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-store"></i></span>
                                                         <strong>Lojas</strong>
@@ -273,7 +284,7 @@
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/jspdf.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260704-2"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260706-1"></script>
 
 </body>
 

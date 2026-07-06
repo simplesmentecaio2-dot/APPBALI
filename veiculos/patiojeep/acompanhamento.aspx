@@ -524,7 +524,7 @@
     <script type="text/javascript">
         $("#dtAgendamento").datetimepicker({ format: 'yyyy-mm-dd', autoclose: true, language: 'pt-BR', todayBtn: true, todayHighlight: true});
     </script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260704-2"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260706-1"></script>
 
 
 </body>

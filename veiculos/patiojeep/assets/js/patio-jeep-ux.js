@@ -192,6 +192,7 @@
       { href: './transferir.aspx', icon: 'fas fa-exchange-alt', label: 'Transferir' },
       { href: './historico.aspx', icon: 'fas fa-history', label: 'Consultar' },
       { href: './relatorios.aspx', icon: 'fas fa-chart-line', label: 'Relat\u00f3rios' },
+      { href: './seminovos.aspx', icon: 'fas fa-car-side', label: 'Seminovos' },
       { href: './lojas.aspx', icon: 'fas fa-store', label: 'Lojas' },
       { href: './barcode-logs.aspx', icon: 'fas fa-clipboard-list', label: 'Logs do leitor' }
     ];
