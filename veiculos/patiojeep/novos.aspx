@@ -113,6 +113,11 @@
         .novos-bar-track span { display:block; height:100%; min-width:3px; border-radius:inherit; background:linear-gradient(90deg,#6f9151,#203729); }
         .novos-bi-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; }
         .novos-empty { border:1px dashed #cfd9e6; border-radius:16px; padding:1.2rem; background:#f8fafc; color:#64748b; font-weight:850; text-align:center; }
+        .novos-status { display:inline-flex; align-items:center; gap:.35rem; border-radius:999px; padding:.35rem .6rem; font-size:.72rem; font-weight:950; background:#eef2ff; color:#3730a3; }
+        .novos-status.is-baixado { background:#fef2f2; color:#991b1b; }
+        .novos-status.is-alerta { background:#fffbeb; color:#92400e; }
+        .novos-status.is-ok { background:#f0fdf4; color:#166534; }
+        .novos-print-toolbar { display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; justify-content:flex-end; }
         .novos-modal {
             position:fixed; inset:0; z-index:1050; display:grid; place-items:center; padding:1rem;
             background:rgba(15,23,42,.56);
@@ -145,6 +150,14 @@
             body[data-patio-page="novos.aspx"] { padding-bottom:76px; }
         }
         @media (max-width:480px) { .novos-tabs { grid-template-columns:1fr; } }
+        @media print {
+            .app-header, .app-sidebar, .novos-tabs, .novos-global, .novos-sticky-summary, .novos-print-toolbar, .novos-mobile-actions, footer { display:none !important; }
+            .app-main, .app-main__outer, .app-main__inner { margin:0 !important; padding:0 !important; background:#fff !important; }
+            .novos-card { box-shadow:none !important; border-color:#cfd9e6 !important; break-inside:avoid; }
+            .novos-table { min-width:0 !important; font-size:10px; }
+            .novos-table th, .novos-table td { padding:.35rem !important; }
+            @page { size:A4 portrait; margin:10mm; }
+        }
     </style>
 </head>
 <body class="patio-modern-page patio-brand-jeep">
@@ -158,6 +171,8 @@
         <asp:HiddenField ID="hfTransferenciaOrigem" runat="server" />
         <asp:HiddenField ID="hfTransferenciaSerie" runat="server" />
         <asp:HiddenField ID="hfHistoricoVeNr" runat="server" />
+        <asp:HiddenField ID="hfOperTipo" runat="server" />
+        <asp:HiddenField ID="hfOperVeNr" runat="server" />
 
         <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
             <div class="app-header header-shadow bg-dark">
@@ -271,11 +286,123 @@
                                         <asp:LinkButton ID="tabTransferir" runat="server" CssClass="novos-tab" CommandArgument="transferir" OnClick="Aba_Click"><i class="fa fa-exchange-alt"></i>Transferir</asp:LinkButton>
                                         <asp:LinkButton ID="tabConsultar" runat="server" CssClass="novos-tab" CommandArgument="consultar" OnClick="Aba_Click"><i class="fa fa-search"></i>Consultar</asp:LinkButton>
                                         <asp:LinkButton ID="tabRelatorios" runat="server" CssClass="novos-tab" CommandArgument="relatorios" OnClick="Aba_Click"><i class="fa fa-chart-line"></i>Relat&oacute;rios</asp:LinkButton>
+                                        <asp:LinkButton ID="tabTodos" runat="server" CssClass="novos-tab" CommandArgument="todos" OnClick="Aba_Click"><i class="fa fa-layer-group"></i>Todos</asp:LinkButton>
                                     </div>
 
                                     <asp:Panel ID="pnlMensagem" runat="server" CssClass="novos-alert" Visible="false">
                                         <i class="fa fa-info-circle mt-1"></i>
                                         <div><asp:Literal ID="litMensagem" runat="server"></asp:Literal></div>
+                                    </asp:Panel>
+
+                                    <asp:Panel ID="pnlTodos" runat="server">
+                                        <div class="novos-card">
+                                            <div class="novos-card-header">
+                                                <div>
+                                                    <small>Vis&atilde;o unificada</small>
+                                                    <h2 class="novos-card-title">Novos e seminovos no p&aacute;tio</h2>
+                                                </div>
+                                                <div class="novos-print-toolbar">
+                                                    <asp:LinkButton ID="btnTodosExportar" runat="server" CssClass="novos-btn novos-btn-light" OnClick="btnTodosExportar_Click"><i class="fa fa-file-excel"></i>Exportar</asp:LinkButton>
+                                                    <button type="button" class="novos-btn novos-btn-light" onclick="window.print();"><i class="fa fa-print"></i>Imprimir</button>
+                                                    <a class="novos-btn novos-btn-light" href="auditoria.aspx"><i class="fa fa-shield-alt"></i>Auditoria</a>
+                                                </div>
+                                            </div>
+                                            <div class="novos-card-body">
+                                                <div class="novos-grid">
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= ddlTodosTipo.ClientID %>">Tipo</label>
+                                                        <asp:DropDownList ID="ddlTodosTipo" runat="server" CssClass="novos-select">
+                                                            <asp:ListItem Value="">Todos</asp:ListItem>
+                                                            <asp:ListItem Value="NOVO">Novos</asp:ListItem>
+                                                            <asp:ListItem Value="SEMINOVO">Seminovos</asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </div>
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= ddlTodosLoja.ClientID %>">Loja</label>
+                                                        <asp:DropDownList ID="ddlTodosLoja" runat="server" CssClass="novos-select"></asp:DropDownList>
+                                                    </div>
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= ddlTodosStatus.ClientID %>">Status</label>
+                                                        <asp:DropDownList ID="ddlTodosStatus" runat="server" CssClass="novos-select">
+                                                            <asp:ListItem Value="">Todos ativos</asp:ListItem>
+                                                            <asp:ListItem Value="NO_PATIO">No p&aacute;tio</asp:ListItem>
+                                                            <asp:ListItem Value="PREPARACAO">Prepara&ccedil;&atilde;o</asp:ListItem>
+                                                            <asp:ListItem Value="AGUARDANDO_RETIRADA">Aguardando retirada</asp:ListItem>
+                                                            <asp:ListItem Value="PENDENTE">Pendente</asp:ListItem>
+                                                            <asp:ListItem Value="VENDIDO">Vendido</asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </div>
+                                                    <div class="novos-field is-wide">
+                                                        <label class="novos-label" for="<%= txtTodosBusca.ClientID %>">Busca</label>
+                                                        <asp:TextBox ID="txtTodosBusca" runat="server" CssClass="novos-input" MaxLength="60" autocomplete="off" placeholder="Modelo, c&oacute;digo, chassi, placa, Renavam ou usu&aacute;rio"></asp:TextBox>
+                                                    </div>
+                                                </div>
+                                                <div class="novos-actions">
+                                                    <asp:LinkButton ID="btnTodosConsultar" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnTodosConsultar_Click"><i class="fa fa-filter"></i>Aplicar filtros</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnTodosLimpar" runat="server" CssClass="novos-btn novos-btn-light" OnClick="btnTodosLimpar_Click"><i class="fa fa-eraser"></i>Limpar</asp:LinkButton>
+                                                </div>
+                                                <asp:Literal ID="litTodosAlertas" runat="server"></asp:Literal>
+                                                <div class="mt-3 novos-table-wrap">
+                                                    <asp:Literal ID="litTodosTabela" runat="server"></asp:Literal>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="novos-card">
+                                            <div class="novos-card-header">
+                                                <div>
+                                                    <small>Status, observa&ccedil;&atilde;o e baixa manual</small>
+                                                    <h2 class="novos-card-title">Manuten&ccedil;&atilde;o operacional</h2>
+                                                </div>
+                                                <span class="novos-pill"><i class="fa fa-lock"></i> Baixa manual exige senha</span>
+                                            </div>
+                                            <div class="novos-card-body">
+                                                <div class="novos-grid">
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= ddlOperTipo.ClientID %>">Tipo</label>
+                                                        <asp:DropDownList ID="ddlOperTipo" runat="server" CssClass="novos-select">
+                                                            <asp:ListItem Value="NOVO">Novo</asp:ListItem>
+                                                            <asp:ListItem Value="SEMINOVO">Seminovo</asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </div>
+                                                    <div class="novos-field is-wide">
+                                                        <label class="novos-label" for="<%= txtOperBusca.ClientID %>">Ve&iacute;culo</label>
+                                                        <asp:TextBox ID="txtOperBusca" runat="server" CssClass="novos-input" MaxLength="60" autocomplete="off" placeholder="C&oacute;digo, chassi, placa ou Renavam"></asp:TextBox>
+                                                    </div>
+                                                    <div class="novos-field">
+                                                        <label class="novos-label">&nbsp;</label>
+                                                        <asp:LinkButton ID="btnOperBuscar" runat="server" CssClass="novos-btn novos-btn-light js-safe-submit" OnClick="btnOperBuscar_Click"><i class="fa fa-search"></i>Localizar</asp:LinkButton>
+                                                    </div>
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= ddlOperStatus.ClientID %>">Status</label>
+                                                        <asp:DropDownList ID="ddlOperStatus" runat="server" CssClass="novos-select">
+                                                            <asp:ListItem Value="NO_PATIO">No p&aacute;tio</asp:ListItem>
+                                                            <asp:ListItem Value="PREPARACAO">Prepara&ccedil;&atilde;o</asp:ListItem>
+                                                            <asp:ListItem Value="AGUARDANDO_RETIRADA">Aguardando retirada</asp:ListItem>
+                                                            <asp:ListItem Value="PENDENTE">Pendente</asp:ListItem>
+                                                            <asp:ListItem Value="VENDIDO">Vendido</asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </div>
+                                                    <div class="novos-field is-wide">
+                                                        <label class="novos-label" for="<%= txtOperObservacao.ClientID %>">Observa&ccedil;&atilde;o</label>
+                                                        <asp:TextBox ID="txtOperObservacao" runat="server" CssClass="novos-textarea" TextMode="MultiLine" MaxLength="500" placeholder="Observa&ccedil;&atilde;o curta para a opera&ccedil;&atilde;o"></asp:TextBox>
+                                                    </div>
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= txtOperSenha.ClientID %>">Senha para baixa</label>
+                                                        <asp:TextBox ID="txtOperSenha" runat="server" CssClass="novos-input" TextMode="Password" autocomplete="new-password" placeholder="@bali2025"></asp:TextBox>
+                                                    </div>
+                                                    <div class="novos-field is-wide">
+                                                        <label class="novos-label" for="<%= txtOperMotivoBaixa.ClientID %>">Motivo da baixa manual</label>
+                                                        <asp:TextBox ID="txtOperMotivoBaixa" runat="server" CssClass="novos-input" MaxLength="500" autocomplete="off" placeholder="Ex.: baixa conferida manualmente"></asp:TextBox>
+                                                    </div>
+                                                </div>
+                                                <div class="novos-actions">
+                                                    <asp:LinkButton ID="btnOperAtualizar" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnOperAtualizar_Click"><i class="far fa-save"></i>Salvar status</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnOperBaixar" runat="server" CssClass="novos-btn novos-btn-danger js-safe-submit" OnClick="btnOperBaixar_Click"><i class="fa fa-check-circle"></i>Dar baixa manual</asp:LinkButton>
+                                                </div>
+                                                <asp:Literal ID="litOperVeiculo" runat="server"></asp:Literal>
+                                            </div>
+                                        </div>
                                     </asp:Panel>
 
                                     <asp:Panel ID="pnlRegistrar" runat="server">

@@ -20,6 +20,11 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
         }
 
         usuarioLogado.Text = Html(Convert.ToString(Session["usuario"]));
+        ScriptManager scriptManager = ScriptManager.GetCurrent(Page);
+        if (scriptManager != null)
+        {
+            scriptManager.RegisterPostBackControl(btnTodosExportar);
+        }
 
         if (!IsPostBack)
         {
@@ -51,6 +56,19 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
             {
                 AtivarAba("consultar");
                 AbrirHistorico(historico);
+            }
+
+            string operTipo = Request.QueryString["operTipo"];
+            string operBusca = Request.QueryString["operBusca"];
+            if (!String.IsNullOrWhiteSpace(operTipo) && !String.IsNullOrWhiteSpace(operBusca))
+            {
+                if (ddlOperTipo.Items.FindByValue(operTipo.ToUpperInvariant()) != null)
+                {
+                    ddlOperTipo.SelectedValue = operTipo.ToUpperInvariant();
+                }
+                txtOperBusca.Text = operBusca;
+                AtivarAba("todos");
+                BuscarOperacional(false);
             }
         }
 
@@ -174,6 +192,12 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
             return;
         }
 
+        if (!LojaAtiva(loja))
+        {
+            MostrarMensagem("warning", "Loja inativa", "A loja selecionada n\u00e3o est\u00e1 ativa para receber ve\u00edculos. Atualize a tela e selecione outra loja.");
+            return;
+        }
+
         DataRow duplicado = LocalizarNovoNoPatio(Convert.ToString(veiculo));
         if (duplicado != null)
         {
@@ -247,6 +271,12 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
             return;
         }
 
+        if (!LojaAtiva(destino))
+        {
+            MostrarMensagem("warning", "Loja inativa", "A loja destino selecionada n\u00e3o est\u00e1 ativa. Atualize a tela e escolha outra loja.");
+            return;
+        }
+
         if (origem == destino)
         {
             MostrarMensagem("warning", "Loja igual", "Selecione uma loja diferente da atual para concluir a transfer\u00eancia.");
@@ -292,6 +322,120 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
         AtivarAba("consultar");
     }
 
+    protected void btnTodosConsultar_Click(object sender, EventArgs e)
+    {
+        AtivarAba("todos");
+        MostrarMensagem("success", "Filtros aplicados", "A vis\u00e3o unificada foi atualizada com os filtros selecionados.");
+    }
+
+    protected void btnTodosLimpar_Click(object sender, EventArgs e)
+    {
+        ddlTodosTipo.SelectedValue = "";
+        ddlTodosStatus.SelectedValue = "";
+        if (ddlTodosLoja.Items.Count > 0) ddlTodosLoja.SelectedValue = "0";
+        txtTodosBusca.Text = "";
+        AtivarAba("todos");
+    }
+
+    protected void btnTodosExportar_Click(object sender, EventArgs e)
+    {
+        ExportarTodos();
+    }
+
+    protected void btnOperBuscar_Click(object sender, EventArgs e)
+    {
+        AtivarAba("todos");
+        BuscarOperacional(true);
+    }
+
+    protected void btnOperAtualizar_Click(object sender, EventArgs e)
+    {
+        AtivarAba("todos");
+
+        if (String.IsNullOrWhiteSpace(hfOperTipo.Value) || String.IsNullOrWhiteSpace(hfOperVeNr.Value))
+        {
+            MostrarMensagem("warning", "Localize o ve\u00edculo", "Pesquise um ve\u00edculo antes de salvar status ou observa\u00e7\u00e3o.");
+            return;
+        }
+
+        DataTable resposta = ExecutarProcedureTabela(
+            "dbo.veiculos_patio_operacional_atualizar",
+            Param("@tipo", SqlDbType.VarChar, hfOperTipo.Value),
+            Param("@ve_nr", SqlDbType.VarChar, hfOperVeNr.Value),
+            Param("@status", SqlDbType.VarChar, ddlOperStatus.SelectedValue),
+            Param("@observacao", SqlDbType.VarChar, txtOperObservacao.Text),
+            Param("@usuario", SqlDbType.VarChar, UsuarioAtual()),
+            Param("@ip", SqlDbType.VarChar, IpAtual()),
+            Param("@url", SqlDbType.VarChar, Request.RawUrl)
+        );
+
+        string resultado = resposta.Rows.Count > 0 ? Valor(resposta.Rows[0], "resultado") : "n";
+        if (resultado == "s")
+        {
+            MostrarMensagem("success", "Status salvo", "Status e observa\u00e7\u00e3o operacional atualizados com sucesso.");
+            PatioJeepAuditoria.Registrar("PATIO_STATUS_OPERACIONAL", Session["usuario"], hfOperVeNr.Value, hfOperTipo.Value + "; Status=" + ddlOperStatus.SelectedValue);
+            BuscarOperacional(false);
+            CarregarTodos();
+            return;
+        }
+
+        MostrarMensagem("warning", "Ve\u00edculo n\u00e3o atualizado", "N\u00e3o encontrei este ve\u00edculo ativo para atualizar. Refa\u00e7a a busca.");
+    }
+
+    protected void btnOperBaixar_Click(object sender, EventArgs e)
+    {
+        AtivarAba("todos");
+
+        if (String.IsNullOrWhiteSpace(hfOperTipo.Value) || String.IsNullOrWhiteSpace(hfOperVeNr.Value))
+        {
+            MostrarMensagem("warning", "Localize o ve\u00edculo", "Pesquise um ve\u00edculo antes de dar baixa manual.");
+            return;
+        }
+
+        if (txtOperSenha.Text != "@bali2025")
+        {
+            MostrarMensagem("error", "Senha incorreta", "A baixa manual exige a senha de manuten\u00e7\u00e3o.");
+            txtOperSenha.Text = "";
+            return;
+        }
+
+        if (String.IsNullOrWhiteSpace(txtOperMotivoBaixa.Text))
+        {
+            MostrarMensagem("warning", "Informe o motivo", "Descreva o motivo da baixa manual para manter a auditoria clara.");
+            return;
+        }
+
+        DataTable resposta = ExecutarProcedureTabela(
+            "dbo.veiculos_patio_baixa_manual",
+            Param("@tipo", SqlDbType.VarChar, hfOperTipo.Value),
+            Param("@ve_nr", SqlDbType.VarChar, hfOperVeNr.Value),
+            Param("@motivo", SqlDbType.VarChar, txtOperMotivoBaixa.Text),
+            Param("@usuario", SqlDbType.VarChar, UsuarioAtual()),
+            Param("@ip", SqlDbType.VarChar, IpAtual()),
+            Param("@url", SqlDbType.VarChar, Request.RawUrl)
+        );
+
+        string resultado = resposta.Rows.Count > 0 ? Valor(resposta.Rows[0], "resultado") : "n";
+        txtOperSenha.Text = "";
+
+        if (resultado == "s")
+        {
+            PatioJeepAuditoria.Registrar("PATIO_BAIXA_MANUAL", Session["usuario"], hfOperVeNr.Value, hfOperTipo.Value + "; Motivo=" + txtOperMotivoBaixa.Text);
+            MostrarMensagem("success", "Baixa registrada", "A baixa manual foi gravada e auditada.");
+            LimparOperacional();
+            CarregarTodos();
+            return;
+        }
+
+        if (resultado == "m")
+        {
+            MostrarMensagem("warning", "Motivo obrigat\u00f3rio", "Informe um motivo para concluir a baixa manual.");
+            return;
+        }
+
+        MostrarMensagem("warning", "Baixa n\u00e3o aplicada", "O ve\u00edculo n\u00e3o est\u00e1 ativo ou j\u00e1 foi baixado.");
+    }
+
     protected void btnAtualizarRelatorio_Click(object sender, EventArgs e)
     {
         AtivarAba("relatorios");
@@ -331,11 +475,13 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
         pnlTransferir.Visible = aba == "transferir";
         pnlConsultar.Visible = aba == "consultar";
         pnlRelatorios.Visible = aba == "relatorios";
+        pnlTodos.Visible = aba == "todos";
 
         tabRegistrar.CssClass = ClasseAba(aba, "registrar");
         tabTransferir.CssClass = ClasseAba(aba, "transferir");
         tabConsultar.CssClass = ClasseAba(aba, "consultar");
         tabRelatorios.CssClass = ClasseAba(aba, "relatorios");
+        tabTodos.CssClass = ClasseAba(aba, "todos");
 
         btnSalvarRegistro.Enabled = !String.IsNullOrWhiteSpace(hfRegistroVeNr.Value);
         btnMobileSalvar.Enabled = btnSalvarRegistro.Enabled;
@@ -344,12 +490,13 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
         if (aba == "registrar") RenderStepper(String.IsNullOrWhiteSpace(hfRegistroVeNr.Value) ? 1 : 3);
         if (aba == "consultar") CarregarConsulta();
         if (aba == "relatorios") CarregarRelatorio();
+        if (aba == "todos") CarregarTodos();
     }
 
     private string NormalizarAba(string aba)
     {
         aba = (aba ?? "").Trim().ToLowerInvariant();
-        if (aba == "transferir" || aba == "consultar" || aba == "relatorios") return aba;
+        if (aba == "transferir" || aba == "consultar" || aba == "relatorios" || aba == "todos") return aba;
         return "registrar";
     }
 
@@ -377,6 +524,7 @@ ORDER BY ds;");
         BindLojas(ddlTransferenciaDestino, lojas, true);
         BindLojas(ddlConsultaLoja, lojas, true);
         BindLojas(ddlRelatorioLoja, lojas, true);
+        BindLojas(ddlTodosLoja, lojas, true);
     }
 
     private void BindLojas(DropDownList lista, DataTable lojas, bool incluirTodas)
@@ -462,6 +610,81 @@ ORDER BY ds;");
         Int32.TryParse(ddlConsultaLoja.SelectedValue, out loja);
         DataTable tabela = ListarNovos(loja, NormalizarBusca(txtConsultaBusca.Text), 250);
         litConsultaTabela.Text = RenderConsulta(tabela);
+    }
+
+    private void CarregarTodos()
+    {
+        int loja;
+        Int32.TryParse(ddlTodosLoja.SelectedValue, out loja);
+
+        DataTable tabela = ListarTodos(
+            ddlTodosTipo.SelectedValue,
+            loja,
+            ddlTodosStatus.SelectedValue,
+            txtTodosBusca.Text,
+            350);
+
+        litTodosAlertas.Text = RenderAlertasTodos(tabela);
+        litTodosTabela.Text = RenderTodos(tabela);
+    }
+
+    private void BuscarOperacional(bool exibirMensagem)
+    {
+        string tipo = (ddlOperTipo.SelectedValue ?? "NOVO").ToUpperInvariant();
+        string busca = NormalizarBusca(txtOperBusca.Text);
+        txtOperBusca.Text = busca;
+
+        if (busca.Length < 4)
+        {
+            LimparOperacional();
+            MostrarMensagem("warning", "Informe mais dados", "Digite ao menos 4 caracteres para localizar o ve\u00edculo operacional.");
+            return;
+        }
+
+        DataTable tabela = ListarTodos(tipo, 0, "", busca, 1);
+        if (tabela.Rows.Count == 0)
+        {
+            LimparOperacional();
+            if (exibirMensagem)
+            {
+                MostrarMensagem("warning", "Ve\u00edculo n\u00e3o encontrado", "N\u00e3o encontrei este ve\u00edculo ativo na base de " + (tipo == "SEMINOVO" ? "seminovos" : "novos") + ".");
+            }
+            return;
+        }
+
+        DataRow row = tabela.Rows[0];
+        hfOperTipo.Value = tipo;
+        hfOperVeNr.Value = Valor(row, "ve_nr");
+        txtOperObservacao.Text = Valor(row, "observacao");
+
+        string status = Valor(row, "status_operacional");
+        if (ddlOperStatus.Items.FindByValue(status) != null)
+        {
+            ddlOperStatus.SelectedValue = status;
+        }
+
+        litOperVeiculo.Text =
+            RenderVeiculoCard(row, tipo == "SEMINOVO" ? "Seminovo localizado" : "Novo localizado", "Manuten\u00e7\u00e3o operacional do p\u00e1tio.", tipo == "SEMINOVO" ? "seminovo" : "novo") +
+            "<div class=\"novos-alert is-success\" style=\"margin-top:1rem;\"><i class=\"fa fa-link mt-1\"></i><div><strong>Link interno do ve&iacute;culo</strong><span>" +
+            Html(Request.Url.GetLeftPart(UriPartial.Authority) + ResolveUrl("~/veiculos/patiojeep/novos.aspx?aba=todos&operTipo=" + tipo + "&operBusca=" + HttpUtility.UrlEncode(Valor(row, "ve_nr")))) +
+            "</span></div></div>";
+
+        AdicionarUltimoAcessado(tipo == "SEMINOVO" ? "Seminovo" : "Novo", row);
+        if (exibirMensagem)
+        {
+            MostrarMensagem("success", "Ve\u00edculo localizado", "Agora voc\u00ea pode salvar status, observa\u00e7\u00e3o ou dar baixa manual com senha.");
+        }
+    }
+
+    private void LimparOperacional()
+    {
+        hfOperTipo.Value = "";
+        hfOperVeNr.Value = "";
+        litOperVeiculo.Text = "";
+        txtOperObservacao.Text = "";
+        txtOperSenha.Text = "";
+        txtOperMotivoBaixa.Text = "";
+        if (ddlOperStatus.Items.FindByValue("NO_PATIO") != null) ddlOperStatus.SelectedValue = "NO_PATIO";
     }
 
     private void InicializarRelatorio()
@@ -640,6 +863,105 @@ SELECT
         }
         html.Append("</tbody></table>");
         return html.ToString();
+    }
+
+    private string RenderTodos(DataTable tabela)
+    {
+        if (tabela.Rows.Count == 0)
+        {
+            return "<div class=\"novos-empty\">Nenhum ve&iacute;culo ativo encontrado para estes filtros.</div>";
+        }
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<table class=\"novos-table\"><thead><tr>");
+        html.Append("<th>A&ccedil;&otilde;es</th><th>Tipo</th><th>Ve&iacute;culo</th><th>Chassi</th><th>Placa</th><th>Loja atual</th><th>Status</th><th>Parado</th><th>Observa&ccedil;&atilde;o</th><th>Cadastro</th>");
+        html.Append("</tr></thead><tbody>");
+
+        foreach (DataRow row in tabela.Rows)
+        {
+            string tipo = Valor(row, "tipo");
+            string veNr = Valor(row, "ve_nr");
+            string chassi = Valor(row, "ve_chassi");
+            string serie = Valor(row, "ve_serie");
+            int dias = ToInt(Valor(row, "dias_parado"));
+            bool alerta = dias >= 15;
+
+            html.Append("<tr>");
+            html.Append("<td data-label=\"A&ccedil;&otilde;es\"><span class=\"novos-row-actions\">");
+            html.Append("<a class=\"novos-mini-action\" href=\"novos.aspx?aba=todos&amp;operTipo=").Append(HttpUtility.UrlEncode(tipo)).Append("&amp;operBusca=").Append(HttpUtility.UrlEncode(veNr)).Append("\"><i class=\"fa fa-tools\"></i>Operar</a>");
+            if (tipo == "NOVO")
+            {
+                html.Append("<a class=\"novos-mini-action\" href=\"novos.aspx?aba=transferir&amp;serie=").Append(HttpUtility.UrlEncode(serie)).Append("\"><i class=\"fa fa-exchange-alt\"></i>Transferir</a>");
+                html.Append("<a class=\"novos-mini-action\" href=\"novos.aspx?aba=consultar&amp;historico=").Append(HttpUtility.UrlEncode(veNr)).Append("\"><i class=\"fa fa-history\"></i>Hist&oacute;rico</a>");
+            }
+            else
+            {
+                html.Append("<a class=\"novos-mini-action\" href=\"seminovos.aspx?aba=transferir&amp;busca=").Append(HttpUtility.UrlEncode(chassi)).Append("\"><i class=\"fa fa-car-side\"></i>Seminovos</a>");
+            }
+            html.Append("<a class=\"novos-mini-action\" href=\"auditoria.aspx?origem=").Append(HttpUtility.UrlEncode(tipo)).Append("&amp;veiculo=").Append(HttpUtility.UrlEncode(veNr)).Append("\"><i class=\"fa fa-shield-alt\"></i>Auditoria</a>");
+            html.Append("<a class=\"novos-mini-action\" href=\"#\" data-copy=\"").Append(Html(chassi)).Append("\"><i class=\"far fa-copy\"></i>Copiar</a>");
+            html.Append("</span></td>");
+            html.Append("<td data-label=\"Tipo\"><span class=\"novos-pill\"><i class=\"fa ").Append(tipo == "SEMINOVO" ? "fa-car-side" : "fa-car").Append("\"></i>").Append(Html(tipo == "SEMINOVO" ? "Seminovo" : "Novo")).Append("</span></td>");
+            html.Append("<td data-label=\"Ve&iacute;culo\"><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong><small>C&oacute;d. ").Append(Html(veNr)).Append(" | Ref. ").Append(Html(Valor(row, "codigo_origem"))).Append("</small></td>");
+            html.Append("<td data-label=\"Chassi\">").Append(Html(chassi)).Append("</td>");
+            html.Append("<td data-label=\"Placa\">").Append(Html(Valor(row, "ve_placa"))).Append("</td>");
+            html.Append("<td data-label=\"Loja atual\"><span class=\"novos-pill\">").Append(Html(Valor(row, "loja_atual"))).Append("</span></td>");
+            html.Append("<td data-label=\"Status\">").Append(StatusBadge(Valor(row, "status_operacional"))).Append("</td>");
+            html.Append("<td data-label=\"Parado\"><span class=\"novos-status ").Append(alerta ? "is-alerta" : "is-ok").Append("\">").Append(dias).Append(" dia(s)</span><small>").Append(DataCurta(row, "ultima_movimentacao")).Append("</small></td>");
+            html.Append("<td data-label=\"Observa&ccedil;&atilde;o\">").Append(Html(Valor(row, "observacao"))).Append("</td>");
+            html.Append("<td data-label=\"Cadastro\">").Append(DataCurta(row, "dt_cad")).Append("<small>").Append(Html(Valor(row, "fun_cad"))).Append("</small></td>");
+            html.Append("</tr>");
+        }
+
+        html.Append("</tbody></table>");
+        return html.ToString();
+    }
+
+    private string RenderAlertasTodos(DataTable tabela)
+    {
+        int parados = 0;
+        int pendentes = 0;
+        foreach (DataRow row in tabela.Rows)
+        {
+            if (ToInt(Valor(row, "dias_parado")) >= 15) parados++;
+            string status = Valor(row, "status_operacional");
+            if (status == "PENDENTE" || status == "AGUARDANDO_RETIRADA") pendentes++;
+        }
+
+        if (parados == 0 && pendentes == 0) return "";
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class=\"novos-alert is-warning\" style=\"margin-top:1rem;\"><i class=\"fa fa-exclamation-triangle mt-1\"></i><div>");
+        html.Append("<strong>Aten&ccedil;&atilde;o operacional</strong><span>");
+        if (parados > 0) html.Append(parados).Append(" ve&iacute;culo(s) parado(s) h&aacute; 15 dias ou mais. ");
+        if (pendentes > 0) html.Append(pendentes).Append(" ve&iacute;culo(s) com status pendente ou aguardando retirada.");
+        html.Append("</span></div></div>");
+        return html.ToString();
+    }
+
+    private string StatusBadge(string status)
+    {
+        status = String.IsNullOrWhiteSpace(status) ? "NO_PATIO" : status.ToUpperInvariant();
+        string classe = "novos-status";
+        if (status == "BAIXADO" || status == "VENDIDO") classe += " is-baixado";
+        else if (status == "PENDENTE" || status == "AGUARDANDO_RETIRADA") classe += " is-alerta";
+        else classe += " is-ok";
+
+        return "<span class=\"" + classe + "\">" + Html(StatusTexto(status)) + "</span>";
+    }
+
+    private string StatusTexto(string status)
+    {
+        switch ((status ?? "").ToUpperInvariant())
+        {
+            case "PREPARACAO": return "Prepara\u00e7\u00e3o";
+            case "AGUARDANDO_RETIRADA": return "Aguardando retirada";
+            case "PENDENTE": return "Pendente";
+            case "VENDIDO": return "Vendido";
+            case "TRANSFERIDO": return "Transferido";
+            case "BAIXADO": return "Baixado";
+            default: return "No p\u00e1tio";
+        }
     }
 
     private string RenderVeiculoCard(DataRow row, string titulo, string subtitulo, string origem)
@@ -847,6 +1169,122 @@ ORDER BY p.dt_cad DESC, p.ve_nr DESC;",
             Param("@buscaLike", SqlDbType.VarChar, "%" + valor + "%"));
     }
 
+    private DataTable ListarTodos(string tipo, int loja, string status, string busca, int limite)
+    {
+        string buscaNormalizada = NormalizarBusca(busca);
+        string texto = (busca ?? "").Trim().ToUpperInvariant();
+
+        return ExecutarSqlTabela(@"
+SELECT TOP (@limite) *
+FROM
+(
+    SELECT
+        'NOVO' AS tipo,
+        CONVERT(varchar(50), p.ve_nr) AS ve_nr,
+        CONVERT(varchar(50), p.ve_nr) AS codigo_origem,
+        SUBSTRING(COALESCE(NULLIF(v.Veiculo_Descricao, ''), 'Veiculo'), 1, 90) AS ve_ds,
+        v.Veiculo_Chassi AS ve_chassi,
+        ISNULL(v.Veiculo_ChassiSerie, '') AS ve_serie,
+        ISNULL(v.Veiculo_Placa, '') AS ve_placa,
+        ISNULL(CONVERT(varchar(40), v.Veiculo_NroRenavam), '') AS ve_renavam,
+        ISNULL(c.Cor_Descricao, '') AS cor_ds,
+        COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) AS loja_atual_id,
+        COALESCE(lj.ds, 'Sem loja') AS loja_atual,
+        ISNULL(p.fun_cad, '') AS fun_cad,
+        p.dt_cad,
+        COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_transferencia t WITH (NOLOCK) WHERE t.ve_nr = p.ve_nr), p.dt_cad) AS ultima_movimentacao,
+        ISNULL(p.status_operacional, 'NO_PATIO') AS status_operacional,
+        ISNULL(p.observacao, '') AS observacao,
+        DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_transferencia t WITH (NOLOCK) WHERE t.ve_nr = p.ve_nr), p.dt_cad), GETDATE()) AS dias_parado
+    FROM dbo.veiculos_patio_locacao p WITH (NOLOCK)
+    INNER JOIN GrupoBali_DealernetWF.dbo.Veiculo v WITH (NOLOCK)
+        ON ISNUMERIC(p.ve_nr) = 1 AND CAST(p.ve_nr AS int) = v.Veiculo_Codigo
+    LEFT JOIN GrupoBali_DealernetWF.dbo.Cor c WITH (NOLOCK)
+        ON v.Veiculo_CorCodExterna = c.Cor_Codigo
+    LEFT JOIN dbo.veiculos_patio_loja lj WITH (NOLOCK)
+        ON lj.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+    WHERE p.baixado_venda = 0
+
+    UNION ALL
+
+    SELECT
+        'SEMINOVO' AS tipo,
+        CONVERT(varchar(50), s.id) AS ve_nr,
+        CONVERT(varchar(50), s.ve_nr) AS codigo_origem,
+        SUBSTRING(COALESCE(NULLIF(s.ve_ds, ''), 'Seminovo'), 1, 90) AS ve_ds,
+        ISNULL(s.ve_chassi, '') AS ve_chassi,
+        RIGHT(ISNULL(s.ve_chassi, ''), 7) AS ve_serie,
+        ISNULL(s.ve_placa, '') AS ve_placa,
+        ISNULL(s.ve_renavam, '') AS ve_renavam,
+        ISNULL(s.cor_ds, '') AS cor_ds,
+        COALESCE(NULLIF(s.loja_atual_id, 0), s.loja_id) AS loja_atual_id,
+        COALESCE(lj.ds, 'Sem loja') AS loja_atual,
+        ISNULL(s.fun_cad, '') AS fun_cad,
+        s.dt_cad,
+        COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = s.id), s.dt_cad) AS ultima_movimentacao,
+        ISNULL(s.status_operacional, 'NO_PATIO') AS status_operacional,
+        ISNULL(s.observacao, '') AS observacao,
+        DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = s.id), s.dt_cad), GETDATE()) AS dias_parado
+    FROM dbo.veiculos_patio_seminovos_locacao s WITH (NOLOCK)
+    LEFT JOIN dbo.veiculos_patio_loja lj WITH (NOLOCK)
+        ON lj.id = COALESCE(NULLIF(s.loja_atual_id, 0), s.loja_id)
+    WHERE s.ativo = 1
+) patio
+WHERE (@tipo = '' OR patio.tipo = @tipo)
+  AND (@loja = 0 OR patio.loja_atual_id = @loja)
+  AND (@status = '' OR patio.status_operacional = @status)
+  AND (
+        @busca = ''
+     OR patio.ve_nr = @busca
+     OR patio.codigo_origem = @busca
+     OR UPPER(patio.ve_serie) = @busca
+     OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(patio.ve_chassi, '')), '-', ''), ' ', ''), '.', '') = @busca
+     OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(patio.ve_placa, '')), '-', ''), ' ', ''), '.', '') = @busca
+     OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(patio.ve_renavam, '')), '-', ''), ' ', ''), '.', '') = @busca
+     OR UPPER(ISNULL(patio.ve_ds, '')) LIKE @textoLike
+     OR UPPER(ISNULL(patio.fun_cad, '')) LIKE @textoLike
+     OR UPPER(ISNULL(patio.loja_atual, '')) LIKE @textoLike
+  )
+ORDER BY patio.ultima_movimentacao DESC, patio.dt_cad DESC, patio.ve_nr DESC;",
+            Param("@limite", SqlDbType.Int, limite),
+            Param("@tipo", SqlDbType.VarChar, (tipo ?? "").ToUpperInvariant()),
+            Param("@loja", SqlDbType.Int, loja),
+            Param("@status", SqlDbType.VarChar, (status ?? "").ToUpperInvariant()),
+            Param("@busca", SqlDbType.VarChar, buscaNormalizada),
+            Param("@textoLike", SqlDbType.VarChar, "%" + texto + "%"));
+    }
+
+    private void ExportarTodos()
+    {
+        int loja;
+        Int32.TryParse(ddlTodosLoja.SelectedValue, out loja);
+        DataTable tabela = ListarTodos(ddlTodosTipo.SelectedValue, loja, ddlTodosStatus.SelectedValue, txtTodosBusca.Text, 5000);
+
+        Response.Clear();
+        Response.Buffer = true;
+        Response.ContentType = "application/vnd.ms-excel";
+        Response.ContentEncoding = Encoding.UTF8;
+        Response.AddHeader("Content-Disposition", "attachment; filename=patio-todos-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".xls");
+        Response.Write("\uFEFF");
+        Response.Write("<table border='1'><thead><tr>");
+        string[] colunas = { "tipo", "ve_nr", "codigo_origem", "ve_ds", "ve_chassi", "ve_placa", "ve_renavam", "cor_ds", "loja_atual", "status_operacional", "observacao", "dias_parado", "fun_cad", "dt_cad", "ultima_movimentacao" };
+        string[] titulos = { "Tipo", "Codigo", "Referencia", "Veiculo", "Chassi", "Placa", "Renavam", "Cor", "Loja atual", "Status", "Observacao", "Dias parado", "Usuario cadastro", "Data cadastro", "Ultima movimentacao" };
+        for (int i = 0; i < titulos.Length; i++) Response.Write("<th>" + Html(titulos[i]) + "</th>");
+        Response.Write("</tr></thead><tbody>");
+        foreach (DataRow row in tabela.Rows)
+        {
+            Response.Write("<tr>");
+            foreach (string coluna in colunas)
+            {
+                Response.Write("<td>" + Html(Valor(row, coluna)) + "</td>");
+            }
+            Response.Write("</tr>");
+        }
+        Response.Write("</tbody></table>");
+        Response.Flush();
+        Context.ApplicationInstance.CompleteRequest();
+    }
+
     private DataRow LocalizarSeminovoNoPatio(string busca)
     {
         DataTable tabela = ExecutarProcedureTabela("dbo.veiculos_patio_seminovos_localizar", Param("@busca", SqlDbType.VarChar, busca));
@@ -886,6 +1324,25 @@ ORDER BY p.dt_cad DESC, p.ve_nr DESC;",
         {
             return false;
         }
+    }
+
+    private bool LojaAtiva(int lojaId)
+    {
+        if (lojaId <= 0) return false;
+
+        DataTable tabela = ExecutarSqlTabela(@"
+SELECT TOP 1 id
+FROM dbo.veiculos_patio_loja WITH (NOLOCK)
+WHERE id = @id
+  AND ISNULL(ativo, 1) = 1;",
+            Param("@id", SqlDbType.Int, lojaId));
+
+        return tabela.Rows.Count > 0;
+    }
+
+    private string IpAtual()
+    {
+        return Request.UserHostAddress ?? "";
     }
 
     private DataTable ExecutarProcedureTabela(string procedure, params SqlParameter[] parametros)
