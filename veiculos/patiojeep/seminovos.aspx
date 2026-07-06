@@ -279,6 +279,64 @@
             font-weight: 950;
         }
 
+        .semi-location-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            border-radius: 999px;
+            padding: .5rem .75rem;
+            background: #203729;
+            color: #fff;
+            font-size: .8rem;
+            font-weight: 950;
+            white-space: nowrap;
+        }
+
+        .semi-detail-panel {
+            margin-top: 1rem;
+            border: 1px solid #cfe2c3;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #f8fff5, #ffffff);
+            padding: 1rem;
+        }
+
+        .semi-detail-header {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .semi-detail-header small {
+            display: block;
+            color: #64748b;
+            font-weight: 900;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+
+        .semi-detail-header strong {
+            display: block;
+            color: #0f172a;
+            font-size: 1.2rem;
+            font-weight: 950;
+        }
+
+        .semi-detail-header span {
+            color: #64748b;
+            font-weight: 800;
+        }
+
+        .semi-history-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .75rem;
+            margin: 1rem 0 .65rem;
+            color: #203729;
+            font-weight: 950;
+        }
+
         .semi-table-wrap {
             overflow-x: auto;
         }
@@ -468,7 +526,8 @@
 
         @media (max-width: 767.98px) {
             .semi-card-header,
-            .semi-vehicle-main {
+            .semi-vehicle-main,
+            .semi-detail-header {
                 grid-template-columns: 1fr;
                 display: grid;
             }
@@ -498,6 +557,45 @@
 
             .semi-search-control .semi-btn {
                 width: 100%;
+            }
+
+            .semi-table,
+            .semi-table thead,
+            .semi-table tbody,
+            .semi-table th,
+            .semi-table td,
+            .semi-table tr {
+                display: block;
+                min-width: 0;
+                width: 100%;
+            }
+
+            .semi-table thead {
+                display: none;
+            }
+
+            .semi-table tr {
+                border: 1px solid #dbe4ef;
+                border-radius: 16px;
+                margin-bottom: .85rem;
+                background: #fff;
+                overflow: hidden;
+            }
+
+            .semi-table td {
+                display: grid;
+                grid-template-columns: 112px minmax(0, 1fr);
+                gap: .65rem;
+                border-bottom: 1px solid #edf2f7;
+            }
+
+            .semi-table td:before {
+                content: attr(data-label);
+                color: #64748b;
+                font-size: .72rem;
+                font-weight: 950;
+                letter-spacing: .04em;
+                text-transform: uppercase;
             }
         }
 
@@ -666,6 +764,7 @@
                                                     <asp:LinkButton ID="btnConsultar" runat="server" CssClass="semi-btn semi-btn-primary js-safe-submit" OnClick="btnConsultar_Click"><i class="fa fa-filter"></i>Consultar</asp:LinkButton>
                                                     <asp:LinkButton ID="btnLimparConsulta" runat="server" CssClass="semi-btn semi-btn-light" OnClick="btnLimparConsulta_Click"><i class="fa fa-eraser"></i>Limpar</asp:LinkButton>
                                                 </div>
+                                                <asp:Literal ID="litConsultaDetalhe" runat="server"></asp:Literal>
                                                 <div class="mt-3 semi-table-wrap">
                                                     <asp:Literal ID="litConsultaTabela" runat="server"></asp:Literal>
                                                 </div>

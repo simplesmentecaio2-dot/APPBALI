@@ -323,14 +323,28 @@ ORDER BY ds;");
     {
         int loja;
         Int32.TryParse(ddlConsultaLoja.SelectedValue, out loja);
+        string busca = NormalizarBusca(txtConsultaBusca.Text);
 
         DataTable tabela = ExecutarProcedureTabela(
             "dbo.veiculos_patio_seminovos_listar",
             Param("@loja", SqlDbType.Int, loja),
-            Param("@busca", SqlDbType.VarChar, NormalizarBusca(txtConsultaBusca.Text))
+            Param("@busca", SqlDbType.VarChar, busca)
         );
 
-        litConsultaTabela.Text = RenderConsulta(tabela);
+        int detalheId = 0;
+        DataRow detalhe = null;
+        if (!IsPostBack && Int32.TryParse(Request.QueryString["detalhe"], out detalheId))
+        {
+            detalhe = LocalizarSeminovoPorId(detalheId);
+        }
+        else if (busca.Length >= 4 && tabela.Rows.Count == 1)
+        {
+            detalhe = tabela.Rows[0];
+            Int32.TryParse(Valor(detalhe, "id"), out detalheId);
+        }
+
+        litConsultaDetalhe.Text = detalhe == null ? "" : RenderConsultaDetalhe(detalhe);
+        litConsultaTabela.Text = RenderConsulta(tabela, detalheId);
     }
 
     private void CarregarRelatorio()
@@ -467,6 +481,35 @@ ORDER BY dt DESC, id DESC;"));
         return tabela.Rows.Count > 0 ? tabela.Rows[0] : null;
     }
 
+    private DataRow LocalizarSeminovoPorId(int id)
+    {
+        DataTable tabela = ExecutarSqlTabela(@"
+SELECT TOP 1
+    p.id,
+    p.ve_nr,
+    p.ve_ds,
+    p.ve_chassi,
+    p.ve_placa,
+    p.ve_renavam,
+    p.cor_ds,
+    p.codnf,
+    p.numeronf,
+    p.loja_id,
+    COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) AS loja_atual_id,
+    COALESCE(l.ds, 'Sem loja') AS loja_atual,
+    p.fun_cad,
+    p.dt_cad,
+    p.observacao
+FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
+LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
+    ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+WHERE p.ativo = 1
+  AND p.id = @id;",
+            Param("@id", SqlDbType.Int, id));
+
+        return tabela.Rows.Count > 0 ? tabela.Rows[0] : null;
+    }
+
     private string RenderVeiculoCard(DataRow row, string tipo, string titulo, string subtitulo)
     {
         StringBuilder html = new StringBuilder();
@@ -493,6 +536,11 @@ ORDER BY dt DESC, id DESC;"));
 
     private string RenderConsulta(DataTable tabela)
     {
+        return RenderConsulta(tabela, 0);
+    }
+
+    private string RenderConsulta(DataTable tabela, int detalheId)
+    {
         if (tabela.Rows.Count == 0)
         {
             return "<div class=\"semi-empty\">Nenhum seminovo encontrado neste filtro.</div>";
@@ -505,20 +553,54 @@ ORDER BY dt DESC, id DESC;"));
         foreach (DataRow row in tabela.Rows)
         {
             string busca = HttpUtility.UrlEncode(Valor(row, "ve_chassi"));
+            string id = Valor(row, "id");
+            bool selecionado = detalheId > 0 && id == Convert.ToString(detalheId);
             html.Append("<tr>");
-            html.Append("<td><span class=\"semi-row-actions\">");
+            html.Append("<td data-label=\"A&ccedil;&otilde;es\"><span class=\"semi-row-actions\">");
+            html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=consultar&amp;detalhe=").Append(HttpUtility.UrlEncode(id)).Append("\"><i class=\"fa fa-history\"></i>").Append(selecionado ? "Selecionado" : "Hist&oacute;rico").Append("</a>");
             html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=transferir&amp;busca=").Append(busca).Append("\"><i class=\"fa fa-exchange-alt\"></i>Transferir</a>");
             html.Append("</span></td>");
-            html.Append("<td><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong><small>C&oacute;d. ").Append(Html(Valor(row, "ve_nr"))).Append("</small></td>");
-            html.Append("<td>").Append(Html(Valor(row, "ve_chassi"))).Append("</td>");
-            html.Append("<td>").Append(Html(Valor(row, "ve_placa"))).Append("</td>");
-            html.Append("<td>").Append(Html(Valor(row, "ve_renavam"))).Append("</td>");
-            html.Append("<td>").Append(Html(Valor(row, "cor_ds"))).Append("</td>");
-            html.Append("<td><span class=\"semi-pill\">").Append(Html(Valor(row, "loja_atual"))).Append("</span></td>");
-            html.Append("<td>").Append(DataCurta(row, "dt_cad")).Append("<small>").Append(Html(Valor(row, "fun_cad"))).Append("</small></td>");
+            html.Append("<td data-label=\"Ve&iacute;culo\"><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong><small>C&oacute;d. ").Append(Html(Valor(row, "ve_nr"))).Append("</small></td>");
+            html.Append("<td data-label=\"Chassi\">").Append(Html(Valor(row, "ve_chassi"))).Append("</td>");
+            html.Append("<td data-label=\"Placa\">").Append(Html(Valor(row, "ve_placa"))).Append("</td>");
+            html.Append("<td data-label=\"Renavam\">").Append(Html(Valor(row, "ve_renavam"))).Append("</td>");
+            html.Append("<td data-label=\"Cor\">").Append(Html(Valor(row, "cor_ds"))).Append("</td>");
+            html.Append("<td data-label=\"Loja atual\"><span class=\"semi-location-pill\"><i class=\"fa fa-map-marker-alt\"></i>").Append(Html(Valor(row, "loja_atual"))).Append("</span></td>");
+            html.Append("<td data-label=\"Cadastro\">").Append(DataCurta(row, "dt_cad")).Append("<small>").Append(Html(Valor(row, "fun_cad"))).Append("</small></td>");
             html.Append("</tr>");
         }
         html.Append("</tbody></table>");
+        return html.ToString();
+    }
+
+    private string RenderConsultaDetalhe(DataRow row)
+    {
+        int id;
+        Int32.TryParse(Valor(row, "id"), out id);
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class=\"semi-detail-panel\">");
+        html.Append("<div class=\"semi-detail-header\">");
+        html.Append("<div><small>Localiza&ccedil;&atilde;o atual</small><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong>");
+        html.Append("<span>Cadastro realizado em ").Append(DataCurta(row, "dt_cad")).Append(" por ").Append(Html(Valor(row, "fun_cad"))).Append("</span></div>");
+        html.Append("<span class=\"semi-location-pill\"><i class=\"fa fa-map-marker-alt\"></i>").Append(Html(Valor(row, "loja_atual"))).Append("</span>");
+        html.Append("</div>");
+        html.Append("<div class=\"semi-pill-list\">");
+        html.Append(Pill("C&oacute;digo", Valor(row, "ve_nr")));
+        html.Append(Pill("Chassi", Valor(row, "ve_chassi")));
+        html.Append(Pill("Placa", Valor(row, "ve_placa")));
+        html.Append(Pill("Renavam", Valor(row, "ve_renavam")));
+        html.Append(Pill("Cor", Valor(row, "cor_ds")));
+        html.Append(Pill("NF", Valor(row, "numeronf")));
+        if (!String.IsNullOrWhiteSpace(Valor(row, "observacao")))
+        {
+            html.Append(Pill("Obs.", Valor(row, "observacao")));
+        }
+        html.Append("</div>");
+        html.Append("<div class=\"semi-history-title\"><span><i class=\"fa fa-route\"></i> Hist&oacute;rico de transfer&ecirc;ncias</span>");
+        html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=transferir&amp;busca=").Append(HttpUtility.UrlEncode(Valor(row, "ve_chassi"))).Append("\"><i class=\"fa fa-exchange-alt\"></i>Transferir este carro</a></div>");
+        html.Append("<div class=\"semi-table-wrap\">").Append(RenderHistorico(id)).Append("</div>");
+        html.Append("</div>");
         return html.ToString();
     }
 
@@ -531,7 +613,7 @@ ORDER BY dt DESC, id DESC;"));
 
         if (tabela.Rows.Count == 0)
         {
-            return "";
+            return "<div class=\"semi-empty\">Nenhuma movimenta&ccedil;&atilde;o registrada para este seminovo.</div>";
         }
 
         StringBuilder html = new StringBuilder();
@@ -541,11 +623,11 @@ ORDER BY dt DESC, id DESC;"));
         foreach (DataRow row in tabela.Rows)
         {
             html.Append("<tr>");
-            html.Append("<td>").Append(DataCurta(row, "data_movimento")).Append("</td>");
-            html.Append("<td>").Append(Html(Valor(row, "movimento"))).Append("</td>");
-            html.Append("<td>").Append(Html(Valor(row, "origem"))).Append("</td>");
-            html.Append("<td>").Append(Html(Valor(row, "destino"))).Append("</td>");
-            html.Append("<td>").Append(Html(Valor(row, "usuario"))).Append("</td>");
+            html.Append("<td data-label=\"Data\">").Append(DataCurta(row, "data_movimento")).Append("</td>");
+            html.Append("<td data-label=\"Movimento\">").Append(Html(Valor(row, "movimento"))).Append("</td>");
+            html.Append("<td data-label=\"Origem\">").Append(Html(String.IsNullOrWhiteSpace(Valor(row, "origem")) ? "-" : Valor(row, "origem"))).Append("</td>");
+            html.Append("<td data-label=\"Destino\"><span class=\"semi-pill\">").Append(Html(Valor(row, "destino"))).Append("</span></td>");
+            html.Append("<td data-label=\"Usu&aacute;rio\">").Append(Html(Valor(row, "usuario"))).Append("</td>");
             html.Append("</tr>");
         }
         html.Append("</tbody></table>");
@@ -611,11 +693,11 @@ ORDER BY dt DESC, id DESC;"));
         foreach (DataRow row in tabela.Rows)
         {
             html.Append("<tr>");
-            html.Append("<td>").Append(DataCurta(row, "dt")).Append("</td>");
-            html.Append("<td>").Append(Html(Valor(row, "acao"))).Append("</td>");
-            html.Append("<td>").Append(Html(Valor(row, "usuario"))).Append("</td>");
-            html.Append("<td>").Append(Html(Valor(row, "referencia"))).Append("</td>");
-            html.Append("<td>").Append(Html(Valor(row, "detalhe"))).Append("</td>");
+            html.Append("<td data-label=\"Data\">").Append(DataCurta(row, "dt")).Append("</td>");
+            html.Append("<td data-label=\"A&ccedil;&atilde;o\">").Append(Html(Valor(row, "acao"))).Append("</td>");
+            html.Append("<td data-label=\"Usu&aacute;rio\">").Append(Html(Valor(row, "usuario"))).Append("</td>");
+            html.Append("<td data-label=\"Ref.\">").Append(Html(Valor(row, "referencia"))).Append("</td>");
+            html.Append("<td data-label=\"Detalhe\">").Append(Html(Valor(row, "detalhe"))).Append("</td>");
             html.Append("</tr>");
         }
         html.Append("</tbody></table>");
