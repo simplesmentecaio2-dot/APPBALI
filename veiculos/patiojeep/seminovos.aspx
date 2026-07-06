@@ -176,6 +176,24 @@
             text-decoration: none !important;
         }
 
+        .semi-pager {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .65rem;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding: .85rem 1rem;
+            border: 1px solid #dbe4ef;
+            border-radius: 16px;
+            background: #f8fafc;
+        }
+
+        .semi-pager-info {
+            color: #475569;
+            font-weight: 900;
+        }
+
         .semi-btn-primary {
             background: linear-gradient(135deg, #203729, #6f9151);
             color: #fff !important;
@@ -614,6 +632,7 @@
         <asp:HiddenField ID="hfRegistroVeNr" runat="server" />
         <asp:HiddenField ID="hfRegistroReferencia" runat="server" />
         <asp:HiddenField ID="hfTransferenciaId" runat="server" />
+        <asp:HiddenField ID="hfConsultaPagina" runat="server" Value="1" />
         <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
             <div class="app-header header-shadow bg-dark">
                 <div class="app-header__logo">
@@ -759,6 +778,14 @@
                                                         <label class="semi-label" for="<%= txtConsultaBusca.ClientID %>">Busca</label>
                                                         <asp:TextBox ID="txtConsultaBusca" runat="server" CssClass="semi-input" MaxLength="40" autocomplete="off" placeholder="Modelo, c&oacute;digo, chassi, placa ou Renavam"></asp:TextBox>
                                                     </div>
+                                                    <div class="semi-field">
+                                                        <label class="semi-label" for="<%= ddlConsultaTamanho.ClientID %>">Linhas</label>
+                                                        <asp:DropDownList ID="ddlConsultaTamanho" runat="server" CssClass="semi-select">
+                                                            <asp:ListItem Value="25">25</asp:ListItem>
+                                                            <asp:ListItem Value="50" Selected="True">50</asp:ListItem>
+                                                            <asp:ListItem Value="100">100</asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </div>
                                                 </div>
                                                 <div class="semi-actions">
                                                     <asp:LinkButton ID="btnConsultar" runat="server" CssClass="semi-btn semi-btn-primary js-safe-submit" OnClick="btnConsultar_Click"><i class="fa fa-filter"></i>Consultar</asp:LinkButton>
@@ -767,6 +794,11 @@
                                                 <asp:Literal ID="litConsultaDetalhe" runat="server"></asp:Literal>
                                                 <div class="mt-3 semi-table-wrap">
                                                     <asp:Literal ID="litConsultaTabela" runat="server"></asp:Literal>
+                                                </div>
+                                                <div class="semi-pager">
+                                                    <asp:LinkButton ID="btnConsultaAnterior" runat="server" CssClass="semi-btn semi-btn-light" OnClick="btnConsultaAnterior_Click"><i class="fa fa-chevron-left"></i>Anterior</asp:LinkButton>
+                                                    <asp:Literal ID="litConsultaPaginacao" runat="server"></asp:Literal>
+                                                    <asp:LinkButton ID="btnConsultaProxima" runat="server" CssClass="semi-btn semi-btn-light" OnClick="btnConsultaProxima_Click">Pr&oacute;xima<i class="fa fa-chevron-right"></i></asp:LinkButton>
                                                 </div>
                                             </div>
                                         </div>

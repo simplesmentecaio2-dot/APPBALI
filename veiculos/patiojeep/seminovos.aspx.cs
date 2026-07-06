@@ -152,16 +152,32 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
 
     protected void btnConsultar_Click(object sender, EventArgs e)
     {
+        hfConsultaPagina.Value = "1";
         AtivarAba("consultar");
     }
 
     protected void btnLimparConsulta_Click(object sender, EventArgs e)
     {
         txtConsultaBusca.Text = "";
+        hfConsultaPagina.Value = "1";
+        ddlConsultaTamanho.SelectedValue = "50";
         if (ddlConsultaLoja.Items.Count > 0)
         {
             ddlConsultaLoja.SelectedValue = "0";
         }
+        AtivarAba("consultar");
+    }
+
+    protected void btnConsultaAnterior_Click(object sender, EventArgs e)
+    {
+        int pagina = PaginaConsulta();
+        hfConsultaPagina.Value = Math.Max(1, pagina - 1).ToString();
+        AtivarAba("consultar");
+    }
+
+    protected void btnConsultaProxima_Click(object sender, EventArgs e)
+    {
+        hfConsultaPagina.Value = (PaginaConsulta() + 1).ToString();
         AtivarAba("consultar");
     }
 
@@ -324,12 +340,11 @@ ORDER BY ds;");
         int loja;
         Int32.TryParse(ddlConsultaLoja.SelectedValue, out loja);
         string busca = NormalizarBusca(txtConsultaBusca.Text);
+        int total;
+        int pagina = PaginaConsulta();
+        int tamanho = TamanhoConsulta();
 
-        DataTable tabela = ExecutarProcedureTabela(
-            "dbo.veiculos_patio_seminovos_listar",
-            Param("@loja", SqlDbType.Int, loja),
-            Param("@busca", SqlDbType.VarChar, busca)
-        );
+        DataTable tabela = ListarSeminovosConsulta(loja, busca, tamanho, pagina, out total);
 
         int detalheId = 0;
         DataRow detalhe = null;
@@ -345,6 +360,31 @@ ORDER BY ds;");
 
         litConsultaDetalhe.Text = detalhe == null ? "" : RenderConsultaDetalhe(detalhe);
         litConsultaTabela.Text = RenderConsulta(tabela, detalheId);
+        litConsultaPaginacao.Text = RenderConsultaPaginacao(total, pagina, tamanho);
+        btnConsultaAnterior.Enabled = pagina > 1;
+        btnConsultaProxima.Enabled = (pagina * tamanho) < total;
+    }
+
+    private int PaginaConsulta()
+    {
+        int pagina;
+        return Int32.TryParse(hfConsultaPagina.Value, out pagina) && pagina > 0 ? pagina : 1;
+    }
+
+    private int TamanhoConsulta()
+    {
+        int tamanho;
+        if (!Int32.TryParse(ddlConsultaTamanho.SelectedValue, out tamanho)) tamanho = 50;
+        if (tamanho != 25 && tamanho != 50 && tamanho != 100) tamanho = 50;
+        return tamanho;
+    }
+
+    private string RenderConsultaPaginacao(int total, int pagina, int tamanho)
+    {
+        int inicio = total == 0 ? 0 : ((pagina - 1) * tamanho) + 1;
+        int fim = Math.Min(total, pagina * tamanho);
+        int paginas = total == 0 ? 1 : (int)Math.Ceiling(total / (double)tamanho);
+        return "<span class=\"semi-pager-info\">P&aacute;gina " + pagina + " de " + paginas + " &middot; " + inicio + "-" + fim + " de " + total + " seminovo(s)</span>";
     }
 
     private void CarregarRelatorio()
@@ -479,6 +519,71 @@ ORDER BY dt DESC, id DESC;"));
             Param("@busca", SqlDbType.VarChar, busca)
         );
         return tabela.Rows.Count > 0 ? tabela.Rows[0] : null;
+    }
+
+    private DataTable ListarSeminovosConsulta(int loja, string busca, int tamanhoPagina, int pagina, out int total)
+    {
+        string valor = NormalizarBusca(busca);
+        int inicio = ((Math.Max(1, pagina) - 1) * Math.Max(1, tamanhoPagina)) + 1;
+        int fim = inicio + Math.Max(1, tamanhoPagina) - 1;
+
+        string baseSql = @"
+;WITH filtrado AS
+(
+    SELECT
+        p.id,
+        p.ve_nr,
+        p.ve_ds,
+        p.ve_chassi,
+        p.ve_placa,
+        p.ve_renavam,
+        p.cor_ds,
+        p.numeronf,
+        COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) AS loja_atual_id,
+        COALESCE(l.ds, 'Sem loja') AS loja_atual,
+        p.fun_cad,
+        p.dt_cad,
+        p.observacao
+    FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
+    LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
+        ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+    WHERE p.ativo = 1
+      AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
+      AND (
+            @valor = ''
+         OR CONVERT(varchar(20), p.ve_nr) = @valor
+         OR CONVERT(varchar(20), p.id) = @valor
+         OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(p.ve_placa, '')), '-', ''), ' ', ''), '.', '') LIKE @valorLike
+         OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(p.ve_chassi, '')), '-', ''), ' ', ''), '.', '') LIKE @valorLike
+         OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(p.ve_renavam, '')), '-', ''), ' ', ''), '.', '') LIKE @valorLike
+         OR UPPER(ISNULL(p.ve_ds, '')) LIKE @valorLike
+      )
+)";
+
+        DataTable totalTabela = ExecutarSqlTabela(baseSql + @"
+SELECT COUNT(1) AS total
+FROM filtrado;",
+            Param("@loja", SqlDbType.Int, loja),
+            Param("@valor", SqlDbType.VarChar, valor),
+            Param("@valorLike", SqlDbType.VarChar, "%" + valor + "%"));
+
+        total = totalTabela.Rows.Count > 0 ? ToInt(Valor(totalTabela.Rows[0], "total")) : 0;
+
+        return ExecutarSqlTabela(baseSql + @"
+, numerado AS
+(
+    SELECT ROW_NUMBER() OVER (ORDER BY dt_cad DESC, id DESC) AS rn, *
+    FROM filtrado
+)
+SELECT *
+FROM numerado
+WHERE rn BETWEEN @inicio AND @fim
+ORDER BY rn;",
+            Param("@loja", SqlDbType.Int, loja),
+            Param("@valor", SqlDbType.VarChar, valor),
+            Param("@valorLike", SqlDbType.VarChar, "%" + valor + "%"),
+            Param("@inicio", SqlDbType.Int, inicio),
+            Param("@fim", SqlDbType.Int, fim));
     }
 
     private DataRow LocalizarSeminovoPorId(int id)
