@@ -310,7 +310,8 @@
     private bool EhPaginaLeitorCodigoBarras()
     {
         string caminho = Request.AppRelativeCurrentExecutionFilePath ?? "";
-        return caminho.Equals("~/veiculos/patiojeep/registrar.aspx", StringComparison.OrdinalIgnoreCase);
+        return caminho.Equals("~/veiculos/patiojeep/registrar.aspx", StringComparison.OrdinalIgnoreCase) ||
+            caminho.Equals("~/veiculos/patiojeep/novos.aspx", StringComparison.OrdinalIgnoreCase);
     }
 
     private bool UsuarioLogado()

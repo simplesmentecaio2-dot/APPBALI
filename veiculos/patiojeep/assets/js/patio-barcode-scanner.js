@@ -3,7 +3,7 @@
 
     var config = window.PatioBarcodeScannerConfig || {};
     var modalSelector = '#myModal';
-    var barcodeFormats = ['code_128', 'code_39', 'ean_13', 'ean_8', 'upc_a'];
+    var barcodeFormats = ['code_128', 'code_39', 'ean_13', 'ean_8', 'upc_a', 'qr_code'];
     var running = false;
     var locked = false;
     var stream = null;

@@ -10,6 +10,7 @@
     <link href="./main.css" rel="stylesheet" />
     <link href="../../css/bali-patio.css?v=20260704-1" rel="stylesheet" />
     <link href="../assets/all.min.css" rel="stylesheet" />
+    <script type="text/javascript" src="./assets/js/quagga.min.js"></script>
     <style>
         .novos-shell { display: grid; gap: 1rem; }
         .novos-tabs { display: flex; flex-wrap: wrap; gap: .65rem; }
@@ -118,6 +119,33 @@
         .novos-status.is-alerta { background:#fffbeb; color:#92400e; }
         .novos-status.is-ok { background:#f0fdf4; color:#166534; }
         .novos-print-toolbar { display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; justify-content:flex-end; }
+        .barcode-modal .modal-dialog { max-width:720px; }
+        .barcode-modal .modal-content { border:0; border-radius:18px; overflow:hidden; box-shadow:0 24px 70px rgba(0,0,0,.32); }
+        .barcode-modal .modal-header { align-items:center; background:linear-gradient(135deg,#10271b,#215c3d); color:#fff; border:0; }
+        .barcode-modal .modal-title { display:flex; align-items:center; gap:.55rem; font-weight:900; }
+        .scanner-stage { position:relative; width:100%; min-height:420px; overflow:hidden; border-radius:18px; background:#0f172a; }
+        #scanner-video, #scanner-container, #scanner-container video, #scanner-container canvas { position:absolute; inset:0; width:100% !important; height:100% !important; object-fit:cover; }
+        #scanner-video, #scanner-container { display:block; }
+        #scanner-video.is-hidden, #scanner-container.is-hidden, .barcode-modal .is-hidden { display:none !important; }
+        .scanner-reticle { position:absolute; left:50%; top:50%; width:min(88%,560px); height:132px; transform:translate(-50%,-50%); border:2px solid rgba(255,255,255,.84); border-radius:20px; box-shadow:0 0 0 999px rgba(2,6,23,.42); pointer-events:none; }
+        .scanner-reticle::before { content:""; position:absolute; left:18px; right:18px; top:50%; height:2px; transform:translateY(-50%); background:linear-gradient(90deg,transparent,#22c55e,transparent); box-shadow:0 0 18px rgba(34,197,94,.85); }
+        .scanner-hint { position:absolute; left:1rem; right:1rem; bottom:1rem; display:flex; justify-content:space-between; gap:.75rem; flex-wrap:wrap; color:#fff; font-weight:800; text-shadow:0 2px 12px rgba(0,0,0,.6); pointer-events:none; }
+        .scanner-pill { display:inline-flex; align-items:center; gap:.4rem; padding:.38rem .65rem; border-radius:999px; background:rgba(15,23,42,.74); backdrop-filter:blur(7px); }
+        .scanner-status { min-height:42px; margin:.85rem 0 0; padding:.75rem .9rem; border-radius:14px; background:#f8fafc; color:#334155; font-weight:800; }
+        .scanner-status--success { color:#14532d; background:#dcfce7; }
+        .scanner-status--error { color:#7f1d1d; background:#fee2e2; }
+        .scanner-status--warning { color:#713f12; background:#fef3c7; }
+        .scanner-status--info { color:#1e3a8a; background:#dbeafe; }
+        .scanner-tools { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:.65rem; margin-top:.85rem; }
+        .scanner-tools select, .scanner-tools button { min-height:42px; border-radius:12px; font-weight:850; }
+        .scanner-zoom { display:grid; grid-template-columns:auto minmax(150px,1fr); align-items:center; gap:.75rem; margin-top:.75rem; padding:.75rem .9rem; border:1px solid #dbe4ef; border-radius:14px; background:#f8fafc; color:#334155; font-weight:850; }
+        .scanner-zoom input { width:100%; }
+        .scanner-help { margin-top:.75rem; padding:.75rem .9rem; border:1px solid #dbe4ef; border-radius:14px; background:#fff; color:#334155; }
+        .scanner-help summary { cursor:pointer; font-weight:950; }
+        .scanner-help ul { margin:.65rem 0 0; padding-left:1.1rem; }
+        .scanner-manual { display:grid; grid-template-columns:1fr auto; gap:.6rem; margin-top:.85rem; }
+        .scanner-manual input { min-height:46px; border-radius:14px; font-size:1.12rem; font-weight:900; letter-spacing:.08em; text-align:center; }
+        .scanner-actions { display:flex; align-items:center; justify-content:space-between; gap:.6rem; flex-wrap:wrap; margin-top:.85rem; }
         .novos-modal {
             position:fixed; inset:0; z-index:1050; display:grid; place-items:center; padding:1rem;
             background:rgba(15,23,42,.56);
@@ -148,6 +176,11 @@
             .novos-mobile-actions { display:flex; position:fixed; left:0; right:0; bottom:0; z-index:1035; gap:.5rem; padding:.7rem; background:#fff; border-top:1px solid #dbe4ef; box-shadow:0 -10px 26px rgba(15,23,42,.12); }
             .novos-mobile-actions .novos-btn { flex:1; }
             body[data-patio-page="novos.aspx"] { padding-bottom:76px; }
+            .barcode-modal .modal-dialog { width:100%; max-width:none; height:100%; margin:0; }
+            .barcode-modal .modal-content { min-height:100%; border-radius:0; }
+            .scanner-stage { min-height:min(64vh,560px); border-radius:16px; }
+            .scanner-reticle { height:112px; }
+            .scanner-manual, .scanner-tools, .scanner-zoom { grid-template-columns:1fr; }
         }
         @media (max-width:480px) { .novos-tabs { grid-template-columns:1fr; } }
         @media print {
@@ -427,6 +460,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="novos-actions">
+                                                    <button type="button" id="openBarcodeScanner" data-toggle="modal" data-target="#myModal" class="novos-btn novos-btn-light"><i class="fa fa-barcode"></i>Ler pela c&acirc;mera</button>
                                                     <asp:LinkButton ID="btnPesquisarRegistro" runat="server" CssClass="novos-btn novos-btn-light js-safe-submit" OnClick="btnPesquisarRegistro_Click"><i class="fa fa-search-location"></i>Buscar ve&iacute;culo</asp:LinkButton>
                                                     <asp:LinkButton ID="btnSalvarRegistro" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnSalvarRegistro_Click"><i class="far fa-save"></i>Salvar registro</asp:LinkButton>
                                                 </div>
@@ -600,9 +634,77 @@
             </div>
         </div>
     </form>
+
+    <div class="modal barcode-modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="barcodeModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="barcodeModalTitle"><i class="fa fa-barcode"></i> Leitor de c&oacute;digo pela c&acirc;mera</h4>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Fechar">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="scanner-stage">
+                        <video id="scanner-video" class="is-hidden" muted autoplay playsinline></video>
+                        <div id="scanner-container" class="is-hidden"></div>
+                        <div class="scanner-reticle"></div>
+                        <div class="scanner-hint">
+                            <span class="scanner-pill"><i class="fa fa-mobile-alt"></i> Aproxime o c&oacute;digo da faixa central</span>
+                            <span class="scanner-pill" id="scannerEngine">Preparando c&acirc;mera</span>
+                        </div>
+                    </div>
+                    <div class="scanner-tools">
+                        <select id="scannerCameraSelect" class="form-control is-hidden" aria-label="Selecionar c&acirc;mera"></select>
+                        <button type="button" id="scannerSwitchCamera" class="btn btn-outline-dark is-hidden"><i class="fa fa-sync-alt mr-1"></i> Trocar c&acirc;mera</button>
+                    </div>
+                    <label id="scannerZoomGroup" class="scanner-zoom is-hidden">
+                        <span>Zoom da c&acirc;mera</span>
+                        <input type="range" id="scannerZoom" min="1" max="1" step="0.1" value="1" />
+                    </label>
+                    <div id="scannerStatus" class="scanner-status" aria-live="polite">Ao permitir a c&acirc;mera, a leitura come&ccedil;a automaticamente.</div>
+                    <div class="scanner-manual">
+                        <input type="text" id="scannerManualSerie" class="form-control" inputmode="text" pattern="[A-Za-z0-9]*" maxlength="7" placeholder="Digitar s&eacute;rie manualmente" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+                        <button type="button" id="scannerApplyManual" class="btn btn-success"><i class="fa fa-check mr-1"></i> Usar s&eacute;rie</button>
+                    </div>
+                    <details class="scanner-help">
+                        <summary>N&atilde;o conseguiu ler?</summary>
+                        <ul>
+                            <li>Limpe a lente da c&acirc;mera e evite reflexo direto no c&oacute;digo.</li>
+                            <li>Aproxime devagar at&eacute; o c&oacute;digo preencher a faixa central.</li>
+                            <li>Se o celular abrir a c&acirc;mera errada, use Trocar c&acirc;mera.</li>
+                            <li>Se ainda falhar, digite manualmente os 7 caracteres da s&eacute;rie.</li>
+                        </ul>
+                    </details>
+                    <div class="scanner-actions">
+                        <div>
+                            <small class="text-muted">Resultado: <strong id="result">aguardando leitura</strong></small>
+                            <small class="text-muted d-block">C&oacute;digo lido: <span id="scannerLastRaw">-</span></small>
+                        </div>
+                        <div>
+                            <button type="button" id="scannerTorch" class="btn btn-outline-secondary is-hidden"><i class="fa fa-lightbulb mr-1"></i> Luz</button>
+                            <button type="button" id="scannerRetry" class="btn btn-outline-dark"><i class="fa fa-redo mr-1"></i> Reiniciar</button>
+                            <button type="button" id="scannerDiagnostics" class="btn btn-outline-info"><i class="fa fa-stethoscope mr-1"></i> Enviar diagn&oacute;stico</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-lg btn-danger" data-dismiss="modal">Cancelar leitura</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="../assets/popper.min.js"></script>
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
+    <script>
+        window.PatioBarcodeScannerConfig = {
+            serieInputId: '<%= txtRegistroSerie.ClientID %>',
+            searchButtonId: '<%= btnPesquisarRegistro.ClientID %>',
+            postBackTarget: '<%= btnPesquisarRegistro.UniqueID %>',
+            logEndpoint: './barcode-log.ashx'
+        };
+    </script>
+    <script src="./assets/js/patio-barcode-scanner.js?v=20260706-1" charset="utf-8"></script>
     <script src="./assets/js/patio-jeep-ux.js?v=20260706-5"></script>
     <script>
         (function () {
