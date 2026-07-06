@@ -164,6 +164,12 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
     {
         AtivarAba("transferir");
 
+        if (!UsuarioTemAcesso(2))
+        {
+            MostrarMensagem("error", "Acesso restrito", "Seu usu\u00e1rio n\u00e3o tem permiss\u00e3o para transferir ve\u00edculos no p\u00e1tio.");
+            return;
+        }
+
         int seminovoId;
         int destino;
         if (!Int32.TryParse(hfTransferenciaId.Value, out seminovoId))
@@ -732,6 +738,31 @@ WHERE id = @id
             Param("@id", SqlDbType.Int, lojaId));
 
         return tabela.Rows.Count > 0;
+    }
+
+    private bool UsuarioTemAcesso(int acessoId)
+    {
+        string cacheKey = "patio_acesso_" + acessoId;
+        if (Session[cacheKey] != null)
+        {
+            return Session[cacheKey].ToString() == "s";
+        }
+
+        try
+        {
+            DataTable tabela = ExecutarProcedureTabela(
+                "APP..veiculos_patio_verificar_acesso",
+                Param("@fun_cad", SqlDbType.VarChar, UsuarioAtual()),
+                Param("@acesso_id", SqlDbType.Int, acessoId));
+
+            string retorno = tabela.Rows.Count > 0 ? Valor(tabela.Rows[0], "resultado") : "n";
+            Session[cacheKey] = retorno;
+            return retorno == "s";
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private SqlParameter Param(string nome, SqlDbType tipo, object valor)
