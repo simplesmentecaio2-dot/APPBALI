@@ -48,46 +48,7 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
     protected void btnPesquisarRegistro_Click(object sender, EventArgs e)
     {
         AtivarAba("registrar");
-        string busca = NormalizarBusca(txtRegistroBusca.Text);
-        LimparRegistro(false);
-        txtRegistroBusca.Text = busca;
-
-        if (busca.Length < 4)
-        {
-            RegistrarAuditoria("REGISTRO_BUSCA_INVALIDA", null, busca, "Busca com menos de 4 caracteres.");
-            MostrarMensagem("warning", "Informe mais dados", "Digite chassi completo, placa ou Renavam antes de pesquisar.");
-            txtRegistroBusca.Focus();
-            return;
-        }
-
-        DataRow veiculo = ConsultarVeiculoDealernet(busca);
-        if (veiculo == null)
-        {
-            RegistrarAuditoria("REGISTRO_NAO_ENCONTRADO", null, busca, "Nenhum seminovo retornado pela consulta.");
-            MostrarMensagem("warning", "Ve\u00edculo n\u00e3o encontrado", "N\u00e3o localizei esse chassi, placa ou Renavam no sistema interno. Confira o valor informado.");
-            txtRegistroBusca.Focus();
-            return;
-        }
-
-        string codigoVeiculo = Valor(veiculo, "ve_nr");
-        DataRow jaRegistrado = LocalizarSeminovo(codigoVeiculo);
-        if (jaRegistrado != null)
-        {
-            btnSalvarRegistro.Enabled = false;
-            hfRegistroVeNr.Value = "";
-            litRegistroVeiculo.Text = RenderVeiculoCard(jaRegistrado, "warning", "Seminovo j\u00e1 registrado", "Local atual: " + Valor(jaRegistrado, "loja_atual"));
-            RegistrarAuditoria("REGISTRO_DUPLICADO", ToIntNullable(codigoVeiculo), busca, "Tentativa de registrar veiculo ja ativo.");
-            MostrarMensagem("warning", "Registro j\u00e1 existente", "Este seminovo j\u00e1 est\u00e1 registrado no p\u00e1tio. Para mudar a loja, use a aba Transferir.");
-            return;
-        }
-
-        hfRegistroVeNr.Value = codigoVeiculo;
-        hfRegistroReferencia.Value = busca;
-        btnSalvarRegistro.Enabled = true;
-        litRegistroVeiculo.Text = RenderVeiculoCard(veiculo, "success", "Ve\u00edculo encontrado", "Confira a loja inicial e salve o registro.");
-        RegistrarAuditoria("REGISTRO_BUSCA_SUCESSO", ToIntNullable(codigoVeiculo), busca, "Veiculo encontrado para registro.");
-        MostrarMensagem("success", "Dados carregados", "Confira as informa\u00e7\u00f5es do seminovo, selecione a loja inicial e clique em Salvar registro.");
-        ddlRegistroLoja.Focus();
+        CarregarRegistroPorBusca(true);
     }
 
     protected void btnSalvarRegistro_Click(object sender, EventArgs e)
@@ -98,8 +59,10 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
         int loja;
         if (!Int32.TryParse(hfRegistroVeNr.Value, out veiculo))
         {
-            MostrarMensagem("warning", "Pesquise o ve\u00edculo", "Antes de salvar, pesquise o chassi, placa ou Renavam para carregar os dados do seminovo.");
-            return;
+            if (!CarregarRegistroPorBusca(false) || !Int32.TryParse(hfRegistroVeNr.Value, out veiculo))
+            {
+                return;
+            }
         }
 
         if (!Int32.TryParse(ddlRegistroLoja.SelectedValue, out loja) || loja <= 0)
@@ -137,6 +100,54 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
 
         RegistrarAuditoria("REGISTRO_ERRO", veiculo, hfRegistroReferencia.Value, "Procedure retornou resultado=" + resultado);
         MostrarMensagem("error", "N\u00e3o foi poss\u00edvel salvar", "O ve\u00edculo n\u00e3o foi localizado novamente no sistema interno. Pesquise e tente salvar outra vez.");
+    }
+
+    private bool CarregarRegistroPorBusca(bool exibirMensagemSucesso)
+    {
+        string busca = NormalizarBusca(txtRegistroBusca.Text);
+        LimparRegistro(false);
+        txtRegistroBusca.Text = busca;
+
+        if (busca.Length < 4)
+        {
+            RegistrarAuditoria("REGISTRO_BUSCA_INVALIDA", null, busca, "Busca com menos de 4 caracteres.");
+            MostrarMensagem("warning", "Informe mais dados", "Digite chassi completo, placa ou Renavam antes de pesquisar.");
+            txtRegistroBusca.Focus();
+            return false;
+        }
+
+        DataRow veiculo = ConsultarVeiculoDealernet(busca);
+        if (veiculo == null)
+        {
+            RegistrarAuditoria("REGISTRO_NAO_ENCONTRADO", null, busca, "Nenhum seminovo retornado pela consulta.");
+            MostrarMensagem("warning", "Ve\u00edculo n\u00e3o encontrado", "N\u00e3o localizei esse chassi, placa ou Renavam no sistema interno. Confira o valor informado.");
+            txtRegistroBusca.Focus();
+            return false;
+        }
+
+        string codigoVeiculo = Valor(veiculo, "ve_nr");
+        DataRow jaRegistrado = LocalizarSeminovo(codigoVeiculo);
+        if (jaRegistrado != null)
+        {
+            btnSalvarRegistro.Enabled = false;
+            hfRegistroVeNr.Value = "";
+            litRegistroVeiculo.Text = RenderVeiculoCard(jaRegistrado, "warning", "Seminovo j\u00e1 registrado", "Local atual: " + Valor(jaRegistrado, "loja_atual"));
+            RegistrarAuditoria("REGISTRO_DUPLICADO", ToIntNullable(codigoVeiculo), busca, "Tentativa de registrar veiculo ja ativo.");
+            MostrarMensagem("warning", "Registro j\u00e1 existente", "Este seminovo j\u00e1 est\u00e1 registrado no p\u00e1tio. Para mudar a loja, use a aba Transferir.");
+            return false;
+        }
+
+        hfRegistroVeNr.Value = codigoVeiculo;
+        hfRegistroReferencia.Value = busca;
+        btnSalvarRegistro.Enabled = true;
+        litRegistroVeiculo.Text = RenderVeiculoCard(veiculo, "success", "Ve\u00edculo encontrado", "Confira a loja inicial e salve o registro.");
+        RegistrarAuditoria("REGISTRO_BUSCA_SUCESSO", ToIntNullable(codigoVeiculo), busca, "Veiculo encontrado para registro.");
+        if (exibirMensagemSucesso)
+        {
+            MostrarMensagem("success", "Dados carregados", "Confira as informa\u00e7\u00f5es do seminovo, selecione a loja inicial e clique em Salvar registro.");
+            ddlRegistroLoja.Focus();
+        }
+        return true;
     }
 
     protected void btnConsultar_Click(object sender, EventArgs e)

@@ -144,6 +144,17 @@
             box-shadow: 0 0 0 4px rgba(111, 145, 81, .14);
         }
 
+        .semi-search-control {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: .65rem;
+            align-items: stretch;
+        }
+
+        .semi-search-control .semi-btn {
+            min-width: 132px;
+        }
+
         .semi-actions {
             display: flex;
             flex-wrap: wrap;
@@ -480,6 +491,14 @@
             .semi-kpis {
                 grid-template-columns: 1fr 1fr;
             }
+
+            .semi-search-control {
+                grid-template-columns: 1fr;
+            }
+
+            .semi-search-control .semi-btn {
+                width: 100%;
+            }
         }
 
         @media (max-width: 480px) {
@@ -602,7 +621,10 @@
                                                 <div class="semi-form-grid">
                                                     <div class="semi-field is-wide">
                                                         <label class="semi-label" for="<%= txtRegistroBusca.ClientID %>">Identifica&ccedil;&atilde;o do ve&iacute;culo</label>
-                                                        <asp:TextBox ID="txtRegistroBusca" runat="server" CssClass="semi-input" MaxLength="40" autocomplete="off" placeholder="Digite chassi completo, placa ou Renavam"></asp:TextBox>
+                                                        <div class="semi-search-control">
+                                                            <asp:TextBox ID="txtRegistroBusca" runat="server" CssClass="semi-input" MaxLength="40" autocomplete="off" placeholder="Digite chassi completo, placa ou Renavam"></asp:TextBox>
+                                                            <asp:LinkButton ID="btnPesquisarRegistro" runat="server" CssClass="semi-btn semi-btn-light js-safe-submit" OnClick="btnPesquisarRegistro_Click"><i class="fa fa-search"></i>Pesquisar</asp:LinkButton>
+                                                        </div>
                                                     </div>
                                                     <div class="semi-field">
                                                         <label class="semi-label" for="<%= ddlRegistroLoja.ClientID %>">Loja inicial</label>
@@ -614,7 +636,6 @@
                                                     </div>
                                                 </div>
                                                 <div class="semi-actions">
-                                                    <asp:LinkButton ID="btnPesquisarRegistro" runat="server" CssClass="semi-btn semi-btn-light js-safe-submit" OnClick="btnPesquisarRegistro_Click"><i class="fa fa-search"></i>Pesquisar</asp:LinkButton>
                                                     <asp:LinkButton ID="btnSalvarRegistro" runat="server" CssClass="semi-btn semi-btn-primary js-safe-submit" OnClick="btnSalvarRegistro_Click"><i class="far fa-save"></i>Salvar registro</asp:LinkButton>
                                                 </div>
                                                 <asp:Literal ID="litRegistroVeiculo" runat="server"></asp:Literal>
@@ -793,6 +814,48 @@
     <script>
         (function () {
             function textOf(el) { return el ? (el.textContent || '').trim() : ''; }
+            function normalize(value) {
+                return String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+            }
+
+            var lastAutoSearch = '';
+
+            function bindRegistroAutoSearch() {
+                var registroInput = document.getElementById('<%= txtRegistroBusca.ClientID %>');
+                var registroHidden = document.getElementById('<%= hfRegistroVeNr.ClientID %>');
+                var registroReferencia = document.getElementById('<%= hfRegistroReferencia.ClientID %>');
+                var registroSearch = document.getElementById('<%= btnPesquisarRegistro.ClientID %>');
+                if (!registroInput || !registroSearch || registroInput.getAttribute('data-auto-search-bound') === '1') return;
+                lastAutoSearch = registroReferencia ? normalize(registroReferencia.value) : lastAutoSearch;
+                registroInput.setAttribute('data-auto-search-bound', '1');
+
+                function autoSearchRegistro() {
+                    var value = normalize(registroInput.value);
+                    var loadedReference = registroReferencia ? normalize(registroReferencia.value) : '';
+                    var hasLoadedVehicle = registroHidden && registroHidden.value;
+                    if (value.length < 4) return;
+                    if (hasLoadedVehicle && loadedReference === value) return;
+                    if (lastAutoSearch === value) return;
+                    lastAutoSearch = value;
+                    registroSearch.click();
+                }
+
+                registroInput.addEventListener('blur', function () {
+                    window.setTimeout(autoSearchRegistro, 120);
+                });
+                registroInput.addEventListener('keydown', function (event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        autoSearchRegistro();
+                    }
+                });
+                registroInput.addEventListener('input', function () {
+                    if (registroHidden) registroHidden.value = '';
+                });
+            }
+
+            bindRegistroAutoSearch();
+
             if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
                 var manager = Sys.WebForms.PageRequestManager.getInstance();
                 manager.add_beginRequest(function () {
@@ -810,6 +873,7 @@
                         buttons[i].removeAttribute('data-original-text');
                         buttons[i].classList.remove('aspNetDisabled');
                     }
+                    bindRegistroAutoSearch();
                 });
             }
         })();
