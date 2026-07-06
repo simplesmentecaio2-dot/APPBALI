@@ -490,7 +490,7 @@
         }
     </style>
 </head>
-<body class="patio-modern-page patio-brand-jeep">
+<body class="patio-modern-page patio-brand-jeep" data-patio-page="seminovos.aspx">
     <form id="form1" runat="server">
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
         <asp:HiddenField ID="hfAbaAtual" runat="server" />
@@ -614,8 +614,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="semi-actions">
-                                                    <asp:LinkButton ID="btnPesquisarRegistro" runat="server" CssClass="semi-btn semi-btn-light" OnClick="btnPesquisarRegistro_Click"><i class="fa fa-search"></i>Pesquisar</asp:LinkButton>
-                                                    <asp:LinkButton ID="btnSalvarRegistro" runat="server" CssClass="semi-btn semi-btn-primary" OnClick="btnSalvarRegistro_Click"><i class="far fa-save"></i>Salvar registro</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnPesquisarRegistro" runat="server" CssClass="semi-btn semi-btn-light js-safe-submit" OnClick="btnPesquisarRegistro_Click"><i class="fa fa-search"></i>Pesquisar</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnSalvarRegistro" runat="server" CssClass="semi-btn semi-btn-primary js-safe-submit" OnClick="btnSalvarRegistro_Click"><i class="far fa-save"></i>Salvar registro</asp:LinkButton>
                                                 </div>
                                                 <asp:Literal ID="litRegistroVeiculo" runat="server"></asp:Literal>
                                             </div>
@@ -642,7 +642,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="semi-actions">
-                                                    <asp:LinkButton ID="btnConsultar" runat="server" CssClass="semi-btn semi-btn-primary" OnClick="btnConsultar_Click"><i class="fa fa-filter"></i>Consultar</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnConsultar" runat="server" CssClass="semi-btn semi-btn-primary js-safe-submit" OnClick="btnConsultar_Click"><i class="fa fa-filter"></i>Consultar</asp:LinkButton>
                                                     <asp:LinkButton ID="btnLimparConsulta" runat="server" CssClass="semi-btn semi-btn-light" OnClick="btnLimparConsulta_Click"><i class="fa fa-eraser"></i>Limpar</asp:LinkButton>
                                                 </div>
                                                 <div class="mt-3 semi-table-wrap">
@@ -678,8 +678,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="semi-actions">
-                                                    <asp:LinkButton ID="btnBuscarTransferencia" runat="server" CssClass="semi-btn semi-btn-light" OnClick="btnBuscarTransferencia_Click"><i class="fa fa-search-location"></i>Pesquisar</asp:LinkButton>
-                                                    <asp:LinkButton ID="btnTransferir" runat="server" CssClass="semi-btn semi-btn-primary" OnClick="btnTransferir_Click"><i class="fa fa-exchange-alt"></i>Transferir</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnBuscarTransferencia" runat="server" CssClass="semi-btn semi-btn-light js-safe-submit" OnClick="btnBuscarTransferencia_Click"><i class="fa fa-search-location"></i>Pesquisar</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnTransferir" runat="server" CssClass="semi-btn semi-btn-primary js-safe-submit" OnClick="btnTransferir_Click"><i class="fa fa-exchange-alt"></i>Transferir</asp:LinkButton>
                                                 </div>
                                                 <asp:Literal ID="litTransferenciaVeiculo" runat="server"></asp:Literal>
                                                 <div class="mt-3 semi-table-wrap">
@@ -696,7 +696,7 @@
                                                     <small>BI de seminovos</small>
                                                     <h2 class="semi-card-title">Relat&oacute;rios</h2>
                                                 </div>
-                                                <asp:LinkButton ID="btnAtualizarRelatorio" runat="server" CssClass="semi-btn semi-btn-light" OnClick="btnAtualizarRelatorio_Click"><i class="fa fa-sync-alt"></i>Atualizar</asp:LinkButton>
+                                                <asp:LinkButton ID="btnAtualizarRelatorio" runat="server" CssClass="semi-btn semi-btn-light js-safe-submit" OnClick="btnAtualizarRelatorio_Click"><i class="fa fa-sync-alt"></i>Atualizar</asp:LinkButton>
                                             </div>
                                             <div class="semi-card-body">
                                                 <asp:Literal ID="litResumo" runat="server"></asp:Literal>
@@ -790,5 +790,29 @@
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
     <script src="./assets/js/patio-jeep-ux.js?v=20260706-5"></script>
+    <script>
+        (function () {
+            function textOf(el) { return el ? (el.textContent || '').trim() : ''; }
+            if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
+                var manager = Sys.WebForms.PageRequestManager.getInstance();
+                manager.add_beginRequest(function () {
+                    var active = document.activeElement;
+                    if (active && active.classList && active.classList.contains('js-safe-submit')) {
+                        active.setAttribute('data-original-text', textOf(active));
+                        active.classList.add('aspNetDisabled');
+                        active.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Processando...';
+                    }
+                });
+                manager.add_endRequest(function () {
+                    var buttons = document.querySelectorAll('.js-safe-submit[data-original-text]');
+                    for (var i = 0; i < buttons.length; i++) {
+                        buttons[i].innerHTML = buttons[i].getAttribute('data-original-text');
+                        buttons[i].removeAttribute('data-original-text');
+                        buttons[i].classList.remove('aspNetDisabled');
+                    }
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
