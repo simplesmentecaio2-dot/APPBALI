@@ -663,6 +663,7 @@ WHERE p.ativo = 1
             html.Append("<tr>");
             html.Append("<td data-label=\"A&ccedil;&otilde;es\"><span class=\"semi-row-actions\">");
             html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=consultar&amp;detalhe=").Append(HttpUtility.UrlEncode(id)).Append("\"><i class=\"fa fa-history\"></i>").Append(selecionado ? "Selecionado" : "Hist&oacute;rico").Append("</a>");
+            html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=consultar&amp;detalhe=").Append(HttpUtility.UrlEncode(id)).Append("#auditoria\"><i class=\"fa fa-shield-alt\"></i>Auditoria</a>");
             html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=transferir&amp;busca=").Append(busca).Append("\"><i class=\"fa fa-exchange-alt\"></i>Transferir</a>");
             html.Append("</span></td>");
             html.Append("<td data-label=\"Ve&iacute;culo\"><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong><small>C&oacute;d. ").Append(Html(Valor(row, "ve_nr"))).Append("</small></td>");
@@ -705,8 +706,34 @@ WHERE p.ativo = 1
         html.Append("<div class=\"semi-history-title\"><span><i class=\"fa fa-route\"></i> Hist&oacute;rico de transfer&ecirc;ncias</span>");
         html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=transferir&amp;busca=").Append(HttpUtility.UrlEncode(Valor(row, "ve_chassi"))).Append("\"><i class=\"fa fa-exchange-alt\"></i>Transferir este carro</a></div>");
         html.Append("<div class=\"semi-table-wrap\">").Append(RenderHistorico(id)).Append("</div>");
+        html.Append("<div id=\"auditoria\" class=\"semi-history-title\"><span><i class=\"fa fa-shield-alt\"></i> Auditoria do ve&iacute;culo</span>");
+        html.Append("<span class=\"semi-pill\">Log operacional</span></div>");
+        html.Append("<div class=\"semi-table-wrap\">").Append(RenderAuditoria(ListarAuditoriaSeminovo(row))).Append("</div>");
         html.Append("</div>");
         return html.ToString();
+    }
+
+    private DataTable ListarAuditoriaSeminovo(DataRow row)
+    {
+        string id = Valor(row, "id");
+        string veNr = Valor(row, "ve_nr");
+        string chassi = Valor(row, "ve_chassi");
+        string placa = Valor(row, "ve_placa");
+        string renavam = Valor(row, "ve_renavam");
+
+        return ExecutarSqlTabela(@"
+SELECT TOP 30 dt, acao, usuario, ve_nr, referencia, detalhe, ip
+FROM dbo.veiculos_patio_seminovos_auditoria WITH (NOLOCK)
+WHERE CONVERT(varchar(20), ISNULL(ve_nr, 0)) = @ve_nr
+   OR referencia IN (@id, @ve_nr, @chassi, @placa, @renavam)
+   OR detalhe LIKE @seminovoIdLike
+ORDER BY dt DESC, id DESC;",
+            Param("@id", SqlDbType.VarChar, id),
+            Param("@ve_nr", SqlDbType.VarChar, veNr),
+            Param("@chassi", SqlDbType.VarChar, chassi),
+            Param("@placa", SqlDbType.VarChar, placa),
+            Param("@renavam", SqlDbType.VarChar, renavam),
+            Param("@seminovoIdLike", SqlDbType.VarChar, "%SeminovoId=" + id + "%"));
     }
 
     private string RenderHistorico(int seminovoId)
