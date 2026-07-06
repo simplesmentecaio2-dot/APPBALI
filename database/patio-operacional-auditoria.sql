@@ -205,7 +205,7 @@ BEGIN
             SET @id = CONVERT(int, @idBig);
     END
 
-    IF @statusNormalizado NOT IN ('NO_PATIO','PREPARACAO','AGUARDANDO_RETIRADA','VENDIDO','TRANSFERIDO','BAIXADO','PENDENTE')
+    IF @statusNormalizado NOT IN ('NO_PATIO','PREPARACAO','AGUARDANDO_DOCUMENTACAO','AGUARDANDO_RETIRADA','VENDIDO','TRANSFERIDO','BAIXADO','PENDENTE')
         SET @statusNormalizado = 'NO_PATIO';
 
     IF @tipoNormalizado = 'NOVO'
