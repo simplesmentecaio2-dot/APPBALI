@@ -444,11 +444,7 @@ WHERE dt_transf >= DATEADD(day, -13, CONVERT(date, GETDATE()))
 GROUP BY CONVERT(date, dt_transf)
 ORDER BY CONVERT(date, dt_transf);"), "Nenhuma transfer&ecirc;ncia nos &uacute;ltimos 14 dias.");
 
-        litUltimosCadastros.Text = RenderConsulta(ExecutarProcedureTabela(
-            "dbo.veiculos_patio_seminovos_listar",
-            Param("@loja", SqlDbType.Int, 0),
-            Param("@busca", SqlDbType.VarChar, "")
-        ));
+        litUltimosCadastros.Text = RenderConsulta(ListarUltimosSeminovos(25));
 
         litAuditoria.Text = RenderAuditoria(ExecutarSqlTabela(@"
 SELECT TOP 20 dt, acao, usuario, ve_nr, referencia, detalhe, ip
@@ -633,6 +629,36 @@ ORDER BY p.dt_cad DESC, p.id DESC;",
             Param("@loja", SqlDbType.Int, loja),
             Param("@valor", SqlDbType.VarChar, valor),
             Param("@valorLike", SqlDbType.VarChar, "%" + valor + "%"));
+    }
+
+    private DataTable ListarUltimosSeminovos(int limite)
+    {
+        if (limite <= 0 || limite > 100)
+        {
+            limite = 25;
+        }
+
+        return ExecutarSqlTabela(@"
+SELECT TOP (@limite)
+    p.id,
+    p.ve_nr,
+    p.ve_ds,
+    p.ve_chassi,
+    p.ve_placa,
+    p.ve_renavam,
+    p.cor_ds,
+    p.numeronf,
+    COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) AS loja_atual_id,
+    COALESCE(l.ds, 'Sem loja') AS loja_atual,
+    p.fun_cad,
+    p.dt_cad,
+    p.observacao
+FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
+LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
+    ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+WHERE p.ativo = 1
+ORDER BY p.dt_cad DESC, p.id DESC;",
+            Param("@limite", SqlDbType.Int, limite));
     }
 
     private void ExportarConsultaSeminovos(int loja, string busca)
