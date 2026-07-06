@@ -119,6 +119,14 @@
         .novos-status.is-alerta { background:#fffbeb; color:#92400e; }
         .novos-status.is-ok { background:#f0fdf4; color:#166534; }
         .novos-print-toolbar { display:flex; flex-wrap:wrap; gap:.6rem; align-items:center; justify-content:flex-end; }
+        .novos-pager { display:flex; flex-wrap:wrap; gap:.65rem; align-items:center; justify-content:space-between; margin-top:1rem; padding:.85rem 1rem; border:1px solid #dbe4ef; border-radius:16px; background:#f8fafc; }
+        .novos-pager-info { color:#475569; font-weight:900; }
+        .novos-suggestion-panel { display:none; margin-top:.55rem; border:1px solid #dbe4ef; border-radius:14px; background:#fff; box-shadow:0 16px 34px rgba(15,23,42,.12); overflow:hidden; }
+        .novos-suggestion-panel.is-open { display:block; }
+        .novos-suggestion-panel a { display:flex; justify-content:space-between; gap:.75rem; padding:.7rem .85rem; color:#334155; font-weight:850; text-decoration:none !important; border-bottom:1px solid #edf2f7; }
+        .novos-suggestion-panel a:hover { background:#f8fafc; color:#203729; }
+        .novos-suggestion-panel small { color:#64748b; font-weight:800; }
+        .novos-compact-note { color:#64748b; font-size:.78rem; font-weight:850; }
         .barcode-modal .modal-dialog { max-width:720px; }
         .barcode-modal .modal-content { border:0; border-radius:18px; overflow:hidden; box-shadow:0 24px 70px rgba(0,0,0,.32); }
         .barcode-modal .modal-header { align-items:center; background:linear-gradient(135deg,#10271b,#215c3d); color:#fff; border:0; }
@@ -206,6 +214,7 @@
         <asp:HiddenField ID="hfHistoricoVeNr" runat="server" />
         <asp:HiddenField ID="hfOperTipo" runat="server" />
         <asp:HiddenField ID="hfOperVeNr" runat="server" />
+        <asp:HiddenField ID="hfTodosPagina" runat="server" Value="1" />
 
         <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
             <div class="app-header header-shadow bg-dark">
@@ -302,6 +311,7 @@
                                                 <div class="novos-field is-wide">
                                                     <label class="novos-label" for="<%= txtGlobalBusca.ClientID %>">Digite s&eacute;rie, chassi, placa, Renavam ou c&oacute;digo</label>
                                                     <asp:TextBox ID="txtGlobalBusca" runat="server" CssClass="novos-input" MaxLength="40" autocomplete="off" placeholder="Ex.: 397665, 8AP..., ABC1D23, Renavam ou c&oacute;digo"></asp:TextBox>
+                                                    <div id="novosGlobalSuggestions" class="novos-suggestion-panel" aria-live="polite"></div>
                                                 </div>
                                                 <div class="novos-field">
                                                     <label class="novos-label">&nbsp;</label>
@@ -360,9 +370,27 @@
                                                             <asp:ListItem Value="">Todos ativos</asp:ListItem>
                                                             <asp:ListItem Value="NO_PATIO">No p&aacute;tio</asp:ListItem>
                                                             <asp:ListItem Value="PREPARACAO">Prepara&ccedil;&atilde;o</asp:ListItem>
+                                                            <asp:ListItem Value="AGUARDANDO_DOCUMENTACAO">Aguardando documenta&ccedil;&atilde;o</asp:ListItem>
                                                             <asp:ListItem Value="AGUARDANDO_RETIRADA">Aguardando retirada</asp:ListItem>
                                                             <asp:ListItem Value="PENDENTE">Pendente</asp:ListItem>
                                                             <asp:ListItem Value="VENDIDO">Vendido</asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </div>
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= ddlTodosParados.ClientID %>">Parados</label>
+                                                        <asp:DropDownList ID="ddlTodosParados" runat="server" CssClass="novos-select">
+                                                            <asp:ListItem Value="0">Todos</asp:ListItem>
+                                                            <asp:ListItem Value="15">15 dias ou mais</asp:ListItem>
+                                                            <asp:ListItem Value="30">30 dias ou mais</asp:ListItem>
+                                                            <asp:ListItem Value="60">60 dias ou mais</asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </div>
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= ddlTodosTamanho.ClientID %>">Linhas por p&aacute;gina</label>
+                                                        <asp:DropDownList ID="ddlTodosTamanho" runat="server" CssClass="novos-select">
+                                                            <asp:ListItem Value="25">25</asp:ListItem>
+                                                            <asp:ListItem Value="50" Selected="True">50</asp:ListItem>
+                                                            <asp:ListItem Value="100">100</asp:ListItem>
                                                         </asp:DropDownList>
                                                     </div>
                                                     <div class="novos-field is-wide">
@@ -374,9 +402,15 @@
                                                     <asp:LinkButton ID="btnTodosConsultar" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnTodosConsultar_Click"><i class="fa fa-filter"></i>Aplicar filtros</asp:LinkButton>
                                                     <asp:LinkButton ID="btnTodosLimpar" runat="server" CssClass="novos-btn novos-btn-light" OnClick="btnTodosLimpar_Click"><i class="fa fa-eraser"></i>Limpar</asp:LinkButton>
                                                 </div>
+                                                <asp:Literal ID="litTodosHoje" runat="server"></asp:Literal>
                                                 <asp:Literal ID="litTodosAlertas" runat="server"></asp:Literal>
                                                 <div class="mt-3 novos-table-wrap">
                                                     <asp:Literal ID="litTodosTabela" runat="server"></asp:Literal>
+                                                </div>
+                                                <div class="novos-pager">
+                                                    <asp:LinkButton ID="btnTodosAnterior" runat="server" CssClass="novos-btn novos-btn-light" OnClick="btnTodosAnterior_Click"><i class="fa fa-chevron-left"></i>Anterior</asp:LinkButton>
+                                                    <asp:Literal ID="litTodosPaginacao" runat="server"></asp:Literal>
+                                                    <asp:LinkButton ID="btnTodosProxima" runat="server" CssClass="novos-btn novos-btn-light" OnClick="btnTodosProxima_Click">Pr&oacute;xima<i class="fa fa-chevron-right"></i></asp:LinkButton>
                                                 </div>
                                             </div>
                                         </div>
@@ -411,6 +445,7 @@
                                                         <asp:DropDownList ID="ddlOperStatus" runat="server" CssClass="novos-select">
                                                             <asp:ListItem Value="NO_PATIO">No p&aacute;tio</asp:ListItem>
                                                             <asp:ListItem Value="PREPARACAO">Prepara&ccedil;&atilde;o</asp:ListItem>
+                                                            <asp:ListItem Value="AGUARDANDO_DOCUMENTACAO">Aguardando documenta&ccedil;&atilde;o</asp:ListItem>
                                                             <asp:ListItem Value="AGUARDANDO_RETIRADA">Aguardando retirada</asp:ListItem>
                                                             <asp:ListItem Value="PENDENTE">Pendente</asp:ListItem>
                                                             <asp:ListItem Value="VENDIDO">Vendido</asp:ListItem>
@@ -431,7 +466,7 @@
                                                 </div>
                                                 <div class="novos-actions">
                                                     <asp:LinkButton ID="btnOperAtualizar" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnOperAtualizar_Click"><i class="far fa-save"></i>Salvar status</asp:LinkButton>
-                                                    <asp:LinkButton ID="btnOperBaixar" runat="server" CssClass="novos-btn novos-btn-danger js-safe-submit" OnClick="btnOperBaixar_Click"><i class="fa fa-check-circle"></i>Dar baixa manual</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnOperBaixar" runat="server" CssClass="novos-btn novos-btn-danger js-safe-submit" OnClick="btnOperBaixar_Click" OnClientClick="return patioConfirmBaixa();"><i class="fa fa-check-circle"></i>Dar baixa manual</asp:LinkButton>
                                                 </div>
                                                 <asp:Literal ID="litOperVeiculo" runat="server"></asp:Literal>
                                             </div>
@@ -581,6 +616,16 @@
                                             <div class="novos-card-header"><div><small>Movimenta&ccedil;&otilde;es</small><h2 class="novos-card-title">&Uacute;ltimas transfer&ecirc;ncias</h2></div></div>
                                             <div class="novos-card-body novos-table-wrap"><asp:Literal ID="litUltimasTransferencias" runat="server"></asp:Literal></div>
                                         </div>
+                                        <div class="novos-bi-grid">
+                                            <div class="novos-card">
+                                                <div class="novos-card-header"><div><small>Usu&aacute;rios</small><h2 class="novos-card-title">Opera&ccedil;&atilde;o por usu&aacute;rio</h2></div></div>
+                                                <div class="novos-card-body"><asp:Literal ID="litDashboardUsuarios" runat="server"></asp:Literal></div>
+                                            </div>
+                                            <div class="novos-card">
+                                                <div class="novos-card-header"><div><small>Confer&ecirc;ncia</small><h2 class="novos-card-title">Diverg&ecirc;ncias</h2></div></div>
+                                                <div class="novos-card-body"><asp:Literal ID="litDivergencias" runat="server"></asp:Literal></div>
+                                            </div>
+                                        </div>
                                     </asp:Panel>
 
                                     <div class="novos-card">
@@ -709,6 +754,77 @@
     <script>
         (function () {
             function textOf(el) { return el ? (el.textContent || '').trim() : ''; }
+            window.patioConfirmBaixa = function () {
+                var veiculo = document.getElementById('<%= hfOperVeNr.ClientID %>');
+                var tipo = document.getElementById('<%= hfOperTipo.ClientID %>');
+                var motivo = document.getElementById('<%= txtOperMotivoBaixa.ClientID %>');
+                var valor = motivo ? (motivo.value || '').trim() : '';
+                if (!veiculo || !veiculo.value) {
+                    alert('Localize o veiculo antes de registrar uma baixa manual.');
+                    return false;
+                }
+                if (!valor) {
+                    alert('Informe o motivo da baixa manual antes de continuar.');
+                    if (motivo) motivo.focus();
+                    return false;
+                }
+                return confirm('Confirmar baixa manual do veiculo ' + veiculo.value + ' (' + (tipo ? tipo.value : 'PATIO') + ')? Esta acao ficara registrada em auditoria.');
+            };
+
+            var globalInput = document.getElementById('<%= txtGlobalBusca.ClientID %>');
+            var globalPanel = document.getElementById('novosGlobalSuggestions');
+            var globalTimer = null;
+            function escapeHtml(value) {
+                return String(value || '').replace(/[&<>"']/g, function (char) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char];
+                });
+            }
+            function closeSuggestions() {
+                if (!globalPanel) return;
+                globalPanel.classList.remove('is-open');
+                globalPanel.innerHTML = '';
+            }
+            function renderSuggestions(items) {
+                if (!globalPanel) return;
+                if (!items || !items.length) {
+                    closeSuggestions();
+                    return;
+                }
+                globalPanel.innerHTML = items.map(function (item) {
+                    var veiculo = String(item.veNr || '');
+                    var tipo = String(item.tipo || '');
+                    var modelo = escapeHtml(item.modelo || '-');
+                    var loja = escapeHtml(item.loja || '-');
+                    var chassi = escapeHtml(item.chassi || '-');
+                    var tipoSeguro = escapeHtml(tipo);
+                    var veiculoSeguro = escapeHtml(veiculo);
+                    return '<a href="novos.aspx?aba=todos&amp;operTipo=' + encodeURIComponent(tipo.toUpperCase()) + '&amp;operBusca=' + encodeURIComponent(veiculo) + '">' +
+                        '<span>' + modelo + '<small>' + tipoSeguro + ' #' + veiculoSeguro + ' &middot; ' + chassi + '</small></span>' +
+                        '<small>' + loja + '</small>' +
+                        '</a>';
+                }).join('');
+                globalPanel.classList.add('is-open');
+            }
+            if (globalInput && globalPanel && window.fetch) {
+                globalInput.addEventListener('input', function () {
+                    var value = (globalInput.value || '').trim();
+                    clearTimeout(globalTimer);
+                    if (value.length < 3) {
+                        closeSuggestions();
+                        return;
+                    }
+                    globalTimer = setTimeout(function () {
+                        fetch('./patio-sugestoes.ashx?q=' + encodeURIComponent(value), { credentials: 'same-origin' })
+                            .then(function (response) { return response.ok ? response.json() : []; })
+                            .then(renderSuggestions)
+                            .catch(closeSuggestions);
+                    }, 260);
+                });
+                document.addEventListener('click', function (event) {
+                    if (!globalPanel.contains(event.target) && event.target !== globalInput) closeSuggestions();
+                });
+            }
+
             document.addEventListener('click', function (event) {
                 var copyButton = event.target.closest ? event.target.closest('[data-copy]') : null;
                 if (copyButton) {

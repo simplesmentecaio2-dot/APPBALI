@@ -324,6 +324,7 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
 
     protected void btnTodosConsultar_Click(object sender, EventArgs e)
     {
+        hfTodosPagina.Value = "1";
         AtivarAba("todos");
         MostrarMensagem("success", "Filtros aplicados", "A vis\u00e3o unificada foi atualizada com os filtros selecionados.");
     }
@@ -332,8 +333,23 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
     {
         ddlTodosTipo.SelectedValue = "";
         ddlTodosStatus.SelectedValue = "";
+        ddlTodosParados.SelectedValue = "0";
+        ddlTodosTamanho.SelectedValue = "50";
         if (ddlTodosLoja.Items.Count > 0) ddlTodosLoja.SelectedValue = "0";
         txtTodosBusca.Text = "";
+        hfTodosPagina.Value = "1";
+        AtivarAba("todos");
+    }
+
+    protected void btnTodosAnterior_Click(object sender, EventArgs e)
+    {
+        hfTodosPagina.Value = Math.Max(1, PaginaTodos() - 1).ToString();
+        AtivarAba("todos");
+    }
+
+    protected void btnTodosProxima_Click(object sender, EventArgs e)
+    {
+        hfTodosPagina.Value = (PaginaTodos() + 1).ToString();
         AtivarAba("todos");
     }
 
@@ -352,11 +368,21 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
     {
         AtivarAba("todos");
 
+        if (!UsuarioTemAcesso(2))
+        {
+            MostrarMensagem("error", "Acesso restrito", "Seu usu\u00e1rio n\u00e3o tem permiss\u00e3o para alterar status operacional.");
+            return;
+        }
+
         if (String.IsNullOrWhiteSpace(hfOperTipo.Value) || String.IsNullOrWhiteSpace(hfOperVeNr.Value))
         {
             MostrarMensagem("warning", "Localize o ve\u00edculo", "Pesquise um ve\u00edculo antes de salvar status ou observa\u00e7\u00e3o.");
             return;
         }
+
+        DataRow antes = LocalizarOperacionalAtual(hfOperTipo.Value, hfOperVeNr.Value);
+        string statusAnterior = Valor(antes, "status_operacional");
+        string observacaoAnterior = Valor(antes, "observacao");
 
         DataTable resposta = ExecutarProcedureTabela(
             "dbo.veiculos_patio_operacional_atualizar",
@@ -373,7 +399,11 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
         if (resultado == "s")
         {
             MostrarMensagem("success", "Status salvo", "Status e observa\u00e7\u00e3o operacional atualizados com sucesso.");
-            PatioJeepAuditoria.Registrar("PATIO_STATUS_OPERACIONAL", Session["usuario"], hfOperVeNr.Value, hfOperTipo.Value + "; Status=" + ddlOperStatus.SelectedValue);
+            PatioJeepAuditoria.Registrar(
+                "PATIO_STATUS_OPERACIONAL",
+                Session["usuario"],
+                hfOperVeNr.Value,
+                hfOperTipo.Value + "; Status: " + statusAnterior + " -> " + ddlOperStatus.SelectedValue + "; Observacao: " + observacaoAnterior + " -> " + txtOperObservacao.Text);
             BuscarOperacional(false);
             CarregarTodos();
             return;
@@ -385,6 +415,12 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
     protected void btnOperBaixar_Click(object sender, EventArgs e)
     {
         AtivarAba("todos");
+
+        if (!UsuarioTemAcesso(2))
+        {
+            MostrarMensagem("error", "Acesso restrito", "Seu usu\u00e1rio n\u00e3o tem permiss\u00e3o para dar baixa manual.");
+            return;
+        }
 
         if (String.IsNullOrWhiteSpace(hfOperTipo.Value) || String.IsNullOrWhiteSpace(hfOperVeNr.Value))
         {
@@ -616,16 +652,88 @@ ORDER BY ds;");
     {
         int loja;
         Int32.TryParse(ddlTodosLoja.SelectedValue, out loja);
+        int total;
+        int pagina = PaginaTodos();
+        int tamanho = TamanhoPaginaTodos();
+        int diasParados = DiasParadosFiltro();
 
         DataTable tabela = ListarTodos(
             ddlTodosTipo.SelectedValue,
             loja,
             ddlTodosStatus.SelectedValue,
             txtTodosBusca.Text,
-            350);
+            tamanho,
+            pagina,
+            diasParados,
+            out total);
 
+        litTodosHoje.Text = RenderPainelHoje();
         litTodosAlertas.Text = RenderAlertasTodos(tabela);
         litTodosTabela.Text = RenderTodos(tabela);
+        litTodosPaginacao.Text = RenderPaginacao(total, pagina, tamanho);
+        btnTodosAnterior.Enabled = pagina > 1;
+        btnTodosProxima.Enabled = (pagina * tamanho) < total;
+    }
+
+    private int PaginaTodos()
+    {
+        int pagina;
+        if (!Int32.TryParse(hfTodosPagina.Value, out pagina) || pagina < 1) pagina = 1;
+        return pagina;
+    }
+
+    private int TamanhoPaginaTodos()
+    {
+        int tamanho;
+        if (!Int32.TryParse(ddlTodosTamanho.SelectedValue, out tamanho)) tamanho = 50;
+        if (tamanho != 25 && tamanho != 50 && tamanho != 100) tamanho = 50;
+        return tamanho;
+    }
+
+    private int DiasParadosFiltro()
+    {
+        int dias;
+        if (!Int32.TryParse(ddlTodosParados.SelectedValue, out dias)) dias = 0;
+        if (dias != 15 && dias != 30 && dias != 60) dias = 0;
+        return dias;
+    }
+
+    private string RenderPaginacao(int total, int pagina, int tamanho)
+    {
+        int inicio = total == 0 ? 0 : ((pagina - 1) * tamanho) + 1;
+        int fim = Math.Min(total, pagina * tamanho);
+        int paginas = total == 0 ? 1 : (int)Math.Ceiling(total / (double)tamanho);
+        return "<span class=\"novos-pager-info\">P&aacute;gina " + pagina + " de " + paginas + " &middot; " + inicio + "-" + fim + " de " + total + " ve&iacute;culo(s)</span>";
+    }
+
+    private string RenderPainelHoje()
+    {
+        try
+        {
+            DataTable tabela = ExecutarSqlTabela(@"
+SELECT
+    (SELECT COUNT(1) FROM dbo.veiculos_patio_locacao WITH (NOLOCK) WHERE dt_cad >= CONVERT(date, GETDATE())) +
+    (SELECT COUNT(1) FROM dbo.veiculos_patio_seminovos_locacao WITH (NOLOCK) WHERE dt_cad >= CONVERT(date, GETDATE())) AS entradas_hoje,
+    (SELECT COUNT(1) FROM dbo.veiculos_patio_transferencia WITH (NOLOCK) WHERE dt_transf >= CONVERT(date, GETDATE())) +
+    (SELECT COUNT(1) FROM dbo.veiculos_patio_seminovos_transferencia WITH (NOLOCK) WHERE dt_transf >= CONVERT(date, GETDATE())) AS transferencias_hoje,
+    (SELECT COUNT(1) FROM dbo.veiculos_patio_locacao WITH (NOLOCK) WHERE dt_baixa_manual >= CONVERT(date, GETDATE())) +
+    (SELECT COUNT(1) FROM dbo.veiculos_patio_seminovos_locacao WITH (NOLOCK) WHERE dt_baixa_manual >= CONVERT(date, GETDATE())) AS baixas_hoje,
+    (SELECT COUNT(1) FROM dbo.veiculos_patio_auditoria_geral WITH (NOLOCK) WHERE dt >= CONVERT(date, GETDATE())) AS eventos_hoje;");
+
+            DataRow row = tabela.Rows.Count > 0 ? tabela.Rows[0] : null;
+            StringBuilder html = new StringBuilder();
+            html.Append("<div class=\"novos-kpis\" style=\"margin-top:1rem;\">");
+            html.Append(Kpi("Entradas hoje", Numero(row, "entradas_hoje"), "novos + seminovos"));
+            html.Append(Kpi("Transfer&ecirc;ncias hoje", Numero(row, "transferencias_hoje"), "movimenta&ccedil;&otilde;es"));
+            html.Append(Kpi("Baixas hoje", Numero(row, "baixas_hoje"), "manuais"));
+            html.Append(Kpi("Eventos hoje", Numero(row, "eventos_hoje"), "auditoria"));
+            html.Append("</div>");
+            return html.ToString();
+        }
+        catch
+        {
+            return "";
+        }
     }
 
     private void BuscarOperacional(bool exibirMensagem)
@@ -799,6 +907,84 @@ ORDER BY t.dt_transf DESC, t.id DESC;",
             Param("@fim", SqlDbType.DateTime, fimExclusivo),
             Param("@usuario", SqlDbType.VarChar, usuario),
             Param("@usuarioLike", SqlDbType.VarChar, "%" + usuario + "%")));
+
+        litDashboardUsuarios.Text = RenderBarras(ExecutarSqlTabela(@"
+SELECT TOP 12 usuario AS label, SUM(total) AS total
+FROM
+(
+    SELECT ISNULL(fun_cad, 'Sem usuario') AS usuario, COUNT(1) AS total
+    FROM dbo.veiculos_patio_locacao WITH (NOLOCK)
+    WHERE dt_cad >= @inicio AND dt_cad < @fim
+      AND (@usuario = '' OR fun_cad LIKE @usuarioLike)
+    GROUP BY ISNULL(fun_cad, 'Sem usuario')
+
+    UNION ALL
+
+    SELECT ISNULL(fun_cad, 'Sem usuario') AS usuario, COUNT(1) AS total
+    FROM dbo.veiculos_patio_seminovos_locacao WITH (NOLOCK)
+    WHERE dt_cad >= @inicio AND dt_cad < @fim
+      AND (@usuario = '' OR fun_cad LIKE @usuarioLike)
+    GROUP BY ISNULL(fun_cad, 'Sem usuario')
+
+    UNION ALL
+
+    SELECT ISNULL(fun_cad, 'Sem usuario') AS usuario, COUNT(1) AS total
+    FROM dbo.veiculos_patio_transferencia WITH (NOLOCK)
+    WHERE dt_transf >= @inicio AND dt_transf < @fim
+      AND (@usuario = '' OR fun_cad LIKE @usuarioLike)
+    GROUP BY ISNULL(fun_cad, 'Sem usuario')
+
+    UNION ALL
+
+    SELECT ISNULL(fun_cad, 'Sem usuario') AS usuario, COUNT(1) AS total
+    FROM dbo.veiculos_patio_seminovos_transferencia WITH (NOLOCK)
+    WHERE dt_transf >= @inicio AND dt_transf < @fim
+      AND (@usuario = '' OR fun_cad LIKE @usuarioLike)
+    GROUP BY ISNULL(fun_cad, 'Sem usuario')
+) movimentos
+GROUP BY usuario
+ORDER BY SUM(total) DESC, usuario;",
+            Param("@inicio", SqlDbType.DateTime, inicio),
+            Param("@fim", SqlDbType.DateTime, fimExclusivo),
+            Param("@usuario", SqlDbType.VarChar, usuario),
+            Param("@usuarioLike", SqlDbType.VarChar, "%" + usuario + "%")), "Nenhuma opera&ccedil;&atilde;o encontrada no per&iacute;odo.");
+
+        litDivergencias.Text = RenderDivergencias(ExecutarSqlTabela(@"
+SELECT 'Novos sem loja atual' AS item, COUNT(1) AS total
+FROM dbo.veiculos_patio_locacao WITH (NOLOCK)
+WHERE baixado_venda = 0
+  AND ISNULL(COALESCE(NULLIF(loja_atual_id, 0), loja_id), 0) = 0
+
+UNION ALL
+
+SELECT 'Seminovos sem loja atual' AS item, COUNT(1) AS total
+FROM dbo.veiculos_patio_seminovos_locacao WITH (NOLOCK)
+WHERE ativo = 1
+  AND ISNULL(COALESCE(NULLIF(loja_atual_id, 0), loja_id), 0) = 0
+
+UNION ALL
+
+SELECT 'Novos sem v&iacute;nculo Dealernet' AS item, COUNT(1) AS total
+FROM dbo.veiculos_patio_locacao p WITH (NOLOCK)
+LEFT JOIN GrupoBali_DealernetWF.dbo.Veiculo v WITH (NOLOCK)
+    ON ISNUMERIC(p.ve_nr) = 1 AND CAST(p.ve_nr AS int) = v.Veiculo_Codigo
+WHERE p.baixado_venda = 0
+  AND v.Veiculo_Codigo IS NULL
+
+UNION ALL
+
+SELECT 'Ve&iacute;culos parados 30+ dias' AS item, COUNT(1) AS total
+FROM
+(
+    SELECT DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_transferencia t WITH (NOLOCK) WHERE t.ve_nr = p.ve_nr), p.dt_cad), GETDATE()) AS dias
+    FROM dbo.veiculos_patio_locacao p WITH (NOLOCK)
+    WHERE p.baixado_venda = 0
+    UNION ALL
+    SELECT DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = s.id), s.dt_cad), GETDATE()) AS dias
+    FROM dbo.veiculos_patio_seminovos_locacao s WITH (NOLOCK)
+    WHERE s.ativo = 1
+) parados
+WHERE dias >= 30;"));
     }
 
     private string RenderIndicadores()
@@ -931,7 +1117,7 @@ SELECT
         {
             if (ToInt(Valor(row, "dias_parado")) >= 15) parados++;
             string status = Valor(row, "status_operacional");
-            if (status == "PENDENTE" || status == "AGUARDANDO_RETIRADA") pendentes++;
+            if (status == "PENDENTE" || status == "AGUARDANDO_RETIRADA" || status == "AGUARDANDO_DOCUMENTACAO") pendentes++;
         }
 
         if (parados == 0 && pendentes == 0) return "";
@@ -950,7 +1136,7 @@ SELECT
         status = String.IsNullOrWhiteSpace(status) ? "NO_PATIO" : status.ToUpperInvariant();
         string classe = "novos-status";
         if (status == "BAIXADO" || status == "VENDIDO") classe += " is-baixado";
-        else if (status == "PENDENTE" || status == "AGUARDANDO_RETIRADA") classe += " is-alerta";
+        else if (status == "PENDENTE" || status == "AGUARDANDO_RETIRADA" || status == "AGUARDANDO_DOCUMENTACAO") classe += " is-alerta";
         else classe += " is-ok";
 
         return "<span class=\"" + classe + "\">" + Html(StatusTexto(status)) + "</span>";
@@ -961,6 +1147,7 @@ SELECT
         switch ((status ?? "").ToUpperInvariant())
         {
             case "PREPARACAO": return "Prepara\u00e7\u00e3o";
+            case "AGUARDANDO_DOCUMENTACAO": return "Aguardando documenta\u00e7\u00e3o";
             case "AGUARDANDO_RETIRADA": return "Aguardando retirada";
             case "PENDENTE": return "Pendente";
             case "VENDIDO": return "Vendido";
@@ -1035,34 +1222,77 @@ SELECT
         }
 
         DataTable historico = ExecutarProcedureTabela("APP..veiculos_patio_select_historico", Param("@ve_nr", SqlDbType.Int, veNr));
-        litHistoricoModal.Text = RenderHistorico(historico, veiculo);
+        DataTable auditoria = ListarAuditoriaVeiculo("NOVO", Convert.ToString(veNr));
+        litHistoricoModal.Text = RenderHistorico(historico, veiculo, auditoria);
         pnlHistoricoModal.Visible = true;
         hfHistoricoVeNr.Value = Convert.ToString(veNr);
         AdicionarUltimoAcessado("Novo", veiculo);
     }
 
-    private string RenderHistorico(DataTable tabela, DataRow veiculo)
+    private string RenderHistorico(DataTable tabela, DataRow veiculo, DataTable auditoria)
     {
         StringBuilder html = new StringBuilder();
         html.Append(RenderVeiculoCard(veiculo, "Hist&oacute;rico", "Linha do tempo operacional do p&aacute;tio.", "historico"));
         if (tabela.Rows.Count == 0)
         {
             html.Append("<div class=\"novos-empty\">Nenhum movimento encontrado.</div>");
-            return html.ToString();
+        }
+        else
+        {
+            html.Append("<table class=\"novos-table\"><thead><tr><th>Data</th><th>Movimento</th><th>Origem</th><th>Destino</th><th>Usu&aacute;rio</th></tr></thead><tbody>");
+            foreach (DataRow row in tabela.Rows)
+            {
+                html.Append("<tr>");
+                html.Append("<td data-label=\"Data\">").Append(DataCurta(row, "dt_transf")).Append("</td>");
+                html.Append("<td data-label=\"Movimento\">").Append(Html(Valor(row, "origem") == "CADASTRADO" ? "Cadastro" : "Transfer\u00eancia")).Append("</td>");
+                html.Append("<td data-label=\"Origem\">").Append(Html(Valor(row, "origem"))).Append("</td>");
+                html.Append("<td data-label=\"Destino\">").Append(Html(Valor(row, "destino"))).Append("</td>");
+                html.Append("<td data-label=\"Usu&aacute;rio\">").Append(Html(Valor(row, "fun_cad"))).Append("</td>");
+                html.Append("</tr>");
+            }
+            html.Append("</tbody></table>");
         }
 
-        html.Append("<table class=\"novos-table\"><thead><tr><th>Data</th><th>Movimento</th><th>Origem</th><th>Destino</th><th>Usu&aacute;rio</th></tr></thead><tbody>");
-        foreach (DataRow row in tabela.Rows)
+        html.Append(RenderAuditoriaVeiculo(auditoria));
+        return html.ToString();
+    }
+
+    private DataTable ListarAuditoriaVeiculo(string origem, string veNr)
+    {
+        return ExecutarSqlTabela(@"
+SELECT TOP 30 dt, origem, acao, usuario, detalhe, ip
+FROM dbo.veiculos_patio_auditoria_geral WITH (NOLOCK)
+WHERE ve_nr = @ve_nr
+  AND (@origem = '' OR origem = @origem OR origem = 'GERAL')
+ORDER BY dt DESC, id DESC;",
+            Param("@origem", SqlDbType.VarChar, origem ?? ""),
+            Param("@ve_nr", SqlDbType.VarChar, veNr ?? ""));
+    }
+
+    private string RenderAuditoriaVeiculo(DataTable tabela)
+    {
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class=\"novos-card\" style=\"margin-top:1rem;\"><div class=\"novos-card-header\"><div><small>Auditoria</small><h2 class=\"novos-card-title\">Eventos do ve&iacute;culo</h2></div><span class=\"novos-pill\"><i class=\"fa fa-shield-alt\"></i> Log operacional</span></div><div class=\"novos-card-body\">");
+        if (tabela.Rows.Count == 0)
         {
-            html.Append("<tr>");
-            html.Append("<td data-label=\"Data\">").Append(DataCurta(row, "dt_transf")).Append("</td>");
-            html.Append("<td data-label=\"Movimento\">").Append(Html(Valor(row, "origem") == "CADASTRADO" ? "Cadastro" : "Transfer\u00eancia")).Append("</td>");
-            html.Append("<td data-label=\"Origem\">").Append(Html(Valor(row, "origem"))).Append("</td>");
-            html.Append("<td data-label=\"Destino\">").Append(Html(Valor(row, "destino"))).Append("</td>");
-            html.Append("<td data-label=\"Usu&aacute;rio\">").Append(Html(Valor(row, "fun_cad"))).Append("</td>");
-            html.Append("</tr>");
+            html.Append("<div class=\"novos-empty\">Nenhum evento de auditoria registrado para este ve&iacute;culo.</div>");
         }
-        html.Append("</tbody></table>");
+        else
+        {
+            html.Append("<table class=\"novos-table\"><thead><tr><th>Data</th><th>A&ccedil;&atilde;o</th><th>Usu&aacute;rio</th><th>Detalhe</th><th>IP</th></tr></thead><tbody>");
+            foreach (DataRow row in tabela.Rows)
+            {
+                html.Append("<tr>");
+                html.Append("<td data-label=\"Data\">").Append(DataCurta(row, "dt")).Append("</td>");
+                html.Append("<td data-label=\"A&ccedil;&atilde;o\"><span class=\"novos-status is-ok\">").Append(Html(Valor(row, "acao"))).Append("</span><small>").Append(Html(Valor(row, "origem"))).Append("</small></td>");
+                html.Append("<td data-label=\"Usu&aacute;rio\">").Append(Html(Valor(row, "usuario"))).Append("</td>");
+                html.Append("<td data-label=\"Detalhe\">").Append(Html(Valor(row, "detalhe"))).Append("</td>");
+                html.Append("<td data-label=\"IP\">").Append(Html(Valor(row, "ip"))).Append("</td>");
+                html.Append("</tr>");
+            }
+            html.Append("</tbody></table>");
+        }
+        html.Append("</div></div>");
         return html.ToString();
     }
 
@@ -1118,6 +1348,26 @@ SELECT
             html.Append("</tr>");
         }
         html.Append("</tbody></table>");
+        return html.ToString();
+    }
+
+    private string RenderDivergencias(DataTable tabela)
+    {
+        if (tabela.Rows.Count == 0) return "<div class=\"novos-empty\">Nenhuma diverg&ecirc;ncia mapeada.</div>";
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class=\"novos-bar-list\">");
+        foreach (DataRow row in tabela.Rows)
+        {
+            int total = ToInt(Valor(row, "total"));
+            string classe = total > 0 ? "novos-alert is-warning" : "novos-alert is-success";
+            html.Append("<div class=\"").Append(classe).Append("\" style=\"margin:0;\">");
+            html.Append("<i class=\"fa ").Append(total > 0 ? "fa-exclamation-triangle" : "fa-check-circle").Append(" mt-1\"></i><div>");
+            html.Append("<strong>").Append(Html(Valor(row, "item"))).Append("</strong>");
+            html.Append("<span>").Append(total).Append(" ocorr&ecirc;ncia(s)</span>");
+            html.Append("</div></div>");
+        }
+        html.Append("</div>");
         return html.ToString();
     }
 
@@ -1177,12 +1427,55 @@ ORDER BY p.dt_cad DESC, p.ve_nr DESC;",
 
     private DataTable ListarTodos(string tipo, int loja, string status, string busca, int limite)
     {
+        int total;
+        return ListarTodos(tipo, loja, status, busca, limite, 1, 0, out total);
+    }
+
+    private DataTable ListarTodos(string tipo, int loja, string status, string busca, int tamanhoPagina, int pagina, int diasParados, out int total)
+    {
         string buscaNormalizada = NormalizarBusca(busca);
         string texto = (busca ?? "").Trim().ToUpperInvariant();
+        int inicio = ((Math.Max(1, pagina) - 1) * Math.Max(1, tamanhoPagina)) + 1;
+        int fim = inicio + Math.Max(1, tamanhoPagina) - 1;
 
-        return ExecutarSqlTabela(@"
-SELECT TOP (@limite) *
-FROM
+        DataTable totalTabela = ExecutarSqlTabela(SqlTodosBase() + @"
+SELECT COUNT(1) AS total
+FROM filtrado;",
+            Param("@tipo", SqlDbType.VarChar, (tipo ?? "").ToUpperInvariant()),
+            Param("@loja", SqlDbType.Int, loja),
+            Param("@status", SqlDbType.VarChar, (status ?? "").ToUpperInvariant()),
+            Param("@busca", SqlDbType.VarChar, buscaNormalizada),
+            Param("@textoLike", SqlDbType.VarChar, "%" + texto + "%"),
+            Param("@diasParados", SqlDbType.Int, Math.Max(0, diasParados)));
+
+        total = totalTabela.Rows.Count > 0 ? ToInt(Valor(totalTabela.Rows[0], "total")) : 0;
+
+        return ExecutarSqlTabela(SqlTodosBase() + @"
+, numerado AS
+(
+    SELECT
+        ROW_NUMBER() OVER (ORDER BY ultima_movimentacao DESC, dt_cad DESC, ve_nr DESC) AS rn,
+        *
+    FROM filtrado
+)
+SELECT *
+FROM numerado
+WHERE rn BETWEEN @inicio AND @fim
+ORDER BY rn;",
+            Param("@tipo", SqlDbType.VarChar, (tipo ?? "").ToUpperInvariant()),
+            Param("@loja", SqlDbType.Int, loja),
+            Param("@status", SqlDbType.VarChar, (status ?? "").ToUpperInvariant()),
+            Param("@busca", SqlDbType.VarChar, buscaNormalizada),
+            Param("@textoLike", SqlDbType.VarChar, "%" + texto + "%"),
+            Param("@diasParados", SqlDbType.Int, Math.Max(0, diasParados)),
+            Param("@inicio", SqlDbType.Int, inicio),
+            Param("@fim", SqlDbType.Int, fim));
+    }
+
+    private string SqlTodosBase()
+    {
+        return @"
+;WITH patio AS
 (
     SELECT
         'NOVO' AS tipo,
@@ -1235,10 +1528,15 @@ FROM
     LEFT JOIN dbo.veiculos_patio_loja lj WITH (NOLOCK)
         ON lj.id = COALESCE(NULLIF(s.loja_atual_id, 0), s.loja_id)
     WHERE s.ativo = 1
-) patio
+),
+filtrado AS
+(
+SELECT *
+FROM patio
 WHERE (@tipo = '' OR patio.tipo = @tipo)
   AND (@loja = 0 OR patio.loja_atual_id = @loja)
   AND (@status = '' OR patio.status_operacional = @status)
+  AND (@diasParados = 0 OR patio.dias_parado >= @diasParados)
   AND (
         @busca = ''
      OR patio.ve_nr = @busca
@@ -1251,13 +1549,7 @@ WHERE (@tipo = '' OR patio.tipo = @tipo)
      OR UPPER(ISNULL(patio.fun_cad, '')) LIKE @textoLike
      OR UPPER(ISNULL(patio.loja_atual, '')) LIKE @textoLike
   )
-ORDER BY patio.ultima_movimentacao DESC, patio.dt_cad DESC, patio.ve_nr DESC;",
-            Param("@limite", SqlDbType.Int, limite),
-            Param("@tipo", SqlDbType.VarChar, (tipo ?? "").ToUpperInvariant()),
-            Param("@loja", SqlDbType.Int, loja),
-            Param("@status", SqlDbType.VarChar, (status ?? "").ToUpperInvariant()),
-            Param("@busca", SqlDbType.VarChar, buscaNormalizada),
-            Param("@textoLike", SqlDbType.VarChar, "%" + texto + "%"));
+)";
     }
 
     private void ExportarTodos()
@@ -1272,7 +1564,14 @@ ORDER BY patio.ultima_movimentacao DESC, patio.dt_cad DESC, patio.ve_nr DESC;",
         Response.ContentEncoding = Encoding.UTF8;
         Response.AddHeader("Content-Disposition", "attachment; filename=patio-todos-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".xls");
         Response.Write("\uFEFF");
-        Response.Write("<table border='1'><thead><tr>");
+        Response.Write("<html><head><meta charset='utf-8'><style>body{font-family:Arial,sans-serif;} table{border-collapse:collapse;} th{background:#203729;color:#fff;} th,td{border:1px solid #cbd5e1;padding:6px;} .meta td{border:0;padding:3px 6px;} .title{font-size:18px;font-weight:bold;color:#203729;}</style></head><body>");
+        Response.Write("<table class='meta'>");
+        Response.Write("<tr><td class='title' colspan='4'>P&aacute;tio de ve&iacute;culos - Exporta&ccedil;&atilde;o</td></tr>");
+        Response.Write("<tr><td><b>Gerado em</b></td><td>" + Html(DateTime.Now.ToString("dd/MM/yyyy HH:mm")) + "</td><td><b>Usu&aacute;rio</b></td><td>" + Html(UsuarioAtual()) + "</td></tr>");
+        Response.Write("<tr><td><b>Tipo</b></td><td>" + Html(ddlTodosTipo.SelectedItem != null ? ddlTodosTipo.SelectedItem.Text : "") + "</td><td><b>Status</b></td><td>" + Html(ddlTodosStatus.SelectedItem != null ? ddlTodosStatus.SelectedItem.Text : "") + "</td></tr>");
+        Response.Write("<tr><td><b>Loja</b></td><td>" + Html(ddlTodosLoja.SelectedItem != null ? ddlTodosLoja.SelectedItem.Text : "") + "</td><td><b>Busca</b></td><td>" + Html(txtTodosBusca.Text) + "</td></tr>");
+        Response.Write("</table><br>");
+        Response.Write("<table><thead><tr>");
         string[] colunas = { "tipo", "ve_nr", "codigo_origem", "ve_ds", "ve_chassi", "ve_placa", "ve_renavam", "cor_ds", "loja_atual", "status_operacional", "observacao", "dias_parado", "fun_cad", "dt_cad", "ultima_movimentacao" };
         string[] titulos = { "Tipo", "Codigo", "Referencia", "Veiculo", "Chassi", "Placa", "Renavam", "Cor", "Loja atual", "Status", "Observacao", "Dias parado", "Usuario cadastro", "Data cadastro", "Ultima movimentacao" };
         for (int i = 0; i < titulos.Length; i++) Response.Write("<th>" + Html(titulos[i]) + "</th>");
@@ -1286,7 +1585,7 @@ ORDER BY patio.ultima_movimentacao DESC, patio.dt_cad DESC, patio.ve_nr DESC;",
             }
             Response.Write("</tr>");
         }
-        Response.Write("</tbody></table>");
+        Response.Write("</tbody></table></body></html>");
         Response.Flush();
         Context.ApplicationInstance.CompleteRequest();
     }
@@ -1294,6 +1593,13 @@ ORDER BY patio.ultima_movimentacao DESC, patio.dt_cad DESC, patio.ve_nr DESC;",
     private DataRow LocalizarSeminovoNoPatio(string busca)
     {
         DataTable tabela = ExecutarProcedureTabela("dbo.veiculos_patio_seminovos_localizar", Param("@busca", SqlDbType.VarChar, busca));
+        return tabela.Rows.Count > 0 ? tabela.Rows[0] : null;
+    }
+
+    private DataRow LocalizarOperacionalAtual(string tipo, string veNr)
+    {
+        int total;
+        DataTable tabela = ListarTodos(tipo, 0, "", veNr, 1, 1, 0, out total);
         return tabela.Rows.Count > 0 ? tabela.Rows[0] : null;
     }
 
