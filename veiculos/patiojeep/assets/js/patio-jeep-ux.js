@@ -208,43 +208,30 @@
 
     for (var m = 0; m < menus.length; m++) {
       var menu = menus[m];
-      var deprecatedLinks = menu.querySelectorAll('a[href$="acompanhamento.aspx"], a[href$="registrar.aspx"], a[href$="transferir.aspx"], a[href$="historico.aspx"], a[href$="relatorios.aspx"]');
-      for (var d = 0; d < deprecatedLinks.length; d++) {
-        var deprecatedItem = deprecatedLinks[d].closest ? deprecatedLinks[d].closest('li') : deprecatedLinks[d].parentNode;
-        if (deprecatedItem) deprecatedItem.remove();
-      }
-
-      if (!menu.querySelector('.app-sidebar__heading')) {
-        var heading = document.createElement('li');
-        heading.className = 'app-sidebar__heading';
-        heading.textContent = 'Fun\u00e7\u00f5es';
-        menu.appendChild(heading);
-      }
+      menu.innerHTML = '';
 
       for (var i = 0; i < links.length; i++) {
         var item = links[i];
-        var key = item.href === './' ? 'href="./"' : 'href$="' + item.href.replace('./', '') + '"';
-        if (menu.querySelector('a[' + key + ']')) continue;
+        if (i === 1) {
+          var heading = document.createElement('li');
+          heading.className = 'app-sidebar__heading';
+          heading.textContent = 'Fun\u00e7\u00f5es';
+          menu.appendChild(heading);
+        }
 
         var li = document.createElement('li');
         var a = document.createElement('a');
         var icon = document.createElement('i');
 
         a.href = item.href;
+        if (item.href === activeHref) {
+          a.className = 'mm-active';
+        }
         icon.className = 'metismenu-icon ' + item.icon;
         a.appendChild(icon);
         a.appendChild(document.createTextNode(item.label));
         li.appendChild(a);
         menu.appendChild(li);
-      }
-
-      var anchors = menu.querySelectorAll('a');
-      for (var aIndex = 0; aIndex < anchors.length; aIndex++) {
-        anchors[aIndex].classList.remove('mm-active');
-        var href = anchors[aIndex].getAttribute('href') || '';
-        if (href === activeHref || (activeHref !== './' && href.indexOf(activeHref.replace('./', '')) >= 0)) {
-          anchors[aIndex].classList.add('mm-active');
-        }
       }
     }
   }

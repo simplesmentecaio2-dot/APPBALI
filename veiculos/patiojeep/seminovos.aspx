@@ -550,10 +550,7 @@
                             <ul class="vertical-nav-menu">
                                 <li><a href="./"><i class="metismenu-icon fas fa-home"></i>In&iacute;cio</a></li>
                                 <li class="app-sidebar__heading">Fun&ccedil;&otilde;es</li>
-                                <li><a href="./registrar.aspx"><i class="metismenu-icon fa fa-folder-plus"></i>Registrar</a></li>
-                                <li><a href="./transferir.aspx"><i class="metismenu-icon fas fa-exchange-alt"></i>Transferir</a></li>
-                                <li><a href="./historico.aspx"><i class="metismenu-icon fas fa-history"></i>Consultar</a></li>
-                                <li><a href="./relatorios.aspx"><i class="metismenu-icon fas fa-chart-line"></i>Relat&oacute;rios</a></li>
+                                <li><a href="./novos.aspx"><i class="metismenu-icon fas fa-car"></i>Novos</a></li>
                                 <li><a href="./seminovos.aspx" class="mm-active"><i class="metismenu-icon fas fa-car-side"></i>Seminovos</a></li>
                                 <li><a href="./lojas.aspx"><i class="metismenu-icon fas fa-store"></i>Lojas</a></li>
                                 <li><a href="./barcode-logs.aspx"><i class="metismenu-icon fas fa-clipboard-list"></i>Logs do leitor</a></li>
@@ -786,6 +783,6 @@
     <script src="../assets/popper.min.js"></script>
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260706-2"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260706-3"></script>
 </body>
 </html>
