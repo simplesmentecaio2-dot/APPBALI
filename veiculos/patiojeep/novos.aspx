@@ -88,6 +88,24 @@
             display:inline-flex; align-items:center; gap:.4rem; border-radius:999px; padding:.42rem .65rem;
             background:#eef6e9; color:#203729; font-size:.78rem; font-weight:950;
         }
+        .novos-location-pill {
+            display:inline-flex; align-items:center; gap:.45rem; border-radius:999px; padding:.5rem .75rem;
+            background:#203729; color:#fff; font-size:.8rem; font-weight:950; white-space:nowrap;
+        }
+        .novos-detail-panel {
+            margin-top:1rem; border:1px solid #cfe2c3; border-radius:18px;
+            background:linear-gradient(135deg,#f8fff5,#fff); padding:1rem;
+        }
+        .novos-detail-header { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:1rem; align-items:start; }
+        .novos-detail-header small {
+            display:block; color:#64748b; font-weight:900; letter-spacing:.04em; text-transform:uppercase;
+        }
+        .novos-detail-header strong { display:block; color:#0f172a; font-size:1.2rem; font-weight:950; }
+        .novos-detail-header span { color:#64748b; font-weight:800; }
+        .novos-history-title {
+            display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+            margin:1rem 0 .65rem; color:#203729; font-weight:950;
+        }
         .novos-global { border-left:4px solid #6f9151; }
         .novos-sticky-summary {
             position:sticky; top:78px; z-index:10; border:1px solid #cfe2c3; border-radius:16px;
@@ -172,7 +190,7 @@
         @media (max-width:767.98px) {
             .novos-tabs { display:grid; grid-template-columns:1fr 1fr; }
             .novos-tab { border-radius:14px; }
-            .novos-card-header, .novos-vehicle-main { display:grid; grid-template-columns:1fr; align-items:start; }
+            .novos-card-header, .novos-vehicle-main, .novos-detail-header { display:grid; grid-template-columns:1fr; align-items:start; }
             .novos-field, .novos-field.is-wide { grid-column:1/-1; }
             .novos-kpis, .novos-stepper { grid-template-columns:1fr; }
             .novos-actions .novos-btn { flex:1 1 100%; }
@@ -562,6 +580,7 @@
                                                     <asp:LinkButton ID="btnConsultar" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnConsultar_Click"><i class="fa fa-filter"></i>Consultar</asp:LinkButton>
                                                     <asp:LinkButton ID="btnLimparConsulta" runat="server" CssClass="novos-btn novos-btn-light" OnClick="btnLimparConsulta_Click"><i class="fa fa-eraser"></i>Limpar</asp:LinkButton>
                                                 </div>
+                                                <asp:Literal ID="litConsultaDetalhe" runat="server"></asp:Literal>
                                                 <div class="mt-3 novos-table-wrap">
                                                     <asp:Literal ID="litConsultaTabela" runat="server"></asp:Literal>
                                                 </div>

@@ -644,8 +644,23 @@ ORDER BY ds;");
     {
         int loja;
         Int32.TryParse(ddlConsultaLoja.SelectedValue, out loja);
-        DataTable tabela = ListarNovos(loja, NormalizarBusca(txtConsultaBusca.Text), 250);
-        litConsultaTabela.Text = RenderConsulta(tabela);
+        string busca = NormalizarBusca(txtConsultaBusca.Text);
+        DataTable tabela = ListarNovos(loja, busca, 250);
+
+        int detalheId = 0;
+        DataRow detalhe = null;
+        if (!IsPostBack && Int32.TryParse(Request.QueryString["detalhe"], out detalheId))
+        {
+            detalhe = LocalizarNovoNoPatio(Convert.ToString(detalheId));
+        }
+        else if (busca.Length >= 4 && tabela.Rows.Count == 1)
+        {
+            detalhe = tabela.Rows[0];
+            Int32.TryParse(Valor(detalhe, "ve_nr"), out detalheId);
+        }
+
+        litConsultaDetalhe.Text = detalhe == null ? "" : RenderConsultaDetalhe(detalhe);
+        litConsultaTabela.Text = RenderConsulta(tabela, detalheId);
     }
 
     private void CarregarTodos()
@@ -1024,6 +1039,11 @@ SELECT
 
     private string RenderConsulta(DataTable tabela)
     {
+        return RenderConsulta(tabela, 0);
+    }
+
+    private string RenderConsulta(DataTable tabela, int detalheId)
+    {
         if (tabela.Rows.Count == 0)
         {
             return "<div class=\"novos-empty\">Nenhum ve&iacute;culo encontrado neste filtro.</div>";
@@ -1038,10 +1058,12 @@ SELECT
             string veNr = Valor(row, "ve_nr");
             string serie = Valor(row, "ve_serie");
             string chassi = Valor(row, "ve_chassi");
+            bool selecionado = detalheId > 0 && veNr == Convert.ToString(detalheId);
             html.Append("<tr>");
             html.Append("<td data-label=\"A&ccedil;&otilde;es\"><span class=\"novos-row-actions\">");
+            html.Append("<a class=\"novos-mini-action\" href=\"novos.aspx?aba=consultar&amp;detalhe=").Append(HttpUtility.UrlEncode(veNr)).Append("\"><i class=\"fa fa-history\"></i>").Append(selecionado ? "Selecionado" : "Hist&oacute;rico").Append("</a>");
             html.Append("<a class=\"novos-mini-action\" href=\"novos.aspx?aba=transferir&amp;serie=").Append(HttpUtility.UrlEncode(serie)).Append("\"><i class=\"fa fa-exchange-alt\"></i>Transferir</a>");
-            html.Append("<a class=\"novos-mini-action\" href=\"novos.aspx?aba=consultar&amp;historico=").Append(HttpUtility.UrlEncode(veNr)).Append("\"><i class=\"fa fa-history\"></i>Hist&oacute;rico</a>");
+            html.Append("<a class=\"novos-mini-action\" href=\"auditoria.aspx?origem=NOVO&amp;veiculo=").Append(HttpUtility.UrlEncode(veNr)).Append("\"><i class=\"fa fa-shield-alt\"></i>Auditoria</a>");
             html.Append("<a class=\"novos-mini-action\" href=\"#\" data-copy=\"").Append(Html(chassi)).Append("\"><i class=\"far fa-copy\"></i>Copiar chassi</a>");
             html.Append("<a class=\"novos-mini-action\" href=\"novos.aspx?aba=relatorios\"><i class=\"fa fa-chart-line\"></i>Relat&oacute;rio</a>");
             html.Append("</span></td>");
@@ -1052,6 +1074,60 @@ SELECT
             html.Append("<td data-label=\"Cor\">").Append(Html(Valor(row, "cor_ds"))).Append("</td>");
             html.Append("<td data-label=\"Loja atual\"><span class=\"novos-pill\">").Append(Html(Valor(row, "loja_atual"))).Append("</span></td>");
             html.Append("<td data-label=\"Cadastro\">").Append(DataCurta(row, "dt_cad")).Append("<small>").Append(Html(Valor(row, "fun_cad"))).Append("</small></td>");
+            html.Append("</tr>");
+        }
+        html.Append("</tbody></table>");
+        return html.ToString();
+    }
+
+    private string RenderConsultaDetalhe(DataRow row)
+    {
+        int veNr;
+        Int32.TryParse(Valor(row, "ve_nr"), out veNr);
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class=\"novos-detail-panel\">");
+        html.Append("<div class=\"novos-detail-header\">");
+        html.Append("<div><small>Localiza&ccedil;&atilde;o atual</small><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong>");
+        html.Append("<span>Cadastro realizado em ").Append(DataCurta(row, "dt_cad")).Append(" por ").Append(Html(Valor(row, "fun_cad"))).Append("</span></div>");
+        html.Append("<span class=\"novos-location-pill\"><i class=\"fa fa-map-marker-alt\"></i>").Append(Html(Valor(row, "loja_atual"))).Append("</span>");
+        html.Append("</div>");
+        html.Append("<div class=\"novos-pill-list\">");
+        html.Append(Pill("C&oacute;digo", Valor(row, "ve_nr")));
+        html.Append(Pill("S&eacute;rie", Valor(row, "ve_serie")));
+        html.Append(Pill("Chassi", Valor(row, "ve_chassi")));
+        html.Append(Pill("Placa", Valor(row, "ve_placa")));
+        html.Append(Pill("Renavam", Valor(row, "ve_renavam")));
+        html.Append(Pill("Cor", Valor(row, "cor_ds")));
+        html.Append(Pill("&Uacute;ltima mov.", DataCurta(row, "ultima_movimentacao")));
+        html.Append("</div>");
+        html.Append("<div class=\"novos-history-title\"><span><i class=\"fa fa-route\"></i> Hist&oacute;rico de transfer&ecirc;ncias</span>");
+        html.Append("<a class=\"novos-mini-action\" href=\"novos.aspx?aba=transferir&amp;serie=").Append(HttpUtility.UrlEncode(Valor(row, "ve_serie"))).Append("\"><i class=\"fa fa-exchange-alt\"></i>Transferir este carro</a></div>");
+        html.Append("<div class=\"novos-table-wrap\">").Append(RenderHistoricoNovoTabela(veNr)).Append("</div>");
+        html.Append(RenderAuditoriaVeiculo(ListarAuditoriaVeiculo("NOVO", Valor(row, "ve_nr"))));
+        html.Append("</div>");
+        return html.ToString();
+    }
+
+    private string RenderHistoricoNovoTabela(int veNr)
+    {
+        DataTable tabela = ExecutarProcedureTabela("APP..veiculos_patio_select_historico", Param("@ve_nr", SqlDbType.Int, veNr));
+        if (tabela.Rows.Count == 0)
+        {
+            return "<div class=\"novos-empty\">Nenhuma movimenta&ccedil;&atilde;o registrada para este ve&iacute;culo.</div>";
+        }
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<table class=\"novos-table\"><thead><tr><th>Data</th><th>Movimento</th><th>Origem</th><th>Destino</th><th>Usu&aacute;rio</th></tr></thead><tbody>");
+        foreach (DataRow item in tabela.Rows)
+        {
+            string origem = Valor(item, "origem");
+            html.Append("<tr>");
+            html.Append("<td data-label=\"Data\">").Append(DataCurta(item, "dt_transf")).Append("</td>");
+            html.Append("<td data-label=\"Movimento\">").Append(Html(origem == "CADASTRADO" ? "Cadastro" : "Transfer\u00eancia")).Append("</td>");
+            html.Append("<td data-label=\"Origem\">").Append(Html(String.IsNullOrWhiteSpace(origem) ? "-" : origem)).Append("</td>");
+            html.Append("<td data-label=\"Destino\"><span class=\"novos-pill\">").Append(Html(Valor(item, "destino"))).Append("</span></td>");
+            html.Append("<td data-label=\"Usu&aacute;rio\">").Append(Html(Valor(item, "fun_cad"))).Append("</td>");
             html.Append("</tr>");
         }
         html.Append("</tbody></table>");
