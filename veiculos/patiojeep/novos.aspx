@@ -849,10 +849,11 @@
                 if (copyButton) {
                     event.preventDefault();
                     var value = copyButton.getAttribute('data-copy') || '';
+                    var label = copyButton.getAttribute('data-copy-label') || 'Informa\u00e7\u00e3o';
                     if (navigator.clipboard && navigator.clipboard.writeText) {
                         navigator.clipboard.writeText(value);
                     }
-                    if (window.patioToast) window.patioToast('Chassi copiado.', 'info');
+                    if (window.patioToast) window.patioToast(label + ' copiado.', 'info');
                 }
             });
 

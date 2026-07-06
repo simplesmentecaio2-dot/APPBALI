@@ -1058,18 +1058,23 @@ SELECT
             string veNr = Valor(row, "ve_nr");
             string serie = Valor(row, "ve_serie");
             string chassi = Valor(row, "ve_chassi");
+            string placa = Valor(row, "ve_placa");
             bool selecionado = detalheId > 0 && veNr == Convert.ToString(detalheId);
             html.Append("<tr>");
             html.Append("<td data-label=\"A&ccedil;&otilde;es\"><span class=\"novos-row-actions\">");
             html.Append("<a class=\"novos-mini-action\" href=\"novos.aspx?aba=consultar&amp;detalhe=").Append(HttpUtility.UrlEncode(veNr)).Append("\"><i class=\"fa fa-history\"></i>").Append(selecionado ? "Selecionado" : "Hist&oacute;rico").Append("</a>");
             html.Append("<a class=\"novos-mini-action\" href=\"novos.aspx?aba=transferir&amp;serie=").Append(HttpUtility.UrlEncode(serie)).Append("\"><i class=\"fa fa-exchange-alt\"></i>Transferir</a>");
             html.Append("<a class=\"novos-mini-action\" href=\"auditoria.aspx?origem=NOVO&amp;veiculo=").Append(HttpUtility.UrlEncode(veNr)).Append("\"><i class=\"fa fa-shield-alt\"></i>Auditoria</a>");
-            html.Append("<a class=\"novos-mini-action\" href=\"#\" data-copy=\"").Append(Html(chassi)).Append("\"><i class=\"far fa-copy\"></i>Copiar chassi</a>");
+            html.Append("<a class=\"novos-mini-action\" href=\"#\" data-copy=\"").Append(Html(chassi)).Append("\" data-copy-label=\"Chassi\"><i class=\"far fa-copy\"></i>Chassi</a>");
+            if (!String.IsNullOrWhiteSpace(placa))
+            {
+                html.Append("<a class=\"novos-mini-action\" href=\"#\" data-copy=\"").Append(Html(placa)).Append("\" data-copy-label=\"Placa\"><i class=\"far fa-copy\"></i>Placa</a>");
+            }
             html.Append("<a class=\"novos-mini-action\" href=\"novos.aspx?aba=relatorios\"><i class=\"fa fa-chart-line\"></i>Relat&oacute;rio</a>");
             html.Append("</span></td>");
             html.Append("<td data-label=\"Ve&iacute;culo\"><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong><small>C&oacute;d. ").Append(Html(veNr)).Append(" | S&eacute;rie ").Append(Html(serie)).Append("</small></td>");
             html.Append("<td data-label=\"Chassi\">").Append(Html(chassi)).Append("</td>");
-            html.Append("<td data-label=\"Placa\">").Append(Html(Valor(row, "ve_placa"))).Append("</td>");
+            html.Append("<td data-label=\"Placa\">").Append(Html(placa)).Append("</td>");
             html.Append("<td data-label=\"Renavam\">").Append(Html(Valor(row, "ve_renavam"))).Append("</td>");
             html.Append("<td data-label=\"Cor\">").Append(Html(Valor(row, "cor_ds"))).Append("</td>");
             html.Append("<td data-label=\"Loja atual\"><span class=\"novos-pill\">").Append(Html(Valor(row, "loja_atual"))).Append("</span></td>");
@@ -1168,7 +1173,11 @@ SELECT
                 html.Append("<a class=\"novos-mini-action\" href=\"seminovos.aspx?aba=transferir&amp;busca=").Append(HttpUtility.UrlEncode(chassi)).Append("\"><i class=\"fa fa-car-side\"></i>Seminovos</a>");
             }
             html.Append("<a class=\"novos-mini-action\" href=\"auditoria.aspx?origem=").Append(HttpUtility.UrlEncode(tipo)).Append("&amp;veiculo=").Append(HttpUtility.UrlEncode(veNr)).Append("\"><i class=\"fa fa-shield-alt\"></i>Auditoria</a>");
-            html.Append("<a class=\"novos-mini-action\" href=\"#\" data-copy=\"").Append(Html(chassi)).Append("\"><i class=\"far fa-copy\"></i>Copiar</a>");
+            html.Append("<a class=\"novos-mini-action\" href=\"#\" data-copy=\"").Append(Html(chassi)).Append("\" data-copy-label=\"Chassi\"><i class=\"far fa-copy\"></i>Chassi</a>");
+            if (!String.IsNullOrWhiteSpace(Valor(row, "ve_placa")))
+            {
+                html.Append("<a class=\"novos-mini-action\" href=\"#\" data-copy=\"").Append(Html(Valor(row, "ve_placa"))).Append("\" data-copy-label=\"Placa\"><i class=\"far fa-copy\"></i>Placa</a>");
+            }
             html.Append("</span></td>");
             html.Append("<td data-label=\"Tipo\"><span class=\"novos-pill\"><i class=\"fa ").Append(tipo == "SEMINOVO" ? "fa-car-side" : "fa-car").Append("\"></i>").Append(Html(tipo == "SEMINOVO" ? "Seminovo" : "Novo")).Append("</span></td>");
             html.Append("<td data-label=\"Ve&iacute;culo\"><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong><small>C&oacute;d. ").Append(Html(veNr)).Append(" | Ref. ").Append(Html(Valor(row, "codigo_origem"))).Append("</small></td>");
@@ -1268,7 +1277,8 @@ SELECT
         {
             html.Append("<a class=\"novos-btn novos-btn-light\" href=\"novos.aspx?aba=registrar\"><i class=\"fa fa-folder-plus\"></i>Registrar em Novos</a>");
         }
-        if (!String.IsNullOrWhiteSpace(chassi)) html.Append("<a class=\"novos-btn novos-btn-light\" href=\"#\" data-copy=\"").Append(Html(chassi)).Append("\"><i class=\"far fa-copy\"></i>Copiar chassi</a>");
+        if (!String.IsNullOrWhiteSpace(chassi)) html.Append("<a class=\"novos-btn novos-btn-light\" href=\"#\" data-copy=\"").Append(Html(chassi)).Append("\" data-copy-label=\"Chassi\"><i class=\"far fa-copy\"></i>Copiar chassi</a>");
+        if (!String.IsNullOrWhiteSpace(Valor(row, "ve_placa"))) html.Append("<a class=\"novos-btn novos-btn-light\" href=\"#\" data-copy=\"").Append(Html(Valor(row, "ve_placa"))).Append("\" data-copy-label=\"Placa\"><i class=\"far fa-copy\"></i>Copiar placa</a>");
         html.Append("</div></div>");
         return html.ToString();
     }
