@@ -775,7 +775,8 @@ SELECT
             RenderVeiculoCard(row, tipo == "SEMINOVO" ? "Seminovo localizado" : "Novo localizado", "Manuten\u00e7\u00e3o operacional do p\u00e1tio.", tipo == "SEMINOVO" ? "seminovo" : "novo") +
             "<div class=\"novos-alert is-success\" style=\"margin-top:1rem;\"><i class=\"fa fa-link mt-1\"></i><div><strong>Link interno do ve&iacute;culo</strong><span>" +
             Html(Request.Url.GetLeftPart(UriPartial.Authority) + ResolveUrl("~/veiculos/patiojeep/novos.aspx?aba=todos&operTipo=" + tipo + "&operBusca=" + HttpUtility.UrlEncode(Valor(row, "ve_nr")))) +
-            "</span></div></div>";
+            "</span></div></div>" +
+            RenderAuditoriaVeiculo(ListarAuditoriaVeiculo(tipo, Valor(row, "ve_nr")));
 
         AdicionarUltimoAcessado(tipo == "SEMINOVO" ? "Seminovo" : "Novo", row);
         if (exibirMensagem)

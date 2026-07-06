@@ -201,7 +201,7 @@
         }
     </style>
 </head>
-<body class="patio-modern-page patio-brand-jeep">
+<body class="patio-modern-page patio-brand-jeep" data-patio-page="novos.aspx">
     <form id="form1" runat="server">
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
         <asp:HiddenField ID="hfAbaAtual" runat="server" />
