@@ -190,6 +190,26 @@
                                         <div class="mb-3 card">
                                             <div class="card-header-tab card-header-tab-animation card-header">
                                                 <div class="card-header-title">
+                                                    <i class="header-icon fa fa-search icon-gradient bg-love-kiss"></i>
+                                                    Busca global do p&aacute;tio
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row align-items-end">
+                                                    <div class="col-md-8 col-12 mb-2">
+                                                        <label class="font-weight-bold text-muted text-uppercase" style="font-size:.75rem;">S&eacute;rie, chassi, placa, Renavam ou c&oacute;digo</label>
+                                                        <asp:TextBox ID="txtBuscaGlobal" runat="server" CssClass="form-control" MaxLength="40" autocomplete="off" placeholder="Digite para localizar em Novos ou Seminovos"></asp:TextBox>
+                                                    </div>
+                                                    <div class="col-md-4 col-12 mb-2">
+                                                        <asp:LinkButton ID="btnBuscaGlobal" runat="server" CssClass="btn btn-success btn-block" OnClick="btnBuscaGlobal_Click"><i class="fa fa-search mr-1"></i>Buscar no p&aacute;tio</asp:LinkButton>
+                                                    </div>
+                                                </div>
+                                                <asp:Literal ID="litHomeIndicadores" runat="server"></asp:Literal>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 card">
+                                            <div class="card-header-tab card-header-tab-animation card-header">
+                                                <div class="card-header-title">
                                                     <i class="header-icon lnr-apartment icon-gradient bg-love-kiss"></i>
                                                     Fun&ccedil;&otilde;es                                       
                                                 </div>

@@ -31,6 +31,13 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
             string aba = Request.QueryString["aba"];
             AtivarAba(String.IsNullOrWhiteSpace(aba) ? "registrar" : aba);
 
+            string buscaGlobal = Request.QueryString["buscar"];
+            if (!String.IsNullOrWhiteSpace(buscaGlobal))
+            {
+                txtGlobalBusca.Text = buscaGlobal;
+                btnGlobalBuscar_Click(btnGlobalBuscar, EventArgs.Empty);
+            }
+
             string serie = Request.QueryString["serie"];
             if (!String.IsNullOrWhiteSpace(serie))
             {
@@ -665,7 +672,7 @@ SELECT
         {
             html.Append("<a class=\"novos-btn novos-btn-light\" href=\"seminovos.aspx?aba=transferir&amp;busca=").Append(HttpUtility.UrlEncode(Valor(row, "ve_chassi"))).Append("\"><i class=\"fa fa-car-side\"></i>Abrir em Seminovos</a>");
         }
-        else
+        else if (origem == "dealernet")
         {
             html.Append("<a class=\"novos-btn novos-btn-light\" href=\"novos.aspx?aba=registrar\"><i class=\"fa fa-folder-plus\"></i>Registrar em Novos</a>");
         }
@@ -721,7 +728,7 @@ SELECT
         {
             html.Append("<tr>");
             html.Append("<td data-label=\"Data\">").Append(DataCurta(row, "dt_transf")).Append("</td>");
-            html.Append("<td data-label=\"Movimento\">").Append(Html(Valor(row, "origem") == "CADASTRADO" ? "Cadastro" : "Transfer&ecirc;ncia")).Append("</td>");
+            html.Append("<td data-label=\"Movimento\">").Append(Html(Valor(row, "origem") == "CADASTRADO" ? "Cadastro" : "Transfer\u00eancia")).Append("</td>");
             html.Append("<td data-label=\"Origem\">").Append(Html(Valor(row, "origem"))).Append("</td>");
             html.Append("<td data-label=\"Destino\">").Append(Html(Valor(row, "destino"))).Append("</td>");
             html.Append("<td data-label=\"Usu&aacute;rio\">").Append(Html(Valor(row, "fun_cad"))).Append("</td>");
