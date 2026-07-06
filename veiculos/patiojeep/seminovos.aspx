@@ -521,6 +521,27 @@
             animation: semiSpin .85s linear infinite;
         }
 
+        .semi-quick-filters {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: .55rem;
+            margin: .85rem 0 1rem;
+        }
+
+        .semi-period-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            border-radius: 999px;
+            padding: .42rem .72rem;
+            background: #f8fafc;
+            border: 1px solid #dbe4ef;
+            color: #475569;
+            font-weight: 900;
+            font-size: .78rem;
+        }
+
         @keyframes semiSpin {
             to { transform: rotate(360deg); }
         }
@@ -852,6 +873,12 @@
                                                 <asp:LinkButton ID="btnAtualizarRelatorio" runat="server" CssClass="semi-btn semi-btn-light js-safe-submit" OnClick="btnAtualizarRelatorio_Click"><i class="fa fa-sync-alt"></i>Atualizar</asp:LinkButton>
                                             </div>
                                             <div class="semi-card-body">
+                                                <div class="semi-quick-filters">
+                                                    <span class="semi-period-pill"><i class="fa fa-calendar-alt"></i><asp:Literal ID="litRelatorioPeriodo" runat="server"></asp:Literal></span>
+                                                    <asp:LinkButton ID="btnFiltroHoje" runat="server" CssClass="semi-mini-action" CommandArgument="hoje" OnClick="FiltroRelatorio_Click"><i class="fa fa-calendar-day"></i>Hoje</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnFiltro7Dias" runat="server" CssClass="semi-mini-action" CommandArgument="7dias" OnClick="FiltroRelatorio_Click"><i class="fa fa-calendar-week"></i>&Uacute;ltimos 7 dias</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnFiltroMes" runat="server" CssClass="semi-mini-action" CommandArgument="mes" OnClick="FiltroRelatorio_Click"><i class="fa fa-calendar-alt"></i>Este m&ecirc;s</asp:LinkButton>
+                                                </div>
                                                 <asp:Literal ID="litResumo" runat="server"></asp:Literal>
                                             </div>
                                         </div>
@@ -870,7 +897,7 @@
                                             <div class="semi-card">
                                                 <div class="semi-card-header">
                                                     <div>
-                                                        <small>&Uacute;ltimos 14 dias</small>
+                                                        <small>Per&iacute;odo selecionado</small>
                                                         <h2 class="semi-card-title">Entradas por dia</h2>
                                                     </div>
                                                 </div>
@@ -883,7 +910,7 @@
                                             <div class="semi-card">
                                                 <div class="semi-card-header">
                                                     <div>
-                                                        <small>&Uacute;ltimos 14 dias</small>
+                                                        <small>Per&iacute;odo selecionado</small>
                                                         <h2 class="semi-card-title">Transfer&ecirc;ncias por dia</h2>
                                                     </div>
                                                 </div>

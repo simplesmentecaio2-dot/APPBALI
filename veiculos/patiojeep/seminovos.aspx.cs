@@ -26,6 +26,7 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
         if (!IsPostBack)
         {
             CarregarLojas();
+            InicializarRelatorio();
             LimparRegistro(false);
             LimparTransferencia(false);
 
@@ -268,6 +269,13 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
         MostrarMensagem("success", "BI atualizado", "Relat\u00f3rio carregado com os dados atuais de seminovos.");
     }
 
+    protected void FiltroRelatorio_Click(object sender, EventArgs e)
+    {
+        LinkButton botao = sender as LinkButton;
+        DefinirPeriodo(botao != null ? botao.CommandArgument : "mes");
+        AtivarAba("relatorios");
+    }
+
     public void btnSair_Click(object sender, EventArgs e)
     {
         SessaoUnica.EncerrarSessaoAtual("LOGOUT_LOCAL");
@@ -303,6 +311,7 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
         {
             CarregarRelatorio();
         }
+        litRelatorioPeriodo.Text = Html(PeriodoAtualTexto());
     }
 
     private string NormalizarAba(string aba)
@@ -399,24 +408,78 @@ ORDER BY ds;");
         return "<span class=\"semi-pager-info\">P&aacute;gina " + pagina + " de " + paginas + " &middot; " + inicio + "-" + fim + " de " + total + " seminovo(s)</span>";
     }
 
+    private void InicializarRelatorio()
+    {
+        if (ViewState["semi_rel_ini"] == null || ViewState["semi_rel_fim"] == null)
+        {
+            DateTime hoje = DateTime.Today;
+            ViewState["semi_rel_ini"] = new DateTime(hoje.Year, hoje.Month, 1);
+            ViewState["semi_rel_fim"] = hoje;
+        }
+    }
+
+    private void DefinirPeriodo(string filtro)
+    {
+        DateTime hoje = DateTime.Today;
+        if (filtro == "hoje")
+        {
+            ViewState["semi_rel_ini"] = hoje;
+            ViewState["semi_rel_fim"] = hoje;
+        }
+        else if (filtro == "7dias")
+        {
+            ViewState["semi_rel_ini"] = hoje.AddDays(-6);
+            ViewState["semi_rel_fim"] = hoje;
+        }
+        else
+        {
+            ViewState["semi_rel_ini"] = new DateTime(hoje.Year, hoje.Month, 1);
+            ViewState["semi_rel_fim"] = hoje;
+        }
+    }
+
+    private DateTime RelInicio()
+    {
+        InicializarRelatorio();
+        return Convert.ToDateTime(ViewState["semi_rel_ini"]);
+    }
+
+    private DateTime RelFim()
+    {
+        InicializarRelatorio();
+        return Convert.ToDateTime(ViewState["semi_rel_fim"]);
+    }
+
+    private string PeriodoAtualTexto()
+    {
+        return RelInicio().ToString("dd/MM/yyyy") + " a " + RelFim().ToString("dd/MM/yyyy");
+    }
+
     private void CarregarRelatorio()
     {
+        DateTime inicio = RelInicio();
+        DateTime fimExclusivo = RelFim().Date.AddDays(1);
+
         DataTable resumo = ExecutarSqlTabela(@"
 SELECT
     COUNT(1) AS total_ativos,
     COUNT(DISTINCT COALESCE(NULLIF(loja_atual_id, 0), loja_id)) AS lojas_com_veiculos,
-    SUM(CASE WHEN dt_cad >= CONVERT(date, GETDATE()) THEN 1 ELSE 0 END) AS entradas_hoje,
-    SUM(CASE WHEN dt_cad >= DATEADD(day, -7, GETDATE()) THEN 1 ELSE 0 END) AS entradas_7_dias,
+    SUM(CASE WHEN dt_cad >= @inicio AND dt_cad < @fim THEN 1 ELSE 0 END) AS entradas_periodo,
     MAX(dt_cad) AS ultima_entrada
 FROM dbo.veiculos_patio_seminovos_locacao WITH (NOLOCK)
-WHERE ativo = 1;");
+WHERE ativo = 1;",
+            Param("@inicio", SqlDbType.DateTime, inicio),
+            Param("@fim", SqlDbType.DateTime, fimExclusivo));
 
         DataTable transferencias = ExecutarSqlTabela(@"
 SELECT
-    COUNT(1) AS transferencias_mes,
+    COUNT(1) AS transferencias_periodo,
     MAX(dt_transf) AS ultima_transferencia
 FROM dbo.veiculos_patio_seminovos_transferencia WITH (NOLOCK)
-WHERE dt_transf >= DATEADD(month, DATEDIFF(month, 0, GETDATE()), 0);");
+WHERE dt_transf >= @inicio
+  AND dt_transf < @fim;",
+            Param("@inicio", SqlDbType.DateTime, inicio),
+            Param("@fim", SqlDbType.DateTime, fimExclusivo));
 
         litResumo.Text = RenderResumo(resumo, transferencias);
 
@@ -433,16 +496,20 @@ ORDER BY COUNT(1) DESC, COALESCE(l.ds, 'Sem loja');"), "Nenhum seminovo ativo no
 SELECT CONVERT(varchar(10), CONVERT(date, dt_cad), 103) AS label, COUNT(1) AS total
 FROM dbo.veiculos_patio_seminovos_locacao WITH (NOLOCK)
 WHERE ativo = 1
-  AND dt_cad >= DATEADD(day, -13, CONVERT(date, GETDATE()))
+  AND dt_cad >= @inicio AND dt_cad < @fim
 GROUP BY CONVERT(date, dt_cad)
-ORDER BY CONVERT(date, dt_cad);"), "Nenhuma entrada nos &uacute;ltimos 14 dias.");
+ORDER BY CONVERT(date, dt_cad);",
+            Param("@inicio", SqlDbType.DateTime, inicio),
+            Param("@fim", SqlDbType.DateTime, fimExclusivo)), "Nenhuma entrada encontrada no per&iacute;odo.");
 
         litMovimentacoesDia.Text = RenderBarras(ExecutarSqlTabela(@"
 SELECT CONVERT(varchar(10), CONVERT(date, dt_transf), 103) AS label, COUNT(1) AS total
 FROM dbo.veiculos_patio_seminovos_transferencia WITH (NOLOCK)
-WHERE dt_transf >= DATEADD(day, -13, CONVERT(date, GETDATE()))
+WHERE dt_transf >= @inicio AND dt_transf < @fim
 GROUP BY CONVERT(date, dt_transf)
-ORDER BY CONVERT(date, dt_transf);"), "Nenhuma transfer&ecirc;ncia nos &uacute;ltimos 14 dias.");
+ORDER BY CONVERT(date, dt_transf);",
+            Param("@inicio", SqlDbType.DateTime, inicio),
+            Param("@fim", SqlDbType.DateTime, fimExclusivo)), "Nenhuma transfer&ecirc;ncia encontrada no per&iacute;odo.");
 
         litUltimosCadastros.Text = RenderConsulta(ListarUltimosSeminovos(25));
 
@@ -903,9 +970,8 @@ ORDER BY dt DESC, id DESC;",
         html.Append("<div class=\"semi-kpis\">");
         html.Append(Kpi("Ativos", Numero(r, "total_ativos"), "seminovos no p&aacute;tio"));
         html.Append(Kpi("Lojas", Numero(r, "lojas_com_veiculos"), "com estoque ativo"));
-        html.Append(Kpi("Hoje", Numero(r, "entradas_hoje"), "entradas no dia"));
-        html.Append(Kpi("7 dias", Numero(r, "entradas_7_dias"), "entradas recentes"));
-        html.Append(Kpi("Transfer&ecirc;ncias", Numero(t, "transferencias_mes"), "no m&ecirc;s atual"));
+        html.Append(Kpi("Entradas", Numero(r, "entradas_periodo"), "no per&iacute;odo"));
+        html.Append(Kpi("Transfer&ecirc;ncias", Numero(t, "transferencias_periodo"), "no per&iacute;odo"));
         html.Append("</div>");
         return html.ToString();
     }
