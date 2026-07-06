@@ -790,6 +790,7 @@
                                                 <div class="semi-actions">
                                                     <asp:LinkButton ID="btnConsultar" runat="server" CssClass="semi-btn semi-btn-primary js-safe-submit" OnClick="btnConsultar_Click"><i class="fa fa-filter"></i>Consultar</asp:LinkButton>
                                                     <asp:LinkButton ID="btnLimparConsulta" runat="server" CssClass="semi-btn semi-btn-light" OnClick="btnLimparConsulta_Click"><i class="fa fa-eraser"></i>Limpar</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnExportarConsulta" runat="server" CssClass="semi-btn semi-btn-light" OnClick="btnExportarConsulta_Click"><i class="fa fa-file-export"></i>Exportar CSV</asp:LinkButton>
                                                 </div>
                                                 <asp:Literal ID="litConsultaDetalhe" runat="server"></asp:Literal>
                                                 <div class="mt-3 semi-table-wrap">

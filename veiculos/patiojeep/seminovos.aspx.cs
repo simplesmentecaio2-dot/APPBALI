@@ -17,6 +17,11 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
         }
 
         usuarioLogado.Text = Html(Convert.ToString(Session["usuario"]));
+        ScriptManager scriptManager = ScriptManager.GetCurrent(Page);
+        if (scriptManager != null)
+        {
+            scriptManager.RegisterPostBackControl(btnExportarConsulta);
+        }
 
         if (!IsPostBack)
         {
@@ -179,6 +184,13 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
     {
         hfConsultaPagina.Value = (PaginaConsulta() + 1).ToString();
         AtivarAba("consultar");
+    }
+
+    protected void btnExportarConsulta_Click(object sender, EventArgs e)
+    {
+        int loja;
+        Int32.TryParse(ddlConsultaLoja.SelectedValue, out loja);
+        ExportarConsultaSeminovos(loja, NormalizarBusca(txtConsultaBusca.Text));
     }
 
     protected void btnBuscarTransferencia_Click(object sender, EventArgs e)
@@ -586,6 +598,77 @@ ORDER BY rn;",
             Param("@fim", SqlDbType.Int, fim));
     }
 
+    private DataTable ListarSeminovosExportacao(int loja, string busca)
+    {
+        string valor = NormalizarBusca(busca);
+        return ExecutarSqlTabela(@"
+SELECT TOP 5000
+    p.id,
+    p.ve_nr,
+    p.ve_ds,
+    p.ve_chassi,
+    p.ve_placa,
+    p.ve_renavam,
+    p.cor_ds,
+    p.numeronf,
+    COALESCE(l.ds, 'Sem loja') AS loja_atual,
+    p.fun_cad,
+    p.dt_cad,
+    p.observacao
+FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
+LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
+    ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+WHERE p.ativo = 1
+  AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
+  AND (
+        @valor = ''
+     OR CONVERT(varchar(20), p.ve_nr) = @valor
+     OR CONVERT(varchar(20), p.id) = @valor
+     OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(p.ve_placa, '')), '-', ''), ' ', ''), '.', '') LIKE @valorLike
+     OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(p.ve_chassi, '')), '-', ''), ' ', ''), '.', '') LIKE @valorLike
+     OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(p.ve_renavam, '')), '-', ''), ' ', ''), '.', '') LIKE @valorLike
+     OR UPPER(ISNULL(p.ve_ds, '')) LIKE @valorLike
+  )
+ORDER BY p.dt_cad DESC, p.id DESC;",
+            Param("@loja", SqlDbType.Int, loja),
+            Param("@valor", SqlDbType.VarChar, valor),
+            Param("@valorLike", SqlDbType.VarChar, "%" + valor + "%"));
+    }
+
+    private void ExportarConsultaSeminovos(int loja, string busca)
+    {
+        DataTable tabela = ListarSeminovosExportacao(loja, busca);
+        StringBuilder csv = new StringBuilder();
+        csv.AppendLine("ID;Codigo;Veiculo;Chassi;Placa;Renavam;Cor;NF;Loja atual;Usuario cadastro;Data cadastro;Observacao");
+
+        foreach (DataRow row in tabela.Rows)
+        {
+            csv.Append(Csv(Valor(row, "id"))).Append(";");
+            csv.Append(Csv(Valor(row, "ve_nr"))).Append(";");
+            csv.Append(Csv(Valor(row, "ve_ds"))).Append(";");
+            csv.Append(Csv(Valor(row, "ve_chassi"))).Append(";");
+            csv.Append(Csv(Valor(row, "ve_placa"))).Append(";");
+            csv.Append(Csv(Valor(row, "ve_renavam"))).Append(";");
+            csv.Append(Csv(Valor(row, "cor_ds"))).Append(";");
+            csv.Append(Csv(Valor(row, "numeronf"))).Append(";");
+            csv.Append(Csv(Valor(row, "loja_atual"))).Append(";");
+            csv.Append(Csv(Valor(row, "fun_cad"))).Append(";");
+            csv.Append(Csv(DataCurta(row, "dt_cad"))).Append(";");
+            csv.Append(Csv(Valor(row, "observacao"))).AppendLine();
+        }
+
+        RegistrarAuditoria("CONSULTA_EXPORTADA", null, busca, "Loja=" + loja + "; Linhas=" + tabela.Rows.Count);
+        Response.Clear();
+        Response.Buffer = true;
+        Response.ContentEncoding = Encoding.UTF8;
+        Response.ContentType = "text/csv";
+        Response.AddHeader("Content-Disposition", "attachment; filename=seminovos-patio-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".csv");
+        Response.BinaryWrite(Encoding.UTF8.GetPreamble());
+        Response.Write(csv.ToString());
+        Response.Flush();
+        Context.ApplicationInstance.CompleteRequest();
+    }
+
     private DataRow LocalizarSeminovoPorId(int id)
     {
         DataTable tabela = ExecutarSqlTabela(@"
@@ -858,6 +941,12 @@ ORDER BY dt DESC, id DESC;",
     private string Pill(string label, string value)
     {
         return "<span class=\"semi-pill\"><b>" + Html(label) + "</b> " + Html(String.IsNullOrWhiteSpace(value) ? "-" : value) + "</span>";
+    }
+
+    private string Csv(string valor)
+    {
+        valor = valor ?? "";
+        return "\"" + valor.Replace("\"", "\"\"").Replace("\r", " ").Replace("\n", " ") + "\"";
     }
 
     private string Kpi(string label, string valor, string detalhe)
