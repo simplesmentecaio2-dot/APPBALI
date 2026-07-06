@@ -11,176 +11,154 @@
     <link href="../../css/bali-patio.css?v=20260704-1" rel="stylesheet" />
     <link href="../assets/all.min.css" rel="stylesheet" />
     <style>
-        .novos-shell {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .novos-tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .65rem;
-        }
-
+        .novos-shell { display: grid; gap: 1rem; }
+        .novos-tabs { display: flex; flex-wrap: wrap; gap: .65rem; }
         .novos-tab {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: .5rem;
-            border: 1px solid #dbe4ef;
-            border-radius: 999px;
-            padding: .72rem 1rem;
-            background: #fff;
-            color: #334155;
-            font-weight: 900;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, .07);
-            text-decoration: none !important;
-            transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+            display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+            border: 1px solid #dbe4ef; border-radius: 999px; padding: .72rem 1rem;
+            background: #fff; color: #334155; font-weight: 900; box-shadow: 0 10px 24px rgba(15,23,42,.07);
+            text-decoration: none !important; transition: transform .18s ease, border-color .18s ease, background .18s ease;
         }
-
-        .novos-tab:hover {
-            transform: translateY(-1px);
-            border-color: #8aa36f;
-            color: #203729;
+        .novos-tab:hover { transform: translateY(-1px); border-color: #8aa36f; color: #203729; }
+        .novos-tab.is-active { background: linear-gradient(135deg,#203729,#6f9151); border-color: transparent; color: #fff; box-shadow: 0 16px 34px rgba(32,55,41,.22); }
+        .novos-card {
+            border: 1px solid #dbe4ef; border-radius: 18px; background: rgba(255,255,255,.97);
+            box-shadow: 0 16px 40px rgba(15,23,42,.08); overflow: hidden;
         }
-
-        .novos-tab.is-active {
-            background: linear-gradient(135deg, #203729, #6f9151);
-            border-color: transparent;
-            color: #fff;
-            box-shadow: 0 16px 34px rgba(32, 55, 41, .22);
+        .novos-card-header {
+            display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+            padding: 1rem 1.15rem; border-bottom: 1px solid #e2e8f0; background: linear-gradient(180deg,#fff,#f8fafc);
         }
-
-        .novos-frame-card {
-            border: 1px solid #dbe4ef;
-            border-radius: 18px;
-            background: rgba(255,255,255,.97);
-            box-shadow: 0 16px 40px rgba(15,23,42,.08);
-            overflow: hidden;
+        .novos-card-header small { display:block; color:#64748b; font-weight:850; }
+        .novos-card-title { margin:0; color:#0f172a; font-size:1.05rem; font-weight:950; }
+        .novos-card-body { padding:1.15rem; }
+        .novos-grid { display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:.9rem; }
+        .novos-field { grid-column:span 4; display:grid; gap:.35rem; }
+        .novos-field.is-wide { grid-column:span 8; }
+        .novos-field.is-full { grid-column:1/-1; }
+        .novos-label { color:#475569; font-size:.74rem; font-weight:950; letter-spacing:.04em; text-transform:uppercase; }
+        .novos-input, .novos-select, .novos-textarea {
+            width:100%; min-height:46px; border:1px solid #cfd9e6; border-radius:12px; padding:.72rem .85rem;
+            background:#fff; color:#0f172a; font-weight:800; outline:none; transition:border-color .16s ease, box-shadow .16s ease;
         }
-
-        .novos-frame-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            padding: 1rem 1.15rem;
-            border-bottom: 1px solid #e2e8f0;
-            background: linear-gradient(180deg, #fff, #f8fafc);
+        .novos-textarea { min-height:88px; resize:vertical; }
+        .novos-input:focus, .novos-select:focus, .novos-textarea:focus { border-color:#6f9151; box-shadow:0 0 0 4px rgba(111,145,81,.14); }
+        .novos-actions { display:flex; flex-wrap:wrap; gap:.7rem; align-items:center; margin-top:1rem; }
+        .novos-btn {
+            display:inline-flex; align-items:center; justify-content:center; gap:.5rem; min-height:44px; border-radius:12px;
+            border:1px solid transparent; padding:.7rem 1rem; font-weight:950; text-decoration:none !important;
         }
-
-        .novos-frame-header small {
-            display: block;
-            color: #64748b;
-            font-weight: 850;
+        .novos-btn-primary { background:linear-gradient(135deg,#203729,#6f9151); color:#fff !important; box-shadow:0 12px 28px rgba(32,55,41,.22); }
+        .novos-btn-light { background:#fff; border-color:#cfd9e6; color:#334155 !important; }
+        .novos-btn-danger { background:#fff5f5; border-color:#fecaca; color:#991b1b !important; }
+        .novos-btn[disabled], .novos-btn.aspNetDisabled { opacity:.55; pointer-events:none; }
+        .novos-alert {
+            display:flex; align-items:flex-start; gap:.75rem; border-radius:16px; padding:.9rem 1rem; margin-bottom:1rem;
+            border:1px solid #dbe4ef; background:#f8fafc; color:#334155; font-weight:800;
         }
-
-        .novos-frame-title {
-            margin: 0;
-            color: #0f172a;
-            font-size: 1.05rem;
-            font-weight: 950;
+        .novos-alert strong { display:block; color:#0f172a; font-weight:950; }
+        .novos-alert span { display:block; }
+        .novos-alert.is-success { border-color:#bbf7d0; background:#f0fdf4; color:#166534; }
+        .novos-alert.is-warning { border-color:#fde68a; background:#fffbeb; color:#92400e; }
+        .novos-alert.is-error { border-color:#fecaca; background:#fef2f2; color:#991b1b; }
+        .novos-kpis { display:grid; grid-template-columns:repeat(4,minmax(140px,1fr)); gap:.85rem; }
+        .novos-kpi { border:1px solid #dbe4ef; border-radius:16px; background:#fff; padding:.95rem; box-shadow:0 12px 26px rgba(15,23,42,.07); }
+        .novos-kpi small { display:block; color:#64748b; font-size:.72rem; font-weight:950; letter-spacing:.04em; text-transform:uppercase; }
+        .novos-kpi strong { display:block; margin-top:.35rem; color:#0f172a; font-size:clamp(1.35rem,2.8vw,2rem); line-height:1; font-weight:950; }
+        .novos-kpi span { display:block; margin-top:.45rem; color:#667085; font-size:.78rem; font-weight:800; }
+        .novos-stepper { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.7rem; margin-bottom:1rem; }
+        .novos-step {
+            display:flex; align-items:center; gap:.65rem; border:1px solid #dbe4ef; border-radius:14px; padding:.75rem; background:#fff;
+            color:#64748b; font-weight:900;
         }
-
-        .novos-frame-status {
-            display: inline-flex;
-            align-items: center;
-            gap: .45rem;
-            border-radius: 999px;
-            padding: .42rem .72rem;
-            background: #eef6e9;
-            color: #203729;
-            font-size: .78rem;
-            font-weight: 950;
-            white-space: nowrap;
+        .novos-step b { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:999px; background:#edf2f7; color:#334155; }
+        .novos-step.is-done { border-color:#bbf7d0; background:#f0fdf4; color:#166534; }
+        .novos-step.is-done b { background:#22c55e; color:#fff; }
+        .novos-step.is-current { border-color:#8aa36f; background:#f8fff5; color:#203729; box-shadow:0 12px 24px rgba(111,145,81,.12); }
+        .novos-vehicle-card {
+            border:1px solid #cfe2c3; border-radius:18px; background:linear-gradient(135deg,#f8fff5,#fff);
+            padding:1rem; margin-top:1rem;
         }
-
-        .novos-frame-wrap {
-            position: relative;
-            min-height: 720px;
-            background: #f8fafc;
+        .novos-vehicle-main { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:1rem; align-items:start; }
+        .novos-vehicle-main strong { display:block; color:#0f172a; font-size:1.15rem; font-weight:950; }
+        .novos-vehicle-main small { display:block; color:#64748b; font-weight:800; margin-top:.2rem; }
+        .novos-pill-list { display:flex; flex-wrap:wrap; gap:.55rem; margin-top:.85rem; }
+        .novos-pill {
+            display:inline-flex; align-items:center; gap:.4rem; border-radius:999px; padding:.42rem .65rem;
+            background:#eef6e9; color:#203729; font-size:.78rem; font-weight:950;
         }
-
-        .novos-frame {
-            display: block;
-            width: 100%;
-            min-height: 820px;
-            border: 0;
-            background: transparent;
+        .novos-global { border-left:4px solid #6f9151; }
+        .novos-sticky-summary {
+            position:sticky; top:78px; z-index:10; border:1px solid #cfe2c3; border-radius:16px;
+            background:rgba(255,255,255,.96); box-shadow:0 12px 26px rgba(15,23,42,.08); padding:.85rem 1rem;
         }
-
-        .novos-frame-loader {
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            display: none;
-            align-items: flex-start;
-            justify-content: center;
-            padding-top: 3rem;
-            background: rgba(248,250,252,.78);
-            pointer-events: none;
+        .novos-sticky-summary:empty { display:none; }
+        .novos-table-wrap { overflow-x:auto; }
+        .novos-table { width:100%; min-width:900px; margin:0; border-collapse:separate; border-spacing:0; }
+        .novos-table th {
+            background:#f8fafc; color:#475569; font-size:.73rem; font-weight:950; letter-spacing:.04em;
+            text-transform:uppercase; white-space:nowrap; border-bottom:1px solid #e2e8f0; padding:.75rem;
         }
-
-        .novos-frame-loader.is-active {
-            display: flex;
+        .novos-table td { color:#1f2937; font-weight:750; vertical-align:middle; border-bottom:1px solid #edf2f7; padding:.78rem; }
+        .novos-table td small { display:block; color:#64748b; font-weight:750; }
+        .novos-row-actions { display:inline-flex; gap:.45rem; flex-wrap:wrap; }
+        .novos-mini-action {
+            display:inline-flex; align-items:center; gap:.35rem; border-radius:999px; border:1px solid #cfd9e6;
+            background:#fff; color:#334155 !important; padding:.38rem .62rem; font-size:.76rem; font-weight:950; text-decoration:none !important;
         }
-
-        .novos-loader-card {
-            display: inline-flex;
-            align-items: center;
-            gap: .75rem;
-            border: 1px solid #dbe4ef;
-            border-radius: 16px;
-            background: #fff;
-            padding: .85rem 1rem;
-            color: #334155;
-            font-weight: 900;
-            box-shadow: 0 14px 34px rgba(15,23,42,.12);
+        .novos-bar-list { display:grid; gap:.75rem; }
+        .novos-bar-row { display:grid; grid-template-columns:minmax(120px,.35fr) minmax(0,1fr) 52px; gap:.7rem; align-items:center; }
+        .novos-bar-label { color:#334155; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .novos-bar-track { height:12px; border-radius:999px; background:#edf2f7; overflow:hidden; }
+        .novos-bar-track span { display:block; height:100%; min-width:3px; border-radius:inherit; background:linear-gradient(90deg,#6f9151,#203729); }
+        .novos-bi-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; }
+        .novos-empty { border:1px dashed #cfd9e6; border-radius:16px; padding:1.2rem; background:#f8fafc; color:#64748b; font-weight:850; text-align:center; }
+        .novos-modal {
+            position:fixed; inset:0; z-index:1050; display:grid; place-items:center; padding:1rem;
+            background:rgba(15,23,42,.56);
         }
-
-        .novos-spinner {
-            width: 24px;
-            height: 24px;
-            border-radius: 999px;
-            border: 3px solid #dbe4ef;
-            border-top-color: #6f9151;
-            animation: novosSpin .85s linear infinite;
+        .novos-modal-card { width:min(920px,100%); max-height:88vh; overflow:auto; border-radius:20px; background:#fff; box-shadow:0 24px 70px rgba(15,23,42,.28); }
+        .novos-modal-header { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 1.15rem; border-bottom:1px solid #e2e8f0; }
+        .novos-modal-body { padding:1rem; }
+        .novos-quick-filters { display:flex; flex-wrap:wrap; gap:.55rem; margin-top:.75rem; }
+        .novos-mobile-actions { display:none; }
+        @media (max-width:1199.98px) { .novos-kpis { grid-template-columns:repeat(2,minmax(140px,1fr)); } }
+        @media (max-width:991.98px) {
+            .novos-field, .novos-field.is-wide { grid-column:span 6; }
+            .novos-bi-grid { grid-template-columns:1fr; }
+            .novos-stepper { grid-template-columns:repeat(2,minmax(0,1fr)); }
         }
-
-        @keyframes novosSpin {
-            to { transform: rotate(360deg); }
+        @media (max-width:767.98px) {
+            .novos-tabs { display:grid; grid-template-columns:1fr 1fr; }
+            .novos-tab { border-radius:14px; }
+            .novos-card-header, .novos-vehicle-main { display:grid; grid-template-columns:1fr; align-items:start; }
+            .novos-field, .novos-field.is-wide { grid-column:1/-1; }
+            .novos-kpis, .novos-stepper { grid-template-columns:1fr; }
+            .novos-actions .novos-btn { flex:1 1 100%; }
+            .novos-table, .novos-table thead, .novos-table tbody, .novos-table th, .novos-table td, .novos-table tr { display:block; min-width:0; width:100%; }
+            .novos-table thead { display:none; }
+            .novos-table tr { border:1px solid #dbe4ef; border-radius:16px; margin-bottom:.85rem; background:#fff; overflow:hidden; }
+            .novos-table td { display:grid; grid-template-columns:112px minmax(0,1fr); gap:.65rem; border-bottom:1px solid #edf2f7; }
+            .novos-table td:before { content:attr(data-label); color:#64748b; font-size:.72rem; font-weight:950; letter-spacing:.04em; text-transform:uppercase; }
+            .novos-mobile-actions { display:flex; position:fixed; left:0; right:0; bottom:0; z-index:1035; gap:.5rem; padding:.7rem; background:#fff; border-top:1px solid #dbe4ef; box-shadow:0 -10px 26px rgba(15,23,42,.12); }
+            .novos-mobile-actions .novos-btn { flex:1; }
+            body[data-patio-page="novos.aspx"] { padding-bottom:76px; }
         }
-
-        @media (max-width: 767.98px) {
-            .novos-tabs {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .novos-tab {
-                border-radius: 14px;
-            }
-
-            .novos-frame-header {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .novos-frame {
-                min-height: 980px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .novos-tabs {
-                grid-template-columns: 1fr;
-            }
-        }
+        @media (max-width:480px) { .novos-tabs { grid-template-columns:1fr; } }
     </style>
 </head>
 <body class="patio-modern-page patio-brand-jeep">
     <form id="form1" runat="server">
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
+        <asp:HiddenField ID="hfAbaAtual" runat="server" />
+        <asp:HiddenField ID="hfRegistroVeNr" runat="server" />
+        <asp:HiddenField ID="hfRegistroSerie" runat="server" />
+        <asp:HiddenField ID="hfRegistroNf" runat="server" />
+        <asp:HiddenField ID="hfTransferenciaVeNr" runat="server" />
+        <asp:HiddenField ID="hfTransferenciaOrigem" runat="server" />
+        <asp:HiddenField ID="hfTransferenciaSerie" runat="server" />
+        <asp:HiddenField ID="hfHistoricoVeNr" runat="server" />
+
         <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
             <div class="app-header header-shadow bg-dark">
                 <div class="app-header__logo">
@@ -243,46 +221,249 @@
                     </div>
                 </div>
                 <div class="app-main__outer">
-                    <div class="app-main__inner mb-3">
-                        <div class="app-page-title text-white" style="background-color:#495057;">
-                            <div class="page-title-wrapper">
-                                <div class="page-title-heading">
-                                    <div class="page-title-icon" style="background-color:#495057;">
-                                        <i class="fas fa-car text-white"></i>
-                                    </div>
-                                    <div>
-                                        <b>Novos</b>
-                                        <div class="page-title-subheading">Registro, consulta, transfer&ecirc;ncia e BI dos ve&iacute;culos novos em uma tela &uacute;nica.</div>
+                    <asp:UpdatePanel ID="updatePanel" runat="server" UpdateMode="Conditional">
+                        <ContentTemplate>
+                            <div class="app-main__inner mb-3">
+                                <div class="app-page-title text-white" style="background-color:#495057;">
+                                    <div class="page-title-wrapper">
+                                        <div class="page-title-heading">
+                                            <div class="page-title-icon" style="background-color:#495057;">
+                                                <i class="fas fa-car text-white"></i>
+                                            </div>
+                                            <div>
+                                                <b>Novos</b>
+                                                <div class="page-title-subheading">Registro, consulta, transfer&ecirc;ncia e BI dos ve&iacute;culos novos em uma tela &uacute;nica.</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div class="novos-shell">
-                            <div class="novos-tabs" role="tablist" aria-label="Fun&ccedil;&otilde;es de ve&iacute;culos novos">
-                                <button type="button" class="novos-tab" data-novos-tab="registrar" data-src="./registrar.aspx?embed=1"><i class="fa fa-folder-plus"></i>Registrar</button>
-                                <button type="button" class="novos-tab" data-novos-tab="transferir" data-src="./transferir.aspx?embed=1"><i class="fa fa-exchange-alt"></i>Transferir</button>
-                                <button type="button" class="novos-tab" data-novos-tab="consultar" data-src="./historico.aspx?embed=1"><i class="fa fa-search"></i>Consultar</button>
-                                <button type="button" class="novos-tab" data-novos-tab="relatorios" data-src="./relatorios.aspx?embed=1"><i class="fa fa-chart-line"></i>Relat&oacute;rios</button>
+                                <div class="novos-shell">
+                                    <asp:Literal ID="litIndicadores" runat="server"></asp:Literal>
+
+                                    <div class="novos-card novos-global">
+                                        <div class="novos-card-header">
+                                            <div>
+                                                <small>Busca global do p&aacute;tio</small>
+                                                <h2 class="novos-card-title">Localizar ve&iacute;culo</h2>
+                                            </div>
+                                            <span class="novos-pill"><i class="fa fa-search"></i> Novos e seminovos</span>
+                                        </div>
+                                        <div class="novos-card-body">
+                                            <div class="novos-grid">
+                                                <div class="novos-field is-wide">
+                                                    <label class="novos-label" for="<%= txtGlobalBusca.ClientID %>">Digite s&eacute;rie, chassi, placa, Renavam ou c&oacute;digo</label>
+                                                    <asp:TextBox ID="txtGlobalBusca" runat="server" CssClass="novos-input" MaxLength="40" autocomplete="off" placeholder="Ex.: 397665, 8AP..., ABC1D23, Renavam ou c&oacute;digo"></asp:TextBox>
+                                                </div>
+                                                <div class="novos-field">
+                                                    <label class="novos-label">&nbsp;</label>
+                                                    <asp:LinkButton ID="btnGlobalBuscar" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnGlobalBuscar_Click"><i class="fa fa-search"></i>Buscar no p&aacute;tio</asp:LinkButton>
+                                                </div>
+                                            </div>
+                                            <asp:Literal ID="litGlobalResultado" runat="server"></asp:Literal>
+                                        </div>
+                                    </div>
+
+                                    <asp:Literal ID="litResumoFixo" runat="server"></asp:Literal>
+
+                                    <div class="novos-tabs" role="tablist" aria-label="Fun&ccedil;&otilde;es de ve&iacute;culos novos">
+                                        <asp:LinkButton ID="tabRegistrar" runat="server" CssClass="novos-tab" CommandArgument="registrar" OnClick="Aba_Click"><i class="fa fa-folder-plus"></i>Registrar</asp:LinkButton>
+                                        <asp:LinkButton ID="tabTransferir" runat="server" CssClass="novos-tab" CommandArgument="transferir" OnClick="Aba_Click"><i class="fa fa-exchange-alt"></i>Transferir</asp:LinkButton>
+                                        <asp:LinkButton ID="tabConsultar" runat="server" CssClass="novos-tab" CommandArgument="consultar" OnClick="Aba_Click"><i class="fa fa-search"></i>Consultar</asp:LinkButton>
+                                        <asp:LinkButton ID="tabRelatorios" runat="server" CssClass="novos-tab" CommandArgument="relatorios" OnClick="Aba_Click"><i class="fa fa-chart-line"></i>Relat&oacute;rios</asp:LinkButton>
+                                    </div>
+
+                                    <asp:Panel ID="pnlMensagem" runat="server" CssClass="novos-alert" Visible="false">
+                                        <i class="fa fa-info-circle mt-1"></i>
+                                        <div><asp:Literal ID="litMensagem" runat="server"></asp:Literal></div>
+                                    </asp:Panel>
+
+                                    <asp:Panel ID="pnlRegistrar" runat="server">
+                                        <div class="novos-card">
+                                            <div class="novos-card-header">
+                                                <div>
+                                                    <small>Entrada de ve&iacute;culo novo</small>
+                                                    <h2 class="novos-card-title">Registrar no p&aacute;tio</h2>
+                                                </div>
+                                                <span class="novos-pill"><i class="fa fa-route"></i> Fluxo guiado</span>
+                                            </div>
+                                            <div class="novos-card-body">
+                                                <asp:Literal ID="litRegistroStepper" runat="server"></asp:Literal>
+                                                <div class="novos-grid">
+                                                    <div class="novos-field is-wide">
+                                                        <label class="novos-label" for="<%= txtRegistroSerie.ClientID %>">S&eacute;rie do chassi</label>
+                                                        <asp:TextBox ID="txtRegistroSerie" runat="server" CssClass="novos-input" MaxLength="17" autocomplete="off" placeholder="Digite os 7 &uacute;ltimos caracteres ou cole o chassi completo"></asp:TextBox>
+                                                    </div>
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= ddlRegistroLoja.ClientID %>">Loja inicial</label>
+                                                        <asp:DropDownList ID="ddlRegistroLoja" runat="server" CssClass="novos-select"></asp:DropDownList>
+                                                    </div>
+                                                </div>
+                                                <div class="novos-actions">
+                                                    <asp:LinkButton ID="btnPesquisarRegistro" runat="server" CssClass="novos-btn novos-btn-light js-safe-submit" OnClick="btnPesquisarRegistro_Click"><i class="fa fa-search-location"></i>Buscar ve&iacute;culo</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnSalvarRegistro" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnSalvarRegistro_Click"><i class="far fa-save"></i>Salvar registro</asp:LinkButton>
+                                                </div>
+                                                <asp:Literal ID="litRegistroVeiculo" runat="server"></asp:Literal>
+                                            </div>
+                                        </div>
+                                    </asp:Panel>
+
+                                    <asp:Panel ID="pnlTransferir" runat="server">
+                                        <div class="novos-card">
+                                            <div class="novos-card-header">
+                                                <div>
+                                                    <small>Movimenta&ccedil;&atilde;o de ve&iacute;culo novo</small>
+                                                    <h2 class="novos-card-title">Transferir loja</h2>
+                                                </div>
+                                                <span class="novos-pill"><i class="fa fa-check-double"></i> Confirma&ccedil;&atilde;o obrigat&oacute;ria</span>
+                                            </div>
+                                            <div class="novos-card-body">
+                                                <div class="novos-grid">
+                                                    <div class="novos-field is-wide">
+                                                        <label class="novos-label" for="<%= txtTransferenciaSerie.ClientID %>">S&eacute;rie, chassi, placa, Renavam ou c&oacute;digo</label>
+                                                        <asp:TextBox ID="txtTransferenciaSerie" runat="server" CssClass="novos-input" MaxLength="40" autocomplete="off" placeholder="Digite para localizar o ve&iacute;culo no p&aacute;tio"></asp:TextBox>
+                                                    </div>
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= ddlTransferenciaDestino.ClientID %>">Loja destino</label>
+                                                        <asp:DropDownList ID="ddlTransferenciaDestino" runat="server" CssClass="novos-select"></asp:DropDownList>
+                                                    </div>
+                                                    <div class="novos-field is-full">
+                                                        <label class="novos-pill" style="justify-content:flex-start;">
+                                                            <asp:CheckBox ID="chkConfirmarTransferencia" runat="server" />
+                                                            <span><asp:Literal ID="litConfirmacaoTransferencia" runat="server" Text="Pesquise um ve&iacute;culo para gerar a confirma&ccedil;&atilde;o."></asp:Literal></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="novos-actions">
+                                                    <asp:LinkButton ID="btnBuscarTransferencia" runat="server" CssClass="novos-btn novos-btn-light js-safe-submit" OnClick="btnBuscarTransferencia_Click"><i class="fa fa-search"></i>Localizar</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnTransferir" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnTransferir_Click"><i class="fa fa-exchange-alt"></i>Transferir</asp:LinkButton>
+                                                </div>
+                                                <asp:Literal ID="litTransferenciaVeiculo" runat="server"></asp:Literal>
+                                            </div>
+                                        </div>
+                                    </asp:Panel>
+
+                                    <asp:Panel ID="pnlConsultar" runat="server">
+                                        <div class="novos-card">
+                                            <div class="novos-card-header">
+                                                <div>
+                                                    <small>Consulta operacional</small>
+                                                    <h2 class="novos-card-title">Ve&iacute;culos novos no p&aacute;tio</h2>
+                                                </div>
+                                            </div>
+                                            <div class="novos-card-body">
+                                                <div class="novos-grid">
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= ddlConsultaLoja.ClientID %>">Loja</label>
+                                                        <asp:DropDownList ID="ddlConsultaLoja" runat="server" CssClass="novos-select"></asp:DropDownList>
+                                                    </div>
+                                                    <div class="novos-field is-wide">
+                                                        <label class="novos-label" for="<%= txtConsultaBusca.ClientID %>">Busca</label>
+                                                        <asp:TextBox ID="txtConsultaBusca" runat="server" CssClass="novos-input" MaxLength="40" autocomplete="off" placeholder="Modelo, c&oacute;digo, s&eacute;rie, chassi, placa ou Renavam"></asp:TextBox>
+                                                    </div>
+                                                </div>
+                                                <div class="novos-actions">
+                                                    <asp:LinkButton ID="btnConsultar" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnConsultar_Click"><i class="fa fa-filter"></i>Consultar</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnLimparConsulta" runat="server" CssClass="novos-btn novos-btn-light" OnClick="btnLimparConsulta_Click"><i class="fa fa-eraser"></i>Limpar</asp:LinkButton>
+                                                </div>
+                                                <div class="mt-3 novos-table-wrap">
+                                                    <asp:Literal ID="litConsultaTabela" runat="server"></asp:Literal>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </asp:Panel>
+
+                                    <asp:Panel ID="pnlRelatorios" runat="server">
+                                        <div class="novos-card">
+                                            <div class="novos-card-header">
+                                                <div>
+                                                    <small>BI de ve&iacute;culos novos</small>
+                                                    <h2 class="novos-card-title">Relat&oacute;rios</h2>
+                                                </div>
+                                                <asp:LinkButton ID="btnAtualizarRelatorio" runat="server" CssClass="novos-btn novos-btn-light js-safe-submit" OnClick="btnAtualizarRelatorio_Click"><i class="fa fa-sync-alt"></i>Atualizar</asp:LinkButton>
+                                            </div>
+                                            <div class="novos-card-body">
+                                                <div class="novos-grid">
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= ddlRelatorioLoja.ClientID %>">Loja</label>
+                                                        <asp:DropDownList ID="ddlRelatorioLoja" runat="server" CssClass="novos-select"></asp:DropDownList>
+                                                    </div>
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= txtRelatorioUsuario.ClientID %>">Usu&aacute;rio</label>
+                                                        <asp:TextBox ID="txtRelatorioUsuario" runat="server" CssClass="novos-input" MaxLength="60" autocomplete="off" placeholder="Opcional"></asp:TextBox>
+                                                    </div>
+                                                    <div class="novos-field">
+                                                        <label class="novos-label">Per&iacute;odo</label>
+                                                        <asp:Literal ID="litRelatorioPeriodo" runat="server"></asp:Literal>
+                                                    </div>
+                                                </div>
+                                                <div class="novos-quick-filters">
+                                                    <asp:LinkButton ID="btnFiltroHoje" runat="server" CssClass="novos-mini-action" CommandArgument="hoje" OnClick="FiltroRelatorio_Click"><i class="fa fa-calendar-day"></i>Hoje</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnFiltro7Dias" runat="server" CssClass="novos-mini-action" CommandArgument="7dias" OnClick="FiltroRelatorio_Click"><i class="fa fa-calendar-week"></i>&Uacute;ltimos 7 dias</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnFiltroMes" runat="server" CssClass="novos-mini-action" CommandArgument="mes" OnClick="FiltroRelatorio_Click"><i class="fa fa-calendar-alt"></i>Este m&ecirc;s</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnFiltroTodos" runat="server" CssClass="novos-mini-action" CommandArgument="todos" OnClick="FiltroRelatorio_Click"><i class="fa fa-layer-group"></i>Todos ativos</asp:LinkButton>
+                                                </div>
+                                                <asp:Literal ID="litResumoRelatorio" runat="server"></asp:Literal>
+                                            </div>
+                                        </div>
+                                        <div class="novos-bi-grid">
+                                            <div class="novos-card">
+                                                <div class="novos-card-header"><div><small>Posi&ccedil;&atilde;o atual</small><h2 class="novos-card-title">Novos por loja</h2></div></div>
+                                                <div class="novos-card-body"><asp:Literal ID="litEstoquePorLoja" runat="server"></asp:Literal></div>
+                                            </div>
+                                            <div class="novos-card">
+                                                <div class="novos-card-header"><div><small>Entradas</small><h2 class="novos-card-title">Registros por dia</h2></div></div>
+                                                <div class="novos-card-body"><asp:Literal ID="litEntradasDia" runat="server"></asp:Literal></div>
+                                            </div>
+                                        </div>
+                                        <div class="novos-card">
+                                            <div class="novos-card-header"><div><small>Movimenta&ccedil;&otilde;es</small><h2 class="novos-card-title">&Uacute;ltimas transfer&ecirc;ncias</h2></div></div>
+                                            <div class="novos-card-body novos-table-wrap"><asp:Literal ID="litUltimasTransferencias" runat="server"></asp:Literal></div>
+                                        </div>
+                                    </asp:Panel>
+
+                                    <div class="novos-card">
+                                        <div class="novos-card-header">
+                                            <div>
+                                                <small>Sess&atilde;o atual</small>
+                                                <h2 class="novos-card-title">&Uacute;ltimos acessados</h2>
+                                            </div>
+                                        </div>
+                                        <div class="novos-card-body">
+                                            <asp:Literal ID="litUltimosAcessados" runat="server"></asp:Literal>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="novos-frame-card">
-                                <div class="novos-frame-header">
-                                    <div>
-                                        <small id="novosFrameEyebrow">P&aacute;tio de novos</small>
-                                        <h2 class="novos-frame-title" id="novosFrameTitle">Registrar ve&iacute;culo</h2>
+                            <asp:Panel ID="pnlHistoricoModal" runat="server" CssClass="novos-modal" Visible="false">
+                                <div class="novos-modal-card">
+                                    <div class="novos-modal-header">
+                                        <div>
+                                            <small>Log vis&iacute;vel por ve&iacute;culo</small>
+                                            <h2 class="novos-card-title">Hist&oacute;rico do ve&iacute;culo</h2>
+                                        </div>
+                                        <asp:LinkButton ID="btnFecharHistorico" runat="server" CssClass="novos-mini-action" OnClick="btnFecharHistorico_Click"><i class="fa fa-times"></i>Fechar</asp:LinkButton>
                                     </div>
-                                    <span class="novos-frame-status"><i class="fa fa-shield-alt"></i> Regras originais preservadas</span>
-                                </div>
-                                <div class="novos-frame-wrap">
-                                    <div class="novos-frame-loader is-active" id="novosFrameLoader">
-                                        <div class="novos-loader-card"><span class="novos-spinner" aria-hidden="true"></span>Carregando tela...</div>
+                                    <div class="novos-modal-body novos-table-wrap">
+                                        <asp:Literal ID="litHistoricoModal" runat="server"></asp:Literal>
                                     </div>
-                                    <iframe id="novosFrame" class="novos-frame" src="./registrar.aspx?embed=1" title="Fun&ccedil;&atilde;o selecionada de ve&iacute;culos novos"></iframe>
                                 </div>
+                            </asp:Panel>
+
+                            <div class="novos-mobile-actions">
+                                <asp:LinkButton ID="btnMobileGlobal" runat="server" CssClass="novos-btn novos-btn-light" OnClick="btnGlobalBuscar_Click"><i class="fa fa-search"></i>Buscar</asp:LinkButton>
+                                <asp:LinkButton ID="btnMobileSalvar" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnSalvarRegistro_Click"><i class="far fa-save"></i>Salvar</asp:LinkButton>
                             </div>
-                        </div>
-                    </div>
+                        </ContentTemplate>
+                    </asp:UpdatePanel>
+                    <asp:UpdateProgress ID="UpdateProgress1" DisplayAfter="120" DynamicLayout="true" runat="server" AssociatedUpdatePanelID="updatePanel">
+                        <ProgressTemplate>
+                            <div class="novos-alert" style="position:fixed;right:1rem;bottom:4rem;z-index:1055;background:#fff;box-shadow:0 18px 44px rgba(15,23,42,.18);">
+                                <i class="fa fa-spinner fa-spin mt-1"></i><div><strong>Processando</strong><span>Aguarde alguns instantes.</span></div>
+                            </div>
+                        </ProgressTemplate>
+                    </asp:UpdateProgress>
                     <footer class="fixed-bottom bg-dark">
                         <div class="container text-center text-white mb-2 mt-2">
                             <b>TI - GRUPO BALI</b>
@@ -298,70 +479,38 @@
     <script src="./assets/js/patio-jeep-ux.js?v=20260706-3"></script>
     <script>
         (function () {
-            var tabs = document.querySelectorAll('[data-novos-tab]');
-            var frame = document.getElementById('novosFrame');
-            var loader = document.getElementById('novosFrameLoader');
-            var title = document.getElementById('novosFrameTitle');
-            var titles = {
-                registrar: 'Registrar ve\u00edculo',
-                transferir: 'Transferir ve\u00edculo',
-                consultar: 'Consultar hist\u00f3rico',
-                relatorios: 'Relat\u00f3rios'
-            };
-
-            function setLoading(active) {
-                if (loader) loader.classList.toggle('is-active', active);
-            }
-
-            function activate(key, pushState) {
-                var selected = null;
-                for (var i = 0; i < tabs.length; i++) {
-                    var tab = tabs[i];
-                    var isActive = tab.getAttribute('data-novos-tab') === key;
-                    tab.classList.toggle('is-active', isActive);
-                    tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
-                    if (isActive) selected = tab;
+            function textOf(el) { return el ? (el.textContent || '').trim() : ''; }
+            document.addEventListener('click', function (event) {
+                var copyButton = event.target.closest ? event.target.closest('[data-copy]') : null;
+                if (copyButton) {
+                    event.preventDefault();
+                    var value = copyButton.getAttribute('data-copy') || '';
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(value);
+                    }
+                    if (window.patioToast) window.patioToast('Chassi copiado.', 'info');
                 }
-
-                if (!selected) {
-                    activate('registrar', false);
-                    return;
-                }
-
-                if (title) title.textContent = titles[key] || 'Novos';
-                if (frame && frame.getAttribute('src') !== selected.getAttribute('data-src')) {
-                    setLoading(true);
-                    frame.setAttribute('src', selected.getAttribute('data-src'));
-                } else {
-                    setLoading(false);
-                }
-
-                if (pushState && window.history && window.history.replaceState) {
-                    window.history.replaceState(null, '', 'novos.aspx?aba=' + encodeURIComponent(key));
-                }
-            }
-
-            for (var i = 0; i < tabs.length; i++) {
-                tabs[i].addEventListener('click', function () {
-                    activate(this.getAttribute('data-novos-tab'), true);
-                });
-            }
-
-            if (frame) {
-                frame.addEventListener('load', function () {
-                    setLoading(false);
-                });
-            }
-
-            window.addEventListener('message', function (event) {
-                if (event.origin !== location.origin || !event.data || event.data.type !== 'patio-embed-height' || !frame) return;
-                var height = parseInt(event.data.height, 10);
-                if (!height || height < 720) height = 720;
-                frame.style.height = Math.min(height + 28, 2800) + 'px';
             });
 
-            var params = new URLSearchParams(location.search || '');
-            activate(params.get('aba') || 'registrar', false);
+            if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
+                var manager = Sys.WebForms.PageRequestManager.getInstance();
+                manager.add_beginRequest(function () {
+                    var active = document.activeElement;
+                    if (active && active.classList && active.classList.contains('js-safe-submit')) {
+                        active.setAttribute('data-original-text', textOf(active));
+                        active.classList.add('aspNetDisabled');
+                        active.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Processando...';
+                    }
+                });
+                manager.add_endRequest(function () {
+                    var buttons = document.querySelectorAll('.js-safe-submit[data-original-text]');
+                    for (var i = 0; i < buttons.length; i++) {
+                        buttons[i].innerHTML = buttons[i].getAttribute('data-original-text');
+                        buttons[i].removeAttribute('data-original-text');
+                        buttons[i].classList.remove('aspNetDisabled');
+                    }
+                });
+            }
         })();
     </script>
 </body>
