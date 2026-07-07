@@ -45,6 +45,18 @@
     return (valor || '').replace(/\D/g, '');
   }
 
+  function escaparHtml(valor) {
+    return String(valor || '').replace(/[&<>"']/g, function (char) {
+      return {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[char];
+    });
+  }
+
   function textoDoElemento(el) {
     return el ? (el.textContent || el.innerText || '').replace(/\s+/g, ' ').trim() : '';
   }
@@ -64,6 +76,19 @@
 
   function veiculoPreview() {
     return textoPorSufixos(['lblVeiculo', 'lblVe\u00edculo', 'lblVeiculoEntreg']);
+  }
+
+  function dadosPreview() {
+    return {
+      cliente: clientePreview(),
+      veiculo: veiculoPreview(),
+      chassi: textoPorSufixos(['lblChassi', 'lblChassiEntreg']),
+      placa: textoPorSufixos(['lblPlaca']),
+      valor: textoPorSufixos(['lblValor']),
+      vendedor: textoPorSufixos(['lblVendedor', 'lblVendedorEntreg']),
+      cor: textoPorSufixos(['lblCor']),
+      nota: textoPorSufixos(['lblNota'])
+    };
   }
 
   function previewGerada() {
@@ -139,6 +164,27 @@
     if (overlay) overlay.classList.remove('is-visible');
   }
 
+  function setGerarProcessando(processando) {
+    var botao = gerarButton();
+    if (!botao) return;
+
+    if (!botao.getAttribute('data-bali-original-text')) {
+      botao.setAttribute('data-bali-original-text', botao.value || botao.textContent || 'Gerar');
+    }
+
+    if (processando) {
+      botao.classList.add('is-processing');
+      botao.setAttribute('aria-disabled', 'true');
+      botao.value = 'Consultando...';
+      setTimeout(function () { botao.disabled = true; }, 0);
+    } else {
+      botao.classList.remove('is-processing');
+      botao.removeAttribute('aria-disabled');
+      botao.disabled = false;
+      botao.value = botao.getAttribute('data-bali-original-text') || 'Gerar';
+    }
+  }
+
   function validarConsulta() {
     var pedido = pedidoField();
     var loja = lojaField();
@@ -166,6 +212,7 @@
     }
 
     document.body.classList.remove('bali-preview-ready');
+    setGerarProcessando(true);
     mostrarCarregando();
     return true;
   }
@@ -239,11 +286,32 @@
     var legend = fieldset.querySelector('legend');
     fieldset.insertBefore(row, legend && legend.nextSibling ? legend.nextSibling : fieldset.firstChild);
 
+    var state = document.createElement('div');
+    state.className = 'bali-preview-state';
+    state.innerHTML = '<strong>Prévia ainda não gerada</strong><span>Informe pedido e loja, clique em Gerar e confira os dados antes de imprimir.</span>';
+    fieldset.insertBefore(state, painel || row.nextSibling);
+
+    var summary = document.createElement('div');
+    summary.className = 'bali-preview-summary';
+    summary.innerHTML = '<div class="bali-preview-summary-grid"></div><div class="bali-preview-summary-actions"><button type="button" class="bali-copy-action">Copiar dados</button></div>';
+    fieldset.insertBefore(summary, painel || state.nextSibling);
+
     var nodes = Array.prototype.slice.call(fieldset.childNodes);
     nodes.forEach(function (node) {
       if (node === row || node === painel) return;
       if (node.nodeType === 3 && /pedido|c[o\u00f3]d/i.test(node.nodeValue || '')) node.parentNode.removeChild(node);
     });
+  }
+
+  function decorarMenuAuditoria() {
+    var menu = document.getElementById('menu');
+    if (!menu || menu.querySelector('.bali-audit-link')) return;
+
+    var link = document.createElement('a');
+    link.className = 'bali-audit-link';
+    link.href = '/recibo-auditoria.aspx';
+    link.textContent = 'Auditoria';
+    menu.appendChild(link);
   }
 
   function decorarBotaoImpressao() {
@@ -307,9 +375,98 @@
     }
   }
 
+  function textoResumoParaCopiar() {
+    var pedido = pedidoField();
+    var loja = lojaField();
+    var dados = dadosPreview();
+    var linhas = [
+      'Tipo: ' + tipoDocumento(),
+      'Marca: ' + marcaPagina(),
+      'Pedido: ' + (pedido ? pedido.value.trim() : ''),
+      'Loja: ' + (loja ? loja.value.trim() : ''),
+      'Cliente: ' + dados.cliente,
+      'Ve\u00edculo: ' + dados.veiculo,
+      'Chassi: ' + dados.chassi,
+      'Placa: ' + dados.placa,
+      'Valor: ' + dados.valor,
+      'Vendedor: ' + dados.vendedor
+    ];
+
+    return linhas.filter(function (linha) {
+      return !/:\s*$/.test(linha);
+    }).join('\n');
+  }
+
+  function copiarResumo() {
+    var texto = textoResumoParaCopiar();
+    if (!texto) {
+      toast('Gere a pr\u00e9via antes de copiar os dados.', 'error');
+      return;
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texto).then(function () {
+        toast('Dados copiados para a \u00e1rea de transfer\u00eancia.', 'info');
+      }).catch(function () {
+        toast('N\u00e3o foi poss\u00edvel copiar automaticamente.', 'error');
+      });
+      return;
+    }
+
+    var temp = document.createElement('textarea');
+    temp.value = texto;
+    temp.style.position = 'fixed';
+    temp.style.left = '-9999px';
+    document.body.appendChild(temp);
+    temp.select();
+    try {
+      document.execCommand('copy');
+      toast('Dados copiados para a \u00e1rea de transfer\u00eancia.', 'info');
+    } catch (ignore) {
+      toast('N\u00e3o foi poss\u00edvel copiar automaticamente.', 'error');
+    }
+    temp.remove();
+  }
+
+  function atualizarResumoPrevia(pronta) {
+    var state = document.querySelector('.bali-preview-state');
+    var summary = document.querySelector('.bali-preview-summary');
+    var grid = document.querySelector('.bali-preview-summary-grid');
+    var copyButton = document.querySelector('.bali-copy-action');
+
+    if (state) state.style.display = pronta ? 'none' : 'grid';
+    if (summary) summary.style.display = pronta ? 'grid' : 'none';
+    if (copyButton && copyButton.getAttribute('data-bali-copy-bound') !== '1') {
+      copyButton.setAttribute('data-bali-copy-bound', '1');
+      copyButton.addEventListener('click', copiarResumo);
+    }
+
+    if (!pronta || !grid) return;
+
+    var dados = dadosPreview();
+    var itens = [
+      ['Cliente', dados.cliente],
+      ['Ve\u00edculo', dados.veiculo],
+      ['Chassi', dados.chassi],
+      ['Placa', dados.placa],
+      ['Valor', dados.valor],
+      ['Vendedor', dados.vendedor],
+      ['Cor', dados.cor],
+      ['Nota', dados.nota]
+    ];
+
+    grid.innerHTML = itens.filter(function (item) {
+      return item[1];
+    }).slice(0, 6).map(function (item) {
+      return '<article><small>' + escaparHtml(item[0]) + '</small><strong>' + escaparHtml(item[1]) + '</strong></article>';
+    }).join('');
+  }
+
   function atualizarEstadoPrevia() {
     var pronta = previewGerada();
     document.body.classList.toggle('bali-preview-ready', pronta);
+    setGerarProcessando(false);
+    atualizarResumoPrevia(pronta);
 
     var printButton = document.querySelector('.bali-print-action');
     if (printButton) {
@@ -419,6 +576,7 @@
     if (!document.body || !document.body.classList.contains('bali-utility-page')) return;
     decorarCampos();
     decorarCardConsulta();
+    decorarMenuAuditoria();
     decorarBotaoImpressao();
     vincularGerar();
     window.imprimePanel = imprimirPainel;

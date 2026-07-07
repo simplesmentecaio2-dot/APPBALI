@@ -59,8 +59,8 @@ public partial class admfinanceiro_Recibo_Entrega : System.Web.UI.Page
          }
   catch
         {
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
-                                                               "alert('Não existe autorização para este pedido!');", true);
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "entregaNaoEncontrada",
+                                                               "if (window.baliUtilityFeedback) { window.baliUtilityFeedback('Autorização de entrega não encontrada para esse pedido e loja.', 'error'); } else { alert('Autorização de entrega não encontrada.'); }", true);
         }
 
     }

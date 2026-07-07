@@ -42,8 +42,8 @@ public partial class veiculos_Recibo_desconto : System.Web.UI.Page
         }
         catch
         {
-            ScriptManager.RegisterStartupScript(this, this.GetType(), "javascript",
-                                                               "alert('Não existe recibo para este pedido!');", true);
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "reciboNaoEncontrado",
+                                                               "if (window.baliUtilityFeedback) { window.baliUtilityFeedback('Pedido não encontrado para essa loja. Confira o número do pedido e o código da loja.', 'error'); } else { alert('Pedido não encontrado para essa loja.'); }", true);
         }
 
 
