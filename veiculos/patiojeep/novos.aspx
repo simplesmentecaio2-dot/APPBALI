@@ -610,7 +610,10 @@
                                                     <small>BI de ve&iacute;culos novos</small>
                                                     <h2 class="novos-card-title">Relat&oacute;rios</h2>
                                                 </div>
-                                                <asp:LinkButton ID="btnAtualizarRelatorio" runat="server" CssClass="novos-btn novos-btn-light js-safe-submit" OnClick="btnAtualizarRelatorio_Click"><i class="fa fa-sync-alt"></i>Atualizar</asp:LinkButton>
+                                                <span class="novos-row-actions">
+                                                    <asp:LinkButton ID="btnAtualizarRelatorio" runat="server" CssClass="novos-btn novos-btn-light js-safe-submit" OnClick="btnAtualizarRelatorio_Click"><i class="fa fa-sync-alt"></i>Atualizar</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnExportarBI" runat="server" CssClass="novos-btn novos-btn-light" OnClick="btnExportarBI_Click"><i class="fa fa-file-excel"></i>Exportar BI</asp:LinkButton>
+                                                </span>
                                             </div>
                                             <div class="novos-card-body">
                                                 <div class="novos-grid">
