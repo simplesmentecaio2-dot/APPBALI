@@ -240,6 +240,11 @@
       return false;
     }
 
+    if (previewGerada() && document.body.getAttribute('data-bali-preview-key') === consultaKeyAtual()) {
+      window.baliUtilityFeedback('A prévia desse pedido e loja já está carregada. Confira os dados ou imprima o documento.', 'info');
+      return false;
+    }
+
     document.body.classList.remove('bali-preview-ready');
     setGerarProcessando(true);
     mostrarCarregando();
@@ -248,6 +253,7 @@
 
   function invalidarPrevia() {
     document.body.classList.remove('bali-preview-ready');
+    document.body.removeAttribute('data-bali-preview-key');
     atualizarResumoPrevia(false);
 
     var printButton = document.querySelector('.bali-print-action');
@@ -268,6 +274,16 @@
       if (lojaLimpa.length === 1) lojaLimpa = '0' + lojaLimpa;
       loja.value = lojaLimpa;
     }
+  }
+
+  function consultaKeyAtual() {
+    var pedido = pedidoField();
+    var loja = lojaField();
+    return [
+      window.location.pathname,
+      pedido ? pedido.value.trim() : '',
+      loja ? loja.value.trim() : ''
+    ].join('|');
   }
 
   function parametroConsulta(nome) {
@@ -703,12 +719,11 @@
       var loja = lojaField();
       var chave = [
         'recibo-gerado',
-        window.location.pathname,
-        pedido ? pedido.value.trim() : '',
-        loja ? loja.value.trim() : '',
+        consultaKeyAtual(),
         clientePreview(),
         veiculoPreview()
       ].join('|');
+      document.body.setAttribute('data-bali-preview-key', consultaKeyAtual());
 
       if (window.sessionStorage && sessionStorage.getItem(chave) !== '1') {
         sessionStorage.setItem(chave, '1');

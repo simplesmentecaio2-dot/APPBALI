@@ -8,12 +8,12 @@
 <head runat="server">
     <title>Recibo de Desconto - Fiat</title>
     <link href="../css/estilo.css" rel="stylesheet" />
-    <link href="../css/bali-utility.css?v=20260707-recibo12" rel="stylesheet" />
+    <link href="../css/bali-utility.css?v=20260707-recibo13" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
     <script src="../../js/js.js"></script>
-    <script src="../js/bali-utility-print.js?v=20260707-recibo12"></script>
+    <script src="../js/bali-utility-print.js?v=20260707-recibo13"></script>
 </head>
 <body class="bali-utility-page utility-fiat utility-no-sidebar">
   <script>
