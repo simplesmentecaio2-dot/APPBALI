@@ -340,6 +340,7 @@ ORDER BY ds;");
         BindLojas(ddlRegistroLoja, lojas, false);
         BindLojas(ddlTransferenciaDestino, lojas, true);
         BindLojas(ddlConsultaLoja, lojas, true);
+        BindLojas(ddlRelatorioLoja, lojas, true);
     }
 
     private void BindLojas(DropDownList lista, DataTable lojas, bool incluirTodas)
@@ -459,6 +460,8 @@ ORDER BY ds;");
     {
         DateTime inicio = RelInicio();
         DateTime fimExclusivo = RelFim().Date.AddDays(1);
+        int loja;
+        Int32.TryParse(ddlRelatorioLoja.SelectedValue, out loja);
 
         DataTable resumo = ExecutarSqlTabela(@"
 SELECT
@@ -467,9 +470,11 @@ SELECT
     SUM(CASE WHEN dt_cad >= @inicio AND dt_cad < @fim THEN 1 ELSE 0 END) AS entradas_periodo,
     MAX(dt_cad) AS ultima_entrada
 FROM dbo.veiculos_patio_seminovos_locacao WITH (NOLOCK)
-WHERE ativo = 1;",
+WHERE ativo = 1
+  AND (@loja = 0 OR COALESCE(NULLIF(loja_atual_id, 0), loja_id) = @loja);",
             Param("@inicio", SqlDbType.DateTime, inicio),
-            Param("@fim", SqlDbType.DateTime, fimExclusivo));
+            Param("@fim", SqlDbType.DateTime, fimExclusivo),
+            Param("@loja", SqlDbType.Int, loja));
 
         DataTable transferencias = ExecutarSqlTabela(@"
 SELECT
@@ -477,9 +482,11 @@ SELECT
     MAX(dt_transf) AS ultima_transferencia
 FROM dbo.veiculos_patio_seminovos_transferencia WITH (NOLOCK)
 WHERE dt_transf >= @inicio
-  AND dt_transf < @fim;",
+  AND dt_transf < @fim
+  AND (@loja = 0 OR loja_orig = @loja OR loja_dest = @loja);",
             Param("@inicio", SqlDbType.DateTime, inicio),
-            Param("@fim", SqlDbType.DateTime, fimExclusivo));
+            Param("@fim", SqlDbType.DateTime, fimExclusivo),
+            Param("@loja", SqlDbType.Int, loja));
 
         litResumo.Text = RenderResumo(resumo, transferencias);
 
@@ -489,29 +496,35 @@ FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
 LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
     ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
 WHERE p.ativo = 1
+  AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
 GROUP BY COALESCE(l.ds, 'Sem loja')
-ORDER BY COUNT(1) DESC, COALESCE(l.ds, 'Sem loja');"), "Nenhum seminovo ativo no p&aacute;tio.");
+ORDER BY COUNT(1) DESC, COALESCE(l.ds, 'Sem loja');",
+            Param("@loja", SqlDbType.Int, loja)), "Nenhum seminovo ativo no p&aacute;tio.");
 
         litEntradasDia.Text = RenderBarras(ExecutarSqlTabela(@"
 SELECT CONVERT(varchar(10), CONVERT(date, dt_cad), 103) AS label, COUNT(1) AS total
 FROM dbo.veiculos_patio_seminovos_locacao WITH (NOLOCK)
 WHERE ativo = 1
   AND dt_cad >= @inicio AND dt_cad < @fim
+  AND (@loja = 0 OR COALESCE(NULLIF(loja_atual_id, 0), loja_id) = @loja)
 GROUP BY CONVERT(date, dt_cad)
 ORDER BY CONVERT(date, dt_cad);",
             Param("@inicio", SqlDbType.DateTime, inicio),
-            Param("@fim", SqlDbType.DateTime, fimExclusivo)), "Nenhuma entrada encontrada no per&iacute;odo.");
+            Param("@fim", SqlDbType.DateTime, fimExclusivo),
+            Param("@loja", SqlDbType.Int, loja)), "Nenhuma entrada encontrada no per&iacute;odo.");
 
         litMovimentacoesDia.Text = RenderBarras(ExecutarSqlTabela(@"
 SELECT CONVERT(varchar(10), CONVERT(date, dt_transf), 103) AS label, COUNT(1) AS total
 FROM dbo.veiculos_patio_seminovos_transferencia WITH (NOLOCK)
 WHERE dt_transf >= @inicio AND dt_transf < @fim
+  AND (@loja = 0 OR loja_orig = @loja OR loja_dest = @loja)
 GROUP BY CONVERT(date, dt_transf)
 ORDER BY CONVERT(date, dt_transf);",
             Param("@inicio", SqlDbType.DateTime, inicio),
-            Param("@fim", SqlDbType.DateTime, fimExclusivo)), "Nenhuma transfer&ecirc;ncia encontrada no per&iacute;odo.");
+            Param("@fim", SqlDbType.DateTime, fimExclusivo),
+            Param("@loja", SqlDbType.Int, loja)), "Nenhuma transfer&ecirc;ncia encontrada no per&iacute;odo.");
 
-        litUltimosCadastros.Text = RenderConsulta(ListarUltimosSeminovos(25));
+        litUltimosCadastros.Text = RenderConsulta(ListarUltimosSeminovos(25, loja));
 
         litAuditoria.Text = RenderAuditoria(ExecutarSqlTabela(@"
 SELECT TOP 20 dt, acao, usuario, ve_nr, referencia, detalhe, ip
@@ -698,7 +711,7 @@ ORDER BY p.dt_cad DESC, p.id DESC;",
             Param("@valorLike", SqlDbType.VarChar, "%" + valor + "%"));
     }
 
-    private DataTable ListarUltimosSeminovos(int limite)
+    private DataTable ListarUltimosSeminovos(int limite, int loja)
     {
         if (limite <= 0 || limite > 100)
         {
@@ -724,8 +737,10 @@ FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
 LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
     ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
 WHERE p.ativo = 1
+  AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
 ORDER BY p.dt_cad DESC, p.id DESC;",
-            Param("@limite", SqlDbType.Int, limite));
+            Param("@limite", SqlDbType.Int, limite),
+            Param("@loja", SqlDbType.Int, loja));
     }
 
     private void ExportarConsultaSeminovos(int loja, string busca)

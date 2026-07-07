@@ -542,6 +542,15 @@
             font-size: .78rem;
         }
 
+        .semi-filter-select {
+            width: auto;
+            min-width: 220px;
+            min-height: 38px;
+            border-radius: 999px;
+            padding: .45rem .75rem;
+            font-size: .82rem;
+        }
+
         @keyframes semiSpin {
             to { transform: rotate(360deg); }
         }
@@ -874,6 +883,7 @@
                                             </div>
                                             <div class="semi-card-body">
                                                 <div class="semi-quick-filters">
+                                                    <asp:DropDownList ID="ddlRelatorioLoja" runat="server" CssClass="semi-select semi-filter-select"></asp:DropDownList>
                                                     <span class="semi-period-pill"><i class="fa fa-calendar-alt"></i><asp:Literal ID="litRelatorioPeriodo" runat="server"></asp:Literal></span>
                                                     <asp:LinkButton ID="btnFiltroHoje" runat="server" CssClass="semi-mini-action" CommandArgument="hoje" OnClick="FiltroRelatorio_Click"><i class="fa fa-calendar-day"></i>Hoje</asp:LinkButton>
                                                     <asp:LinkButton ID="btnFiltro7Dias" runat="server" CssClass="semi-mini-action" CommandArgument="7dias" OnClick="FiltroRelatorio_Click"><i class="fa fa-calendar-week"></i>&Uacute;ltimos 7 dias</asp:LinkButton>
