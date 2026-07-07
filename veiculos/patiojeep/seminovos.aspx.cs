@@ -29,6 +29,7 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
             InicializarRelatorio();
             LimparRegistro(false);
             LimparTransferencia(false);
+            LimparOperacional(false);
 
             string aba = Request.QueryString["aba"];
             AtivarAba(String.IsNullOrWhiteSpace(aba) ? "registrar" : aba);
@@ -40,6 +41,16 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
                 {
                     txtTransferenciaBusca.Text = busca;
                     BuscarTransferencia(false);
+                }
+            }
+
+            if (String.Equals(hfAbaAtual.Value, "operacional", StringComparison.OrdinalIgnoreCase))
+            {
+                string buscaOperacional = Request.QueryString["operBusca"];
+                if (!String.IsNullOrWhiteSpace(buscaOperacional))
+                {
+                    txtOperBusca.Text = buscaOperacional;
+                    BuscarOperacional(false);
                 }
             }
         }
@@ -166,6 +177,8 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
     {
         txtConsultaBusca.Text = "";
         hfConsultaPagina.Value = "1";
+        ddlConsultaStatus.SelectedValue = "";
+        ddlConsultaParados.SelectedValue = "0";
         ddlConsultaTamanho.SelectedValue = "50";
         if (ddlConsultaLoja.Items.Count > 0)
         {
@@ -191,13 +204,122 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
     {
         int loja;
         Int32.TryParse(ddlConsultaLoja.SelectedValue, out loja);
-        ExportarConsultaSeminovos(loja, NormalizarBusca(txtConsultaBusca.Text));
+        ExportarConsultaSeminovos(loja, NormalizarBusca(txtConsultaBusca.Text), ddlConsultaStatus.SelectedValue, DiasParadosFiltro());
     }
 
     protected void btnBuscarTransferencia_Click(object sender, EventArgs e)
     {
         AtivarAba("transferir");
         BuscarTransferencia(true);
+    }
+
+    protected void btnOperBuscar_Click(object sender, EventArgs e)
+    {
+        AtivarAba("operacional");
+        BuscarOperacional(true);
+    }
+
+    protected void btnOperAtualizar_Click(object sender, EventArgs e)
+    {
+        AtivarAba("operacional");
+
+        if (!UsuarioTemAcesso(2))
+        {
+            MostrarMensagem("error", "Acesso restrito", "Seu usu\u00e1rio n\u00e3o tem permiss\u00e3o para alterar status operacional.");
+            return;
+        }
+
+        if (String.IsNullOrWhiteSpace(hfOperVeNr.Value))
+        {
+            MostrarMensagem("warning", "Localize o seminovo", "Pesquise um seminovo antes de salvar status ou observa\u00e7\u00e3o.");
+            return;
+        }
+
+        DataRow antes = LocalizarSeminovoOperacional(hfOperVeNr.Value);
+        string statusAnterior = Valor(antes, "status_operacional");
+        string observacaoAnterior = Valor(antes, "observacao");
+
+        DataTable resposta = ExecutarProcedureTabela(
+            "dbo.veiculos_patio_operacional_atualizar",
+            Param("@tipo", SqlDbType.VarChar, "SEMINOVO"),
+            Param("@ve_nr", SqlDbType.VarChar, hfOperVeNr.Value),
+            Param("@status", SqlDbType.VarChar, ddlOperStatus.SelectedValue),
+            Param("@observacao", SqlDbType.VarChar, txtOperObservacao.Text),
+            Param("@usuario", SqlDbType.VarChar, UsuarioAtual()),
+            Param("@ip", SqlDbType.VarChar, IpUsuario()),
+            Param("@url", SqlDbType.VarChar, Request.RawUrl)
+        );
+
+        string resultado = resposta.Rows.Count > 0 ? Valor(resposta.Rows[0], "resultado") : "n";
+        if (resultado == "s")
+        {
+            RegistrarAuditoria("STATUS_OPERACIONAL", ToIntNullable(hfOperVeNr.Value), txtOperBusca.Text, "Status: " + statusAnterior + " -> " + ddlOperStatus.SelectedValue + "; Observacao: " + observacaoAnterior + " -> " + txtOperObservacao.Text);
+            MostrarMensagem("success", "Status salvo", "Status e observa\u00e7\u00e3o operacional atualizados com sucesso.");
+            BuscarOperacional(false);
+            return;
+        }
+
+        MostrarMensagem("warning", "Seminovo n\u00e3o atualizado", "N\u00e3o encontrei este seminovo ativo para atualizar. Refa\u00e7a a busca.");
+    }
+
+    protected void btnOperBaixar_Click(object sender, EventArgs e)
+    {
+        AtivarAba("operacional");
+
+        if (!UsuarioTemAcesso(2))
+        {
+            MostrarMensagem("error", "Acesso restrito", "Seu usu\u00e1rio n\u00e3o tem permiss\u00e3o para dar baixa manual.");
+            return;
+        }
+
+        if (String.IsNullOrWhiteSpace(hfOperVeNr.Value))
+        {
+            MostrarMensagem("warning", "Localize o seminovo", "Pesquise um seminovo antes de dar baixa manual.");
+            return;
+        }
+
+        if (txtOperSenha.Text != "@bali2025")
+        {
+            MostrarMensagem("error", "Senha incorreta", "A baixa manual exige a senha de manuten\u00e7\u00e3o.");
+            txtOperSenha.Text = "";
+            return;
+        }
+
+        if (String.IsNullOrWhiteSpace(txtOperMotivoBaixa.Text))
+        {
+            MostrarMensagem("warning", "Informe o motivo", "Descreva o motivo da baixa manual para manter a auditoria clara.");
+            return;
+        }
+
+        DataTable resposta = ExecutarProcedureTabela(
+            "dbo.veiculos_patio_baixa_manual",
+            Param("@tipo", SqlDbType.VarChar, "SEMINOVO"),
+            Param("@ve_nr", SqlDbType.VarChar, hfOperVeNr.Value),
+            Param("@motivo", SqlDbType.VarChar, txtOperMotivoBaixa.Text),
+            Param("@usuario", SqlDbType.VarChar, UsuarioAtual()),
+            Param("@ip", SqlDbType.VarChar, IpUsuario()),
+            Param("@url", SqlDbType.VarChar, Request.RawUrl)
+        );
+
+        string resultado = resposta.Rows.Count > 0 ? Valor(resposta.Rows[0], "resultado") : "n";
+        txtOperSenha.Text = "";
+
+        if (resultado == "s")
+        {
+            RegistrarAuditoria("BAIXA_MANUAL", ToIntNullable(hfOperVeNr.Value), txtOperBusca.Text, "Motivo=" + txtOperMotivoBaixa.Text);
+            MostrarMensagem("success", "Baixa registrada", "A baixa manual foi gravada e auditada.");
+            LimparOperacional();
+            CarregarConsulta();
+            return;
+        }
+
+        if (resultado == "m")
+        {
+            MostrarMensagem("warning", "Motivo obrigat\u00f3rio", "Informe um motivo para concluir a baixa manual.");
+            return;
+        }
+
+        MostrarMensagem("warning", "Baixa n\u00e3o aplicada", "O seminovo n\u00e3o est\u00e1 ativo ou j\u00e1 foi baixado.");
     }
 
     protected void btnTransferir_Click(object sender, EventArgs e)
@@ -293,15 +415,19 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
         pnlRegistrar.Visible = aba == "registrar";
         pnlConsultar.Visible = aba == "consultar";
         pnlTransferir.Visible = aba == "transferir";
+        pnlOperacional.Visible = aba == "operacional";
         pnlRelatorios.Visible = aba == "relatorios";
 
         tabRegistrar.CssClass = ClasseAba(aba, "registrar");
         tabConsultar.CssClass = ClasseAba(aba, "consultar");
         tabTransferir.CssClass = ClasseAba(aba, "transferir");
+        tabOperacional.CssClass = ClasseAba(aba, "operacional");
         tabRelatorios.CssClass = ClasseAba(aba, "relatorios");
 
         btnSalvarRegistro.Enabled = !String.IsNullOrWhiteSpace(hfRegistroVeNr.Value);
         btnTransferir.Enabled = !String.IsNullOrWhiteSpace(hfTransferenciaId.Value);
+        btnOperAtualizar.Enabled = !String.IsNullOrWhiteSpace(hfOperVeNr.Value);
+        btnOperBaixar.Enabled = !String.IsNullOrWhiteSpace(hfOperVeNr.Value);
 
         if (aba == "consultar")
         {
@@ -317,7 +443,7 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
     private string NormalizarAba(string aba)
     {
         aba = (aba ?? "").Trim().ToLowerInvariant();
-        if (aba == "consultar" || aba == "transferir" || aba == "relatorios")
+        if (aba == "consultar" || aba == "transferir" || aba == "operacional" || aba == "relatorios")
         {
             return aba;
         }
@@ -365,8 +491,9 @@ ORDER BY ds;");
         int total;
         int pagina = PaginaConsulta();
         int tamanho = TamanhoConsulta();
+        int diasParados = DiasParadosFiltro();
 
-        DataTable tabela = ListarSeminovosConsulta(loja, busca, tamanho, pagina, out total);
+        DataTable tabela = ListarSeminovosConsulta(loja, busca, ddlConsultaStatus.SelectedValue, diasParados, tamanho, pagina, out total);
 
         int detalheId = 0;
         DataRow detalhe = null;
@@ -399,6 +526,14 @@ ORDER BY ds;");
         if (!Int32.TryParse(ddlConsultaTamanho.SelectedValue, out tamanho)) tamanho = 50;
         if (tamanho != 25 && tamanho != 50 && tamanho != 100) tamanho = 50;
         return tamanho;
+    }
+
+    private int DiasParadosFiltro()
+    {
+        int dias;
+        if (!Int32.TryParse(ddlConsultaParados.SelectedValue, out dias)) dias = 0;
+        if (dias != 15 && dias != 30 && dias != 60) dias = 0;
+        return dias;
     }
 
     private string RenderConsultaPaginacao(int total, int pagina, int tamanho)
@@ -532,6 +667,52 @@ FROM dbo.veiculos_patio_seminovos_auditoria WITH (NOLOCK)
 ORDER BY dt DESC, id DESC;"));
     }
 
+    private void BuscarOperacional(bool exibirMensagem)
+    {
+        LimparOperacional(false);
+        string busca = NormalizarBusca(txtOperBusca.Text);
+        txtOperBusca.Text = busca;
+
+        if (busca.Length < 4)
+        {
+            MostrarMensagem("warning", "Informe mais dados", "Digite c\u00f3digo, chassi, placa ou Renavam para localizar o seminovo.");
+            txtOperBusca.Focus();
+            return;
+        }
+
+        DataRow seminovo = LocalizarSeminovoOperacional(busca);
+        if (seminovo == null)
+        {
+            if (exibirMensagem)
+            {
+                MostrarMensagem("warning", "Seminovo n\u00e3o encontrado", "N\u00e3o encontrei este seminovo ativo no p\u00e1tio para manuten\u00e7\u00e3o operacional.");
+            }
+            return;
+        }
+
+        hfOperVeNr.Value = Valor(seminovo, "id");
+        txtOperObservacao.Text = Valor(seminovo, "observacao");
+
+        string status = Valor(seminovo, "status_operacional");
+        if (ddlOperStatus.Items.FindByValue(status) != null)
+        {
+            ddlOperStatus.SelectedValue = status;
+        }
+
+        litOperVeiculo.Text =
+            RenderVeiculoCard(seminovo, "success", "Seminovo localizado", "Manuten\u00e7\u00e3o operacional do p\u00e1tio.") +
+            "<div class=\"semi-history-title\"><span><i class=\"fa fa-shield-alt\"></i> Auditoria recente</span><a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=consultar&amp;detalhe=" + Html(Valor(seminovo, "id")) + "#auditoria\"><i class=\"fa fa-list\"></i>Ver consulta</a></div>" +
+            "<div class=\"semi-table-wrap\">" + RenderAuditoria(ListarAuditoriaSeminovo(seminovo)) + "</div>";
+
+        btnOperAtualizar.Enabled = true;
+        btnOperBaixar.Enabled = true;
+
+        if (exibirMensagem)
+        {
+            MostrarMensagem("success", "Seminovo localizado", "Agora voc\u00ea pode salvar status, observa\u00e7\u00e3o ou dar baixa manual com senha.");
+        }
+    }
+
     private void BuscarTransferencia(bool exibirMensagemNaoEncontrado)
     {
         LimparTransferencia(false);
@@ -609,9 +790,51 @@ ORDER BY dt DESC, id DESC;"));
         return tabela.Rows.Count > 0 ? tabela.Rows[0] : null;
     }
 
-    private DataTable ListarSeminovosConsulta(int loja, string busca, int tamanhoPagina, int pagina, out int total)
+    private DataRow LocalizarSeminovoOperacional(string busca)
     {
         string valor = NormalizarBusca(busca);
+        DataTable tabela = ExecutarSqlTabela(@"
+SELECT TOP 1
+    p.id,
+    p.ve_nr,
+    p.ve_ds,
+    p.ve_chassi,
+    p.ve_placa,
+    p.ve_renavam,
+    p.cor_ds,
+    p.codnf,
+    p.numeronf,
+    p.loja_id,
+    COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) AS loja_atual_id,
+    COALESCE(l.ds, 'Sem loja') AS loja_atual,
+    p.fun_cad,
+    p.dt_cad,
+    p.observacao,
+    ISNULL(p.status_operacional, 'NO_PATIO') AS status_operacional,
+    COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad) AS ultima_movimentacao,
+    DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado
+FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
+LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
+    ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+WHERE p.ativo = 1
+  AND @valor <> ''
+  AND (
+        CONVERT(varchar(20), p.id) = @valor
+     OR CONVERT(varchar(20), p.ve_nr) = @valor
+     OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(p.ve_placa, '')), '-', ''), ' ', ''), '.', '') = @valor
+     OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(p.ve_chassi, '')), '-', ''), ' ', ''), '.', '') = @valor
+     OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(p.ve_renavam, '')), '-', ''), ' ', ''), '.', '') = @valor
+  )
+ORDER BY p.dt_cad DESC, p.id DESC;",
+            Param("@valor", SqlDbType.VarChar, valor));
+
+        return tabela.Rows.Count > 0 ? tabela.Rows[0] : null;
+    }
+
+    private DataTable ListarSeminovosConsulta(int loja, string busca, string status, int diasParados, int tamanhoPagina, int pagina, out int total)
+    {
+        string valor = NormalizarBusca(busca);
+        string statusNormalizado = (status ?? "").Trim().ToUpperInvariant();
         int inicio = ((Math.Max(1, pagina) - 1) * Math.Max(1, tamanhoPagina)) + 1;
         int fim = inicio + Math.Max(1, tamanhoPagina) - 1;
 
@@ -640,6 +863,8 @@ ORDER BY dt DESC, id DESC;"));
         ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
     WHERE p.ativo = 1
       AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
+      AND (@status = '' OR ISNULL(p.status_operacional, 'NO_PATIO') = @status)
+      AND (@diasParados = 0 OR DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) >= @diasParados)
       AND (
             @valor = ''
          OR CONVERT(varchar(20), p.ve_nr) = @valor
@@ -655,6 +880,8 @@ ORDER BY dt DESC, id DESC;"));
 SELECT COUNT(1) AS total
 FROM filtrado;",
             Param("@loja", SqlDbType.Int, loja),
+            Param("@status", SqlDbType.VarChar, statusNormalizado),
+            Param("@diasParados", SqlDbType.Int, Math.Max(0, diasParados)),
             Param("@valor", SqlDbType.VarChar, valor),
             Param("@valorLike", SqlDbType.VarChar, "%" + valor + "%"));
 
@@ -671,15 +898,18 @@ FROM numerado
 WHERE rn BETWEEN @inicio AND @fim
 ORDER BY rn;",
             Param("@loja", SqlDbType.Int, loja),
+            Param("@status", SqlDbType.VarChar, statusNormalizado),
+            Param("@diasParados", SqlDbType.Int, Math.Max(0, diasParados)),
             Param("@valor", SqlDbType.VarChar, valor),
             Param("@valorLike", SqlDbType.VarChar, "%" + valor + "%"),
             Param("@inicio", SqlDbType.Int, inicio),
             Param("@fim", SqlDbType.Int, fim));
     }
 
-    private DataTable ListarSeminovosExportacao(int loja, string busca)
+    private DataTable ListarSeminovosExportacao(int loja, string busca, string status, int diasParados)
     {
         string valor = NormalizarBusca(busca);
+        string statusNormalizado = (status ?? "").Trim().ToUpperInvariant();
         return ExecutarSqlTabela(@"
 SELECT TOP 5000
     p.id,
@@ -702,6 +932,8 @@ LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
     ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
 WHERE p.ativo = 1
   AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
+  AND (@status = '' OR ISNULL(p.status_operacional, 'NO_PATIO') = @status)
+  AND (@diasParados = 0 OR DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) >= @diasParados)
   AND (
         @valor = ''
      OR CONVERT(varchar(20), p.ve_nr) = @valor
@@ -713,6 +945,8 @@ WHERE p.ativo = 1
   )
 ORDER BY p.dt_cad DESC, p.id DESC;",
             Param("@loja", SqlDbType.Int, loja),
+            Param("@status", SqlDbType.VarChar, statusNormalizado),
+            Param("@diasParados", SqlDbType.Int, Math.Max(0, diasParados)),
             Param("@valor", SqlDbType.VarChar, valor),
             Param("@valorLike", SqlDbType.VarChar, "%" + valor + "%"));
     }
@@ -752,9 +986,9 @@ ORDER BY p.dt_cad DESC, p.id DESC;",
             Param("@loja", SqlDbType.Int, loja));
     }
 
-    private void ExportarConsultaSeminovos(int loja, string busca)
+    private void ExportarConsultaSeminovos(int loja, string busca, string status, int diasParados)
     {
-        DataTable tabela = ListarSeminovosExportacao(loja, busca);
+        DataTable tabela = ListarSeminovosExportacao(loja, busca, status, diasParados);
         StringBuilder csv = new StringBuilder();
         csv.AppendLine("ID;Codigo;Veiculo;Chassi;Placa;Renavam;Cor;NF;Loja atual;Status;Dias parado;Ultima movimentacao;Usuario cadastro;Data cadastro;Observacao");
 
@@ -777,7 +1011,7 @@ ORDER BY p.dt_cad DESC, p.id DESC;",
             csv.Append(Csv(Valor(row, "observacao"))).AppendLine();
         }
 
-        RegistrarAuditoria("CONSULTA_EXPORTADA", null, busca, "Loja=" + loja + "; Linhas=" + tabela.Rows.Count);
+        RegistrarAuditoria("CONSULTA_EXPORTADA", null, busca, "Loja=" + loja + "; Status=" + status + "; DiasParados=" + diasParados + "; Linhas=" + tabela.Rows.Count);
         Response.Clear();
         Response.Buffer = true;
         Response.ContentEncoding = Encoding.UTF8;
@@ -882,6 +1116,7 @@ WHERE p.ativo = 1
             html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=consultar&amp;detalhe=").Append(HttpUtility.UrlEncode(id)).Append("\"><i class=\"fa fa-history\"></i>").Append(selecionado ? "Selecionado" : "Hist&oacute;rico").Append("</a>");
             html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=consultar&amp;detalhe=").Append(HttpUtility.UrlEncode(id)).Append("#auditoria\"><i class=\"fa fa-shield-alt\"></i>Auditoria</a>");
             html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=transferir&amp;busca=").Append(busca).Append("\"><i class=\"fa fa-exchange-alt\"></i>Transferir</a>");
+            html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=operacional&amp;operBusca=").Append(HttpUtility.UrlEncode(id)).Append("\"><i class=\"fa fa-tools\"></i>Operar</a>");
             html.Append("<a class=\"semi-mini-action\" href=\"#\" data-copy=\"").Append(Html(chassi)).Append("\" data-copy-label=\"Chassi\"><i class=\"far fa-copy\"></i>Chassi</a>");
             if (!String.IsNullOrWhiteSpace(placa))
             {
@@ -1136,6 +1371,30 @@ ORDER BY dt DESC, id DESC;",
         if (limparBusca)
         {
             txtTransferenciaBusca.Text = "";
+        }
+    }
+
+    private void LimparOperacional()
+    {
+        LimparOperacional(true);
+    }
+
+    private void LimparOperacional(bool limparBusca)
+    {
+        hfOperVeNr.Value = "";
+        litOperVeiculo.Text = "";
+        txtOperObservacao.Text = "";
+        txtOperSenha.Text = "";
+        txtOperMotivoBaixa.Text = "";
+        btnOperAtualizar.Enabled = false;
+        btnOperBaixar.Enabled = false;
+        if (ddlOperStatus.Items.FindByValue("NO_PATIO") != null)
+        {
+            ddlOperStatus.SelectedValue = "NO_PATIO";
+        }
+        if (limparBusca)
+        {
+            txtOperBusca.Text = "";
         }
     }
 

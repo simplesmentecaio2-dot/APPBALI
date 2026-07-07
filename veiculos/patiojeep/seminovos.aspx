@@ -686,6 +686,7 @@
         <asp:HiddenField ID="hfRegistroReferencia" runat="server" />
         <asp:HiddenField ID="hfTransferenciaId" runat="server" />
         <asp:HiddenField ID="hfConsultaPagina" runat="server" Value="1" />
+        <asp:HiddenField ID="hfOperVeNr" runat="server" />
         <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
             <div class="app-header header-shadow bg-dark">
                 <div class="app-header__logo">
@@ -770,6 +771,7 @@
                                         <asp:LinkButton ID="tabRegistrar" runat="server" CssClass="semi-tab" CommandArgument="registrar" OnClick="Aba_Click"><i class="fa fa-folder-plus"></i>Registrar</asp:LinkButton>
                                         <asp:LinkButton ID="tabConsultar" runat="server" CssClass="semi-tab" CommandArgument="consultar" OnClick="Aba_Click"><i class="fa fa-search"></i>Consultar</asp:LinkButton>
                                         <asp:LinkButton ID="tabTransferir" runat="server" CssClass="semi-tab" CommandArgument="transferir" OnClick="Aba_Click"><i class="fa fa-exchange-alt"></i>Transferir</asp:LinkButton>
+                                        <asp:LinkButton ID="tabOperacional" runat="server" CssClass="semi-tab" CommandArgument="operacional" OnClick="Aba_Click"><i class="fa fa-tools"></i>Operacional</asp:LinkButton>
                                         <asp:LinkButton ID="tabRelatorios" runat="server" CssClass="semi-tab" CommandArgument="relatorios" OnClick="Aba_Click"><i class="fa fa-chart-line"></i>Relat&oacute;rios</asp:LinkButton>
                                     </div>
 
@@ -832,6 +834,27 @@
                                                         <asp:TextBox ID="txtConsultaBusca" runat="server" CssClass="semi-input" MaxLength="40" autocomplete="off" placeholder="Modelo, c&oacute;digo, chassi, placa ou Renavam"></asp:TextBox>
                                                     </div>
                                                     <div class="semi-field">
+                                                        <label class="semi-label" for="<%= ddlConsultaStatus.ClientID %>">Status</label>
+                                                        <asp:DropDownList ID="ddlConsultaStatus" runat="server" CssClass="semi-select">
+                                                            <asp:ListItem Value="">Todos</asp:ListItem>
+                                                            <asp:ListItem Value="NO_PATIO">No p&aacute;tio</asp:ListItem>
+                                                            <asp:ListItem Value="PREPARACAO">Prepara&ccedil;&atilde;o</asp:ListItem>
+                                                            <asp:ListItem Value="AGUARDANDO_DOCUMENTACAO">Aguardando documenta&ccedil;&atilde;o</asp:ListItem>
+                                                            <asp:ListItem Value="AGUARDANDO_RETIRADA">Aguardando retirada</asp:ListItem>
+                                                            <asp:ListItem Value="PENDENTE">Pendente</asp:ListItem>
+                                                            <asp:ListItem Value="VENDIDO">Vendido</asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </div>
+                                                    <div class="semi-field">
+                                                        <label class="semi-label" for="<%= ddlConsultaParados.ClientID %>">Parados</label>
+                                                        <asp:DropDownList ID="ddlConsultaParados" runat="server" CssClass="semi-select">
+                                                            <asp:ListItem Value="0">Todos</asp:ListItem>
+                                                            <asp:ListItem Value="15">15 dias ou mais</asp:ListItem>
+                                                            <asp:ListItem Value="30">30 dias ou mais</asp:ListItem>
+                                                            <asp:ListItem Value="60">60 dias ou mais</asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </div>
+                                                    <div class="semi-field">
                                                         <label class="semi-label" for="<%= ddlConsultaTamanho.ClientID %>">Linhas</label>
                                                         <asp:DropDownList ID="ddlConsultaTamanho" runat="server" CssClass="semi-select">
                                                             <asp:ListItem Value="25">25</asp:ListItem>
@@ -891,6 +914,58 @@
                                                 <div class="mt-3 semi-table-wrap">
                                                     <asp:Literal ID="litTransferenciaHistorico" runat="server"></asp:Literal>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </asp:Panel>
+
+                                    <asp:Panel ID="pnlOperacional" runat="server">
+                                        <div class="semi-card">
+                                            <div class="semi-card-header">
+                                                <div>
+                                                    <small>Status, observa&ccedil;&atilde;o e baixa manual</small>
+                                                    <h2 class="semi-card-title">Manuten&ccedil;&atilde;o operacional</h2>
+                                                </div>
+                                                <span class="semi-pill"><i class="fa fa-lock"></i> Baixa manual exige senha</span>
+                                            </div>
+                                            <div class="semi-card-body">
+                                                <div class="semi-form-grid">
+                                                    <div class="semi-field is-wide">
+                                                        <label class="semi-label" for="<%= txtOperBusca.ClientID %>">Seminovo</label>
+                                                        <asp:TextBox ID="txtOperBusca" runat="server" CssClass="semi-input" MaxLength="60" autocomplete="off" placeholder="C&oacute;digo, chassi, placa ou Renavam"></asp:TextBox>
+                                                    </div>
+                                                    <div class="semi-field">
+                                                        <label class="semi-label">&nbsp;</label>
+                                                        <asp:LinkButton ID="btnOperBuscar" runat="server" CssClass="semi-btn semi-btn-light js-safe-submit" OnClick="btnOperBuscar_Click"><i class="fa fa-search"></i>Localizar</asp:LinkButton>
+                                                    </div>
+                                                    <div class="semi-field">
+                                                        <label class="semi-label" for="<%= ddlOperStatus.ClientID %>">Status</label>
+                                                        <asp:DropDownList ID="ddlOperStatus" runat="server" CssClass="semi-select">
+                                                            <asp:ListItem Value="NO_PATIO">No p&aacute;tio</asp:ListItem>
+                                                            <asp:ListItem Value="PREPARACAO">Prepara&ccedil;&atilde;o</asp:ListItem>
+                                                            <asp:ListItem Value="AGUARDANDO_DOCUMENTACAO">Aguardando documenta&ccedil;&atilde;o</asp:ListItem>
+                                                            <asp:ListItem Value="AGUARDANDO_RETIRADA">Aguardando retirada</asp:ListItem>
+                                                            <asp:ListItem Value="PENDENTE">Pendente</asp:ListItem>
+                                                            <asp:ListItem Value="VENDIDO">Vendido</asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </div>
+                                                    <div class="semi-field is-wide">
+                                                        <label class="semi-label" for="<%= txtOperObservacao.ClientID %>">Observa&ccedil;&atilde;o</label>
+                                                        <asp:TextBox ID="txtOperObservacao" runat="server" CssClass="semi-textarea" TextMode="MultiLine" MaxLength="500" placeholder="Observa&ccedil;&atilde;o curta para a opera&ccedil;&atilde;o"></asp:TextBox>
+                                                    </div>
+                                                    <div class="semi-field">
+                                                        <label class="semi-label" for="<%= txtOperSenha.ClientID %>">Senha para baixa</label>
+                                                        <asp:TextBox ID="txtOperSenha" runat="server" CssClass="semi-input" TextMode="Password" autocomplete="new-password" placeholder="@bali2025"></asp:TextBox>
+                                                    </div>
+                                                    <div class="semi-field is-wide">
+                                                        <label class="semi-label" for="<%= txtOperMotivoBaixa.ClientID %>">Motivo da baixa manual</label>
+                                                        <asp:TextBox ID="txtOperMotivoBaixa" runat="server" CssClass="semi-input" MaxLength="500" autocomplete="off" placeholder="Ex.: baixa conferida manualmente"></asp:TextBox>
+                                                    </div>
+                                                </div>
+                                                <div class="semi-actions">
+                                                    <asp:LinkButton ID="btnOperAtualizar" runat="server" CssClass="semi-btn semi-btn-primary js-safe-submit" OnClick="btnOperAtualizar_Click"><i class="far fa-save"></i>Salvar status</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnOperBaixar" runat="server" CssClass="semi-btn semi-btn-light js-safe-submit" OnClick="btnOperBaixar_Click" OnClientClick="return patioConfirmSemiBaixa();"><i class="fa fa-check-circle"></i>Dar baixa manual</asp:LinkButton>
+                                                </div>
+                                                <asp:Literal ID="litOperVeiculo" runat="server"></asp:Literal>
                                             </div>
                                         </div>
                                     </asp:Panel>
@@ -1011,6 +1086,22 @@
             }
 
             var lastAutoSearch = '';
+
+            window.patioConfirmSemiBaixa = function () {
+                var veiculo = document.getElementById('<%= hfOperVeNr.ClientID %>');
+                var motivo = document.getElementById('<%= txtOperMotivoBaixa.ClientID %>');
+                var valor = motivo ? (motivo.value || '').trim() : '';
+                if (!veiculo || !veiculo.value) {
+                    alert('Localize o seminovo antes de registrar uma baixa manual.');
+                    return false;
+                }
+                if (!valor) {
+                    alert('Informe o motivo da baixa manual antes de continuar.');
+                    if (motivo) motivo.focus();
+                    return false;
+                }
+                return confirm('Confirmar baixa manual do seminovo ' + veiculo.value + '? Esta acao ficara registrada em auditoria.');
+            };
 
             function bindRegistroAutoSearch() {
                 var registroInput = document.getElementById('<%= txtRegistroBusca.ClientID %>');
