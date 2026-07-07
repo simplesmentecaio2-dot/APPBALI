@@ -19,7 +19,7 @@
     <script src="../assets/dataTables.bootstrap4.min.js"></script>
     <script src="../assets/dataTables.responsive.min.js"></script>
     <link href="./main.css" rel="stylesheet" />
-    <link href="../../css/bali-patio.css?v=20260704-1" rel="stylesheet" />
+    <link href="../../css/bali-patio.css?v=20260707-1" rel="stylesheet" />
     <script src="../ChartJS.js"></script>
     <link href="../assets/all.min.css" rel="stylesheet" />
     <script type="text/javascript" src="../assets/toastr.min.js"></script>

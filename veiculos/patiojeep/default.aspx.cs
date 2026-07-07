@@ -61,7 +61,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void RenderizarIndicadores()
     {
-        string cacheKey = "patio_home_indicadores_v3";
+        string cacheKey = "patio_home_indicadores_v4";
         object cache = HttpRuntime.Cache[cacheKey];
         if (cache != null)
         {
@@ -161,20 +161,23 @@ ORDER BY dt DESC;");
     private string RenderResumo(DataRow row)
     {
         StringBuilder html = new StringBuilder();
+        html.Append("<div class=\"patio-home-insights\">");
+        html.Append("<div class=\"patio-section-heading\"><span><small>Resumo operacional</small><strong>Vis&atilde;o geral do p&aacute;tio</strong></span><em>Atualizado automaticamente por per&iacute;odo curto.</em></div>");
         html.Append("<div class=\"patio-home-dashboard\">");
-        html.Append(CardResumo("Novos ativos", Valor(row, "novos_ativos"), "Ve&iacute;culos novos no p&aacute;tio", "fa-car"));
-        html.Append(CardResumo("Seminovos ativos", Valor(row, "seminovos_ativos"), "Seminovos no p&aacute;tio", "fa-car-side"));
-        html.Append(CardResumo("Parados 15+", Valor(row, "parados_15"), "Aten&ccedil;&atilde;o operacional", "fa-hourglass-half"));
-        html.Append(CardResumo("Transfer&ecirc;ncias hoje", Valor(row, "transferencias_hoje"), "Movimenta&ccedil;&otilde;es do dia", "fa-exchange-alt"));
-        html.Append(CardResumo("Baixas hoje", Valor(row, "baixas_hoje"), "Manuais ou por venda", "fa-check-circle"));
-        html.Append(CardResumo("Eventos hoje", Valor(row, "eventos_hoje"), "Auditoria registrada", "fa-shield-alt"));
+        html.Append(CardResumo("Novos ativos", Valor(row, "novos_ativos"), "Ve&iacute;culos novos no p&aacute;tio", "fa-car", "is-main"));
+        html.Append(CardResumo("Seminovos ativos", Valor(row, "seminovos_ativos"), "Seminovos no p&aacute;tio", "fa-car-side", "is-main"));
+        html.Append(CardResumo("Parados 15+", Valor(row, "parados_15"), "Aten&ccedil;&atilde;o operacional", "fa-hourglass-half", "is-warning"));
+        html.Append(CardResumo("Transfer&ecirc;ncias hoje", Valor(row, "transferencias_hoje"), "Movimenta&ccedil;&otilde;es do dia", "fa-exchange-alt", "is-info"));
+        html.Append(CardResumo("Baixas hoje", Valor(row, "baixas_hoje"), "Manuais ou por venda", "fa-check-circle", "is-ok"));
+        html.Append(CardResumo("Eventos hoje", Valor(row, "eventos_hoje"), "Auditoria registrada", "fa-shield-alt", "is-muted"));
+        html.Append("</div>");
         html.Append("</div>");
         return html.ToString();
     }
 
-    private string CardResumo(string titulo, string valor, string detalhe, string icone)
+    private string CardResumo(string titulo, string valor, string detalhe, string icone, string classe)
     {
-        return "<div class=\"patio-dashboard-card\"><span><i class=\"fa " + icone + "\"></i></span><small>" + titulo + "</small><strong>" + Html(valor) + "</strong><em>" + detalhe + "</em></div>";
+        return "<div class=\"patio-dashboard-card " + classe + "\"><span class=\"patio-dashboard-icon\"><i class=\"fa " + icone + "\"></i></span><div class=\"patio-dashboard-content\"><small>" + titulo + "</small><strong>" + Html(valor) + "</strong><em>" + detalhe + "</em></div></div>";
     }
 
     private string RenderAlertas(DataRow row)
@@ -184,7 +187,7 @@ ORDER BY dt DESC;");
         int parados15 = Inteiro(row, "parados_15");
 
         StringBuilder html = new StringBuilder();
-        html.Append("<div class=\"patio-attention-panel\"><div><small>Aten&ccedil;&atilde;o</small><strong>Pontos para conferir</strong></div><div class=\"patio-attention-list\">");
+        html.Append("<div class=\"patio-attention-panel\"><div class=\"patio-section-heading is-compact\"><span><small>Aten&ccedil;&atilde;o</small><strong>Pontos para conferir</strong></span><em>Alertas gerados pelos dados atuais do p&aacute;tio.</em></div><div class=\"patio-attention-list\">");
         bool possuiAlerta = false;
 
         if (parados30 > 0)
@@ -204,7 +207,7 @@ ORDER BY dt DESC;");
         }
         if (!possuiAlerta)
         {
-            html.Append("<span class=\"patio-alert-chip is-ok\"><i class=\"fa fa-check-circle\"></i> Nenhum alerta cr&iacute;tico agora.</span>");
+            html.Append("<span class=\"patio-alert-card is-ok\"><i class=\"fa fa-check-circle\"></i><span><strong>Tudo certo</strong><small>Nenhum alerta cr&iacute;tico agora.</small></span></span>");
         }
 
         html.Append("</div></div>");
@@ -213,16 +216,16 @@ ORDER BY dt DESC;");
 
     private string Alerta(string titulo, string valor, string detalhe, string classe)
     {
-        return "<span class=\"patio-alert-chip " + classe + "\"><b>" + Html(valor) + "</b><span>" + titulo + "<small>" + detalhe + "</small></span></span>";
+        return "<span class=\"patio-alert-card " + classe + "\"><b>" + Html(valor) + "</b><span><strong>" + titulo + "</strong><small>" + detalhe + "</small></span></span>";
     }
 
     private string RenderAtividades(DataTable tabela)
     {
         StringBuilder html = new StringBuilder();
-        html.Append("<div class=\"patio-home-activity\"><div class=\"patio-home-activity-title\"><span><small>&Uacute;ltimas a&ccedil;&otilde;es</small><strong>Auditoria recente do p&aacute;tio</strong></span><a href=\"auditoria.aspx\">Ver auditoria</a></div>");
+        html.Append("<div class=\"patio-home-activity\"><div class=\"patio-home-activity-title\"><span><small>&Uacute;ltimas a&ccedil;&otilde;es</small><strong>Auditoria recente do p&aacute;tio</strong></span><a href=\"auditoria.aspx\"><i class=\"fa fa-shield-alt\"></i>Ver auditoria</a></div>");
         if (tabela == null || tabela.Rows.Count == 0)
         {
-            html.Append("<div class=\"patio-home-empty\">Nenhuma movimenta&ccedil;&atilde;o recente encontrada.</div>");
+            html.Append("<div class=\"patio-home-empty\"><i class=\"fa fa-inbox\"></i><span><strong>Nenhuma movimenta&ccedil;&atilde;o recente encontrada.</strong><small>Assim que houver uma a&ccedil;&atilde;o auditada, ela aparecer&aacute; aqui.</small></span></div>");
         }
         else
         {
