@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <title>Auditoria de Recibos e Entregas</title>
     <link href="css/estilo.css" rel="stylesheet" />
-    <link href="css/bali-utility.css?v=20260707-recibo08" rel="stylesheet" />
+    <link href="css/bali-utility.css?v=20260707-recibo09" rel="stylesheet" />
 </head>
 <body class="bali-utility-page utility-fiat utility-no-sidebar bali-audit-page">
     <form id="form1" runat="server">

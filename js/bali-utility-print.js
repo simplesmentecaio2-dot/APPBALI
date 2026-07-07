@@ -192,6 +192,8 @@
   }
 
   function validarConsulta() {
+    normalizarCamposConsulta();
+
     var pedido = pedidoField();
     var loja = lojaField();
     var mensagens = [];
@@ -223,6 +225,18 @@
     return true;
   }
 
+  function normalizarCamposConsulta() {
+    var pedido = pedidoField();
+    var loja = lojaField();
+
+    if (pedido) pedido.value = somenteDigitos(pedido.value).slice(0, 12);
+    if (loja) {
+      var lojaLimpa = somenteDigitos(loja.value).slice(0, 3);
+      if (lojaLimpa.length === 1) lojaLimpa = '0' + lojaLimpa;
+      loja.value = lojaLimpa;
+    }
+  }
+
   function decorarCampos() {
     var pedido = pedidoField();
     var loja = lojaField();
@@ -238,6 +252,7 @@
           var limpo = somenteDigitos(pedido.value).slice(0, 12);
           if (pedido.value !== limpo) pedido.value = limpo;
         });
+        pedido.addEventListener('blur', normalizarCamposConsulta);
       }
     }
 
@@ -252,6 +267,7 @@
           var limpo = somenteDigitos(loja.value).slice(0, 3);
           if (loja.value !== limpo) loja.value = limpo;
         });
+        loja.addEventListener('blur', normalizarCamposConsulta);
       }
     }
   }
