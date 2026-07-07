@@ -180,7 +180,7 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
 
         int veiculo;
         int loja;
-        if (!Int32.TryParse(hfRegistroVeNr.Value, out veiculo))
+        if (!TentarObterRegistroParaSalvar(out veiculo))
         {
             RenderStepper(1);
             MostrarMensagem("warning", "Pesquise antes de salvar", "Busque a s\u00e9rie do ve\u00edculo para carregar os dados antes de gravar.");
@@ -1520,6 +1520,40 @@ ORDER BY dt DESC, id DESC;",
     {
         DataTable tabela = ExecutarProcedureTabela("APP..veiculos_patio_selectRegistrar", Param("@chassi", SqlDbType.VarChar, serie));
         return tabela.Rows.Count > 0 ? tabela.Rows[0] : null;
+    }
+
+    private bool TentarObterRegistroParaSalvar(out int veiculo)
+    {
+        if (Int32.TryParse(hfRegistroVeNr.Value, out veiculo))
+        {
+            return true;
+        }
+
+        string serie = NormalizarSerie(txtRegistroSerie.Text);
+        txtRegistroSerie.Text = serie;
+        if (serie.Length != 7)
+        {
+            veiculo = 0;
+            return false;
+        }
+
+        DataRow dados = ConsultarRegistroDealernet(serie);
+        if (dados == null)
+        {
+            veiculo = 0;
+            return false;
+        }
+
+        hfRegistroVeNr.Value = Valor(dados, "ve_nr");
+        hfRegistroSerie.Value = serie;
+        hfRegistroNf.Value = Valor(dados, "numeronf");
+        btnSalvarRegistro.Enabled = true;
+        btnMobileSalvar.Enabled = true;
+        litRegistroVeiculo.Text = RenderVeiculoCard(dados, "Ve\u00edculo encontrado", "Dados recarregados para salvar o registro.", "dealernet");
+        litResumoFixo.Text = RenderResumoFixo(dados, "Pronto para registro");
+        RenderStepper(3);
+
+        return Int32.TryParse(hfRegistroVeNr.Value, out veiculo);
     }
 
     private DataRow LocalizarNovoNoPatio(string busca)
