@@ -9,6 +9,8 @@ using System.Web.UI.WebControls;
 
 public partial class ReciboAuditoria : System.Web.UI.Page
 {
+    private const int MaxLinhasLog = 10000;
+
     protected void Page_Load(object sender, EventArgs e)
     {
         Response.ContentEncoding = Encoding.UTF8;
@@ -78,8 +80,24 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         Response.ContentEncoding = Encoding.UTF8;
         Response.ContentType = "text/csv";
         Response.AddHeader("Content-Disposition", "attachment; filename=auditoria-recibos.csv");
+        Response.BinaryWrite(Encoding.UTF8.GetPreamble());
         Response.Write(csv.ToString());
         Response.End();
+    }
+
+    protected void btnHoje_Click(object sender, EventArgs e)
+    {
+        DefinirPeriodo(DateTime.Today, DateTime.Today);
+    }
+
+    protected void btnSeteDias_Click(object sender, EventArgs e)
+    {
+        DefinirPeriodo(DateTime.Today.AddDays(-6), DateTime.Today);
+    }
+
+    protected void btnMesAtual_Click(object sender, EventArgs e)
+    {
+        DefinirPeriodo(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1), DateTime.Today);
     }
 
     protected void gvLogs_PageIndexChanging(object sender, GridViewPageEventArgs e)
@@ -109,7 +127,9 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         if (!File.Exists(caminho)) return itens;
 
         string[] linhas = File.ReadAllLines(caminho, Encoding.UTF8);
-        foreach (string linha in linhas)
+        IEnumerable<string> linhasRecentes = linhas.Length > MaxLinhasLog ? linhas.Skip(linhas.Length - MaxLinhasLog) : linhas;
+
+        foreach (string linha in linhasRecentes)
         {
             if (String.IsNullOrWhiteSpace(linha)) continue;
             string[] partes = linha.Split('\t');
@@ -132,6 +152,14 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         }
 
         return itens.OrderByDescending(i => ParseData(i.Data)).ToList();
+    }
+
+    private void DefinirPeriodo(DateTime inicio, DateTime fim)
+    {
+        txtDataInicial.Text = inicio.ToString("yyyy-MM-dd");
+        txtDataFinal.Text = fim.ToString("yyyy-MM-dd");
+        gvLogs.PageIndex = 0;
+        Carregar();
     }
 
     private List<ReciboLogItem> Filtrar(List<ReciboLogItem> itens)

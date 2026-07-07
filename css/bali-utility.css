@@ -572,6 +572,55 @@ body.bali-utility-page .bali-preview-summary strong {
   white-space: nowrap;
 }
 
+body.bali-utility-page .bali-preview-tools {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--utility-line);
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+body.bali-utility-page .bali-preview-tools strong {
+  color: var(--utility-muted);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+body.bali-utility-page .bali-preview-tools div {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+body.bali-utility-page .bali-preview-tools button {
+  min-width: 34px;
+  min-height: 32px;
+  padding: 0 11px;
+  border: 1px solid var(--utility-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--utility-brand-strong);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+body.bali-utility-page .bali-preview-tools span {
+  min-width: 46px;
+  color: var(--utility-ink);
+  font-size: 12px;
+  font-weight: 950;
+  text-align: center;
+}
+
 body.bali-utility-page .bali-copy-action,
 .bali-utility-page .bali-audit-secondary {
   min-height: 38px;
@@ -819,6 +868,7 @@ body.bali-utility-page button.bali-print-action:focus {
 .bali-utility-page [id$="pnlImpressao"] > div,
 .bali-utility-page [id$="pnlImpressao"] > table {
   background: #fff;
+  zoom: var(--bali-preview-zoom, 1);
   box-shadow: 0 12px 28px rgba(15, 23, 42, .08);
 }
 

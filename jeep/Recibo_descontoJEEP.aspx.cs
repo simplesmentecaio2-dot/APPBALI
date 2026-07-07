@@ -23,7 +23,17 @@ public partial class veiculos_Recibo_desconto : System.Web.UI.Page
     }
    protected void btnGerar_Click(object sender, EventArgs e)
     {
-        
+        long pedidoNumero;
+        int lojaNumero;
+        if (String.IsNullOrWhiteSpace(txtPedido.Text) || String.IsNullOrWhiteSpace(txtLoja.Text) ||
+            !long.TryParse(txtPedido.Text.Trim(), out pedidoNumero) || !int.TryParse(txtLoja.Text.Trim(), out lojaNumero) ||
+            txtPedido.Text.Trim().Length > 12 || txtLoja.Text.Trim().Length > 3)
+        {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "reciboValidacao",
+                                                               "if (window.baliUtilityFeedback) { window.baliUtilityFeedback('Informe pedido e loja usando apenas números.', 'error'); } else { alert('Informe pedido e loja usando apenas números.'); }", true);
+            return;
+        }
+
        try
         {
             Jeep oJeep = new Jeep();

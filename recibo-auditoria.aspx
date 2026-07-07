@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <title>Auditoria de Recibos e Entregas</title>
     <link href="css/estilo.css" rel="stylesheet" />
-    <link href="css/bali-utility.css?v=20260707-recibo05" rel="stylesheet" />
+    <link href="css/bali-utility.css?v=20260707-recibo06" rel="stylesheet" />
 </head>
 <body class="bali-utility-page utility-fiat utility-no-sidebar bali-audit-page">
     <form id="form1" runat="server">
@@ -78,6 +78,9 @@
                     <asp:Button ID="btnFiltrar" runat="server" Text="Filtrar" CssClass="btns" OnClick="btnFiltrar_Click" />
                     <asp:Button ID="btnLimpar" runat="server" Text="Limpar" CssClass="bali-audit-secondary" OnClick="btnLimpar_Click" />
                     <asp:Button ID="btnExportar" runat="server" Text="Exportar CSV" CssClass="bali-audit-secondary" OnClick="btnExportar_Click" />
+                    <asp:Button ID="btnHoje" runat="server" Text="Hoje" CssClass="bali-audit-secondary" OnClick="btnHoje_Click" />
+                    <asp:Button ID="btnSeteDias" runat="server" Text="7 dias" CssClass="bali-audit-secondary" OnClick="btnSeteDias_Click" />
+                    <asp:Button ID="btnMesAtual" runat="server" Text="Este mês" CssClass="bali-audit-secondary" OnClick="btnMesAtual_Click" />
                 </div>
             </section>
 

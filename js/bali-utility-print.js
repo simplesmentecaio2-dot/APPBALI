@@ -30,6 +30,8 @@
     return bySuffix('pnlImpressao');
   }
 
+  var previewZoom = 1;
+
   function marcaPagina() {
     if (document.body.classList.contains('utility-jeep')) return 'Jeep';
     if (document.body.classList.contains('utility-byd')) return 'BYD';
@@ -296,6 +298,11 @@
     summary.innerHTML = '<div class="bali-preview-summary-grid"></div><div class="bali-preview-summary-actions"><button type="button" class="bali-copy-action">Copiar dados</button></div>';
     fieldset.insertBefore(summary, painel || state.nextSibling);
 
+    var tools = document.createElement('div');
+    tools.className = 'bali-preview-tools';
+    tools.innerHTML = '<strong>Visualização</strong><div><button type="button" data-zoom="-0.1">-</button><span>100%</span><button type="button" data-zoom="0.1">+</button><button type="button" data-zoom="reset">Resetar</button></div>';
+    fieldset.insertBefore(tools, painel || summary.nextSibling);
+
     var nodes = Array.prototype.slice.call(fieldset.childNodes);
     nodes.forEach(function (node) {
       if (node === row || node === painel) return;
@@ -428,14 +435,44 @@
     temp.remove();
   }
 
+  function aplicarZoomPrevia() {
+    var painel = painelImpressao();
+    var label = document.querySelector('.bali-preview-tools span');
+    if (!painel) return;
+
+    painel.style.setProperty('--bali-preview-zoom', previewZoom.toFixed(2));
+    if (label) label.textContent = Math.round(previewZoom * 100) + '%';
+  }
+
+  function vincularFerramentasPrevia() {
+    var tools = document.querySelector('.bali-preview-tools');
+    if (!tools || tools.getAttribute('data-bali-tools-bound') === '1') return;
+    tools.setAttribute('data-bali-tools-bound', '1');
+
+    tools.addEventListener('click', function (event) {
+      var button = event.target.closest ? event.target.closest('button[data-zoom]') : null;
+      if (!button) return;
+
+      var acao = button.getAttribute('data-zoom');
+      if (acao === 'reset') previewZoom = 1;
+      else previewZoom = Math.max(0.7, Math.min(1.2, previewZoom + parseFloat(acao)));
+
+      aplicarZoomPrevia();
+    });
+  }
+
   function atualizarResumoPrevia(pronta) {
     var state = document.querySelector('.bali-preview-state');
     var summary = document.querySelector('.bali-preview-summary');
+    var tools = document.querySelector('.bali-preview-tools');
     var grid = document.querySelector('.bali-preview-summary-grid');
     var copyButton = document.querySelector('.bali-copy-action');
 
     if (state) state.style.display = pronta ? 'none' : 'grid';
     if (summary) summary.style.display = pronta ? 'grid' : 'none';
+    if (tools) tools.style.display = pronta ? 'flex' : 'none';
+    vincularFerramentasPrevia();
+    aplicarZoomPrevia();
     if (copyButton && copyButton.getAttribute('data-bali-copy-bound') !== '1') {
       copyButton.setAttribute('data-bali-copy-bound', '1');
       copyButton.addEventListener('click', copiarResumo);
@@ -578,6 +615,7 @@
     decorarCardConsulta();
     decorarMenuAuditoria();
     decorarBotaoImpressao();
+    vincularFerramentasPrevia();
     vincularGerar();
     window.imprimePanel = imprimirPainel;
     window.aguarde = mostrarCarregando;

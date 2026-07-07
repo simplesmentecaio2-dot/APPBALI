@@ -30,6 +30,16 @@ public partial class admfinanceiro_Recibo_Entrega : System.Web.UI.Page
     }
     protected void btnGerar_Click(object sender, EventArgs e)
     {
+        long pedidoNumero;
+        int lojaNumero;
+        if (String.IsNullOrWhiteSpace(txtpedido.Text) || String.IsNullOrWhiteSpace(txtLoja.Text) ||
+            !long.TryParse(txtpedido.Text.Trim(), out pedidoNumero) || !int.TryParse(txtLoja.Text.Trim(), out lojaNumero) ||
+            txtpedido.Text.Trim().Length > 12 || txtLoja.Text.Trim().Length > 3)
+        {
+            ScriptManager.RegisterStartupScript(this, this.GetType(), "entregaValidacao",
+                                                               "if (window.baliUtilityFeedback) { window.baliUtilityFeedback('Informe pedido e loja usando apenas números.', 'error'); } else { alert('Informe pedido e loja usando apenas números.'); }", true);
+            return;
+        }
 
     try
         {
