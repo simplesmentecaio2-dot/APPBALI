@@ -147,10 +147,7 @@ public partial class ReciboAuditoria : System.Web.UI.Page
 
         if (!File.Exists(caminho)) return itens;
 
-        string[] linhas = File.ReadAllLines(caminho, Encoding.UTF8);
-        IEnumerable<string> linhasRecentes = linhas.Length > MaxLinhasLog ? linhas.Skip(linhas.Length - MaxLinhasLog) : linhas;
-
-        foreach (string linha in linhasRecentes)
+        foreach (string linha in LerLinhasRecentes(caminho))
         {
             if (String.IsNullOrWhiteSpace(linha)) continue;
             string[] partes = linha.Split('\t');
@@ -174,6 +171,23 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         }
 
         return itens.OrderByDescending(i => ParseData(i.Data)).ToList();
+    }
+
+    private static IEnumerable<string> LerLinhasRecentes(string caminho)
+    {
+        Queue<string> linhas = new Queue<string>();
+
+        using (StreamReader reader = new StreamReader(caminho, Encoding.UTF8, true))
+        {
+            string linha;
+            while ((linha = reader.ReadLine()) != null)
+            {
+                linhas.Enqueue(linha);
+                if (linhas.Count > MaxLinhasLog) linhas.Dequeue();
+            }
+        }
+
+        return linhas;
     }
 
     private void DefinirPeriodo(DateTime inicio, DateTime fim)
