@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <title>Auditoria de Recibos e Entregas</title>
     <link href="css/estilo.css" rel="stylesheet" />
-    <link href="css/bali-utility.css?v=20260707-recibo11" rel="stylesheet" />
+    <link href="css/bali-utility.css?v=20260707-recibo12" rel="stylesheet" />
 </head>
 <body class="bali-utility-page utility-fiat utility-no-sidebar bali-audit-page">
     <form id="form1" runat="server">
@@ -126,6 +126,11 @@
                         <asp:BoundField DataField="Veiculo" HeaderText="Veículo" />
                         <asp:BoundField DataField="Mensagem" HeaderText="Mensagem" />
                         <asp:BoundField DataField="Ip" HeaderText="IP" />
+                        <asp:TemplateField HeaderText="Abrir">
+                            <ItemTemplate>
+                                <asp:HyperLink ID="lnkAbrir" runat="server" NavigateUrl='<%# Eval("LinkConsulta") %>' Text="Abrir" CssClass="bali-table-action" />
+                            </ItemTemplate>
+                        </asp:TemplateField>
                     </Columns>
                     <PagerStyle CssClass="bali-audit-pager" />
                 </asp:GridView>

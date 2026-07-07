@@ -270,6 +270,41 @@
     }
   }
 
+  function parametroConsulta(nome) {
+    var query = window.location.search || '';
+    if (!query) return '';
+
+    if (window.URLSearchParams) {
+      return new URLSearchParams(query).get(nome) || '';
+    }
+
+    var partes = query.replace(/^\?/, '').split('&');
+    for (var i = 0; i < partes.length; i++) {
+      var par = partes[i].split('=');
+      if (decodeURIComponent(par[0] || '') === nome) {
+        return decodeURIComponent((par[1] || '').replace(/\+/g, ' '));
+      }
+    }
+    return '';
+  }
+
+  function preencherConsultaPorUrl() {
+    if (document.documentElement.getAttribute('data-bali-query-prefilled') === '1') return;
+    document.documentElement.setAttribute('data-bali-query-prefilled', '1');
+
+    var pedidoParam = somenteDigitos(parametroConsulta('pedido')).slice(0, 12);
+    var lojaParam = somenteDigitos(parametroConsulta('loja')).slice(0, 3);
+    if (!pedidoParam && !lojaParam) return;
+
+    var pedido = pedidoField();
+    var loja = lojaField();
+    if (pedido && pedidoParam) pedido.value = pedidoParam;
+    if (loja && lojaParam) loja.value = lojaParam;
+    normalizarCamposConsulta();
+    invalidarPrevia();
+    toast('Consulta preenchida pela auditoria. Clique em Gerar para carregar a prévia.', 'info');
+  }
+
   function decorarCampos() {
     var pedido = pedidoField();
     var loja = lojaField();
@@ -788,6 +823,7 @@
     if (!document.body || !document.body.classList.contains('bali-utility-page')) return;
     decorarCampos();
     decorarCardConsulta();
+    preencherConsultaPorUrl();
     decorarMenuAuditoria();
     decorarBotaoImpressao();
     vincularFerramentasPrevia();

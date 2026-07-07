@@ -167,6 +167,7 @@ public partial class ReciboAuditoria : System.Web.UI.Page
             item.Pagina = partes[10];
             item.Ip = partes[11];
             item.Mensagem = partes.Length > 12 ? partes[12] : "";
+            item.LinkConsulta = MontarLinkConsulta(item.Pagina, item.Pedido, item.Loja);
             itens.Add(item);
         }
 
@@ -188,6 +189,27 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         }
 
         return linhas;
+    }
+
+    private static string MontarLinkConsulta(string pagina, string pedido, string loja)
+    {
+        pagina = (pagina ?? "").Trim();
+        if (String.IsNullOrWhiteSpace(pagina)) return "#";
+        if (!pagina.StartsWith("/")) pagina = "/" + pagina;
+        if (pagina.Contains("..") || pagina.Contains("://") || !pagina.EndsWith(".aspx", StringComparison.OrdinalIgnoreCase)) return "#";
+
+        pedido = SomenteDigitos(pedido, 12);
+        loja = SomenteDigitos(loja, 3);
+        if (String.IsNullOrWhiteSpace(pedido) || String.IsNullOrWhiteSpace(loja)) return "#";
+
+        return pagina + "?pedido=" + HttpUtility.UrlEncode(pedido) + "&loja=" + HttpUtility.UrlEncode(loja);
+    }
+
+    private static string SomenteDigitos(string valor, int maximo)
+    {
+        string limpo = new string((valor ?? "").Where(Char.IsDigit).ToArray());
+        if (limpo.Length > maximo) limpo = limpo.Substring(0, maximo);
+        return limpo;
     }
 
     private void DefinirPeriodo(DateTime inicio, DateTime fim)
@@ -295,5 +317,6 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         public string Pagina { get; set; }
         public string Ip { get; set; }
         public string Mensagem { get; set; }
+        public string LinkConsulta { get; set; }
     }
 }

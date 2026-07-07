@@ -1148,6 +1148,28 @@ body.bali-utility-page button.bali-print-action:focus {
   box-shadow: inset 4px 0 0 #22c55e;
 }
 
+.bali-data-table .bali-table-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 11px;
+  border: 1px solid var(--utility-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--utility-brand-strong);
+  font-size: 11px;
+  font-weight: 950;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.bali-data-table .bali-table-action:hover,
+.bali-data-table .bali-table-action:focus {
+  border-color: var(--utility-brand);
+  box-shadow: 0 0 0 3px var(--utility-brand-ring);
+}
+
 .bali-audit-pager td {
   padding: 14px 8px !important;
 }
