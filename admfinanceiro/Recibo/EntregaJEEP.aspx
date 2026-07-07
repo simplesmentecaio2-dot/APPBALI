@@ -9,11 +9,12 @@
 <head runat="server">
     <title>Entrega de Veículo - Jeep</title>
     <link href="../../css/estilo.css" rel="stylesheet" />
-    <link href="../../css/bali-utility.css?v=20260628-back01" rel="stylesheet" />
+    <link href="../../css/bali-utility.css?v=20260707-recibo01" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
     <script src="../../js/js.js"></script>
+    <script src="../../js/bali-utility-print.js?v=20260707-recibo01"></script>
     <script language="javascript">
         meses = new Array("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro");
         semana = new Array("Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado");
