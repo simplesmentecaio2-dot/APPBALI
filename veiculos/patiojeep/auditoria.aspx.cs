@@ -35,6 +35,16 @@ public partial class veiculos_patiojeep_auditoria : System.Web.UI.Page
         CarregarAuditoria();
     }
 
+    protected void FiltroRapido_Click(object sender, EventArgs e)
+    {
+        LinkButton botao = sender as LinkButton;
+        if (botao != null && ddlPeriodo.Items.FindByValue(botao.CommandArgument) != null)
+        {
+            ddlPeriodo.SelectedValue = botao.CommandArgument;
+        }
+        CarregarAuditoria();
+    }
+
     protected void btnLimpar_Click(object sender, EventArgs e)
     {
         ddlOrigem.SelectedValue = "";
@@ -42,6 +52,11 @@ public partial class veiculos_patiojeep_auditoria : System.Web.UI.Page
         txtVeiculo.Text = "";
         txtBusca.Text = "";
         CarregarAuditoria();
+    }
+
+    protected void btnExportar_Click(object sender, EventArgs e)
+    {
+        ExportarAuditoria();
     }
 
     public void btnSair_Click(object sender, EventArgs e)
@@ -55,11 +70,20 @@ public partial class veiculos_patiojeep_auditoria : System.Web.UI.Page
 
     private void CarregarAuditoria()
     {
-        int dias;
-        if (!Int32.TryParse(ddlPeriodo.SelectedValue, out dias) || dias <= 0) dias = 30;
+        DataTable tabela = ListarEventos(300);
 
-        DataTable tabela = ExecutarSqlTabela(@"
-SELECT TOP 300
+        litResumo.Text = "<span class=\"audit-pill\"><i class=\"fa fa-list\"></i>" + tabela.Rows.Count + " evento(s)</span>";
+        litTabela.Text = RenderTabela(tabela);
+        litAgrupamentos.Text = RenderAgrupamentos();
+    }
+
+    private DataTable ListarEventos(int limite)
+    {
+        int dias = DiasFiltro();
+        string busca = (txtBusca.Text ?? "").Trim();
+
+        return ExecutarSqlTabela(@"
+SELECT TOP (@limite)
     id,
     dt,
     origem,
@@ -82,14 +106,137 @@ WHERE dt >= DATEADD(day, -@dias, GETDATE())
      OR url LIKE @buscaLike
   )
 ORDER BY dt DESC, id DESC;",
+            Param("@limite", SqlDbType.Int, Math.Max(1, limite)),
             Param("@dias", SqlDbType.Int, dias),
             Param("@origem", SqlDbType.VarChar, ddlOrigem.SelectedValue),
             Param("@veiculo", SqlDbType.VarChar, LimparBusca(txtVeiculo.Text)),
-            Param("@busca", SqlDbType.VarChar, (txtBusca.Text ?? "").Trim()),
-            Param("@buscaLike", SqlDbType.VarChar, "%" + (txtBusca.Text ?? "").Trim() + "%"));
+            Param("@busca", SqlDbType.VarChar, busca),
+            Param("@buscaLike", SqlDbType.VarChar, "%" + busca + "%"));
+    }
 
-        litResumo.Text = "<span class=\"audit-pill\"><i class=\"fa fa-list\"></i>" + tabela.Rows.Count + " evento(s)</span>";
-        litTabela.Text = RenderTabela(tabela);
+    private string RenderAgrupamentos()
+    {
+        int dias = DiasFiltro();
+        string busca = (txtBusca.Text ?? "").Trim();
+
+        DataTable usuarios = ExecutarSqlTabela(@"
+SELECT TOP 8 ISNULL(NULLIF(usuario, ''), 'Sem usuario') AS label, COUNT(1) AS total
+FROM dbo.veiculos_patio_auditoria_geral WITH (NOLOCK)
+WHERE dt >= DATEADD(day, -@dias, GETDATE())
+  AND (@origem = '' OR origem = @origem)
+  AND (@veiculo = '' OR ve_nr = @veiculo)
+  AND (
+        @busca = ''
+     OR acao LIKE @buscaLike
+     OR usuario LIKE @buscaLike
+     OR detalhe LIKE @buscaLike
+     OR ip LIKE @buscaLike
+     OR url LIKE @buscaLike
+  )
+GROUP BY ISNULL(NULLIF(usuario, ''), 'Sem usuario')
+ORDER BY COUNT(1) DESC, ISNULL(NULLIF(usuario, ''), 'Sem usuario');",
+            Param("@dias", SqlDbType.Int, dias),
+            Param("@origem", SqlDbType.VarChar, ddlOrigem.SelectedValue),
+            Param("@veiculo", SqlDbType.VarChar, LimparBusca(txtVeiculo.Text)),
+            Param("@busca", SqlDbType.VarChar, busca),
+            Param("@buscaLike", SqlDbType.VarChar, "%" + busca + "%"));
+
+        DataTable acoes = ExecutarSqlTabela(@"
+SELECT TOP 8 ISNULL(NULLIF(acao, ''), 'Sem acao') AS label, COUNT(1) AS total
+FROM dbo.veiculos_patio_auditoria_geral WITH (NOLOCK)
+WHERE dt >= DATEADD(day, -@dias, GETDATE())
+  AND (@origem = '' OR origem = @origem)
+  AND (@veiculo = '' OR ve_nr = @veiculo)
+  AND (
+        @busca = ''
+     OR acao LIKE @buscaLike
+     OR usuario LIKE @buscaLike
+     OR detalhe LIKE @buscaLike
+     OR ip LIKE @buscaLike
+     OR url LIKE @buscaLike
+  )
+GROUP BY ISNULL(NULLIF(acao, ''), 'Sem acao')
+ORDER BY COUNT(1) DESC, ISNULL(NULLIF(acao, ''), 'Sem acao');",
+            Param("@dias", SqlDbType.Int, dias),
+            Param("@origem", SqlDbType.VarChar, ddlOrigem.SelectedValue),
+            Param("@veiculo", SqlDbType.VarChar, LimparBusca(txtVeiculo.Text)),
+            Param("@busca", SqlDbType.VarChar, busca),
+            Param("@buscaLike", SqlDbType.VarChar, "%" + busca + "%"));
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class=\"audit-summary-grid\">");
+        html.Append("<div><span class=\"audit-pill\"><i class=\"fa fa-user\"></i>Por usu&aacute;rio</span>").Append(RenderBarras(usuarios)).Append("</div>");
+        html.Append("<div><span class=\"audit-pill\"><i class=\"fa fa-bolt\"></i>Por a&ccedil;&atilde;o</span>").Append(RenderBarras(acoes)).Append("</div>");
+        html.Append("</div>");
+        return html.ToString();
+    }
+
+    private string RenderBarras(DataTable tabela)
+    {
+        if (tabela.Rows.Count == 0) return "<div class=\"audit-empty\">Sem dados para agrupar neste filtro.</div>";
+
+        int maximo = 1;
+        foreach (DataRow row in tabela.Rows)
+        {
+            int total;
+            if (Int32.TryParse(Valor(row, "total"), out total) && total > maximo) maximo = total;
+        }
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<div class=\"audit-bar-list mt-3\">");
+        foreach (DataRow row in tabela.Rows)
+        {
+            int total;
+            Int32.TryParse(Valor(row, "total"), out total);
+            int largura = Math.Max(4, (int)Math.Round((total * 100.0) / maximo));
+            html.Append("<div class=\"audit-bar-row\"><span class=\"audit-bar-label\" title=\"")
+                .Append(Html(Valor(row, "label")))
+                .Append("\">")
+                .Append(Html(Valor(row, "label")))
+                .Append("</span><span class=\"audit-bar-track\"><span style=\"width:")
+                .Append(largura)
+                .Append("%\"></span></span><span class=\"audit-bar-value\">")
+                .Append(total)
+                .Append("</span></div>");
+        }
+        html.Append("</div>");
+        return html.ToString();
+    }
+
+    private void ExportarAuditoria()
+    {
+        DataTable tabela = ListarEventos(5000);
+        StringBuilder csv = new StringBuilder();
+        csv.AppendLine("Id;Data;Origem;Veiculo;Acao;Usuario;Detalhe;IP;URL");
+        foreach (DataRow row in tabela.Rows)
+        {
+            csv.Append(Csv(Valor(row, "id"))).Append(";");
+            csv.Append(Csv(DataCurta(row, "dt"))).Append(";");
+            csv.Append(Csv(Valor(row, "origem"))).Append(";");
+            csv.Append(Csv(Valor(row, "ve_nr"))).Append(";");
+            csv.Append(Csv(Valor(row, "acao"))).Append(";");
+            csv.Append(Csv(Valor(row, "usuario"))).Append(";");
+            csv.Append(Csv(Valor(row, "detalhe"))).Append(";");
+            csv.Append(Csv(Valor(row, "ip"))).Append(";");
+            csv.Append(Csv(Valor(row, "url"))).AppendLine();
+        }
+
+        Response.Clear();
+        Response.Buffer = true;
+        Response.ContentEncoding = Encoding.UTF8;
+        Response.ContentType = "text/csv";
+        Response.AddHeader("Content-Disposition", "attachment; filename=auditoria-patio-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".csv");
+        Response.BinaryWrite(Encoding.UTF8.GetPreamble());
+        Response.Write(csv.ToString());
+        Response.Flush();
+        Context.ApplicationInstance.CompleteRequest();
+    }
+
+    private int DiasFiltro()
+    {
+        int dias;
+        if (!Int32.TryParse(ddlPeriodo.SelectedValue, out dias) || dias <= 0) dias = 30;
+        return dias;
     }
 
     private string RenderTabela(DataTable tabela)
@@ -177,5 +324,11 @@ ORDER BY dt DESC, id DESC;",
     private string Html(string valor)
     {
         return HttpUtility.HtmlEncode(valor ?? "");
+    }
+
+    private string Csv(string valor)
+    {
+        valor = valor ?? "";
+        return "\"" + valor.Replace("\"", "\"\"").Replace("\r", " ").Replace("\n", " ") + "\"";
     }
 }

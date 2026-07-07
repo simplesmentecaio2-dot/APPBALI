@@ -33,10 +33,22 @@
         .audit-table small { display:block; color:#64748b; font-weight:750; margin-top:.2rem; }
         .audit-pill { display:inline-flex; align-items:center; gap:.4rem; border-radius:999px; padding:.38rem .62rem; background:#eef6e9; color:#203729; font-size:.76rem; font-weight:950; }
         .audit-empty { border:1px dashed #cfd9e6; border-radius:16px; padding:1.2rem; background:#f8fafc; color:#64748b; font-weight:850; text-align:center; }
+        .audit-quick { display:flex; flex-wrap:wrap; gap:.55rem; margin-top:.85rem; }
+        .audit-chip { display:inline-flex; align-items:center; gap:.4rem; border:1px solid #dbe4ef; border-radius:999px; padding:.45rem .75rem; background:#fff; color:#334155 !important; font-weight:900; text-decoration:none !important; }
+        .audit-chip:hover { border-color:#8aa36f; color:#203729 !important; }
+        .audit-summary-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
+        .audit-bar-list { display:grid; gap:.75rem; }
+        .audit-bar-row { display:grid; grid-template-columns:minmax(110px,.42fr) minmax(0,1fr) 56px; gap:.65rem; align-items:center; }
+        .audit-bar-label { color:#334155; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .audit-bar-track { height:12px; border-radius:999px; background:#edf2f7; overflow:hidden; }
+        .audit-bar-track span { display:block; height:100%; min-width:3px; border-radius:inherit; background:linear-gradient(90deg,#6f9151,#203729); }
+        .audit-bar-value { color:#64748b; font-weight:950; text-align:right; }
         @media (max-width:991.98px) { .audit-field, .audit-field.is-wide { grid-column:span 6; } }
         @media (max-width:767.98px) {
             .audit-header { display:grid; grid-template-columns:1fr; }
             .audit-field, .audit-field.is-wide { grid-column:1/-1; }
+            .audit-summary-grid { grid-template-columns:1fr; }
+            .audit-bar-row { grid-template-columns:1fr; }
             .audit-actions .audit-btn { flex:1 1 100%; }
             .audit-table, .audit-table thead, .audit-table tbody, .audit-table th, .audit-table td, .audit-table tr { display:block; min-width:0; width:100%; }
             .audit-table thead { display:none; }
@@ -129,10 +141,28 @@
                                             <asp:TextBox ID="txtBusca" runat="server" CssClass="audit-input" MaxLength="80" autocomplete="off" placeholder="A&ccedil;&atilde;o, usu&aacute;rio, detalhe, IP ou URL"></asp:TextBox>
                                         </div>
                                     </div>
+                                    <div class="audit-quick">
+                                        <asp:LinkButton ID="btnHoje" runat="server" CssClass="audit-chip" CommandArgument="1" OnClick="FiltroRapido_Click"><i class="fa fa-calendar-day"></i>Hoje</asp:LinkButton>
+                                        <asp:LinkButton ID="btnSete" runat="server" CssClass="audit-chip" CommandArgument="7" OnClick="FiltroRapido_Click"><i class="fa fa-calendar-week"></i>7 dias</asp:LinkButton>
+                                        <asp:LinkButton ID="btnTrinta" runat="server" CssClass="audit-chip" CommandArgument="30" OnClick="FiltroRapido_Click"><i class="fa fa-calendar-alt"></i>30 dias</asp:LinkButton>
+                                        <asp:LinkButton ID="btnNoventa" runat="server" CssClass="audit-chip" CommandArgument="90" OnClick="FiltroRapido_Click"><i class="fa fa-history"></i>90 dias</asp:LinkButton>
+                                    </div>
                                     <div class="audit-actions">
                                         <asp:LinkButton ID="btnFiltrar" runat="server" CssClass="audit-btn audit-btn-primary" OnClick="btnFiltrar_Click"><i class="fa fa-filter"></i>Filtrar</asp:LinkButton>
                                         <asp:LinkButton ID="btnLimpar" runat="server" CssClass="audit-btn" OnClick="btnLimpar_Click"><i class="fa fa-eraser"></i>Limpar</asp:LinkButton>
+                                        <asp:LinkButton ID="btnExportar" runat="server" CssClass="audit-btn" OnClick="btnExportar_Click"><i class="fa fa-file-export"></i>Exportar CSV</asp:LinkButton>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="audit-card">
+                                <div class="audit-header">
+                                    <div>
+                                        <small>Resumo</small>
+                                        <h2 class="audit-title">Agrupamentos do filtro</h2>
+                                    </div>
+                                </div>
+                                <div class="audit-body">
+                                    <asp:Literal ID="litAgrupamentos" runat="server"></asp:Literal>
                                 </div>
                             </div>
                             <div class="audit-card">
