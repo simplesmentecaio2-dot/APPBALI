@@ -512,13 +512,9 @@ body.bali-utility-page .bali-query-actions input[type="button"] {
 }
 
 body.bali-utility-page .bali-print-toolbar {
-  display: none;
+  display: flex;
   justify-content: flex-end;
   align-items: center;
-}
-
-body.bali-utility-page.bali-preview-ready .bali-print-toolbar {
-  display: flex;
 }
 
 body.bali-utility-page button.bali-print-action {
