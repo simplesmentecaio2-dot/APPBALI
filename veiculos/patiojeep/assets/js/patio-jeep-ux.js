@@ -283,6 +283,39 @@
     }
   }
 
+  function ensureLegacyBanner() {
+    if (isEmbedMode()) return;
+    if (document.querySelector('.patio-legacy-banner')) return;
+
+    var currentPage = ((location.pathname || '').split('/').pop() || '').toLowerCase();
+    var legacy = {
+      'registrar.aspx': { title: 'Registro clássico', target: './novos.aspx?aba=registrar', action: 'Abrir registro em abas' },
+      'transferir.aspx': { title: 'Transferência clássica', target: './novos.aspx?aba=transferir', action: 'Abrir transferência em abas' },
+      'historico.aspx': { title: 'Histórico clássico', target: './novos.aspx?aba=consultar', action: 'Abrir consulta em abas' },
+      'relatorios.aspx': { title: 'Relatórios clássicos', target: './novos.aspx?aba=relatorios', action: 'Abrir BI em abas' }
+    }[currentPage];
+
+    if (!legacy) return;
+
+    var container = document.querySelector('.patio-modern-page .app-main__inner');
+    if (!container) return;
+
+    var banner = document.createElement('div');
+    banner.className = 'patio-legacy-banner';
+    banner.innerHTML = '<span><i class="fa fa-info-circle"></i><strong></strong><small>Esta tela continua funcionando, mas o fluxo novo em abas tem melhor leitura, filtros e experiência mobile.</small></span><div><a class="patio-legacy-btn is-primary"></a><a class="patio-legacy-btn" href="./">Início do pátio</a></div>';
+    banner.querySelector('strong').textContent = legacy.title;
+    var primary = banner.querySelector('.patio-legacy-btn.is-primary');
+    primary.href = legacy.target;
+    primary.textContent = legacy.action;
+
+    var title = container.querySelector('.app-page-title');
+    if (title && title.parentNode) {
+      title.parentNode.insertBefore(banner, title.nextSibling);
+    } else {
+      container.insertBefore(banner, container.firstChild);
+    }
+  }
+
   function isEmbedMode() {
     return /(?:\?|&)embed=1(?:&|$)/.test(location.search || '');
   }
@@ -441,6 +474,7 @@
     enhanceCurrentPage();
     enhanceDashboardCards();
     ensureSidebarLinks();
+    ensureLegacyBanner();
     enhanceVehicleSummary();
   }
 

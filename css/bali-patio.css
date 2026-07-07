@@ -843,6 +843,77 @@ body.patio-modern-page.patio-brand-byd {
   font-weight: 800;
 }
 
+.patio-modern-page .patio-legacy-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(88, 120, 68, .22);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ffffff, #f4fbf0);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, .08);
+}
+
+.patio-modern-page .patio-legacy-banner > span {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 2px 12px;
+  align-items: center;
+}
+
+.patio-modern-page .patio-legacy-banner i {
+  grid-row: 1 / 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--patio-brand-soft);
+  color: var(--patio-brand-strong);
+}
+
+.patio-modern-page .patio-legacy-banner strong {
+  color: var(--patio-ink);
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.patio-modern-page .patio-legacy-banner small {
+  color: var(--patio-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.patio-modern-page .patio-legacy-banner > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.patio-modern-page .patio-legacy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid rgba(88, 120, 68, .24);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--patio-brand-strong) !important;
+  font-size: 12px;
+  font-weight: 900;
+  text-decoration: none !important;
+}
+
+.patio-modern-page .patio-legacy-btn.is-primary {
+  border-color: transparent;
+  background: var(--patio-brand);
+  color: #fff !important;
+}
+
 .patio-modern-page .page-title-actions .btn {
   border: 1px solid rgba(255, 255, 255, .22) !important;
   background: rgba(255, 255, 255, .12) !important;
@@ -1014,6 +1085,16 @@ body.patio-modern-page.patio-brand-byd {
 
   .patio-modern-page .patio-home-activity-item time {
     justify-self: start;
+  }
+
+  .patio-modern-page .patio-legacy-banner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .patio-modern-page .patio-legacy-banner > div,
+  .patio-modern-page .patio-legacy-btn {
+    width: 100%;
   }
 
   .patio-modern-page footer.fixed-bottom {
