@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <title>Auditoria de Recibos e Entregas</title>
     <link href="css/estilo.css" rel="stylesheet" />
-    <link href="css/bali-utility.css?v=20260707-recibo07" rel="stylesheet" />
+    <link href="css/bali-utility.css?v=20260707-recibo08" rel="stylesheet" />
 </head>
 <body class="bali-utility-page utility-fiat utility-no-sidebar bali-audit-page">
     <form id="form1" runat="server">
@@ -63,6 +63,7 @@
                         <asp:ListItem Text="Todas" Value=""></asp:ListItem>
                         <asp:ListItem Text="Gerado" Value="gerado"></asp:ListItem>
                         <asp:ListItem Text="Impressão" Value="impressao"></asp:ListItem>
+                        <asp:ListItem Text="Erro" Value="erro"></asp:ListItem>
                     </asp:DropDownList>
                 </label>
                 <label>Pedido
@@ -91,6 +92,7 @@
                 <article><small>Total</small><strong><asp:Literal ID="litTotal" runat="server" /></strong></article>
                 <article><small>Gerados</small><strong><asp:Literal ID="litGerados" runat="server" /></strong></article>
                 <article><small>Impressões</small><strong><asp:Literal ID="litImpressoes" runat="server" /></strong></article>
+                <article><small>Erros</small><strong><asp:Literal ID="litErros" runat="server" /></strong></article>
                 <article><small>Usuários</small><strong><asp:Literal ID="litUsuarios" runat="server" /></strong></article>
                 <article><small>Fiat</small><strong><asp:Literal ID="litFiat" runat="server" /></strong></article>
                 <article><small>Jeep</small><strong><asp:Literal ID="litJeep" runat="server" /></strong></article>
@@ -102,7 +104,7 @@
             </asp:Panel>
 
             <section class="bali-audit-table">
-                <asp:GridView ID="gvLogs" runat="server" AutoGenerateColumns="false" GridLines="None" CssClass="bali-data-table" AllowPaging="true" PageSize="30" OnPageIndexChanging="gvLogs_PageIndexChanging">
+                <asp:GridView ID="gvLogs" runat="server" AutoGenerateColumns="false" GridLines="None" CssClass="bali-data-table" AllowPaging="true" PageSize="30" OnPageIndexChanging="gvLogs_PageIndexChanging" OnRowDataBound="gvLogs_RowDataBound">
                     <Columns>
                         <asp:BoundField DataField="Data" HeaderText="Data" />
                         <asp:BoundField DataField="Acao" HeaderText="Ação" />
@@ -113,6 +115,7 @@
                         <asp:BoundField DataField="Usuario" HeaderText="Usuário" />
                         <asp:BoundField DataField="Cliente" HeaderText="Cliente" />
                         <asp:BoundField DataField="Veiculo" HeaderText="Veículo" />
+                        <asp:BoundField DataField="Mensagem" HeaderText="Mensagem" />
                         <asp:BoundField DataField="Ip" HeaderText="IP" />
                     </Columns>
                     <PagerStyle CssClass="bali-audit-pager" />

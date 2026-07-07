@@ -56,7 +56,7 @@ public partial class ReciboAuditoria : System.Web.UI.Page
     {
         List<ReciboLogItem> itens = Filtrar(LerLogs());
         StringBuilder csv = new StringBuilder();
-        csv.AppendLine("Data;Acao;Marca;Tipo;Pedido;Loja;Usuario;CodigoUsuario;Cliente;Veiculo;Pagina;IP");
+        csv.AppendLine("Data;Acao;Marca;Tipo;Pedido;Loja;Usuario;CodigoUsuario;Cliente;Veiculo;Pagina;IP;Mensagem");
 
         foreach (ReciboLogItem item in itens)
         {
@@ -73,7 +73,8 @@ public partial class ReciboAuditoria : System.Web.UI.Page
                 Csv(item.Cliente),
                 Csv(item.Veiculo),
                 Csv(item.Pagina),
-                Csv(item.Ip)
+                Csv(item.Ip),
+                Csv(item.Mensagem)
             }));
         }
 
@@ -107,6 +108,18 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         Carregar();
     }
 
+    protected void gvLogs_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType != DataControlRowType.DataRow) return;
+
+        ReciboLogItem item = e.Row.DataItem as ReciboLogItem;
+        if (item == null) return;
+
+        if (Igual(item.Acao, "erro")) e.Row.CssClass = "is-error-row";
+        else if (Igual(item.Acao, "impressao")) e.Row.CssClass = "is-print-row";
+        else if (Igual(item.Acao, "gerado")) e.Row.CssClass = "is-generated-row";
+    }
+
     private void Carregar()
     {
         List<ReciboLogItem> itens = Filtrar(LerLogs());
@@ -117,6 +130,7 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         litTotal.Text = itens.Count.ToString();
         litGerados.Text = itens.Count(i => Igual(i.Acao, "gerado")).ToString();
         litImpressoes.Text = itens.Count(i => Igual(i.Acao, "impressao")).ToString();
+        litErros.Text = itens.Count(i => Igual(i.Acao, "erro")).ToString();
         litUsuarios.Text = itens.Select(i => i.Usuario).Where(i => !String.IsNullOrWhiteSpace(i)).Distinct(StringComparer.OrdinalIgnoreCase).Count().ToString();
         litFiat.Text = itens.Count(i => Igual(i.Marca, "Fiat")).ToString();
         litJeep.Text = itens.Count(i => Igual(i.Marca, "Jeep")).ToString();
@@ -152,6 +166,7 @@ public partial class ReciboAuditoria : System.Web.UI.Page
             item.Veiculo = partes[9];
             item.Pagina = partes[10];
             item.Ip = partes[11];
+            item.Mensagem = partes.Length > 12 ? partes[12] : "";
             itens.Add(item);
         }
 
@@ -232,7 +247,8 @@ public partial class ReciboAuditoria : System.Web.UI.Page
             item.Cliente,
             item.Veiculo,
             item.Pagina,
-            item.Ip
+            item.Ip,
+            item.Mensagem
         });
 
         return texto.IndexOf(busca, StringComparison.OrdinalIgnoreCase) >= 0;
@@ -259,5 +275,6 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         public string Veiculo { get; set; }
         public string Pagina { get; set; }
         public string Ip { get; set; }
+        public string Mensagem { get; set; }
     }
 }

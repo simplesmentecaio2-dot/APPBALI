@@ -135,7 +135,11 @@
   }
 
   window.baliUtilityFeedback = function (message, type) {
-    toast(mensagemAmigavel(message), type || 'info');
+    var texto = mensagemAmigavel(message);
+    toast(texto, type || 'info');
+    if ((type || '').toLowerCase() === 'error') {
+      logEvento('erro', texto);
+    }
     esconderCarregando();
   };
 
@@ -207,7 +211,7 @@
     }
 
     if (mensagens.length) {
-      toast(mensagens.join(' '), 'error');
+      window.baliUtilityFeedback(mensagens.join(' '), 'error');
       if (pedido && (!pedidoValor || pedidoValor !== somenteDigitos(pedidoValor))) pedido.focus();
       else if (loja) loja.focus();
       return false;
@@ -359,7 +363,7 @@
     else imagem.parentNode.insertBefore(barra, imagem);
   }
 
-  function logEvento(acao) {
+  function logEvento(acao, mensagem) {
     var pedido = pedidoField();
     var loja = lojaField();
     var dados = {
@@ -370,7 +374,8 @@
       tipo: tipoDocumento(),
       cliente: clientePreview(),
       veiculo: veiculoPreview(),
-      pagina: window.location.pathname
+      pagina: window.location.pathname,
+      mensagem: mensagem || ''
     };
 
     var body = Object.keys(dados).map(function (key) {
@@ -622,6 +627,31 @@
     }, true);
   }
 
+  function vincularAtalhosTeclado() {
+    if (document.documentElement.getAttribute('data-bali-utility-keys') === '1') return;
+    document.documentElement.setAttribute('data-bali-utility-keys', '1');
+
+    document.addEventListener('keydown', function (event) {
+      var key = (event.key || '').toLowerCase();
+      var alvo = event.target || event.srcElement;
+
+      if ((event.ctrlKey || event.metaKey) && key === 'p') {
+        if (previewGerada()) {
+          event.preventDefault();
+          imprimirPainel();
+        }
+        return;
+      }
+
+      if (key !== 'enter') return;
+      if (alvo !== pedidoField() && alvo !== lojaField()) return;
+
+      event.preventDefault();
+      var botao = gerarButton();
+      if (botao && validarConsulta()) botao.click();
+    }, true);
+  }
+
   function aplicarMelhorias() {
     if (!document.body || !document.body.classList.contains('bali-utility-page')) return;
     decorarCampos();
@@ -630,6 +660,7 @@
     decorarBotaoImpressao();
     vincularFerramentasPrevia();
     vincularGerar();
+    vincularAtalhosTeclado();
     window.imprimePanel = imprimirPainel;
     window.aguarde = mostrarCarregando;
     atualizarEstadoPrevia();

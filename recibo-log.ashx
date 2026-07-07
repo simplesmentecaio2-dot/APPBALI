@@ -44,6 +44,7 @@ public class ReciboLogHandler : IHttpHandler, IRequiresSessionState
         string cliente = Limpar(context.Request["cliente"], 120);
         string veiculo = Limpar(context.Request["veiculo"], 120);
         string pagina = Limpar(context.Request["pagina"], 180);
+        string mensagem = Limpar(context.Request["mensagem"], 220);
         string ip = Limpar(context.Request.UserHostAddress, 45);
 
         string linha = String.Join("\t", new string[]
@@ -59,7 +60,8 @@ public class ReciboLogHandler : IHttpHandler, IRequiresSessionState
             cliente,
             veiculo,
             pagina,
-            ip
+            ip,
+            mensagem
         });
 
         string diretorio = context.Server.MapPath("~/App_Data");

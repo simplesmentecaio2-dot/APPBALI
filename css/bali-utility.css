@@ -976,7 +976,7 @@ body.bali-utility-page button.bali-print-action:focus {
 
 .bali-audit-summary {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: 12px;
   padding: 14px;
 }
@@ -1037,6 +1037,31 @@ body.bali-utility-page button.bali-print-action:focus {
   border-bottom: 1px solid #edf2f7;
   font-weight: 800;
   vertical-align: top;
+}
+
+.bali-data-table tr.is-error-row td {
+  background: #fff5f5;
+  color: #7f1d1d;
+}
+
+.bali-data-table tr.is-print-row td {
+  background: #f7fbff;
+}
+
+.bali-data-table tr.is-generated-row td {
+  background: #fbfffb;
+}
+
+.bali-data-table tr.is-error-row td:first-child {
+  box-shadow: inset 4px 0 0 #ef4444;
+}
+
+.bali-data-table tr.is-print-row td:first-child {
+  box-shadow: inset 4px 0 0 var(--utility-brand);
+}
+
+.bali-data-table tr.is-generated-row td:first-child {
+  box-shadow: inset 4px 0 0 #22c55e;
 }
 
 .bali-audit-pager td {
