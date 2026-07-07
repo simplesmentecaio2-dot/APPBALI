@@ -195,6 +195,7 @@
                                                 </div>
                                             </div>
                                             <div class="card-body">
+                                                <asp:Literal ID="litBuscaMensagem" runat="server"></asp:Literal>
                                                 <div class="row align-items-end">
                                                     <div class="col-md-8 col-12 mb-2">
                                                         <label class="font-weight-bold text-muted text-uppercase" style="font-size:.75rem;">S&eacute;rie, chassi, placa, Renavam ou c&oacute;digo</label>

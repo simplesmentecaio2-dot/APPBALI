@@ -593,6 +593,256 @@ body.patio-modern-page.patio-brand-byd {
   line-height: 1.35;
 }
 
+.patio-modern-page .patio-home-message {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 11px 13px;
+  border: 1px solid rgba(217, 119, 6, .22);
+  border-radius: 8px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.patio-modern-page .patio-home-message.is-warning i {
+  color: #d97706;
+}
+
+.patio-modern-page .patio-home-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.patio-modern-page .patio-dashboard-card {
+  position: relative;
+  min-height: 122px;
+  padding: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(88, 120, 68, .18);
+  border-radius: 8px;
+  background: linear-gradient(145deg, #fff, #f7fbf6);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, .07);
+}
+
+.patio-modern-page .patio-dashboard-card > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: var(--patio-brand-soft);
+  color: var(--patio-brand-strong);
+}
+
+.patio-modern-page .patio-dashboard-card small,
+.patio-modern-page .patio-dashboard-card em {
+  display: block;
+  color: var(--patio-muted);
+  font-style: normal;
+  font-weight: 800;
+}
+
+.patio-modern-page .patio-dashboard-card small {
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.patio-modern-page .patio-dashboard-card strong {
+  display: block;
+  margin: 2px 0;
+  color: var(--patio-ink);
+  font-size: 28px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.patio-modern-page .patio-dashboard-card em {
+  font-size: 12px;
+}
+
+.patio-modern-page .patio-attention-panel {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) 1fr;
+  gap: 14px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(88, 120, 68, .18);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.patio-modern-page .patio-attention-panel small {
+  display: block;
+  color: var(--patio-muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.patio-modern-page .patio-attention-panel strong {
+  color: var(--patio-ink);
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.patio-modern-page .patio-attention-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.patio-modern-page .patio-alert-chip {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  min-height: 46px;
+  padding: 9px 12px;
+  border: 1px solid rgba(22, 101, 52, .18);
+  border-radius: 8px;
+  background: #f0fdf4;
+  color: #166534;
+  font-weight: 900;
+}
+
+.patio-modern-page .patio-alert-chip.is-warning {
+  border-color: rgba(217, 119, 6, .24);
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.patio-modern-page .patio-alert-chip.is-danger {
+  border-color: rgba(220, 38, 38, .24);
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.patio-modern-page .patio-alert-chip b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .8);
+  color: inherit;
+  font-size: 14px;
+}
+
+.patio-modern-page .patio-alert-chip span,
+.patio-modern-page .patio-alert-chip small {
+  display: block;
+}
+
+.patio-modern-page .patio-alert-chip small {
+  margin-top: 1px;
+  font-size: 11px;
+  font-weight: 800;
+  opacity: .8;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.patio-modern-page .patio-home-activity {
+  margin-top: 14px;
+  border: 1px solid var(--patio-line);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.patio-modern-page .patio-home-activity-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--patio-line);
+}
+
+.patio-modern-page .patio-home-activity-title small {
+  display: block;
+  color: var(--patio-muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.patio-modern-page .patio-home-activity-title strong {
+  color: var(--patio-ink);
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.patio-modern-page .patio-home-activity-title a {
+  color: var(--patio-brand-strong);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.patio-modern-page .patio-home-activity-list {
+  display: grid;
+}
+
+.patio-modern-page .patio-home-activity-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.patio-modern-page .patio-home-activity-item:last-child {
+  border-bottom: 0;
+}
+
+.patio-modern-page .patio-home-activity-item i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--patio-brand-soft);
+  color: var(--patio-brand-strong);
+}
+
+.patio-modern-page .patio-home-activity-item b,
+.patio-modern-page .patio-home-activity-item small {
+  display: block;
+}
+
+.patio-modern-page .patio-home-activity-item b {
+  color: var(--patio-ink);
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.patio-modern-page .patio-home-activity-item small,
+.patio-modern-page .patio-home-activity-item time {
+  color: var(--patio-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.patio-modern-page .patio-home-empty {
+  padding: 16px;
+  color: var(--patio-muted);
+  font-weight: 800;
+}
+
 .patio-modern-page .page-title-actions .btn {
   border: 1px solid rgba(255, 255, 255, .22) !important;
   background: rgba(255, 255, 255, .12) !important;
@@ -755,6 +1005,15 @@ body.patio-modern-page.patio-brand-byd {
 
   .patio-modern-page .patio-summary-action {
     width: 100%;
+  }
+
+  .patio-modern-page .patio-attention-panel,
+  .patio-modern-page .patio-home-activity-item {
+    grid-template-columns: 1fr;
+  }
+
+  .patio-modern-page .patio-home-activity-item time {
+    justify-self: start;
   }
 
   .patio-modern-page footer.fixed-bottom {
