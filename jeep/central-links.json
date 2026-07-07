@@ -38,6 +38,13 @@
       "icon": "receipt"
     },
     {
+      "id": "autorizacao-polimento",
+      "title": "Autorização de Polimento",
+      "caption": "Documento interno",
+      "url": "Autorizacao_polimentoJEEP.aspx",
+      "icon": "paint"
+    },
+    {
       "id": "padrao-4-entrega-do-veiculo",
       "title": "Entrega do Veículo",
       "caption": "Entrega",
@@ -80,5 +87,5 @@
       "icon": "bi"
     }
   ],
-  "updatedAt": "2026-06-28 00:00:00"
+  "updatedAt": "2026-07-07 12:00:00"
 }

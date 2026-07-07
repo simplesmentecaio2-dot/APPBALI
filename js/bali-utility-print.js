@@ -40,6 +40,7 @@
 
   function tipoDocumento() {
     var titulo = (document.title || '').toLowerCase();
+    if (titulo.indexOf('polimento') >= 0) return 'Autorizacao de polimento';
     return titulo.indexOf('entrega') >= 0 ? 'Entrega de veiculo' : 'Recibo de desconto';
   }
 

@@ -14,7 +14,7 @@
     { key: 'vehicle', terms: ['veiculos', 'veiculo', 'carro', 'vendas'] },
     { key: 'parts', terms: ['pecas', 'acessorios'] },
     { key: 'service', terms: ['assistencia', 'tecnica', 'pos-venda'] },
-    { key: 'paint', terms: ['lanternagem', 'funilaria'] },
+    { key: 'paint', terms: ['lanternagem', 'funilaria', 'polimento'] },
     { key: 'test-drive', terms: ['test drive', 'experiencia'] },
     { key: 'phone', terms: ['telefone', 'contatos', 'financeiras'] },
     { key: 'accounts', terms: ['contas', 'bancarias', 'financeiro'] },
