@@ -106,11 +106,6 @@
 
     fieldset.setAttribute('data-bali-receipt-card', '1');
     fieldset.classList.add('bali-receipt-card');
-
-    var helper = document.createElement('div');
-    helper.className = 'bali-receipt-helper';
-    helper.innerHTML = '<span><small>Consulta</small><strong>Dados para gerar o recibo</strong></span><em>Informe pedido e loja, gere a pr\u00e9via e imprima somente ap\u00f3s conferir os dados.</em>';
-    fieldset.insertBefore(helper, fieldset.firstChild);
   }
 
   function decorarBotaoImpressao() {
@@ -120,15 +115,19 @@
     imagem.setAttribute('data-bali-print-decorated', '1');
     imagem.style.display = 'none';
 
+    var barra = document.createElement('div');
+    barra.className = 'bali-print-toolbar';
+
     var botao = document.createElement('button');
     botao.type = 'button';
     botao.className = 'bali-print-action';
-    botao.innerHTML = '<i class="fa fa-print"></i><span>Imprimir recibo</span>';
+    botao.innerHTML = '<img src="' + imagem.getAttribute('src') + '" alt="" aria-hidden="true"><span>Imprimir</span>';
     botao.addEventListener('click', function () {
       if (typeof window.imprimePanel === 'function') window.imprimePanel();
     });
 
-    imagem.parentNode.insertBefore(botao, imagem);
+    barra.appendChild(botao);
+    imagem.parentNode.insertBefore(barra, imagem);
   }
 
   function esperarImagens(printWindow, callback) {
@@ -204,12 +203,20 @@
     }, true);
   }
 
-  ready(function () {
+  function aplicarMelhorias() {
     if (!document.body || !document.body.classList.contains('bali-utility-page')) return;
     decorarCampos();
     decorarCardConsulta();
     decorarBotaoImpressao();
     vincularGerar();
     window.imprimePanel = imprimirPainel;
+  }
+
+  ready(function () {
+    aplicarMelhorias();
+
+    if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
+      Sys.WebForms.PageRequestManager.getInstance().add_endRequest(aplicarMelhorias);
+    }
   });
 })();

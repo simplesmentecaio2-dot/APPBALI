@@ -422,7 +422,7 @@ body.bali-utility-page *::after {
   object-fit: contain;
 }
 
-.bali-utility-page .bali-receipt-card {
+body.bali-utility-page fieldset.bali-receipt-card {
   position: relative;
   display: grid;
   grid-template-columns: auto minmax(150px, 220px) auto minmax(110px, 160px) auto;
@@ -430,7 +430,7 @@ body.bali-utility-page *::after {
   align-items: end;
 }
 
-.bali-utility-page .bali-receipt-card > br {
+body.bali-utility-page fieldset.bali-receipt-card > br {
   display: none;
 }
 
@@ -471,29 +471,57 @@ body.bali-utility-page *::after {
   letter-spacing: 0;
 }
 
-.bali-utility-page .bali-print-action {
-  display: inline-flex;
+body.bali-utility-page .bali-print-toolbar {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 44px;
+  padding-top: 8px;
+  border-top: 1px solid #edf2f7;
+}
+
+body.bali-utility-page button.bali-print-action {
+  appearance: none !important;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  min-height: 40px;
-  padding: 0 16px;
-  border: 1px solid var(--utility-line);
-  border-radius: 8px;
-  background: #fff;
-  color: var(--utility-brand-strong);
-  cursor: pointer;
+  gap: 8px;
+  width: auto !important;
+  min-width: 116px;
+  min-height: 38px;
+  margin: 0 !important;
+  padding: 0 14px !important;
+  border: 1px solid var(--utility-line) !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: var(--utility-brand-strong) !important;
+  cursor: pointer !important;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 900;
+  line-height: 1 !important;
   text-transform: uppercase;
   box-shadow: 0 12px 26px rgba(15, 23, 42, .08);
   transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
 }
 
-.bali-utility-page .bali-print-action:hover,
-.bali-utility-page .bali-print-action:focus {
-  border-color: var(--utility-brand);
+body.bali-utility-page button.bali-print-action img {
+  display: block;
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  object-fit: contain;
+}
+
+body.bali-utility-page button.bali-print-action:hover,
+body.bali-utility-page button.bali-print-action:focus {
+  border-color: var(--utility-brand) !important;
   box-shadow: 0 0 0 3px var(--utility-brand-ring), 0 16px 30px rgba(15, 23, 42, .1);
   transform: translateY(-1px);
 }
