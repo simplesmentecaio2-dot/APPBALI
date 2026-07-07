@@ -21,6 +21,7 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
         if (scriptManager != null)
         {
             scriptManager.RegisterPostBackControl(btnExportarConsulta);
+            scriptManager.RegisterPostBackControl(btnExportarBI);
         }
 
         if (!IsPostBack)
@@ -389,6 +390,11 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
     {
         AtivarAba("relatorios");
         MostrarMensagem("success", "BI atualizado", "Relat\u00f3rio carregado com os dados atuais de seminovos.");
+    }
+
+    protected void btnExportarBI_Click(object sender, EventArgs e)
+    {
+        ExportarBISeminovos();
     }
 
     protected void FiltroRelatorio_Click(object sender, EventArgs e)
@@ -1023,6 +1029,98 @@ ORDER BY p.dt_cad DESC, p.id DESC;",
         Context.ApplicationInstance.CompleteRequest();
     }
 
+    private void ExportarBISeminovos()
+    {
+        DateTime inicio = RelInicio();
+        DateTime fimExclusivo = RelFim().Date.AddDays(1);
+        int loja;
+        Int32.TryParse(ddlRelatorioLoja.SelectedValue, out loja);
+
+        DataTable resumo = ExecutarSqlTabela(@"
+SELECT
+    COUNT(1) AS total_ativos,
+    COUNT(DISTINCT COALESCE(NULLIF(loja_atual_id, 0), loja_id)) AS lojas_com_veiculos,
+    SUM(CASE WHEN dt_cad >= @inicio AND dt_cad < @fim THEN 1 ELSE 0 END) AS entradas_periodo,
+    MAX(dt_cad) AS ultima_entrada
+FROM dbo.veiculos_patio_seminovos_locacao WITH (NOLOCK)
+WHERE ativo = 1
+  AND (@loja = 0 OR COALESCE(NULLIF(loja_atual_id, 0), loja_id) = @loja);",
+            Param("@inicio", SqlDbType.DateTime, inicio),
+            Param("@fim", SqlDbType.DateTime, fimExclusivo),
+            Param("@loja", SqlDbType.Int, loja));
+
+        DataTable estoque = ExecutarSqlTabela(@"
+SELECT COALESCE(l.ds, 'Sem loja') AS loja, COUNT(1) AS total
+FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
+LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
+    ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+WHERE p.ativo = 1
+  AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
+GROUP BY COALESCE(l.ds, 'Sem loja')
+ORDER BY COUNT(1) DESC, COALESCE(l.ds, 'Sem loja');",
+            Param("@loja", SqlDbType.Int, loja));
+
+        DataTable entradas = ExecutarSqlTabela(@"
+SELECT CONVERT(varchar(10), CONVERT(date, dt_cad), 103) AS data, COUNT(1) AS total
+FROM dbo.veiculos_patio_seminovos_locacao WITH (NOLOCK)
+WHERE ativo = 1
+  AND dt_cad >= @inicio AND dt_cad < @fim
+  AND (@loja = 0 OR COALESCE(NULLIF(loja_atual_id, 0), loja_id) = @loja)
+GROUP BY CONVERT(date, dt_cad)
+ORDER BY CONVERT(date, dt_cad);",
+            Param("@inicio", SqlDbType.DateTime, inicio),
+            Param("@fim", SqlDbType.DateTime, fimExclusivo),
+            Param("@loja", SqlDbType.Int, loja));
+
+        DataTable transferencias = ExecutarSqlTabela(@"
+SELECT CONVERT(varchar(10), CONVERT(date, t.dt_transf), 103) AS data, COUNT(1) AS total
+FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK)
+WHERE t.dt_transf >= @inicio AND t.dt_transf < @fim
+  AND (@loja = 0 OR t.loja_orig = @loja OR t.loja_dest = @loja)
+GROUP BY CONVERT(date, t.dt_transf)
+ORDER BY CONVERT(date, t.dt_transf);",
+            Param("@inicio", SqlDbType.DateTime, inicio),
+            Param("@fim", SqlDbType.DateTime, fimExclusivo),
+            Param("@loja", SqlDbType.Int, loja));
+
+        DataTable parados = ExecutarSqlTabela(@"
+SELECT TOP 100
+    p.id,
+    p.ve_nr,
+    p.ve_ds,
+    p.ve_chassi,
+    p.ve_placa,
+    COALESCE(l.ds, 'Sem loja') AS loja_atual,
+    ISNULL(p.status_operacional, 'NO_PATIO') AS status_operacional,
+    DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado
+FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
+LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
+    ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+WHERE p.ativo = 1
+  AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
+ORDER BY dias_parado DESC, p.dt_cad;",
+            Param("@loja", SqlDbType.Int, loja));
+
+        Response.Clear();
+        Response.Buffer = true;
+        Response.ContentType = "application/vnd.ms-excel";
+        Response.ContentEncoding = Encoding.UTF8;
+        Response.AddHeader("Content-Disposition", "attachment; filename=bi-seminovos-patio-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".xls");
+        Response.Write("\uFEFF");
+        Response.Write("<html><head><meta charset='utf-8'><style>body{font-family:Arial,sans-serif;} h2{color:#203729;} table{border-collapse:collapse;margin-bottom:22px;} th{background:#203729;color:#fff;} th,td{border:1px solid #cbd5e1;padding:6px;} .meta td{border:0;} .title{font-size:20px;font-weight:bold;color:#203729;}</style></head><body>");
+        Response.Write("<table class='meta'><tr><td class='title' colspan='4'>BI de Seminovos - P&aacute;tio</td></tr>");
+        Response.Write("<tr><td><b>Gerado em</b></td><td>" + Html(DateTime.Now.ToString("dd/MM/yyyy HH:mm")) + "</td><td><b>Usu&aacute;rio</b></td><td>" + Html(UsuarioAtual()) + "</td></tr>");
+        Response.Write("<tr><td><b>Per&iacute;odo</b></td><td>" + Html(PeriodoAtualTexto()) + "</td><td><b>Loja</b></td><td>" + Html(ddlRelatorioLoja.SelectedItem != null ? ddlRelatorioLoja.SelectedItem.Text : "Todas") + "</td></tr></table>");
+        Response.Write(TabelaExcel("Resumo", resumo));
+        Response.Write(TabelaExcel("Seminovos por loja", estoque));
+        Response.Write(TabelaExcel("Entradas por dia", entradas));
+        Response.Write(TabelaExcel("Transfer&ecirc;ncias por dia", transferencias));
+        Response.Write(TabelaExcel("Seminovos parados", parados));
+        Response.Write("</body></html>");
+        Response.Flush();
+        Context.ApplicationInstance.CompleteRequest();
+    }
+
     private DataRow LocalizarSeminovoPorId(int id)
     {
         DataTable tabela = ExecutarSqlTabela(@"
@@ -1316,6 +1414,33 @@ ORDER BY dt DESC, id DESC;",
     {
         valor = valor ?? "";
         return "\"" + valor.Replace("\"", "\"\"").Replace("\r", " ").Replace("\n", " ") + "\"";
+    }
+
+    private string TabelaExcel(string titulo, DataTable tabela)
+    {
+        StringBuilder html = new StringBuilder();
+        html.Append("<h2>").Append(Html(titulo)).Append("</h2>");
+        html.Append("<table><thead><tr>");
+        foreach (DataColumn coluna in tabela.Columns)
+        {
+            html.Append("<th>").Append(Html(coluna.ColumnName)).Append("</th>");
+        }
+        html.Append("</tr></thead><tbody>");
+        foreach (DataRow row in tabela.Rows)
+        {
+            html.Append("<tr>");
+            foreach (DataColumn coluna in tabela.Columns)
+            {
+                html.Append("<td>").Append(Html(Convert.ToString(row[coluna]))).Append("</td>");
+            }
+            html.Append("</tr>");
+        }
+        if (tabela.Rows.Count == 0)
+        {
+            html.Append("<tr><td colspan=\"").Append(tabela.Columns.Count).Append("\">Sem dados.</td></tr>");
+        }
+        html.Append("</tbody></table>");
+        return html.ToString();
     }
 
     private string Kpi(string label, string valor, string detalhe)

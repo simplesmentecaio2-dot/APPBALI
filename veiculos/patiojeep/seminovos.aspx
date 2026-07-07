@@ -977,7 +977,10 @@
                                                     <small>BI de seminovos</small>
                                                     <h2 class="semi-card-title">Relat&oacute;rios</h2>
                                                 </div>
-                                                <asp:LinkButton ID="btnAtualizarRelatorio" runat="server" CssClass="semi-btn semi-btn-light js-safe-submit" OnClick="btnAtualizarRelatorio_Click"><i class="fa fa-sync-alt"></i>Atualizar</asp:LinkButton>
+                                                <span class="semi-row-actions">
+                                                    <asp:LinkButton ID="btnAtualizarRelatorio" runat="server" CssClass="semi-btn semi-btn-light js-safe-submit" OnClick="btnAtualizarRelatorio_Click"><i class="fa fa-sync-alt"></i>Atualizar</asp:LinkButton>
+                                                    <asp:LinkButton ID="btnExportarBI" runat="server" CssClass="semi-btn semi-btn-light" OnClick="btnExportarBI_Click"><i class="fa fa-file-excel"></i>Exportar BI</asp:LinkButton>
+                                                </span>
                                             </div>
                                             <div class="semi-card-body">
                                                 <div class="semi-quick-filters">
