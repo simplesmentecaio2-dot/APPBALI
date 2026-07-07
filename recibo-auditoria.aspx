@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <title>Auditoria de Recibos e Entregas</title>
     <link href="css/estilo.css" rel="stylesheet" />
-    <link href="css/bali-utility.css?v=20260707-recibo06" rel="stylesheet" />
+    <link href="css/bali-utility.css?v=20260707-recibo07" rel="stylesheet" />
 </head>
 <body class="bali-utility-page utility-fiat utility-no-sidebar bali-audit-page">
     <form id="form1" runat="server">
@@ -74,6 +74,9 @@
                 <label>Usuário
                     <asp:TextBox ID="txtUsuario" runat="server" autocomplete="off"></asp:TextBox>
                 </label>
+                <label>Busca geral
+                    <asp:TextBox ID="txtBusca" runat="server" autocomplete="off" placeholder="cliente, veículo, pedido, IP..."></asp:TextBox>
+                </label>
                 <div class="bali-audit-actions">
                     <asp:Button ID="btnFiltrar" runat="server" Text="Filtrar" CssClass="btns" OnClick="btnFiltrar_Click" />
                     <asp:Button ID="btnLimpar" runat="server" Text="Limpar" CssClass="bali-audit-secondary" OnClick="btnLimpar_Click" />
@@ -89,6 +92,9 @@
                 <article><small>Gerados</small><strong><asp:Literal ID="litGerados" runat="server" /></strong></article>
                 <article><small>Impressões</small><strong><asp:Literal ID="litImpressoes" runat="server" /></strong></article>
                 <article><small>Usuários</small><strong><asp:Literal ID="litUsuarios" runat="server" /></strong></article>
+                <article><small>Fiat</small><strong><asp:Literal ID="litFiat" runat="server" /></strong></article>
+                <article><small>Jeep</small><strong><asp:Literal ID="litJeep" runat="server" /></strong></article>
+                <article><small>BYD</small><strong><asp:Literal ID="litByd" runat="server" /></strong></article>
             </section>
 
             <asp:Panel ID="pnlMensagem" runat="server" CssClass="bali-audit-empty" Visible="false">

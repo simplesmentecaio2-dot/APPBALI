@@ -47,6 +47,7 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         txtPedido.Text = "";
         txtLoja.Text = "";
         txtUsuario.Text = "";
+        txtBusca.Text = "";
         gvLogs.PageIndex = 0;
         Carregar();
     }
@@ -117,6 +118,9 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         litGerados.Text = itens.Count(i => Igual(i.Acao, "gerado")).ToString();
         litImpressoes.Text = itens.Count(i => Igual(i.Acao, "impressao")).ToString();
         litUsuarios.Text = itens.Select(i => i.Usuario).Where(i => !String.IsNullOrWhiteSpace(i)).Distinct(StringComparer.OrdinalIgnoreCase).Count().ToString();
+        litFiat.Text = itens.Count(i => Igual(i.Marca, "Fiat")).ToString();
+        litJeep.Text = itens.Count(i => Igual(i.Marca, "Jeep")).ToString();
+        litByd.Text = itens.Count(i => Igual(i.Marca, "BYD")).ToString();
     }
 
     private List<ReciboLogItem> LerLogs()
@@ -175,6 +179,7 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         string pedido = txtPedido.Text.Trim();
         string loja = txtLoja.Text.Trim();
         string usuario = txtUsuario.Text.Trim();
+        string busca = txtBusca.Text.Trim();
 
         return itens.Where(delegate(ReciboLogItem item)
         {
@@ -186,6 +191,7 @@ public partial class ReciboAuditoria : System.Web.UI.Page
             if (!Contem(item.Pedido, pedido)) return false;
             if (!Contem(item.Loja, loja)) return false;
             if (!Contem(item.Usuario, usuario)) return false;
+            if (!BuscaGeral(item, busca)) return false;
             return true;
         }).ToList();
     }
@@ -207,6 +213,29 @@ public partial class ReciboAuditoria : System.Web.UI.Page
     {
         if (String.IsNullOrWhiteSpace(busca)) return true;
         return (valor ?? "").IndexOf(busca, StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    private static bool BuscaGeral(ReciboLogItem item, string busca)
+    {
+        if (String.IsNullOrWhiteSpace(busca)) return true;
+
+        string texto = String.Join(" ", new string[]
+        {
+            item.Data,
+            item.Acao,
+            item.Marca,
+            item.Tipo,
+            item.Pedido,
+            item.Loja,
+            item.Usuario,
+            item.CodigoUsuario,
+            item.Cliente,
+            item.Veiculo,
+            item.Pagina,
+            item.Ip
+        });
+
+        return texto.IndexOf(busca, StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
     private static string Csv(string valor)

@@ -314,11 +314,24 @@
     var menu = document.getElementById('menu');
     if (!menu || menu.querySelector('.bali-audit-link')) return;
 
+    var backButton = menu.querySelector('.bali-back-button');
+    var actions = menu.querySelector('.bali-menu-actions');
+    if (!actions) {
+      actions = document.createElement('div');
+      actions.className = 'bali-menu-actions';
+      if (backButton) {
+        menu.insertBefore(actions, backButton);
+        actions.appendChild(backButton);
+      } else {
+        menu.insertBefore(actions, menu.firstChild);
+      }
+    }
+
     var link = document.createElement('a');
     link.className = 'bali-audit-link';
     link.href = '/recibo-auditoria.aspx';
     link.textContent = 'Auditoria';
-    menu.appendChild(link);
+    actions.appendChild(link);
   }
 
   function decorarBotaoImpressao() {
