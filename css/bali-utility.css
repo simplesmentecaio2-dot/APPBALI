@@ -1170,6 +1170,95 @@ body.bali-utility-page button.bali-print-action:focus {
   box-shadow: 0 0 0 3px var(--utility-brand-ring);
 }
 
+.polimento-tabs {
+  display: inline-flex;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 6px;
+  border: 1px solid var(--utility-line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, .06);
+}
+
+.polimento-tab {
+  min-height: 36px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--utility-muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.polimento-tab.is-active,
+.polimento-tab:hover,
+.polimento-tab:focus {
+  background: var(--utility-brand);
+  color: #fff;
+  box-shadow: 0 10px 22px var(--utility-brand-ring);
+}
+
+.polimento-tab-panel {
+  display: none;
+}
+
+.polimento-tab-panel.is-active {
+  display: block;
+}
+
+.polimento-bi-shell {
+  display: grid;
+  gap: 14px;
+}
+
+.polimento-bi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.polimento-bi-grid article {
+  padding: 14px;
+  border: 1px solid var(--utility-line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.polimento-bi-grid small {
+  display: block;
+  color: var(--utility-muted);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.polimento-bi-grid strong {
+  display: block;
+  margin-top: 5px;
+  color: var(--utility-brand-strong);
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.polimento-bi-section {
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--utility-line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.polimento-bi-section h3 {
+  margin: 0 0 10px;
+  color: var(--utility-ink);
+  font-size: 16px;
+  font-weight: 950;
+}
+
 .bali-audit-pager td {
   padding: 14px 8px !important;
 }
@@ -1308,7 +1397,14 @@ body.bali-utility-page button.bali-print-action:focus {
   body.bali-utility-page .bali-preview-summary-grid,
   body.bali-utility-page .bali-local-history-list,
   .bali-audit-filters,
-  .bali-audit-summary {
+  .bali-audit-summary,
+  .polimento-bi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .polimento-tabs {
+    width: 100%;
+    display: grid;
     grid-template-columns: 1fr;
   }
 

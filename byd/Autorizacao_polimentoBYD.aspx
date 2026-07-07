@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <title>Autorização de Polimento - BYD</title>
     <link href="../css/estilo.css" rel="stylesheet" />
-    <link href="../css/bali-utility.css?v=20260707-polimento01" rel="stylesheet" />
+    <link href="../css/bali-utility.css?v=20260707-polimento-bi01" rel="stylesheet" />
     <script src="../js/bali-utility-print.js?v=20260707-polimento01"></script>
 </head>
 <body class="bali-utility-page utility-byd utility-no-sidebar">
@@ -39,7 +39,14 @@
         </div>
 
         <div id="TabRecibo">
-            <fieldset>
+            <asp:HiddenField ID="hdnPolimentoTab" runat="server" ClientIDMode="Static" Value="autorizacao" />
+            <div class="polimento-tabs" role="tablist" aria-label="Navegação da autorização de polimento">
+                <button type="button" class="polimento-tab is-active" data-polimento-tab="autorizacao">Autorização</button>
+                <button type="button" class="polimento-tab" data-polimento-tab="dados">Dados</button>
+            </div>
+
+            <div class="polimento-tab-panel is-active" data-polimento-panel="autorizacao">
+                <fieldset>
                 <legend>Autorização</legend>
                 Pedido: <asp:TextBox ID="txtPedido" runat="server"></asp:TextBox>
                 Cód. Loja: <asp:TextBox ID="txtLoja" runat="server"></asp:TextBox>
@@ -128,7 +135,63 @@
                         </div>
                     </div>
                 </asp:Panel>
-            </fieldset>
+                </fieldset>
+            </div>
+
+            <div class="polimento-tab-panel" data-polimento-panel="dados">
+                <div class="polimento-bi-shell">
+                    <fieldset>
+                        <legend>Dados da autorização</legend>
+                        Data inicial: <asp:TextBox ID="txtBIDataInicial" runat="server"></asp:TextBox>
+                        Data final: <asp:TextBox ID="txtBIDataFinal" runat="server"></asp:TextBox>
+                        <asp:Button ID="btnAtualizarBI" runat="server" Text="Atualizar dados" CssClass="btns" OnClick="btnAtualizarBI_Click" OnClientClick="document.getElementById('hdnPolimentoTab').value='dados';" />
+                    </fieldset>
+
+                    <div class="polimento-bi-grid">
+                        <article>
+                            <small>Autorizações</small>
+                            <strong><asp:Label ID="lblBITotal" runat="server" Text="0"></asp:Label></strong>
+                        </article>
+                        <article>
+                            <small>Cores diferentes</small>
+                            <strong><asp:Label ID="lblBICores" runat="server" Text="0"></asp:Label></strong>
+                        </article>
+                        <article>
+                            <small>Cor mais frequente</small>
+                            <strong><asp:Label ID="lblBITopCor" runat="server" Text="-"></asp:Label></strong>
+                        </article>
+                    </div>
+
+                    <div class="polimento-bi-section">
+                        <h3>Resumo por mês e cor</h3>
+                        <asp:GridView ID="gvPolimentoResumo" runat="server" AutoGenerateColumns="False" CssClass="bali-data-table" GridLines="None" EmptyDataText="Nenhuma autorização encontrada neste período.">
+                            <Columns>
+                                <asp:BoundField DataField="Mes" HeaderText="Mês" />
+                                <asp:BoundField DataField="Cor" HeaderText="Cor" />
+                                <asp:BoundField DataField="Quantidade" HeaderText="Quantidade" />
+                                <asp:BoundField DataField="UltimaGeracao" HeaderText="Última geração" />
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+
+                    <div class="polimento-bi-section">
+                        <h3>Últimas autorizações do período</h3>
+                        <asp:GridView ID="gvPolimentoDetalhes" runat="server" AutoGenerateColumns="False" CssClass="bali-data-table" GridLines="None" EmptyDataText="Nenhuma autorização encontrada neste período.">
+                            <Columns>
+                                <asp:BoundField DataField="GeradoEm" HeaderText="Gerado em" />
+                                <asp:BoundField DataField="Pedido" HeaderText="Pedido" />
+                                <asp:BoundField DataField="Loja" HeaderText="Loja" />
+                                <asp:BoundField DataField="Cor" HeaderText="Cor" />
+                                <asp:BoundField DataField="Veiculo" HeaderText="Veículo" />
+                                <asp:BoundField DataField="Chassi" HeaderText="Chassi" />
+                                <asp:BoundField DataField="Cliente" HeaderText="Cliente" />
+                                <asp:BoundField DataField="Usuario" HeaderText="Usuário" />
+                                <asp:BoundField DataField="Geracoes" HeaderText="Gerações" />
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                </div>
+            </div>
         </div>
     </form>
     <div id="ag" style="position:fixed; z-index:1000; top:0; left:0; width:100%; height:100%; background-color:rgba(0, 0, 0, 0.75); visibility:hidden;">
@@ -136,6 +199,35 @@
             <img src="../../img/aguarde.gif" style="border-radius:5px;" />
         </div>
     </div>
+    <script>
+        (function () {
+            window.abrirPolimentoTab = function (tab) {
+                tab = tab || 'autorizacao';
+                var hidden = document.getElementById('hdnPolimentoTab');
+                if (hidden) hidden.value = tab;
+
+                var botoes = document.querySelectorAll('[data-polimento-tab]');
+                var paineis = document.querySelectorAll('[data-polimento-panel]');
+                for (var i = 0; i < botoes.length; i++) {
+                    botoes[i].classList.toggle('is-active', botoes[i].getAttribute('data-polimento-tab') === tab);
+                }
+                for (var j = 0; j < paineis.length; j++) {
+                    paineis[j].classList.toggle('is-active', paineis[j].getAttribute('data-polimento-panel') === tab);
+                }
+            };
+
+            document.addEventListener('click', function (event) {
+                var botao = event.target.closest ? event.target.closest('[data-polimento-tab]') : null;
+                if (!botao) return;
+                window.abrirPolimentoTab(botao.getAttribute('data-polimento-tab'));
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var hidden = document.getElementById('hdnPolimentoTab');
+                window.abrirPolimentoTab(hidden && hidden.value ? hidden.value : 'autorizacao');
+            });
+        })();
+    </script>
 </body>
 </html>
 

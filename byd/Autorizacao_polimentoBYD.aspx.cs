@@ -6,6 +6,7 @@ using System.Web.UI;
 
 public partial class byd_Autorizacao_polimento : System.Web.UI.Page
 {
+    private const string MarcaPolimento = "BYD";
     private const string EmpresaDocumento = "BALI AUTO ELETRICS LTDA";
     private const string LoginRetorno = "./loginAppcontrato.aspx";
 
@@ -25,6 +26,9 @@ public partial class byd_Autorizacao_polimento : System.Web.UI.Page
             lblEmpresa.Text = EmpresaDocumento;
             lblEmpresaAssinatura.Text = EmpresaDocumento;
             lblData.Text = DataExtenso(DateTime.Today);
+            txtBIDataInicial.Text = PrimeiroDiaMes().ToString("dd/MM/yyyy");
+            txtBIDataFinal.Text = DateTime.Today.ToString("dd/MM/yyyy");
+            CarregarBI(false);
         }
     }
 
@@ -66,11 +70,25 @@ public partial class byd_Autorizacao_polimento : System.Web.UI.Page
             lblEmpresa.Text = EmpresaDocumento;
             lblEmpresaAssinatura.Text = EmpresaDocumento;
             lblData.Text = DataExtenso(DateTime.Today);
+
+            bool registrado = PolimentoAutorizacao.RegistrarGeracao(MarcaPolimento, pedido, loja, dados, Context);
+            CarregarBI(false);
+            if (!registrado)
+            {
+                Avisar("Autorização gerada, mas não foi possível registrar nos dados gerenciais agora.", "error");
+            }
         }
         catch
         {
             Avisar("Não foi possível gerar a autorização agora. Confira pedido e loja ou tente novamente.", "error");
         }
+    }
+
+    protected void btnAtualizarBI_Click(object sender, EventArgs e)
+    {
+        hdnPolimentoTab.Value = "dados";
+        CarregarBI(true);
+        ScriptManager.RegisterStartupScript(this, this.GetType(), "polimentoDados", "window.abrirPolimentoTab && window.abrirPolimentoTab('dados');", true);
     }
 
     private DataRow ConsultarAutorizacaoPolimento(string pedido, string loja)
@@ -153,6 +171,69 @@ GROUP BY
     {
         ScriptManager.RegisterStartupScript(this, this.GetType(), Guid.NewGuid().ToString("N"),
             "if (window.baliUtilityFeedback) { window.baliUtilityFeedback('" + mensagem.Replace("'", "\\'") + "', '" + tipo + "'); } else { alert('" + mensagem.Replace("'", "\\'") + "'); }", true);
+    }
+
+    private void CarregarBI(bool avisarErro)
+    {
+        try
+        {
+            DateTime inicio = DataInformada(txtBIDataInicial.Text, PrimeiroDiaMes());
+            DateTime fim = DataInformada(txtBIDataFinal.Text, DateTime.Today);
+            if (fim < inicio)
+            {
+                DateTime troca = inicio;
+                inicio = fim;
+                fim = troca;
+            }
+
+            txtBIDataInicial.Text = inicio.ToString("dd/MM/yyyy");
+            txtBIDataFinal.Text = fim.ToString("dd/MM/yyyy");
+
+            DataTable resumo = PolimentoAutorizacao.ResumoPorCor(MarcaPolimento, inicio, fim);
+            DataTable detalhes = PolimentoAutorizacao.Detalhes(MarcaPolimento, inicio, fim);
+
+            gvPolimentoResumo.DataSource = resumo;
+            gvPolimentoResumo.DataBind();
+            gvPolimentoDetalhes.DataSource = detalhes;
+            gvPolimentoDetalhes.DataBind();
+
+            lblBITotal.Text = PolimentoAutorizacao.Total(resumo).ToString("N0", new CultureInfo("pt-BR"));
+            lblBICores.Text = ContarCores(resumo).ToString("N0", new CultureInfo("pt-BR"));
+            lblBITopCor.Text = PolimentoAutorizacao.TopCor(resumo);
+        }
+        catch
+        {
+            lblBITotal.Text = "0";
+            lblBICores.Text = "0";
+            lblBITopCor.Text = "-";
+            gvPolimentoResumo.DataSource = null;
+            gvPolimentoResumo.DataBind();
+            gvPolimentoDetalhes.DataSource = null;
+            gvPolimentoDetalhes.DataBind();
+            if (avisarErro) Avisar("Não foi possível carregar os dados de polimento agora.", "error");
+        }
+    }
+
+    private int ContarCores(DataTable resumo)
+    {
+        DataTable cores = resumo == null ? null : resumo.DefaultView.ToTable(true, "Cor");
+        return cores == null ? 0 : cores.Rows.Count;
+    }
+
+    private DateTime PrimeiroDiaMes()
+    {
+        DateTime hoje = DateTime.Today;
+        return new DateTime(hoje.Year, hoje.Month, 1);
+    }
+
+    private DateTime DataInformada(string valor, DateTime padrao)
+    {
+        DateTime data;
+        string texto = (valor ?? "").Trim();
+        string[] formatos = { "dd/MM/yyyy", "d/M/yyyy", "yyyy-MM-dd" };
+        if (DateTime.TryParseExact(texto, formatos, new CultureInfo("pt-BR"), DateTimeStyles.None, out data)) return data;
+        if (DateTime.TryParse(texto, new CultureInfo("pt-BR"), DateTimeStyles.None, out data)) return data;
+        return padrao;
     }
 
     private string SomenteNumeros(string valor, int maximo)
