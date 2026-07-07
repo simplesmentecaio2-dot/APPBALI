@@ -1211,7 +1211,7 @@ WHERE p.ativo = 1
             bool selecionado = detalheId > 0 && id == Convert.ToString(detalheId);
             html.Append("<tr>");
             html.Append("<td data-label=\"A&ccedil;&otilde;es\"><span class=\"semi-row-actions\">");
-            html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=consultar&amp;detalhe=").Append(HttpUtility.UrlEncode(id)).Append("\"><i class=\"fa fa-history\"></i>").Append(selecionado ? "Selecionado" : "Hist&oacute;rico").Append("</a>");
+            html.Append("<a class=\"semi-mini-action js-semi-history-modal\" href=\"seminovos.aspx?aba=consultar&amp;detalhe=").Append(HttpUtility.UrlEncode(id)).Append("\" data-history-id=\"").Append(Html(id)).Append("\"><i class=\"fa fa-history\"></i>").Append(selecionado ? "Selecionado" : "Hist&oacute;rico").Append("</a>");
             html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=consultar&amp;detalhe=").Append(HttpUtility.UrlEncode(id)).Append("#auditoria\"><i class=\"fa fa-shield-alt\"></i>Auditoria</a>");
             html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=transferir&amp;busca=").Append(busca).Append("\"><i class=\"fa fa-exchange-alt\"></i>Transferir</a>");
             html.Append("<a class=\"semi-mini-action\" href=\"seminovos.aspx?aba=operacional&amp;operBusca=").Append(HttpUtility.UrlEncode(id)).Append("\"><i class=\"fa fa-tools\"></i>Operar</a>");

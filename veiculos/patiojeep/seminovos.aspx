@@ -544,6 +544,88 @@
             animation: semiSpin .85s linear infinite;
         }
 
+        .semi-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+        }
+
+        .semi-modal.is-open {
+            display: flex;
+        }
+
+        .semi-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, .62);
+            backdrop-filter: blur(3px);
+        }
+
+        .semi-modal-dialog {
+            position: relative;
+            z-index: 1;
+            width: min(980px, 100%);
+            max-height: min(86vh, 860px);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #dbe4ef;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 28px 80px rgba(15, 23, 42, .34);
+            overflow: hidden;
+        }
+
+        .semi-modal-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: center;
+            padding: 1rem 1.15rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: linear-gradient(180deg, #fff, #f8fafc);
+        }
+
+        .semi-modal-header small {
+            display: block;
+            color: #64748b;
+            font-size: .72rem;
+            font-weight: 950;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+
+        .semi-modal-header h2 {
+            margin: 0;
+            color: #0f172a;
+            font-size: 1.05rem;
+            font-weight: 950;
+        }
+
+        .semi-modal-close {
+            width: 42px;
+            height: 42px;
+            border: 1px solid #cfd9e6;
+            border-radius: 999px;
+            background: #fff;
+            color: #334155;
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .semi-modal-body {
+            overflow: auto;
+            padding: 1rem;
+        }
+
+        body.semi-modal-locked {
+            overflow: hidden;
+        }
+
         .semi-quick-filters {
             display: flex;
             flex-wrap: wrap;
@@ -660,6 +742,23 @@
                 border-bottom: 1px solid #edf2f7;
             }
 
+            .semi-table td[data-label="Ações"] {
+                grid-template-columns: 1fr;
+                background: #f8fafc;
+            }
+
+            .semi-row-actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                width: 100%;
+            }
+
+            .semi-mini-action {
+                min-height: 40px;
+                justify-content: center;
+                border-radius: 12px;
+            }
+
             .semi-table td:before {
                 content: attr(data-label);
                 color: #64748b;
@@ -673,6 +772,10 @@
         @media (max-width: 480px) {
             .semi-tabs,
             .semi-kpis {
+                grid-template-columns: 1fr;
+            }
+
+            .semi-row-actions {
                 grid-template-columns: 1fr;
             }
         }
@@ -1057,6 +1160,21 @@
                             </div>
                         </ContentTemplate>
                     </asp:UpdatePanel>
+                    <div id="semiHistoryModal" class="semi-modal" aria-hidden="true">
+                        <div class="semi-modal-backdrop" data-semi-modal-close="1"></div>
+                        <div class="semi-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="semiHistoryModalTitle">
+                            <div class="semi-modal-header">
+                                <div>
+                                    <small>Consulta r&aacute;pida</small>
+                                    <h2 id="semiHistoryModalTitle">Hist&oacute;rico do seminovo</h2>
+                                </div>
+                                <button type="button" class="semi-modal-close" data-semi-modal-close="1" aria-label="Fechar hist&oacute;rico">&times;</button>
+                            </div>
+                            <div id="semiHistoryModalBody" class="semi-modal-body">
+                                <div class="semi-empty">Carregando hist&oacute;rico...</div>
+                            </div>
+                        </div>
+                    </div>
                     <asp:UpdateProgress ID="UpdateProgress1" DisplayAfter="120" DynamicLayout="true" runat="server" AssociatedUpdatePanelID="updatePanel">
                         <ProgressTemplate>
                             <div class="semi-progress" role="status" aria-live="polite">
@@ -1177,8 +1295,74 @@
                 });
             }
 
+            function bindHistoryModal() {
+                if (document.documentElement.getAttribute('data-semi-history-bound') === '1') return;
+                document.documentElement.setAttribute('data-semi-history-bound', '1');
+
+                function modal() { return document.getElementById('semiHistoryModal'); }
+                function modalBody() { return document.getElementById('semiHistoryModalBody'); }
+
+                function closeModal() {
+                    var el = modal();
+                    if (!el) return;
+                    el.classList.remove('is-open');
+                    el.setAttribute('aria-hidden', 'true');
+                    document.body.classList.remove('semi-modal-locked');
+                }
+
+                function openModal(id, fallbackUrl) {
+                    var el = modal();
+                    var body = modalBody();
+                    if (!el || !body) {
+                        window.location.href = fallbackUrl;
+                        return;
+                    }
+
+                    el.classList.add('is-open');
+                    el.setAttribute('aria-hidden', 'false');
+                    document.body.classList.add('semi-modal-locked');
+                    body.innerHTML = '<div class="semi-empty"><i class="fa fa-spinner fa-spin"></i> Carregando hist&oacute;rico do seminovo...</div>';
+
+                    if (!window.fetch) {
+                        window.location.href = fallbackUrl;
+                        return;
+                    }
+
+                    fetch('seminovos-historico.ashx?id=' + encodeURIComponent(id), { credentials: 'same-origin' })
+                        .then(function (response) {
+                            if (!response.ok) throw new Error('Falha ao carregar hist\u00f3rico.');
+                            return response.text();
+                        })
+                        .then(function (html) {
+                            body.innerHTML = html;
+                        })
+                        .catch(function () {
+                            body.innerHTML = '<div class="semi-empty">N&atilde;o foi poss&iacute;vel carregar o hist&oacute;rico agora. Use o link de detalhe completo.</div>';
+                        });
+                }
+
+                document.addEventListener('click', function (event) {
+                    var trigger = event.target.closest ? event.target.closest('.js-semi-history-modal') : null;
+                    if (trigger) {
+                        event.preventDefault();
+                        openModal(trigger.getAttribute('data-history-id'), trigger.getAttribute('href'));
+                        return;
+                    }
+
+                    if (event.target && event.target.getAttribute && event.target.getAttribute('data-semi-modal-close') === '1') {
+                        event.preventDefault();
+                        closeModal();
+                    }
+                });
+
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape') closeModal();
+                });
+            }
+
             bindRegistroAutoSearch();
             bindCopyButtons();
+            bindHistoryModal();
 
             if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
                 var manager = Sys.WebForms.PageRequestManager.getInstance();
@@ -1199,6 +1383,7 @@
                     }
                     bindRegistroAutoSearch();
                     bindCopyButtons();
+                    bindHistoryModal();
                 });
             }
         })();
