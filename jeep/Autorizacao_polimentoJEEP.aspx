@@ -83,7 +83,7 @@
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Cor</strong></td>
-                                <td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblCor" runat="server"></asp:Label></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px; font-size: 12.5px; font-weight: bold;"><asp:Label ID="lblCor" runat="server"></asp:Label></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Chassi</strong></td>
