@@ -43,6 +43,7 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         txtDataInicial.Text = DateTime.Today.AddDays(-7).ToString("yyyy-MM-dd");
         txtDataFinal.Text = DateTime.Today.ToString("yyyy-MM-dd");
         ddlMarca.SelectedValue = "";
+        ddlTipo.SelectedValue = "";
         ddlAcao.SelectedValue = "";
         txtPedido.Text = "";
         txtLoja.Text = "";
@@ -131,6 +132,8 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         litGerados.Text = itens.Count(i => Igual(i.Acao, "gerado")).ToString();
         litImpressoes.Text = itens.Count(i => Igual(i.Acao, "impressao")).ToString();
         litErros.Text = itens.Count(i => Igual(i.Acao, "erro")).ToString();
+        litRecibos.Text = itens.Count(i => Igual(i.Tipo, "Recibo de desconto")).ToString();
+        litEntregas.Text = itens.Count(i => Igual(i.Tipo, "Entrega de veiculo")).ToString();
         litUsuarios.Text = itens.Select(i => i.Usuario).Where(i => !String.IsNullOrWhiteSpace(i)).Distinct(StringComparer.OrdinalIgnoreCase).Count().ToString();
         litFiat.Text = itens.Count(i => Igual(i.Marca, "Fiat")).ToString();
         litJeep.Text = itens.Count(i => Igual(i.Marca, "Jeep")).ToString();
@@ -190,6 +193,7 @@ public partial class ReciboAuditoria : System.Web.UI.Page
         if (temDataFinal) dataFinal = dataFinal.Date.AddDays(1).AddTicks(-1);
 
         string marca = ddlMarca.SelectedValue;
+        string tipo = ddlTipo.SelectedValue;
         string acao = ddlAcao.SelectedValue;
         string pedido = txtPedido.Text.Trim();
         string loja = txtLoja.Text.Trim();
@@ -202,6 +206,7 @@ public partial class ReciboAuditoria : System.Web.UI.Page
             if (temDataInicial && data < dataInicial.Date) return false;
             if (temDataFinal && data > dataFinal) return false;
             if (!String.IsNullOrWhiteSpace(marca) && !Igual(item.Marca, marca)) return false;
+            if (!String.IsNullOrWhiteSpace(tipo) && !Igual(item.Tipo, tipo)) return false;
             if (!String.IsNullOrWhiteSpace(acao) && !Igual(item.Acao, acao)) return false;
             if (!Contem(item.Pedido, pedido)) return false;
             if (!Contem(item.Loja, loja)) return false;

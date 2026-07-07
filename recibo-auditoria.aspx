@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <title>Auditoria de Recibos e Entregas</title>
     <link href="css/estilo.css" rel="stylesheet" />
-    <link href="css/bali-utility.css?v=20260707-recibo09" rel="stylesheet" />
+    <link href="css/bali-utility.css?v=20260707-recibo10" rel="stylesheet" />
 </head>
 <body class="bali-utility-page utility-fiat utility-no-sidebar bali-audit-page">
     <form id="form1" runat="server">
@@ -58,6 +58,13 @@
                         <asp:ListItem Text="BYD" Value="BYD"></asp:ListItem>
                     </asp:DropDownList>
                 </label>
+                <label>Documento
+                    <asp:DropDownList ID="ddlTipo" runat="server">
+                        <asp:ListItem Text="Todos" Value=""></asp:ListItem>
+                        <asp:ListItem Text="Recibo de desconto" Value="Recibo de desconto"></asp:ListItem>
+                        <asp:ListItem Text="Entrega de veículo" Value="Entrega de veiculo"></asp:ListItem>
+                    </asp:DropDownList>
+                </label>
                 <label>Ação
                     <asp:DropDownList ID="ddlAcao" runat="server">
                         <asp:ListItem Text="Todas" Value=""></asp:ListItem>
@@ -93,6 +100,8 @@
                 <article><small>Gerados</small><strong><asp:Literal ID="litGerados" runat="server" /></strong></article>
                 <article><small>Impressões</small><strong><asp:Literal ID="litImpressoes" runat="server" /></strong></article>
                 <article><small>Erros</small><strong><asp:Literal ID="litErros" runat="server" /></strong></article>
+                <article><small>Recibos</small><strong><asp:Literal ID="litRecibos" runat="server" /></strong></article>
+                <article><small>Entregas</small><strong><asp:Literal ID="litEntregas" runat="server" /></strong></article>
                 <article><small>Usuários</small><strong><asp:Literal ID="litUsuarios" runat="server" /></strong></article>
                 <article><small>Fiat</small><strong><asp:Literal ID="litFiat" runat="server" /></strong></article>
                 <article><small>Jeep</small><strong><asp:Literal ID="litJeep" runat="server" /></strong></article>

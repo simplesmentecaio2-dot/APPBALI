@@ -976,7 +976,7 @@ body.bali-utility-page button.bali-print-action:focus {
 
 .bali-audit-summary {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(10, minmax(0, 1fr));
   gap: 12px;
   padding: 14px;
 }
@@ -1000,7 +1000,7 @@ body.bali-utility-page button.bali-print-action:focus {
   display: block;
   margin-top: 4px;
   color: var(--utility-brand-strong);
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 950;
 }
 
