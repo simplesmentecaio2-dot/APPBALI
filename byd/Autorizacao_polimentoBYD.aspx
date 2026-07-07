@@ -47,80 +47,80 @@
                 <br /><br />
                 <img src="../img/imprimir.png" style="width: 30px; cursor: pointer;" onclick="javascript: imprimePanel()" />
                 <asp:Panel ID="pnlImpressao" runat="server" Width="100%" Height="100%">
-                    <div style="width: 19cm; min-height: 25.5cm; box-sizing: border-box; border: 1px solid #111; font-family: 'Times New Roman', serif; padding: 1.15cm; color: #111; background: #fff;" id="autorizacao-polimento">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 14px; margin-bottom: 28px;">
+                    <div style="width: 18.6cm; min-height: 0; height: 25.7cm; box-sizing: border-box; border: 1px solid #111; font-family: 'Times New Roman', serif; padding: .65cm; color: #111; background: #fff; overflow: hidden;" id="autorizacao-polimento">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 8px; margin-bottom: 14px;">
                             <div>
-                                <div style="font-family: Arial, Helvetica, sans-serif; font-size: 24px; font-weight: 900; letter-spacing: .04em;">GRUPO BALI</div>
-                                <div style="font-size: 12px; text-transform: uppercase; margin-top: 4px;"><asp:Label ID="lblEmpresa" runat="server"></asp:Label></div>
+                                <div style="font-family: Arial, Helvetica, sans-serif; font-size: 20px; font-weight: 900; letter-spacing: .04em;">GRUPO BALI</div>
+                                <div style="font-size: 10px; text-transform: uppercase; margin-top: 2px;"><asp:Label ID="lblEmpresa" runat="server"></asp:Label></div>
                             </div>
-                            <div style="font-size: 12px; text-align: right;">
+                            <div style="font-size: 10.5px; text-align: right;">
                                 Pedido: <strong><asp:Label ID="lblPedidoPrint" runat="server"></asp:Label></strong><br />
                                 Nota Fiscal: <strong><asp:Label ID="lblNota" runat="server"></asp:Label></strong><br />
                                 Proposta: <strong><asp:Label ID="lblProposta" runat="server"></asp:Label></strong>
                             </div>
                         </div>
 
-                        <div style="text-align: center; font-size: 21px; font-weight: bold; text-transform: uppercase; margin: 18px 0 26px;">
+                        <div style="text-align: center; font-size: 17px; font-weight: bold; text-transform: uppercase; margin: 10px 0 14px;">
                             Autorização Interna para Execução de Polimento Veicular
                         </div>
 
-                        <p style="font-size: 16px; line-height: 1.55; text-align: justify;">
+                        <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">
                             Pelo presente documento, fica autorizada a execução do serviço de <strong>polimento veicular</strong> no veículo abaixo identificado, conforme dados extraídos do sistema interno da empresa.
                         </p>
 
-                        <table style="width: 100%; border-collapse: collapse; margin: 24px 0 28px; font-size: 14px;">
+                        <table style="width: 100%; border-collapse: collapse; margin: 12px 0 14px; font-size: 11.5px;">
                             <tr>
-                                <td style="border: 1px solid #444; padding: 8px; width: 28%; background: #f2f2f2;"><strong>Cliente</strong></td>
-                                <td style="border: 1px solid #444; padding: 8px;"><asp:Label ID="lblCliente" runat="server"></asp:Label></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px; width: 25%; background: #f2f2f2;"><strong>Cliente</strong></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblCliente" runat="server"></asp:Label></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #444; padding: 8px; background: #f2f2f2;"><strong>Veículo</strong></td>
-                                <td style="border: 1px solid #444; padding: 8px;"><asp:Label ID="lblVeiculo" runat="server"></asp:Label></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Veículo</strong></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblVeiculo" runat="server"></asp:Label></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #444; padding: 8px; background: #f2f2f2;"><strong>Ano/Modelo</strong></td>
-                                <td style="border: 1px solid #444; padding: 8px;"><asp:Label ID="lblAno" runat="server"></asp:Label></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Ano/Modelo</strong></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblAno" runat="server"></asp:Label></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #444; padding: 8px; background: #f2f2f2;"><strong>Cor</strong></td>
-                                <td style="border: 1px solid #444; padding: 8px;"><asp:Label ID="lblCor" runat="server"></asp:Label></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Cor</strong></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblCor" runat="server"></asp:Label></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #444; padding: 8px; background: #f2f2f2;"><strong>Chassi</strong></td>
-                                <td style="border: 1px solid #444; padding: 8px;"><asp:Label ID="lblChassi" runat="server"></asp:Label></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Chassi</strong></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblChassi" runat="server"></asp:Label></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #444; padding: 8px; background: #f2f2f2;"><strong>Placa</strong></td>
-                                <td style="border: 1px solid #444; padding: 8px;"><asp:Label ID="lblPlaca" runat="server"></asp:Label></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Placa</strong></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblPlaca" runat="server"></asp:Label></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #444; padding: 8px; background: #f2f2f2;"><strong>Unidade</strong></td>
-                                <td style="border: 1px solid #444; padding: 8px;"><asp:Label ID="lblUnidade" runat="server"></asp:Label></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Unidade</strong></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblUnidade" runat="server"></asp:Label></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #444; padding: 8px; background: #f2f2f2;"><strong>Valor registrado</strong></td>
-                                <td style="border: 1px solid #444; padding: 8px;"><asp:Label ID="lblValor" runat="server"></asp:Label></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Valor registrado</strong></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblValor" runat="server"></asp:Label></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #444; padding: 8px; background: #f2f2f2;"><strong>Vendedor</strong></td>
-                                <td style="border: 1px solid #444; padding: 8px;"><asp:Label ID="lblVendedor" runat="server"></asp:Label></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Vendedor</strong></td>
+                                <td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblVendedor" runat="server"></asp:Label></td>
                             </tr>
                         </table>
 
-                        <p style="font-size: 16px; line-height: 1.55; text-align: justify;">
+                        <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">
                             A presente autorização tem por finalidade permitir a realização do serviço necessário à adequada apresentação estética do veículo, visando sua preparação para exposição, comercialização, entrega ou demais finalidades operacionais da área de vendas.
                         </p>
-                        <p style="font-size: 16px; line-height: 1.55; text-align: justify;">
+                        <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">
                             Declaro, na qualidade de gerente responsável, que tomei ciência da solicitação e <strong>autorizo expressamente</strong> a execução do polimento no veículo acima identificado, ficando registrado que o serviço somente deverá ser realizado após a assinatura desta autorização.
                         </p>
-                        <p style="font-size: 16px; line-height: 1.55; text-align: justify;">
+                        <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">
                             Esta autorização deverá ser arquivada no sistema interno da empresa para fins de controle, rastreabilidade e comprovação da aprovação gerencial.
                         </p>
 
-                        <div style="margin-top: 34px; font-size: 16px;"><asp:Label ID="lblData" runat="server"></asp:Label></div>
+                        <div style="margin-top: 14px; font-size: 13px;"><asp:Label ID="lblData" runat="server"></asp:Label></div>
 
-                        <div style="margin-top: 86px; text-align: center; font-size: 15px;">
-                            <div style="width: 70%; margin: 0 auto; border-top: 1px solid #111; padding-top: 10px;">
+                        <div style="margin-top: 44px; text-align: center; font-size: 12.5px;">
+                            <div style="width: 64%; margin: 0 auto; border-top: 1px solid #111; padding-top: 7px;">
                                 <strong>GERÊNCIA DE VENDAS</strong><br />
                                 Gerente de Vendas<br />
                                 <asp:Label ID="lblUnidadeAssinatura" runat="server"></asp:Label> - <asp:Label ID="lblEmpresaAssinatura" runat="server"></asp:Label>
