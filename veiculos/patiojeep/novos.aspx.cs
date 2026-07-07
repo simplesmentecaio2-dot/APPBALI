@@ -312,6 +312,7 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
 
     protected void btnConsultar_Click(object sender, EventArgs e)
     {
+        hfConsultaPagina.Value = "1";
         AtivarAba("consultar");
     }
 
@@ -319,6 +320,20 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
     {
         txtConsultaBusca.Text = "";
         if (ddlConsultaLoja.Items.Count > 0) ddlConsultaLoja.SelectedValue = "0";
+        ddlConsultaTamanho.SelectedValue = "50";
+        hfConsultaPagina.Value = "1";
+        AtivarAba("consultar");
+    }
+
+    protected void btnConsultaAnterior_Click(object sender, EventArgs e)
+    {
+        hfConsultaPagina.Value = Math.Max(1, PaginaConsulta() - 1).ToString();
+        AtivarAba("consultar");
+    }
+
+    protected void btnConsultaProxima_Click(object sender, EventArgs e)
+    {
+        hfConsultaPagina.Value = (PaginaConsulta() + 1).ToString();
         AtivarAba("consultar");
     }
 
@@ -645,7 +660,10 @@ ORDER BY ds;");
         int loja;
         Int32.TryParse(ddlConsultaLoja.SelectedValue, out loja);
         string busca = NormalizarBusca(txtConsultaBusca.Text);
-        DataTable tabela = ListarNovos(loja, busca, 250);
+        int total;
+        int pagina = PaginaConsulta();
+        int tamanho = TamanhoConsulta();
+        DataTable tabela = ListarNovosConsulta(loja, busca, tamanho, pagina, out total);
 
         int detalheId = 0;
         DataRow detalhe = null;
@@ -661,6 +679,32 @@ ORDER BY ds;");
 
         litConsultaDetalhe.Text = detalhe == null ? "" : RenderConsultaDetalhe(detalhe);
         litConsultaTabela.Text = RenderConsulta(tabela, detalheId);
+        litConsultaPaginacao.Text = RenderConsultaPaginacao(total, pagina, tamanho);
+        btnConsultaAnterior.Enabled = pagina > 1;
+        btnConsultaProxima.Enabled = (pagina * tamanho) < total;
+    }
+
+    private int PaginaConsulta()
+    {
+        int pagina;
+        if (!Int32.TryParse(hfConsultaPagina.Value, out pagina) || pagina < 1) pagina = 1;
+        return pagina;
+    }
+
+    private int TamanhoConsulta()
+    {
+        int tamanho;
+        if (!Int32.TryParse(ddlConsultaTamanho.SelectedValue, out tamanho)) tamanho = 50;
+        if (tamanho != 25 && tamanho != 50 && tamanho != 100) tamanho = 50;
+        return tamanho;
+    }
+
+    private string RenderConsultaPaginacao(int total, int pagina, int tamanho)
+    {
+        int inicio = total == 0 ? 0 : ((pagina - 1) * tamanho) + 1;
+        int fim = Math.Min(total, pagina * tamanho);
+        int paginas = total == 0 ? 1 : (int)Math.Ceiling(total / (double)tamanho);
+        return "<span class=\"novos-pager-info\">P&aacute;gina " + pagina + " de " + paginas + " &middot; " + inicio + "-" + fim + " de " + total + " novo(s)</span>";
     }
 
     private void CarregarTodos()
@@ -1510,6 +1554,74 @@ ORDER BY p.dt_cad DESC, p.ve_nr DESC;",
             Param("@loja", SqlDbType.Int, loja),
             Param("@busca", SqlDbType.VarChar, valor),
             Param("@buscaLike", SqlDbType.VarChar, "%" + valor + "%"));
+    }
+
+    private DataTable ListarNovosConsulta(int loja, string busca, int tamanhoPagina, int pagina, out int total)
+    {
+        string valor = NormalizarBusca(busca);
+        int inicio = ((Math.Max(1, pagina) - 1) * Math.Max(1, tamanhoPagina)) + 1;
+        int fim = inicio + Math.Max(1, tamanhoPagina) - 1;
+
+        string baseSql = @"
+;WITH filtrado AS
+(
+    SELECT
+        p.ve_nr,
+        SUBSTRING(COALESCE(NULLIF(v.Veiculo_Descricao, ''), 'Veiculo'), 1, 80) AS ve_ds,
+        v.Veiculo_Chassi AS ve_chassi,
+        ISNULL(v.Veiculo_ChassiSerie, '') AS ve_serie,
+        ISNULL(v.Veiculo_Placa, '') AS ve_placa,
+        ISNULL(CONVERT(varchar(40), v.Veiculo_NroRenavam), '') AS ve_renavam,
+        c.Cor_Descricao AS cor_ds,
+        COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) AS loja_atual_id,
+        COALESCE(lj.ds, 'Sem loja') AS loja_atual,
+        p.fun_cad,
+        p.dt_cad,
+        (SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_transferencia t WITH (NOLOCK) WHERE t.ve_nr = p.ve_nr) AS ultima_movimentacao
+    FROM dbo.veiculos_patio_locacao p WITH (NOLOCK)
+    INNER JOIN GrupoBali_DealernetWF.dbo.Veiculo v WITH (NOLOCK)
+        ON ISNUMERIC(p.ve_nr) = 1 AND CAST(p.ve_nr AS int) = v.Veiculo_Codigo
+    LEFT JOIN GrupoBali_DealernetWF.dbo.Cor c WITH (NOLOCK)
+        ON v.Veiculo_CorCodExterna = c.Cor_Codigo
+    LEFT JOIN dbo.veiculos_patio_loja lj WITH (NOLOCK)
+        ON lj.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+    WHERE p.baixado_venda = 0
+      AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
+      AND (
+            @busca = ''
+         OR CONVERT(varchar(50), p.ve_nr) = @busca
+         OR UPPER(ISNULL(v.Veiculo_ChassiSerie, '')) = @busca
+         OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(v.Veiculo_Chassi, '')), '-', ''), ' ', ''), '.', '') = @busca
+         OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(v.Veiculo_Placa, '')), '-', ''), ' ', ''), '.', '') = @busca
+         OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(CONVERT(varchar(40), v.Veiculo_NroRenavam), '')), '-', ''), ' ', ''), '.', '') = @busca
+         OR UPPER(ISNULL(v.Veiculo_Descricao, '')) LIKE @buscaLike
+      )
+)";
+
+        DataTable totalTabela = ExecutarSqlTabela(baseSql + @"
+SELECT COUNT(1) AS total
+FROM filtrado;",
+            Param("@loja", SqlDbType.Int, loja),
+            Param("@busca", SqlDbType.VarChar, valor),
+            Param("@buscaLike", SqlDbType.VarChar, "%" + valor + "%"));
+
+        total = totalTabela.Rows.Count > 0 ? ToInt(Valor(totalTabela.Rows[0], "total")) : 0;
+
+        return ExecutarSqlTabela(baseSql + @"
+, numerado AS
+(
+    SELECT ROW_NUMBER() OVER (ORDER BY dt_cad DESC, ve_nr DESC) AS rn, *
+    FROM filtrado
+)
+SELECT *
+FROM numerado
+WHERE rn BETWEEN @inicio AND @fim
+ORDER BY rn;",
+            Param("@loja", SqlDbType.Int, loja),
+            Param("@busca", SqlDbType.VarChar, valor),
+            Param("@buscaLike", SqlDbType.VarChar, "%" + valor + "%"),
+            Param("@inicio", SqlDbType.Int, inicio),
+            Param("@fim", SqlDbType.Int, fim));
     }
 
     private DataTable ListarTodos(string tipo, int loja, string status, string busca, int limite)

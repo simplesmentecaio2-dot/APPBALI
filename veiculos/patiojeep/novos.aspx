@@ -233,6 +233,7 @@
         <asp:HiddenField ID="hfOperTipo" runat="server" />
         <asp:HiddenField ID="hfOperVeNr" runat="server" />
         <asp:HiddenField ID="hfTodosPagina" runat="server" Value="1" />
+        <asp:HiddenField ID="hfConsultaPagina" runat="server" Value="1" />
 
         <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
             <div class="app-header header-shadow bg-dark">
@@ -575,6 +576,14 @@
                                                         <label class="novos-label" for="<%= txtConsultaBusca.ClientID %>">Busca</label>
                                                         <asp:TextBox ID="txtConsultaBusca" runat="server" CssClass="novos-input" MaxLength="40" autocomplete="off" placeholder="Modelo, c&oacute;digo, s&eacute;rie, chassi, placa ou Renavam"></asp:TextBox>
                                                     </div>
+                                                    <div class="novos-field">
+                                                        <label class="novos-label" for="<%= ddlConsultaTamanho.ClientID %>">Linhas</label>
+                                                        <asp:DropDownList ID="ddlConsultaTamanho" runat="server" CssClass="novos-select">
+                                                            <asp:ListItem Value="25">25</asp:ListItem>
+                                                            <asp:ListItem Value="50" Selected="True">50</asp:ListItem>
+                                                            <asp:ListItem Value="100">100</asp:ListItem>
+                                                        </asp:DropDownList>
+                                                    </div>
                                                 </div>
                                                 <div class="novos-actions">
                                                     <asp:LinkButton ID="btnConsultar" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnConsultar_Click"><i class="fa fa-filter"></i>Consultar</asp:LinkButton>
@@ -583,6 +592,11 @@
                                                 <asp:Literal ID="litConsultaDetalhe" runat="server"></asp:Literal>
                                                 <div class="mt-3 novos-table-wrap">
                                                     <asp:Literal ID="litConsultaTabela" runat="server"></asp:Literal>
+                                                </div>
+                                                <div class="novos-pager">
+                                                    <asp:LinkButton ID="btnConsultaAnterior" runat="server" CssClass="novos-btn novos-btn-light" OnClick="btnConsultaAnterior_Click"><i class="fa fa-chevron-left"></i>Anterior</asp:LinkButton>
+                                                    <asp:Literal ID="litConsultaPaginacao" runat="server"></asp:Literal>
+                                                    <asp:LinkButton ID="btnConsultaProxima" runat="server" CssClass="novos-btn novos-btn-light" OnClick="btnConsultaProxima_Click">Pr&oacute;xima<i class="fa fa-chevron-right"></i></asp:LinkButton>
                                                 </div>
                                             </div>
                                         </div>
