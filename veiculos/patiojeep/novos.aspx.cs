@@ -24,6 +24,7 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
         if (scriptManager != null)
         {
             scriptManager.RegisterPostBackControl(btnTodosExportar);
+            scriptManager.RegisterPostBackControl(btnExportarConsulta);
         }
 
         if (!IsPostBack)
@@ -335,6 +336,13 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
     {
         hfConsultaPagina.Value = (PaginaConsulta() + 1).ToString();
         AtivarAba("consultar");
+    }
+
+    protected void btnExportarConsulta_Click(object sender, EventArgs e)
+    {
+        int loja;
+        Int32.TryParse(ddlConsultaLoja.SelectedValue, out loja);
+        ExportarConsultaNovos(loja, NormalizarBusca(txtConsultaBusca.Text));
     }
 
     protected void btnTodosConsultar_Click(object sender, EventArgs e)
@@ -1624,6 +1632,79 @@ ORDER BY rn;",
             Param("@fim", SqlDbType.Int, fim));
     }
 
+    private DataTable ListarNovosExportacao(int loja, string busca)
+    {
+        string valor = NormalizarBusca(busca);
+        return ExecutarSqlTabela(@"
+SELECT TOP 5000
+    p.ve_nr,
+    SUBSTRING(COALESCE(NULLIF(v.Veiculo_Descricao, ''), 'Veiculo'), 1, 120) AS ve_ds,
+    v.Veiculo_Chassi AS ve_chassi,
+    ISNULL(v.Veiculo_ChassiSerie, '') AS ve_serie,
+    ISNULL(v.Veiculo_Placa, '') AS ve_placa,
+    ISNULL(CONVERT(varchar(40), v.Veiculo_NroRenavam), '') AS ve_renavam,
+    c.Cor_Descricao AS cor_ds,
+    COALESCE(lj.ds, 'Sem loja') AS loja_atual,
+    p.fun_cad,
+    p.dt_cad,
+    (SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_transferencia t WITH (NOLOCK) WHERE t.ve_nr = p.ve_nr) AS ultima_movimentacao
+FROM dbo.veiculos_patio_locacao p WITH (NOLOCK)
+INNER JOIN GrupoBali_DealernetWF.dbo.Veiculo v WITH (NOLOCK)
+    ON ISNUMERIC(p.ve_nr) = 1 AND CAST(p.ve_nr AS int) = v.Veiculo_Codigo
+LEFT JOIN GrupoBali_DealernetWF.dbo.Cor c WITH (NOLOCK)
+    ON v.Veiculo_CorCodExterna = c.Cor_Codigo
+LEFT JOIN dbo.veiculos_patio_loja lj WITH (NOLOCK)
+    ON lj.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+WHERE p.baixado_venda = 0
+  AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
+  AND (
+        @busca = ''
+     OR CONVERT(varchar(50), p.ve_nr) = @busca
+     OR UPPER(ISNULL(v.Veiculo_ChassiSerie, '')) = @busca
+     OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(v.Veiculo_Chassi, '')), '-', ''), ' ', ''), '.', '') = @busca
+     OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(v.Veiculo_Placa, '')), '-', ''), ' ', ''), '.', '') = @busca
+     OR REPLACE(REPLACE(REPLACE(UPPER(ISNULL(CONVERT(varchar(40), v.Veiculo_NroRenavam), '')), '-', ''), ' ', ''), '.', '') = @busca
+     OR UPPER(ISNULL(v.Veiculo_Descricao, '')) LIKE @buscaLike
+  )
+ORDER BY p.dt_cad DESC, p.ve_nr DESC;",
+            Param("@loja", SqlDbType.Int, loja),
+            Param("@busca", SqlDbType.VarChar, valor),
+            Param("@buscaLike", SqlDbType.VarChar, "%" + valor + "%"));
+    }
+
+    private void ExportarConsultaNovos(int loja, string busca)
+    {
+        DataTable tabela = ListarNovosExportacao(loja, busca);
+        StringBuilder csv = new StringBuilder();
+        csv.AppendLine("Codigo;Veiculo;Chassi;Serie;Placa;Renavam;Cor;Loja atual;Usuario cadastro;Data cadastro;Ultima movimentacao");
+
+        foreach (DataRow row in tabela.Rows)
+        {
+            csv.Append(Csv(Valor(row, "ve_nr"))).Append(";");
+            csv.Append(Csv(Valor(row, "ve_ds"))).Append(";");
+            csv.Append(Csv(Valor(row, "ve_chassi"))).Append(";");
+            csv.Append(Csv(Valor(row, "ve_serie"))).Append(";");
+            csv.Append(Csv(Valor(row, "ve_placa"))).Append(";");
+            csv.Append(Csv(Valor(row, "ve_renavam"))).Append(";");
+            csv.Append(Csv(Valor(row, "cor_ds"))).Append(";");
+            csv.Append(Csv(Valor(row, "loja_atual"))).Append(";");
+            csv.Append(Csv(Valor(row, "fun_cad"))).Append(";");
+            csv.Append(Csv(DataCurta(row, "dt_cad"))).Append(";");
+            csv.Append(Csv(DataCurta(row, "ultima_movimentacao"))).AppendLine();
+        }
+
+        PatioJeepAuditoria.Registrar("NOVOS_CONSULTA_EXPORTADA", Session["usuario"], "CONSULTA", "Loja=" + loja + "; Busca=" + busca + "; Linhas=" + tabela.Rows.Count);
+        Response.Clear();
+        Response.Buffer = true;
+        Response.ContentEncoding = Encoding.UTF8;
+        Response.ContentType = "text/csv";
+        Response.AddHeader("Content-Disposition", "attachment; filename=novos-patio-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".csv");
+        Response.BinaryWrite(Encoding.UTF8.GetPreamble());
+        Response.Write(csv.ToString());
+        Response.Flush();
+        Context.ApplicationInstance.CompleteRequest();
+    }
+
     private DataTable ListarTodos(string tipo, int loja, string status, string busca, int limite)
     {
         int total;
@@ -1787,6 +1868,12 @@ WHERE (@tipo = '' OR patio.tipo = @tipo)
         Response.Write("</tbody></table></body></html>");
         Response.Flush();
         Context.ApplicationInstance.CompleteRequest();
+    }
+
+    private string Csv(string valor)
+    {
+        valor = valor ?? "";
+        return "\"" + valor.Replace("\"", "\"\"").Replace("\r", " ").Replace("\n", " ") + "\"";
     }
 
     private DataRow LocalizarSeminovoNoPatio(string busca)
