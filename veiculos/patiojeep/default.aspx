@@ -237,6 +237,11 @@
                                                         <strong>Logs do leitor</strong>
                                                         <small>Audite leituras por c&acirc;mera, digita&ccedil;&atilde;o manual e diagn&oacute;sticos.</small>
                                                     </a>
+                                                    <a class="patio-home-card" href="./saude.aspx">
+                                                        <span class="patio-home-icon"><i class="fa fa-heartbeat"></i></span>
+                                                        <strong>Sa&uacute;de</strong>
+                                                        <small>Confira estrutura, &iacute;ndices, procedures e &uacute;ltimas sincroniza&ccedil;&otilde;es do p&aacute;tio.</small>
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>

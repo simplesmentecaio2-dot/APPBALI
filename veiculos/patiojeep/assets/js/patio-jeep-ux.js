@@ -237,6 +237,8 @@
       activeHref = './lojas.aspx';
     } else if (currentPage === 'auditoria.aspx') {
       activeHref = './auditoria.aspx';
+    } else if (currentPage === 'saude.aspx') {
+      activeHref = './saude.aspx';
     } else if (currentPage === 'barcode-logs.aspx') {
       activeHref = './barcode-logs.aspx';
     }
@@ -247,6 +249,7 @@
       { href: './seminovos.aspx', icon: 'fas fa-car-side', label: 'Seminovos' },
       { href: './lojas.aspx', icon: 'fas fa-store', label: 'Lojas' },
       { href: './auditoria.aspx', icon: 'fas fa-shield-alt', label: 'Auditoria' },
+      { href: './saude.aspx', icon: 'fas fa-heartbeat', label: 'Sa\u00fade' },
       { href: './barcode-logs.aspx', icon: 'fas fa-clipboard-list', label: 'Logs do leitor' }
     ];
 
