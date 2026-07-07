@@ -310,6 +310,29 @@
             white-space: nowrap;
         }
 
+        .semi-status {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            border-radius: 999px;
+            padding: .35rem .6rem;
+            font-size: .72rem;
+            font-weight: 950;
+            background: #f0fdf4;
+            color: #166534;
+            white-space: nowrap;
+        }
+
+        .semi-status.is-alerta {
+            background: #fffbeb;
+            color: #92400e;
+        }
+
+        .semi-status.is-baixado {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
         .semi-detail-panel {
             margin-top: 1rem;
             border: 1px solid #cfe2c3;

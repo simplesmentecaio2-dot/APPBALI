@@ -631,7 +631,10 @@ ORDER BY dt DESC, id DESC;"));
         COALESCE(l.ds, 'Sem loja') AS loja_atual,
         p.fun_cad,
         p.dt_cad,
-        p.observacao
+        p.observacao,
+        ISNULL(p.status_operacional, 'NO_PATIO') AS status_operacional,
+        COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad) AS ultima_movimentacao,
+        DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado
     FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
     LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
         ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
@@ -690,7 +693,10 @@ SELECT TOP 5000
     COALESCE(l.ds, 'Sem loja') AS loja_atual,
     p.fun_cad,
     p.dt_cad,
-    p.observacao
+    p.observacao,
+    ISNULL(p.status_operacional, 'NO_PATIO') AS status_operacional,
+    COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad) AS ultima_movimentacao,
+    DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado
 FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
 LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
     ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
@@ -732,7 +738,10 @@ SELECT TOP (@limite)
     COALESCE(l.ds, 'Sem loja') AS loja_atual,
     p.fun_cad,
     p.dt_cad,
-    p.observacao
+    p.observacao,
+    ISNULL(p.status_operacional, 'NO_PATIO') AS status_operacional,
+    COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad) AS ultima_movimentacao,
+    DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado
 FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
 LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
     ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
@@ -747,7 +756,7 @@ ORDER BY p.dt_cad DESC, p.id DESC;",
     {
         DataTable tabela = ListarSeminovosExportacao(loja, busca);
         StringBuilder csv = new StringBuilder();
-        csv.AppendLine("ID;Codigo;Veiculo;Chassi;Placa;Renavam;Cor;NF;Loja atual;Usuario cadastro;Data cadastro;Observacao");
+        csv.AppendLine("ID;Codigo;Veiculo;Chassi;Placa;Renavam;Cor;NF;Loja atual;Status;Dias parado;Ultima movimentacao;Usuario cadastro;Data cadastro;Observacao");
 
         foreach (DataRow row in tabela.Rows)
         {
@@ -760,6 +769,9 @@ ORDER BY p.dt_cad DESC, p.id DESC;",
             csv.Append(Csv(Valor(row, "cor_ds"))).Append(";");
             csv.Append(Csv(Valor(row, "numeronf"))).Append(";");
             csv.Append(Csv(Valor(row, "loja_atual"))).Append(";");
+            csv.Append(Csv(StatusTexto(Valor(row, "status_operacional")))).Append(";");
+            csv.Append(Csv(Valor(row, "dias_parado"))).Append(";");
+            csv.Append(Csv(DataCurta(row, "ultima_movimentacao"))).Append(";");
             csv.Append(Csv(Valor(row, "fun_cad"))).Append(";");
             csv.Append(Csv(DataCurta(row, "dt_cad"))).Append(";");
             csv.Append(Csv(Valor(row, "observacao"))).AppendLine();
@@ -795,7 +807,10 @@ SELECT TOP 1
     COALESCE(l.ds, 'Sem loja') AS loja_atual,
     p.fun_cad,
     p.dt_cad,
-    p.observacao
+    p.observacao,
+    ISNULL(p.status_operacional, 'NO_PATIO') AS status_operacional,
+    COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad) AS ultima_movimentacao,
+    DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado
 FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
 LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
     ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
@@ -825,6 +840,14 @@ WHERE p.ativo = 1
         {
             html.Append(Pill("Loja atual", Valor(row, "loja_atual")));
         }
+        if (row.Table.Columns.Contains("status_operacional"))
+        {
+            html.Append(StatusBadge(Valor(row, "status_operacional")));
+        }
+        if (row.Table.Columns.Contains("ultima_movimentacao"))
+        {
+            html.Append(Pill("&Uacute;ltima mov.", DataCurta(row, "ultima_movimentacao")));
+        }
         html.Append("</div>");
         html.Append("</div>");
         return html.ToString();
@@ -844,7 +867,7 @@ WHERE p.ativo = 1
 
         StringBuilder html = new StringBuilder();
         html.Append("<table class=\"semi-table\"><thead><tr>");
-        html.Append("<th>A&ccedil;&otilde;es</th><th>Ve&iacute;culo</th><th>Chassi</th><th>Placa</th><th>Renavam</th><th>Cor</th><th>Loja atual</th><th>Cadastro</th>");
+        html.Append("<th>A&ccedil;&otilde;es</th><th>Ve&iacute;culo</th><th>Chassi</th><th>Placa</th><th>Renavam</th><th>Loja atual</th><th>Status</th><th>Parado</th><th>Cadastro</th>");
         html.Append("</tr></thead><tbody>");
         foreach (DataRow row in tabela.Rows)
         {
@@ -869,8 +892,9 @@ WHERE p.ativo = 1
             html.Append("<td data-label=\"Chassi\">").Append(Html(chassi)).Append("</td>");
             html.Append("<td data-label=\"Placa\">").Append(Html(placa)).Append("</td>");
             html.Append("<td data-label=\"Renavam\">").Append(Html(renavam)).Append("</td>");
-            html.Append("<td data-label=\"Cor\">").Append(Html(Valor(row, "cor_ds"))).Append("</td>");
             html.Append("<td data-label=\"Loja atual\"><span class=\"semi-location-pill\"><i class=\"fa fa-map-marker-alt\"></i>").Append(Html(Valor(row, "loja_atual"))).Append("</span></td>");
+            html.Append("<td data-label=\"Status\">").Append(StatusBadge(Valor(row, "status_operacional"))).Append("</td>");
+            html.Append("<td data-label=\"Parado\"><span class=\"semi-status ").Append(ToInt(Valor(row, "dias_parado")) >= 15 ? "is-alerta" : "").Append("\">").Append(Html(Valor(row, "dias_parado"))).Append(" dia(s)</span><small>").Append(DataCurta(row, "ultima_movimentacao")).Append("</small></td>");
             html.Append("<td data-label=\"Cadastro\">").Append(DataCurta(row, "dt_cad")).Append("<small>").Append(Html(Valor(row, "fun_cad"))).Append("</small></td>");
             html.Append("</tr>");
         }
@@ -897,6 +921,9 @@ WHERE p.ativo = 1
         html.Append(Pill("Renavam", Valor(row, "ve_renavam")));
         html.Append(Pill("Cor", Valor(row, "cor_ds")));
         html.Append(Pill("NF", Valor(row, "numeronf")));
+        html.Append(StatusBadge(Valor(row, "status_operacional")));
+        html.Append(Pill("Parado", Valor(row, "dias_parado") + " dia(s)"));
+        html.Append(Pill("&Uacute;ltima mov.", DataCurta(row, "ultima_movimentacao")));
         if (!String.IsNullOrWhiteSpace(Valor(row, "observacao")))
         {
             html.Append(Pill("Obs.", Valor(row, "observacao")));
@@ -1059,6 +1086,30 @@ ORDER BY dt DESC, id DESC;",
     private string Kpi(string label, string valor, string detalhe)
     {
         return "<div class=\"semi-kpi\"><small>" + label + "</small><strong>" + valor + "</strong><span>" + detalhe + "</span></div>";
+    }
+
+    private string StatusBadge(string status)
+    {
+        status = String.IsNullOrWhiteSpace(status) ? "NO_PATIO" : status.ToUpperInvariant();
+        string classe = "semi-status";
+        if (status == "BAIXADO" || status == "VENDIDO") classe += " is-baixado";
+        else if (status == "PENDENTE" || status == "AGUARDANDO_RETIRADA" || status == "AGUARDANDO_DOCUMENTACAO") classe += " is-alerta";
+        return "<span class=\"" + classe + "\">" + Html(StatusTexto(status)) + "</span>";
+    }
+
+    private string StatusTexto(string status)
+    {
+        switch ((status ?? "").ToUpperInvariant())
+        {
+            case "PREPARACAO": return "Prepara\u00e7\u00e3o";
+            case "AGUARDANDO_DOCUMENTACAO": return "Aguardando documenta\u00e7\u00e3o";
+            case "AGUARDANDO_RETIRADA": return "Aguardando retirada";
+            case "PENDENTE": return "Pendente";
+            case "VENDIDO": return "Vendido";
+            case "TRANSFERIDO": return "Transferido";
+            case "BAIXADO": return "Baixado";
+            default: return "No p\u00e1tio";
+        }
     }
 
     private void LimparRegistro(bool limparBusca)
