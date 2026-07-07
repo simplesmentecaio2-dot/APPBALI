@@ -424,14 +424,54 @@ body.bali-utility-page *::after {
 
 body.bali-utility-page fieldset.bali-receipt-card {
   position: relative;
-  display: grid;
-  grid-template-columns: auto minmax(150px, 220px) auto minmax(110px, 160px) auto;
-  gap: 10px 12px;
-  align-items: end;
+  display: block;
 }
 
 body.bali-utility-page fieldset.bali-receipt-card > br {
   display: none;
+}
+
+body.bali-utility-page .bali-query-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) minmax(120px, 170px) auto;
+  gap: 12px;
+  align-items: end;
+  width: 100%;
+}
+
+body.bali-utility-page .bali-query-field {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  color: var(--utility-ink);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body.bali-utility-page .bali-query-field > span {
+  color: var(--utility-muted);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+body.bali-utility-page .bali-query-field input[type="text"] {
+  width: 100% !important;
+}
+
+body.bali-utility-page .bali-query-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+body.bali-utility-page .bali-query-actions .btns,
+body.bali-utility-page .bali-query-actions input[type="submit"],
+body.bali-utility-page .bali-query-actions input[type="button"] {
+  min-width: 104px;
+  margin: 0 !important;
 }
 
 .bali-utility-page .bali-receipt-helper {
@@ -472,13 +512,13 @@ body.bali-utility-page fieldset.bali-receipt-card > br {
 }
 
 body.bali-utility-page .bali-print-toolbar {
-  grid-column: 1 / -1;
-  display: flex;
+  display: none;
   justify-content: flex-end;
   align-items: center;
-  min-height: 44px;
-  padding-top: 8px;
-  border-top: 1px solid #edf2f7;
+}
+
+body.bali-utility-page.bali-preview-ready .bali-print-toolbar {
+  display: flex;
 }
 
 body.bali-utility-page button.bali-print-action {
@@ -506,6 +546,13 @@ body.bali-utility-page button.bali-print-action {
   transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
 }
 
+body.bali-utility-page button.bali-print-action:disabled {
+  opacity: .56;
+  cursor: not-allowed !important;
+  transform: none;
+  box-shadow: none;
+}
+
 body.bali-utility-page button.bali-print-action img {
   display: block;
   width: 16px !important;
@@ -527,7 +574,7 @@ body.bali-utility-page button.bali-print-action:focus {
 }
 
 .bali-utility-page .bali-receipt-card [id$="pnlImpressao"] {
-  grid-column: 1 / -1;
+  width: 100%;
 }
 
 .bali-utility-toast-root {
@@ -760,6 +807,21 @@ body.bali-utility-page button.bali-print-action:focus {
   .bali-utility-page .bali-receipt-helper em {
     max-width: none;
     text-align: left;
+  }
+
+  body.bali-utility-page .bali-query-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  body.bali-utility-page .bali-query-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 10px 0 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .7), #fff 38%);
   }
 
   .bali-utility-page input[type="text"],
