@@ -535,6 +535,90 @@ body.bali-utility-page .bali-preview-state span {
   font-weight: 800;
 }
 
+body.bali-utility-page .bali-local-history {
+  display: none;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid var(--utility-line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+body.bali-utility-page .bali-local-history-head {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+body.bali-utility-page .bali-local-history-head strong {
+  color: var(--utility-muted);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+body.bali-utility-page .bali-local-history-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.bali-utility-page .bali-local-history-list button,
+body.bali-utility-page .bali-history-clear {
+  border: 1px solid var(--utility-line);
+  border-radius: 8px;
+  background: #f8fbff;
+  color: var(--utility-ink);
+  cursor: pointer;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body.bali-utility-page .bali-local-history-list button {
+  min-width: 0;
+  padding: 9px 10px;
+  text-align: left;
+}
+
+body.bali-utility-page .bali-local-history-list button:hover,
+body.bali-utility-page .bali-local-history-list button:focus,
+body.bali-utility-page .bali-history-clear:hover,
+body.bali-utility-page .bali-history-clear:focus {
+  border-color: var(--utility-brand);
+  box-shadow: 0 0 0 3px var(--utility-brand-ring);
+}
+
+body.bali-utility-page .bali-local-history-list strong,
+body.bali-utility-page .bali-local-history-list span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.bali-utility-page .bali-local-history-list strong {
+  font-size: 12px;
+  font-weight: 950;
+}
+
+body.bali-utility-page .bali-local-history-list span {
+  margin-top: 2px;
+  color: var(--utility-muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+body.bali-utility-page .bali-history-clear {
+  min-height: 28px;
+  padding: 0 10px;
+  color: var(--utility-brand-strong);
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
 body.bali-utility-page .bali-preview-summary {
   display: none;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1200,6 +1284,7 @@ body.bali-utility-page button.bali-print-action:focus {
   }
 
   body.bali-utility-page .bali-preview-summary-grid,
+  body.bali-utility-page .bali-local-history-list,
   .bali-audit-filters,
   .bali-audit-summary {
     grid-template-columns: 1fr;

@@ -72,6 +72,27 @@
     return '';
   }
 
+  function historicoKey() {
+    return 'bali-utility-history:' + window.location.pathname;
+  }
+
+  function lerHistoricoLocal() {
+    if (!window.localStorage) return [];
+    try {
+      var itens = JSON.parse(localStorage.getItem(historicoKey()) || '[]');
+      return Array.isArray(itens) ? itens : [];
+    } catch (ignore) {
+      return [];
+    }
+  }
+
+  function salvarHistoricoLocal(itens) {
+    if (!window.localStorage) return;
+    try {
+      localStorage.setItem(historicoKey(), JSON.stringify(itens.slice(0, 6)));
+    } catch (ignore) {}
+  }
+
   function clientePreview() {
     return textoPorSufixos(['lblCliente', 'lblClienteEntreg']);
   }
@@ -225,6 +246,18 @@
     return true;
   }
 
+  function invalidarPrevia() {
+    document.body.classList.remove('bali-preview-ready');
+    atualizarResumoPrevia(false);
+
+    var printButton = document.querySelector('.bali-print-action');
+    if (printButton) {
+      printButton.disabled = true;
+      printButton.setAttribute('aria-disabled', 'true');
+      printButton.title = 'Gere a prévia antes de imprimir';
+    }
+  }
+
   function normalizarCamposConsulta() {
     var pedido = pedidoField();
     var loja = lojaField();
@@ -251,6 +284,7 @@
         pedido.addEventListener('input', function () {
           var limpo = somenteDigitos(pedido.value).slice(0, 12);
           if (pedido.value !== limpo) pedido.value = limpo;
+          invalidarPrevia();
         });
         pedido.addEventListener('blur', normalizarCamposConsulta);
       }
@@ -266,6 +300,7 @@
         loja.addEventListener('input', function () {
           var limpo = somenteDigitos(loja.value).slice(0, 3);
           if (loja.value !== limpo) loja.value = limpo;
+          invalidarPrevia();
         });
         loja.addEventListener('blur', normalizarCamposConsulta);
       }
@@ -313,6 +348,11 @@
     state.innerHTML = '<strong>Prévia ainda não gerada</strong><span>Informe pedido e loja, clique em Gerar e confira os dados antes de imprimir.</span>';
     fieldset.insertBefore(state, painel || row.nextSibling);
 
+    var history = document.createElement('div');
+    history.className = 'bali-local-history';
+    history.innerHTML = '<div class="bali-local-history-head"><strong>Últimas consultas</strong><button type="button" class="bali-history-clear">Limpar</button></div><div class="bali-local-history-list"></div>';
+    fieldset.insertBefore(history, painel || state.nextSibling);
+
     var summary = document.createElement('div');
     summary.className = 'bali-preview-summary';
     summary.innerHTML = '<div class="bali-preview-summary-grid"></div><div class="bali-preview-summary-actions"><button type="button" class="bali-copy-action">Copiar dados</button></div>';
@@ -327,6 +367,81 @@
     nodes.forEach(function (node) {
       if (node === row || node === painel) return;
       if (node.nodeType === 3 && /pedido|c[o\u00f3]d/i.test(node.nodeValue || '')) node.parentNode.removeChild(node);
+    });
+
+    vincularHistoricoLocal();
+    renderizarHistoricoLocal();
+  }
+
+  function registrarHistoricoLocal(acao) {
+    var pedido = pedidoField();
+    var loja = lojaField();
+    if (!pedido || !loja || !pedido.value || !loja.value) return;
+
+    var dados = dadosPreview();
+    var item = {
+      pedido: pedido.value.trim(),
+      loja: loja.value.trim(),
+      cliente: dados.cliente,
+      veiculo: dados.veiculo,
+      acao: acao || 'Gerado',
+      data: new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+    };
+
+    var itens = lerHistoricoLocal().filter(function (atual) {
+      return !(atual.pedido === item.pedido && atual.loja === item.loja);
+    });
+    itens.unshift(item);
+    salvarHistoricoLocal(itens);
+    renderizarHistoricoLocal();
+  }
+
+  function renderizarHistoricoLocal() {
+    var root = document.querySelector('.bali-local-history');
+    var list = document.querySelector('.bali-local-history-list');
+    if (!root || !list) return;
+
+    var itens = lerHistoricoLocal();
+    root.style.display = itens.length ? 'grid' : 'none';
+    if (!itens.length) {
+      list.innerHTML = '';
+      return;
+    }
+
+    list.innerHTML = itens.map(function (item, index) {
+      var titulo = (item.cliente || item.veiculo || 'Pedido ' + item.pedido);
+      var detalhe = ['Pedido ' + item.pedido, 'Loja ' + item.loja, item.data].filter(Boolean).join(' · ');
+      return '<button type="button" data-history-index="' + index + '"><strong>' + escaparHtml(titulo) + '</strong><span>' + escaparHtml(detalhe) + '</span></button>';
+    }).join('');
+  }
+
+  function vincularHistoricoLocal() {
+    var root = document.querySelector('.bali-local-history');
+    if (!root || root.getAttribute('data-bali-history-bound') === '1') return;
+    root.setAttribute('data-bali-history-bound', '1');
+
+    root.addEventListener('click', function (event) {
+      var limpar = event.target.closest ? event.target.closest('.bali-history-clear') : null;
+      if (limpar) {
+        salvarHistoricoLocal([]);
+        renderizarHistoricoLocal();
+        toast('Histórico local limpo.', 'info');
+        return;
+      }
+
+      var botao = event.target.closest ? event.target.closest('button[data-history-index]') : null;
+      if (!botao) return;
+
+      var item = lerHistoricoLocal()[parseInt(botao.getAttribute('data-history-index'), 10)];
+      if (!item) return;
+
+      var pedido = pedidoField();
+      var loja = lojaField();
+      if (pedido) pedido.value = item.pedido || '';
+      if (loja) loja.value = item.loja || '';
+      normalizarCamposConsulta();
+      invalidarPrevia();
+      toast('Consulta carregada. Clique em Gerar para atualizar a prévia.', 'info');
     });
   }
 
@@ -563,6 +678,7 @@
       if (window.sessionStorage && sessionStorage.getItem(chave) !== '1') {
         sessionStorage.setItem(chave, '1');
         logEvento('gerado');
+        registrarHistoricoLocal('Gerado');
         toast('Pr\u00e9via pronta para impress\u00e3o.', 'info');
       }
     }
