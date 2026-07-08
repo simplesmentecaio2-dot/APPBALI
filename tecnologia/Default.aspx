@@ -38,7 +38,7 @@
                         <p>Administre sistemas, usu&aacute;rios, permiss&otilde;es e arquivos t&eacute;cnicos em um &uacute;nico painel.</p>
                     </div>
                     <div class="central-summary" aria-label="Resumo dos atalhos">
-                        <div class="central-summary-item"><strong>7</strong><span>atalhos</span></div>
+                        <div class="central-summary-item"><strong>8</strong><span>atalhos</span></div>
                         <div class="central-summary-item"><strong>TI</strong><span>suporte</span></div>
                     </div>
                 </section>
@@ -79,6 +79,10 @@
                         <a class="central-link-card" href="../qrcode-veiculo/default.aspx" data-icon="vehicle">
                             <span class="central-link-icon"></span>
                             <span><span class="central-link-title">QR Code de ve&iacute;culo</span><span class="central-link-caption">Consulta p&uacute;blica do estoque</span></span>
+                        </a>
+                        <a class="central-link-card" href="ControleAcessorios.aspx" data-icon="parts">
+                            <span class="central-link-icon"></span>
+                            <span><span class="central-link-title">Controle de acess&oacute;rios</span><span class="central-link-caption">NFs emitidas</span></span>
                         </a>
                     </div>
                 </section>
