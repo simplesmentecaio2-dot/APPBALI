@@ -132,13 +132,13 @@
                                                 .delivery-card b, .delivery-mini b { font-size: 13px; }
                                                 .delivery-portaria { display: grid; align-content: start; text-align: center; }
                                                 .delivery-portaria h2 { margin: 0 0 18px; font-size: 17px; text-transform: uppercase; }
-                                                .delivery-date { margin-bottom: 20px; font-size: 13px; font-weight: bold; text-align: center; }
+                                                .delivery-date { margin-bottom: 24px; font-size: 13px; font-weight: bold; text-align: center; }
                                                 .delivery-sign-grid { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #222; }
-                                                .delivery-sign-box { min-height: 128px; padding: 10px 16px 8px; text-align: center; }
+                                                .delivery-sign-box { min-height: 152px; padding: 13px 16px 10px; text-align: center; }
                                                 .delivery-sign-box:first-child { border-right: 1px solid #222; }
-                                                .delivery-line { width: 74%; height: 1px; margin: 22px auto 5px; border-top: 1px solid #111; }
+                                                .delivery-line { width: 84%; height: 1px; margin: 29px auto 6px; border-top: 1px solid #111; }
                                                 .delivery-sign-box strong { display: block; font-size: 12.5px; }
-                                                .delivery-observation-grid { display: grid; grid-template-columns: 1fr 1fr; min-height: 52px; }
+                                                .delivery-observation-grid { display: grid; grid-template-columns: 1fr 1fr; min-height: 62px; }
                                                 .delivery-observation-grid div { padding: 6px 8px; font-weight: bold; text-transform: uppercase; }
                                                 .delivery-observation-grid div:first-child { border-right: 1px solid #222; }
                                                 .delivery-cut { position: relative; margin: 12px 0; border-top: 1px dashed #b42318; color: #b42318; font-family: Arial, sans-serif; font-size: 9px; font-weight: bold; letter-spacing: .08em; text-align: center; text-transform: uppercase; }
@@ -162,9 +162,10 @@
                                                 .delivery-mini-head { padding: 5px 8px; border-bottom: 1px solid #222; text-align: center; }
                                                 .delivery-mini-head img { max-width: 410px; max-height: 42px; object-fit: contain; }
                                                 .delivery-mini-data { padding: 5px 8px; text-align: center; font-size: 12.5px; }
-                                                .delivery-release-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 36px; margin-top: 22px; padding: 0 8px 6px; font-size: 14px; }
+                                                .delivery-release-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 42px; margin-top: 28px; padding: 0 8px 8px; font-size: 14px; }
                                                 .delivery-release-field { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: end; }
-                                                .delivery-release-line { border-bottom: 1px solid #111; min-height: 20px; }
+                                                .delivery-release-field strong { white-space: nowrap; }
+                                                .delivery-release-line { border-bottom: 1px solid #111; min-height: 26px; }
                                                 @media print {
                                                     @page { size: A4 portrait; margin: 7mm; }
                                                     body { margin: 0; background: #fff; }
@@ -268,7 +269,7 @@
                                                         <div class="delivery-release-field"><strong>Liberado:</strong><span class="delivery-release-line"></span></div>
                                                         <div class="delivery-release-field"><strong>Brasília-DF:</strong><span><asp:Label ID="lblDataFinal" runat="server"></asp:Label></span></div>
                                                         <div class="delivery-release-field"><strong>Acessórios:</strong><span class="delivery-release-line"></span></div>
-                                                        <div class="delivery-release-field"><strong>CleanWell:</strong><span class="delivery-release-line"></span></div>
+                                                        <div class="delivery-release-field"><strong>Acessórios Externos:</strong><span class="delivery-release-line"></span></div>
                                                     </div>
                                                 </section>
                                             </div>
