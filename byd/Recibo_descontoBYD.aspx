@@ -149,11 +149,9 @@
                                             </tr>
                                             <tr>
                                                 <td style="padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Pedido</td>
-                                                <td style="padding: 5px 7px; border: 1px solid #111;"><asp:Label ID="lblPedidoRecibo" runat="server" Font-Bold="True"></asp:Label></td>
-                                                <td style="width: 12%; padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Loja</td>
-                                                <td style="padding: 5px 7px; border: 1px solid #111;"><asp:Label ID="lblLojaRecibo" runat="server" Font-Bold="True"></asp:Label></td>
-                                                <td style="padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Vendedor</td>
-                                                <td style="padding: 5px 7px; border: 1px solid #111;"><asp:Label ID="lblVendedor" runat="server" Font-Bold="True"></asp:Label></td>
+                                                <td style="width: 18%; padding: 5px 7px; border: 1px solid #111;"><asp:Label ID="lblPedidoRecibo" runat="server" Font-Bold="True"></asp:Label></td>
+                                                <td style="width: 15%; padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Vendedor</td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111;" colspan="3"><asp:Label ID="lblVendedor" runat="server" Font-Bold="True"></asp:Label></td>
                                             </tr>
                                             <tr>
                                                 <td style="padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Veículo</td>

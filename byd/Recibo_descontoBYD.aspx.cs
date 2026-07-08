@@ -51,7 +51,6 @@ public partial class veiculos_Recibo_desconto : System.Web.UI.Page
             lblPlaca.Text = placa;
             lblVendedor.Text = vendedor;
             lblPedidoRecibo.Text = txtPedido.Text.Trim();
-            lblLojaRecibo.Text = txtLoja.Text.Trim();
             lblextenso.Text = valorpoextenso(valor.ToString("N2"));
 
         }
