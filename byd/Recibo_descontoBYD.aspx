@@ -184,7 +184,7 @@
                                     <div style="font-size: 15px; text-align: center; margin-top: 18px;">Brasília-DF - <script language="javascript">document.write(DiaExtenso());</script></div>
                                     <div style="text-align: center; width: 100%; margin-top: 68px;">
                                         <div style="width: 70%; margin: 0 auto; border-top: 1px solid #111; height: 1px;"></div>
-                                        <div style="font-size: 15px; font-weight: bold; margin-top: 9px;">Assinatura do cliente</div>
+                                        <div style="font-size: 15px; font-weight: bold; margin-top: 9px;"><asp:Label ID="lblClienteAssinatura" runat="server" Font-Bold="True"></asp:Label></div>
                                         <div style="font-size: 13px; margin-top: 3px;">Cliente acima identificado</div>
                                     </div>
                                 </div></asp:Panel></fieldset>

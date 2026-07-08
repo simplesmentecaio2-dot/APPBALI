@@ -41,6 +41,7 @@ public partial class veiculos_Recibo_desconto : System.Web.UI.Page
             double valor;
             oJeep.select_dadosentrega(txtPedido.Text, txtLoja.Text, out cliente, out veiculo, out chassi, out cor, out placa, out vendedor, out valor, out ano, out nota);
             lblCliente.Text = cliente;
+            lblClienteAssinatura.Text = cliente;
             lblValor.Text = valor.ToString("N2");
             lblVeículo.Text = veiculo;
             lblChassi.Text = chassi;
