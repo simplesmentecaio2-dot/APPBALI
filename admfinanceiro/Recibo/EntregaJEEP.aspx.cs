@@ -9,6 +9,8 @@ public partial class admfinanceiro_Recibo_Entrega : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
+        PreencherDataAtual();
+
         if (Session["usuario"] != null)
         {
             lblUsuario.Text = Session["usuario"].ToString();
@@ -28,6 +30,15 @@ public partial class admfinanceiro_Recibo_Entrega : System.Web.UI.Page
         //}
 
     }
+
+    private void PreencherDataAtual()
+    {
+        string dataAtual = DateTime.Now.ToString("dd/MM/yyyy");
+        lblDataGerencia.Text = dataAtual;
+        lblDataPortaria.Text = dataAtual;
+        lblDataFinal.Text = dataAtual;
+    }
+
     protected void btnGerar_Click(object sender, EventArgs e)
     {
         long pedidoNumero;
