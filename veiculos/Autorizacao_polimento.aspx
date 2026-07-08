@@ -127,8 +127,10 @@
                         <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">
                             Esta autorização deverá ser arquivada no sistema interno da empresa para fins de controle, rastreabilidade e comprovação da aprovação gerencial.
                         </p>
-                        <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 8px 0 7px;">
-                            <strong>Serviço autorizado: <asp:Label ID="lblTipoPolimento" runat="server" Text="Polimento completo do veículo"></asp:Label>.</strong>
+                        <p style="text-align: center; margin: 4px 0 3px;">
+                            <strong style="display: block; font-size: 24px; line-height: 1.05; text-transform: uppercase; letter-spacing: 0;">
+                                Serviço autorizado: <asp:Label ID="lblTipoPolimento" runat="server" Text="Polimento completo do veículo"></asp:Label>.
+                            </strong>
                         </p>
 
                         <div style="margin-top: 14px; font-size: 13px;"><asp:Label ID="lblData" runat="server"></asp:Label></div>
