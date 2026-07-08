@@ -592,7 +592,7 @@
                     </label>
                     <label class="tech-field" for="<%= txtSenhaDesmarcar.ClientID %>">
                         <span>Senha para desmarcar</span>
-                        <asp:TextBox ID="txtSenhaDesmarcar" runat="server" TextMode="Password" autocomplete="new-password" placeholder="@bali2025" />
+                        <asp:TextBox ID="txtSenhaDesmarcar" runat="server" TextMode="Password" autocomplete="new-password" placeholder="Digite a senha" />
                     </label>
                 </div>
 
