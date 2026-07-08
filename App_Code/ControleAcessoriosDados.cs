@@ -88,6 +88,42 @@ END;
 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_controle_acessorios_nf_log_chave' AND object_id = OBJECT_ID('dbo.controle_acessorios_nf_log'))
     CREATE INDEX IX_controle_acessorios_nf_log_chave ON dbo.controle_acessorios_nf_log (chave_controle, criado_em DESC);
+
+IF OBJECT_ID('dbo.controle_acessorios_nf_relatorio','U') IS NULL
+BEGIN
+    CREATE TABLE dbo.controle_acessorios_nf_relatorio
+    (
+        id_relatorio BIGINT IDENTITY(1,1) NOT NULL CONSTRAINT PK_controle_acessorios_nf_relatorio PRIMARY KEY,
+        usuario_codigo NVARCHAR(50) NULL,
+        usuario_nome NVARCHAR(160) NULL,
+        total_itens INT NOT NULL,
+        valor_total DECIMAL(18,2) NOT NULL,
+        ip NVARCHAR(80) NULL,
+        pagina NVARCHAR(260) NULL,
+        gerado_em DATETIME2(0) NOT NULL CONSTRAINT DF_controle_acessorios_nf_relatorio_gerado DEFAULT(SYSDATETIME())
+    );
+END;
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_controle_acessorios_nf_relatorio_usuario_data' AND object_id = OBJECT_ID('dbo.controle_acessorios_nf_relatorio'))
+    CREATE INDEX IX_controle_acessorios_nf_relatorio_usuario_data ON dbo.controle_acessorios_nf_relatorio (usuario_codigo, gerado_em DESC) INCLUDE (usuario_nome, total_itens, valor_total);
+
+IF OBJECT_ID('dbo.controle_acessorios_nf_relatorio_item','U') IS NULL
+BEGIN
+    CREATE TABLE dbo.controle_acessorios_nf_relatorio_item
+    (
+        id_item BIGINT IDENTITY(1,1) NOT NULL CONSTRAINT PK_controle_acessorios_nf_relatorio_item PRIMARY KEY,
+        id_relatorio BIGINT NOT NULL,
+        chave_controle NVARCHAR(180) NOT NULL,
+        lancamento BIGINT NOT NULL,
+        numero_titulo NVARCHAR(60) NULL,
+        veiculo_chassi NVARCHAR(60) NULL,
+        valor_nf DECIMAL(18,2) NOT NULL,
+        criado_em DATETIME2(0) NOT NULL CONSTRAINT DF_controle_acessorios_nf_relatorio_item_criado DEFAULT(SYSDATETIME())
+    );
+END;
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_controle_acessorios_nf_relatorio_item_relatorio' AND object_id = OBJECT_ID('dbo.controle_acessorios_nf_relatorio_item'))
+    CREATE INDEX IX_controle_acessorios_nf_relatorio_item_relatorio ON dbo.controle_acessorios_nf_relatorio_item (id_relatorio, lancamento);
 ", con))
             {
                 cmd.CommandType = CommandType.Text;
@@ -150,14 +186,161 @@ ORDER BY ISNULL(ctrl.emitido, 0), ti.Titulo_DataVencimento, cr.Titulo_Codigo;", 
         }
     }
 
-    public static int MarcarEmitidas(IEnumerable<string> chaves, string usuarioCodigo, string usuarioNome, HttpContext contexto)
+    public static ControleAcessoriosRelatorioResumo MarcarEmitidas(IEnumerable<string> chaves, string usuarioCodigo, string usuarioNome, HttpContext contexto)
     {
-        return AlterarMarcacao(chaves, true, usuarioCodigo, usuarioNome, contexto);
+        return MarcarEmitidasComRelatorio(chaves, usuarioCodigo, usuarioNome, contexto);
     }
 
     public static int DesmarcarEmitidas(IEnumerable<string> chaves, string usuarioCodigo, string usuarioNome, HttpContext contexto)
     {
         return AlterarMarcacao(chaves, false, usuarioCodigo, usuarioNome, contexto);
+    }
+
+    public static DataTable ListarItensRelatorio(long idRelatorio)
+    {
+        GarantirEstrutura();
+
+        using (SqlConnection con = new SqlConnection(ConnectionString))
+        using (SqlCommand cmd = new SqlCommand(@"
+SELECT
+    lancamento AS Lancamento,
+    numero_titulo AS NumeroTitulo,
+    veiculo_chassi AS VeiculoChassi,
+    valor_nf AS ValorNF
+FROM dbo.controle_acessorios_nf_relatorio_item WITH (NOLOCK)
+WHERE id_relatorio = @id_relatorio
+ORDER BY lancamento, numero_titulo;", con))
+        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+        {
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
+            cmd.Parameters.Add("@id_relatorio", SqlDbType.BigInt).Value = idRelatorio;
+            DataTable tabela = new DataTable();
+            adapter.Fill(tabela);
+            return tabela;
+        }
+    }
+
+    public static DataRow ObterRelatorio(long idRelatorio)
+    {
+        GarantirEstrutura();
+
+        using (SqlConnection con = new SqlConnection(ConnectionString))
+        using (SqlCommand cmd = new SqlCommand(@"
+SELECT TOP (1)
+    id_relatorio AS IdRelatorio,
+    usuario_codigo AS UsuarioCodigo,
+    usuario_nome AS UsuarioNome,
+    total_itens AS TotalItens,
+    valor_total AS ValorTotal,
+    gerado_em AS GeradoEm
+FROM dbo.controle_acessorios_nf_relatorio WITH (NOLOCK)
+WHERE id_relatorio = @id_relatorio;", con))
+        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+        {
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
+            cmd.Parameters.Add("@id_relatorio", SqlDbType.BigInt).Value = idRelatorio;
+            DataTable tabela = new DataTable();
+            adapter.Fill(tabela);
+            return tabela.Rows.Count == 0 ? null : tabela.Rows[0];
+        }
+    }
+
+    public static DataTable ListarItensMarcadosNoDia(string usuarioCodigo, string usuarioNome, DateTime data)
+    {
+        GarantirEstrutura();
+
+        using (SqlConnection con = new SqlConnection(ConnectionString))
+        using (SqlCommand cmd = new SqlCommand(@"
+SELECT
+    lancamento AS Lancamento,
+    numero_titulo AS NumeroTitulo,
+    veiculo_chassi AS VeiculoChassi,
+    saldo AS ValorNF,
+    marcado_em AS MarcadoEm,
+    marcado_usuario_nome AS UsuarioNome
+FROM dbo.controle_acessorios_nf WITH (NOLOCK)
+WHERE emitido = 1
+  AND marcado_em >= @inicio
+  AND marcado_em < @fim
+  AND (
+        NULLIF(@usuario_codigo, N'') IS NULL
+        OR marcado_usuario_codigo = @usuario_codigo
+        OR (NULLIF(marcado_usuario_codigo, N'') IS NULL AND marcado_usuario_nome = @usuario_nome)
+      )
+ORDER BY marcado_em, lancamento, numero_titulo;", con))
+        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+        {
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
+            cmd.Parameters.Add("@inicio", SqlDbType.DateTime2).Value = data.Date;
+            cmd.Parameters.Add("@fim", SqlDbType.DateTime2).Value = data.Date.AddDays(1);
+            cmd.Parameters.Add("@usuario_codigo", SqlDbType.NVarChar, 50).Value = Limitar(usuarioCodigo, 50);
+            cmd.Parameters.Add("@usuario_nome", SqlDbType.NVarChar, 160).Value = Limitar(usuarioNome, 160);
+            DataTable tabela = new DataTable();
+            adapter.Fill(tabela);
+            return tabela;
+        }
+    }
+
+    public static DataTable ListarRelatoriosDoDia(string usuarioCodigo, string usuarioNome, DateTime data)
+    {
+        GarantirEstrutura();
+
+        using (SqlConnection con = new SqlConnection(ConnectionString))
+        using (SqlCommand cmd = new SqlCommand(@"
+SELECT
+    id_relatorio AS IdRelatorio,
+    usuario_nome AS UsuarioNome,
+    total_itens AS TotalItens,
+    valor_total AS ValorTotal,
+    gerado_em AS GeradoEm
+FROM dbo.controle_acessorios_nf_relatorio WITH (NOLOCK)
+WHERE gerado_em >= @inicio
+  AND gerado_em < @fim
+  AND (
+        NULLIF(@usuario_codigo, N'') IS NULL
+        OR usuario_codigo = @usuario_codigo
+        OR (NULLIF(usuario_codigo, N'') IS NULL AND usuario_nome = @usuario_nome)
+      )
+ORDER BY gerado_em DESC, id_relatorio DESC;", con))
+        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+        {
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
+            cmd.Parameters.Add("@inicio", SqlDbType.DateTime2).Value = data.Date;
+            cmd.Parameters.Add("@fim", SqlDbType.DateTime2).Value = data.Date.AddDays(1);
+            cmd.Parameters.Add("@usuario_codigo", SqlDbType.NVarChar, 50).Value = Limitar(usuarioCodigo, 50);
+            cmd.Parameters.Add("@usuario_nome", SqlDbType.NVarChar, 160).Value = Limitar(usuarioNome, 160);
+            DataTable tabela = new DataTable();
+            adapter.Fill(tabela);
+            return tabela;
+        }
+    }
+
+    private static ControleAcessoriosRelatorioResumo MarcarEmitidasComRelatorio(IEnumerable<string> chaves, string usuarioCodigo, string usuarioNome, HttpContext contexto)
+    {
+        HashSet<string> selecionadas = NormalizarChaves(chaves);
+        if (selecionadas.Count == 0) return new ControleAcessoriosRelatorioResumo();
+
+        DataTable abertos = ListarAbertos();
+        DataTable itensRelatorio = CriarTabelaItensRelatorio();
+        int total = 0;
+
+        foreach (DataRow row in abertos.Rows)
+        {
+            string chave = Valor(row, "ChaveControle");
+            if (!selecionadas.Contains(chave)) continue;
+
+            SalvarMarcacao(row, true, usuarioCodigo, usuarioNome, contexto);
+            AdicionarItemRelatorio(itensRelatorio, row);
+            total++;
+        }
+
+        if (total == 0) return new ControleAcessoriosRelatorioResumo();
+
+        return CriarRelatorio(itensRelatorio, usuarioCodigo, usuarioNome, contexto);
     }
 
     private static int AlterarMarcacao(IEnumerable<string> chaves, bool emitido, string usuarioCodigo, string usuarioNome, HttpContext contexto)
@@ -178,6 +361,113 @@ ORDER BY ISNULL(ctrl.emitido, 0), ti.Titulo_DataVencimento, cr.Titulo_Codigo;", 
         }
 
         return total;
+    }
+
+    private static ControleAcessoriosRelatorioResumo CriarRelatorio(DataTable itens, string usuarioCodigo, string usuarioNome, HttpContext contexto)
+    {
+        ControleAcessoriosRelatorioResumo resumo = new ControleAcessoriosRelatorioResumo();
+        if (itens == null || itens.Rows.Count == 0) return resumo;
+
+        decimal total = 0;
+        foreach (DataRow row in itens.Rows)
+        {
+            total += DecimalValor(row["ValorNF"]);
+        }
+
+        using (SqlConnection con = new SqlConnection(ConnectionString))
+        {
+            con.Open();
+            using (SqlTransaction transacao = con.BeginTransaction())
+            {
+                try
+                {
+                    long idRelatorio;
+                    using (SqlCommand cmd = new SqlCommand(@"
+INSERT INTO dbo.controle_acessorios_nf_relatorio
+(
+    usuario_codigo, usuario_nome, total_itens, valor_total, ip, pagina
+)
+OUTPUT INSERTED.id_relatorio
+VALUES
+(
+    NULLIF(@usuario_codigo, N''), NULLIF(@usuario_nome, N''), @total_itens, @valor_total, NULLIF(@ip, N''), NULLIF(@pagina, N'')
+);", con, transacao))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandTimeout = TimeoutSqlSegundos;
+                        cmd.Parameters.Add("@usuario_codigo", SqlDbType.NVarChar, 50).Value = Limitar(usuarioCodigo, 50);
+                        cmd.Parameters.Add("@usuario_nome", SqlDbType.NVarChar, 160).Value = Limitar(usuarioNome, 160);
+                        cmd.Parameters.Add("@total_itens", SqlDbType.Int).Value = itens.Rows.Count;
+                        cmd.Parameters.Add("@valor_total", SqlDbType.Decimal).Value = total;
+                        cmd.Parameters["@valor_total"].Precision = 18;
+                        cmd.Parameters["@valor_total"].Scale = 2;
+                        cmd.Parameters.Add("@ip", SqlDbType.NVarChar, 80).Value = Limitar(Ip(contexto), 80);
+                        cmd.Parameters.Add("@pagina", SqlDbType.NVarChar, 260).Value = Limitar(Pagina(contexto), 260);
+                        idRelatorio = Convert.ToInt64(cmd.ExecuteScalar());
+                    }
+
+                    foreach (DataRow row in itens.Rows)
+                    {
+                        using (SqlCommand cmdItem = new SqlCommand(@"
+INSERT INTO dbo.controle_acessorios_nf_relatorio_item
+(
+    id_relatorio, chave_controle, lancamento, numero_titulo, veiculo_chassi, valor_nf
+)
+VALUES
+(
+    @id_relatorio, @chave_controle, @lancamento, NULLIF(@numero_titulo, N''), NULLIF(@veiculo_chassi, N''), @valor_nf
+);", con, transacao))
+                        {
+                            cmdItem.CommandType = CommandType.Text;
+                            cmdItem.CommandTimeout = TimeoutSqlSegundos;
+                            cmdItem.Parameters.Add("@id_relatorio", SqlDbType.BigInt).Value = idRelatorio;
+                            cmdItem.Parameters.Add("@chave_controle", SqlDbType.NVarChar, 180).Value = Limitar(Valor(row, "ChaveControle"), 180);
+                            cmdItem.Parameters.Add("@lancamento", SqlDbType.BigInt).Value = ConverterLong(row, "Lancamento");
+                            cmdItem.Parameters.Add("@numero_titulo", SqlDbType.NVarChar, 60).Value = Limitar(Valor(row, "NumeroTitulo"), 60);
+                            cmdItem.Parameters.Add("@veiculo_chassi", SqlDbType.NVarChar, 60).Value = Limitar(Valor(row, "VeiculoChassi"), 60);
+                            cmdItem.Parameters.Add("@valor_nf", SqlDbType.Decimal).Value = DecimalValor(row["ValorNF"]);
+                            cmdItem.Parameters["@valor_nf"].Precision = 18;
+                            cmdItem.Parameters["@valor_nf"].Scale = 2;
+                            cmdItem.ExecuteNonQuery();
+                        }
+                    }
+
+                    transacao.Commit();
+
+                    resumo.IdRelatorio = idRelatorio;
+                    resumo.TotalItens = itens.Rows.Count;
+                    resumo.ValorTotal = total;
+                    return resumo;
+                }
+                catch
+                {
+                    transacao.Rollback();
+                    throw;
+                }
+            }
+        }
+    }
+
+    private static DataTable CriarTabelaItensRelatorio()
+    {
+        DataTable tabela = new DataTable();
+        tabela.Columns.Add("ChaveControle", typeof(string));
+        tabela.Columns.Add("Lancamento", typeof(long));
+        tabela.Columns.Add("NumeroTitulo", typeof(string));
+        tabela.Columns.Add("VeiculoChassi", typeof(string));
+        tabela.Columns.Add("ValorNF", typeof(decimal));
+        return tabela;
+    }
+
+    private static void AdicionarItemRelatorio(DataTable tabela, DataRow origem)
+    {
+        DataRow item = tabela.NewRow();
+        item["ChaveControle"] = Valor(origem, "ChaveControle");
+        item["Lancamento"] = ConverterLong(origem, "Lancamento");
+        item["NumeroTitulo"] = Valor(origem, "NumeroTitulo");
+        item["VeiculoChassi"] = Valor(origem, "Veiculo_Chassi");
+        item["ValorNF"] = DecimalValor(origem["Saldo"]);
+        tabela.Rows.Add(item);
     }
 
     private static void SalvarMarcacao(DataRow row, bool emitido, string usuarioCodigo, string usuarioNome, HttpContext contexto)
@@ -357,6 +647,38 @@ VALUES
         return DBNull.Value;
     }
 
+    private static decimal DecimalValor(object valorOriginal)
+    {
+        if (valorOriginal == null || valorOriginal == DBNull.Value) return 0;
+        if (valorOriginal is decimal) return (decimal)valorOriginal;
+        if (valorOriginal is int || valorOriginal is long || valorOriginal is short || valorOriginal is byte)
+        {
+            return Convert.ToDecimal(valorOriginal, CultureInfo.InvariantCulture);
+        }
+
+        if (valorOriginal is double || valorOriginal is float)
+        {
+            return Convert.ToDecimal(valorOriginal, CultureInfo.InvariantCulture);
+        }
+
+        string texto = Convert.ToString(valorOriginal).Trim();
+        if (texto.Length == 0) return 0;
+
+        decimal valor;
+        CultureInfo ptBr = new CultureInfo("pt-BR");
+        bool temVirgula = texto.IndexOf(',') >= 0;
+        bool temPonto = texto.IndexOf('.') >= 0;
+
+        if (temVirgula && (!temPonto || texto.LastIndexOf(',') > texto.LastIndexOf('.')))
+        {
+            if (Decimal.TryParse(texto, NumberStyles.Any, ptBr, out valor)) return valor;
+        }
+
+        if (Decimal.TryParse(texto, NumberStyles.Any, CultureInfo.InvariantCulture, out valor)) return valor;
+        if (Decimal.TryParse(texto, NumberStyles.Any, ptBr, out valor)) return valor;
+        return 0;
+    }
+
     private static string Ip(HttpContext contexto)
     {
         if (contexto == null || contexto.Request == null) return "";
@@ -369,5 +691,12 @@ VALUES
     {
         if (contexto == null || contexto.Request == null) return "";
         return contexto.Request.RawUrl ?? "";
+    }
+
+    public class ControleAcessoriosRelatorioResumo
+    {
+        public long IdRelatorio { get; set; }
+        public int TotalItens { get; set; }
+        public decimal ValorTotal { get; set; }
     }
 }

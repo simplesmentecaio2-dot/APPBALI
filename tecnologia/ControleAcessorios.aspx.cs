@@ -17,7 +17,9 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
 
         if (!IsPostBack)
         {
+            txtRelatorioData.Text = DateTime.Today.ToString("dd/MM/yyyy");
             CarregarDados("", false);
+            CarregarRelatorioDia(DateTime.Today, false);
         }
     }
 
@@ -32,15 +34,17 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
         if (!UsuarioTecnologiaValido()) return;
 
         string[] chaves = Request.Form.GetValues("acessorioSelecionado");
-        int total = ControleAcessoriosDados.MarcarEmitidas(chaves, UsuarioCodigo(), UsuarioNome(), Context);
+        ControleAcessoriosDados.ControleAcessoriosRelatorioResumo relatorio = ControleAcessoriosDados.MarcarEmitidas(chaves, UsuarioCodigo(), UsuarioNome(), Context);
 
-        if (total == 0)
+        if (relatorio.TotalItens == 0)
         {
             CarregarDados("Selecione pelo menos uma linha para marcar como NF emitida.", false);
             return;
         }
 
-        CarregarDados(total.ToString() + " registro(s) marcado(s) como NF emitida.", true);
+        CarregarDados(relatorio.TotalItens.ToString() + " registro(s) marcado(s) como NF emitida. Relat\u00f3rio pronto para impress\u00e3o.", true);
+        CarregarRelatorioAtual(relatorio.IdRelatorio);
+        CarregarRelatorioDia(DateTime.Today, false);
     }
 
     protected void btnDesmarcarEmitidas_Click(object sender, EventArgs e)
@@ -57,6 +61,14 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
         }
 
         CarregarDados(total.ToString() + " registro(s) desmarcado(s).", true);
+        CarregarRelatorioDia(DataRelatorioSelecionada(), false);
+    }
+
+    protected void btnBuscarRelatorioDia_Click(object sender, EventArgs e)
+    {
+        if (!UsuarioTecnologiaValido()) return;
+        CarregarDados("", false);
+        CarregarRelatorioDia(DataRelatorioSelecionada(), true);
     }
 
     private void CarregarDados(string mensagem, bool sucesso)
@@ -132,6 +144,96 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
         litMensagem.Text = "<div class=\"" + classe + "\">" + HttpUtility.HtmlEncode(mensagem) + "</div>";
     }
 
+    private void CarregarRelatorioAtual(long idRelatorio)
+    {
+        if (idRelatorio <= 0)
+        {
+            pnlRelatorioAtual.Visible = false;
+            return;
+        }
+
+        DataRow cabecalho = ControleAcessoriosDados.ObterRelatorio(idRelatorio);
+        DataTable itens = ControleAcessoriosDados.ListarItensRelatorio(idRelatorio);
+
+        if (cabecalho == null || itens.Rows.Count == 0)
+        {
+            pnlRelatorioAtual.Visible = false;
+            return;
+        }
+
+        litRelatorioAtualId.Text = "#" + Html(cabecalho["IdRelatorio"]);
+        litRelatorioAtualData.Text = DataHora(cabecalho["GeradoEm"]);
+        litRelatorioAtualUsuario.Text = Html(cabecalho["UsuarioNome"]);
+        litRelatorioAtualItens.Text = Convert.ToString(itens.Rows.Count);
+        litRelatorioAtualTotal.Text = Moeda(SomarValor(itens));
+        rptRelatorioAtual.DataSource = itens;
+        rptRelatorioAtual.DataBind();
+        pnlRelatorioAtual.Visible = true;
+    }
+
+    private void CarregarRelatorioDia(DateTime data, bool mostrarMensagem)
+    {
+        txtRelatorioData.Text = data.ToString("dd/MM/yyyy");
+
+        DataTable itens = ControleAcessoriosDados.ListarItensMarcadosNoDia(UsuarioCodigo(), UsuarioNome(), data);
+        DataTable lotes = ControleAcessoriosDados.ListarRelatoriosDoDia(UsuarioCodigo(), UsuarioNome(), data);
+
+        rptRelatorioDia.DataSource = itens;
+        rptRelatorioDia.DataBind();
+        rptLotesDia.DataSource = lotes;
+        rptLotesDia.DataBind();
+
+        pnlRelatorioDia.Visible = itens.Rows.Count > 0;
+        pnlSemRelatorioDia.Visible = itens.Rows.Count == 0;
+        pnlLotesDia.Visible = lotes.Rows.Count > 0;
+
+        litRelatorioDiaData.Text = data.ToString("dd/MM/yyyy");
+        litRelatorioDiaUsuario.Text = Html(UsuarioNome());
+        litRelatorioDiaItens.Text = itens.Rows.Count.ToString();
+        litRelatorioDiaTotal.Text = Moeda(SomarValor(itens));
+
+        if (mostrarMensagem)
+        {
+            litMensagemRelatorio.Text = itens.Rows.Count == 0
+                ? "<div class=\"accessory-alert is-error\">Nenhuma NF emitida encontrada para essa data.</div>"
+                : "<div class=\"accessory-alert is-success\">Relat\u00f3rio do dia carregado para reimpress\u00e3o.</div>";
+            ClientScript.RegisterStartupScript(GetType(), "abrirReimpressao", "window.__accessoryInitialTab='reimpressao';", true);
+        }
+        else
+        {
+            litMensagemRelatorio.Text = "";
+        }
+    }
+
+    private DateTime DataRelatorioSelecionada()
+    {
+        DateTime data;
+        if (DateTime.TryParseExact((txtRelatorioData.Text ?? "").Trim(), "dd/MM/yyyy", new CultureInfo("pt-BR"), DateTimeStyles.None, out data))
+        {
+            return data.Date;
+        }
+
+        if (DateTime.TryParse((txtRelatorioData.Text ?? "").Trim(), new CultureInfo("pt-BR"), DateTimeStyles.None, out data))
+        {
+            return data.Date;
+        }
+
+        return DateTime.Today;
+    }
+
+    private decimal SomarValor(DataTable tabela)
+    {
+        decimal total = 0;
+        if (tabela == null || !tabela.Columns.Contains("ValorNF")) return total;
+
+        foreach (DataRow row in tabela.Rows)
+        {
+            total += DecimalValor(row["ValorNF"]);
+        }
+
+        return total;
+    }
+
     protected string Html(object valor)
     {
         string texto = Convert.ToString(valor);
@@ -163,6 +265,14 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
     {
         decimal numero = DecimalValor(valor);
         return numero.ToString("C", new CultureInfo("pt-BR"));
+    }
+
+    protected string DataHora(object valor)
+    {
+        if (valor == null || valor == DBNull.Value) return "-";
+        DateTime data;
+        if (!DateTime.TryParse(Convert.ToString(valor), out data)) return "-";
+        return data.ToString("dd/MM/yyyy HH:mm:ss");
     }
 
     protected string Marcacao(object emitido, object usuario, object data)
