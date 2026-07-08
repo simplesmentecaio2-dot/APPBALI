@@ -86,9 +86,9 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
 
         string documento = NormalizarDocumentoDealernet(cpf);
-        if (documento.Length != 11 && documento.Length != 14)
+        if (!DocumentoDealernetConsultaValido(documento))
         {
-            throw new ArgumentException("Informe um CPF com 11 números ou CNPJ com 14 números para consultar.");
+            throw new ArgumentException("Informe um CPF com 11 números ou CNPJ com 14 caracteres para consultar.");
         }
 
         List<ClienteDealernetContrato> clientes = new List<ClienteDealernetContrato>();
@@ -140,15 +140,22 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private static string NormalizarDocumentoDealernet(string valor)
     {
-        StringBuilder digitos = new StringBuilder();
+        StringBuilder documento = new StringBuilder();
         foreach (char c in Convert.ToString(valor ?? ""))
         {
-            if (Char.IsDigit(c))
+            if (Char.IsLetterOrDigit(c))
             {
-                digitos.Append(c);
+                documento.Append(Char.ToUpperInvariant(c));
             }
         }
-        return digitos.ToString();
+        return documento.ToString();
+    }
+
+    private static bool DocumentoDealernetConsultaValido(string documento)
+    {
+        if (documento.Length == 11) return documento.All(Char.IsDigit);
+        if (documento.Length == 14) return documento.All(Char.IsLetterOrDigit) && Char.IsDigit(documento[12]) && Char.IsDigit(documento[13]);
+        return false;
     }
 
     private static string ValorDealernet(SqlDataReader reader, string coluna)
@@ -287,10 +294,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private string MascararDocumentoLog(string valor)
     {
-        string digitos = SomenteDigitos(valor);
-        if (digitos.Length == 0) return "";
-        if (digitos.Length <= 4) return "****";
-        return "****" + digitos.Substring(digitos.Length - 4);
+        string documento = SomenteLetrasNumeros(valor).ToUpperInvariant();
+        if (documento.Length == 0) return "";
+        if (documento.Length <= 4) return "****";
+        return "****" + documento.Substring(documento.Length - 4);
     }
 
     private void RegistrarValidacaoContrato(string acao, string detalheContrato, string mensagem)
@@ -688,13 +695,14 @@ public partial class veiculos_contrato : System.Web.UI.Page
     {
         if (campo == null) return;
         string digitos = SomenteDigitos(campo.Text);
+        string documento = SomenteLetrasNumeros(campo.Text).ToUpperInvariant();
         if (digitos.Length == 11)
         {
             campo.Text = digitos.Substring(0, 3) + "." + digitos.Substring(3, 3) + "." + digitos.Substring(6, 3) + "-" + digitos.Substring(9, 2);
         }
-        else if (digitos.Length == 14)
+        else if (documento.Length == 14)
         {
-            campo.Text = digitos.Substring(0, 2) + "." + digitos.Substring(2, 3) + "." + digitos.Substring(5, 3) + "/" + digitos.Substring(8, 4) + "-" + digitos.Substring(12, 2);
+            campo.Text = documento.Substring(0, 2) + "." + documento.Substring(2, 3) + "." + documento.Substring(5, 3) + "/" + documento.Substring(8, 4) + "-" + documento.Substring(12, 2);
         }
     }
 
@@ -776,14 +784,20 @@ public partial class veiculos_contrato : System.Web.UI.Page
     private bool CpfCnpjValido(string valor)
     {
         string digitos = SomenteDigitos(valor);
-        if (digitos.Length == 11) return CpfValido(digitos);
-        if (digitos.Length == 14) return CnpjValido(digitos);
+        string documento = SomenteLetrasNumeros(valor).ToUpperInvariant();
+        if (documento.Length == 11 && digitos.Length == 11) return CpfValido(digitos);
+        if (documento.Length == 14) return CnpjValido(documento);
         return false;
     }
 
     private bool DigitosRepetidos(string digitos)
     {
         return digitos.Length > 0 && digitos.All(delegate(char caractere) { return caractere == digitos[0]; });
+    }
+
+    private bool CaracteresRepetidos(string texto)
+    {
+        return texto.Length > 0 && texto.All(delegate(char caractere) { return caractere == texto[0]; });
     }
 
     private int CalcularDigitoDocumento(string digitos, int[] pesos)
@@ -806,12 +820,36 @@ public partial class veiculos_contrato : System.Web.UI.Page
         return primeiro == digitos[9] - '0' && segundo == digitos[10] - '0';
     }
 
-    private bool CnpjValido(string digitos)
+    private int ValorCaracterCnpj(char caractere)
     {
-        if (digitos.Length != 14 || DigitosRepetidos(digitos)) return false;
-        int primeiro = CalcularDigitoDocumento(digitos, new int[] { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 });
-        int segundo = CalcularDigitoDocumento(digitos, new int[] { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 });
-        return primeiro == digitos[12] - '0' && segundo == digitos[13] - '0';
+        if (caractere >= '0' && caractere <= '9') return caractere - '0';
+        if (caractere >= 'A' && caractere <= 'Z') return ((int)caractere) - 48;
+        return -1;
+    }
+
+    private int CalcularDigitoCnpj(string documento, int[] pesos)
+    {
+        int soma = 0;
+        for (int i = 0; i < pesos.Length; i++)
+        {
+            int valor = ValorCaracterCnpj(documento[i]);
+            if (valor < 0) return -1;
+            soma += valor * pesos[i];
+        }
+
+        int resto = soma % 11;
+        return resto < 2 ? 0 : 11 - resto;
+    }
+
+    private bool CnpjValido(string documento)
+    {
+        string cnpj = SomenteLetrasNumeros(documento).ToUpperInvariant();
+        if (cnpj.Length != 14 || CaracteresRepetidos(cnpj)) return false;
+        if (!Char.IsDigit(cnpj[12]) || !Char.IsDigit(cnpj[13])) return false;
+
+        int primeiro = CalcularDigitoCnpj(cnpj.Substring(0, 12), new int[] { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 });
+        int segundo = CalcularDigitoCnpj(cnpj.Substring(0, 12) + primeiro.ToString(), new int[] { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 });
+        return primeiro >= 0 && segundo >= 0 && primeiro == cnpj[12] - '0' && segundo == cnpj[13] - '0';
     }
 
     private bool CepValido(string valor)
@@ -872,7 +910,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void ValidarFormatosNovo(List<string> erros)
     {
-        ValidarFormatoOpcional(erros, txtCPFCNPJ.Text, CpfCnpjValido, "CPF/CNPJ deve ter 11 ou 14 números com dígitos válidos.");
+        ValidarFormatoOpcional(erros, txtCPFCNPJ.Text, CpfCnpjValido, "CPF deve ter 11 números válidos ou CNPJ deve ter 14 caracteres válidos (numérico ou alfanumérico).");
         ValidarFormatoOpcional(erros, txtCEP.Text, CepValido, "CEP deve ter 8 números. Exemplo: 01001-000.");
         ValidarFormatoOpcional(erros, txtUF.Text, UfValida, "UF deve ser uma sigla brasileira válida. Exemplo: SP.");
         ValidarFormatoOpcional(erros, txtEmail.Text, EmailValido, "Informe um e-mail válido. Exemplo: cliente@email.com.");
@@ -885,7 +923,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
     private void ValidarFormatosEdicao(List<string> erros)
     {
-        ValidarFormatoOpcional(erros, txtEdCPF.Text, CpfCnpjValido, "CPF/CNPJ deve ter 11 ou 14 números com dígitos válidos.");
+        ValidarFormatoOpcional(erros, txtEdCPF.Text, CpfCnpjValido, "CPF deve ter 11 números válidos ou CNPJ deve ter 14 caracteres válidos (numérico ou alfanumérico).");
         ValidarFormatoOpcional(erros, txtEdCep.Text, CepValido, "CEP deve ter 8 números. Exemplo: 01001-000.");
         ValidarFormatoOpcional(erros, txtEdUF.Text, UfValida, "UF deve ser uma sigla brasileira válida. Exemplo: SP.");
         ValidarFormatoOpcional(erros, txtEdEmail.Text, EmailValido, "Informe um e-mail válido. Exemplo: cliente@email.com.");

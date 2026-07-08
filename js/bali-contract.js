@@ -201,16 +201,15 @@
     {
       ids: ['txtCPFCNPJ', 'txtEdCPF'],
       placeholder: 'CPF ou CNPJ',
-      inputmode: 'numeric',
+      inputmode: 'text',
       autocomplete: 'off',
-      autocapitalize: 'off',
-      numericBlank: true,
+      autocapitalize: 'characters',
       maxLength: 18,
       normalize: formatCpfCnpj,
       validate: function (value) {
         return isCpfCnpjValid(value);
       },
-      message: 'CPF/CNPJ deve ter 11 ou 14 n\u00fameros com d\u00edgitos v\u00e1lidos.'
+      message: 'CPF deve ter 11 n\u00fameros v\u00e1lidos ou CNPJ deve ter 14 caracteres v\u00e1lidos (num\u00e9rico ou alfanum\u00e9rico).'
     },
     {
       ids: ['txtChassiPlaca', 'txtEdChassi'],
@@ -468,6 +467,10 @@
     return String(value || '').replace(/[^0-9a-zA-Z]/g, '');
   }
 
+  function documentLettersNumbers(value) {
+    return lettersNumbersOnly(value).toUpperCase();
+  }
+
   function validInstallments(value) {
     var digits = digitsOnly(value);
     var number = parseInt(digits, 10);
@@ -493,23 +496,46 @@
 
   function formatCpfCnpj(value) {
     var digits = digitsOnly(value);
+    var document = documentLettersNumbers(value);
     if (digits.length === 11) {
       return digits.substr(0, 3) + '.' + digits.substr(3, 3) + '.' + digits.substr(6, 3) + '-' + digits.substr(9, 2);
     }
-    if (digits.length === 14) {
-      return digits.substr(0, 2) + '.' + digits.substr(2, 3) + '.' + digits.substr(5, 3) + '/' + digits.substr(8, 4) + '-' + digits.substr(12, 2);
+    if (document.length === 14) {
+      return document.substr(0, 2) + '.' + document.substr(2, 3) + '.' + document.substr(5, 3) + '/' + document.substr(8, 4) + '-' + document.substr(12, 2);
     }
-    return String(value || '').trim();
+    return document || String(value || '').trim().toUpperCase();
   }
 
   function repeatedDigits(digits) {
     return /^(\d)\1+$/.test(String(digits || ''));
   }
 
+  function repeatedChars(value) {
+    return /^([0-9A-Z])\1+$/.test(String(value || '').toUpperCase());
+  }
+
   function documentDigit(digits, weights) {
     var sum = 0;
     for (var i = 0; i < weights.length; i++) {
       sum += parseInt(digits.charAt(i), 10) * weights[i];
+    }
+    var remainder = sum % 11;
+    return remainder < 2 ? 0 : 11 - remainder;
+  }
+
+  function cnpjCharValue(character) {
+    var code = String(character || '').charCodeAt(0);
+    if (code >= 48 && code <= 57) return code - 48;
+    if (code >= 65 && code <= 90) return code - 48;
+    return -1;
+  }
+
+  function cnpjDocumentDigit(document, weights) {
+    var sum = 0;
+    for (var i = 0; i < weights.length; i++) {
+      var value = cnpjCharValue(document.charAt(i));
+      if (value < 0) return -1;
+      sum += value * weights[i];
     }
     var remainder = sum % 11;
     return remainder < 2 ? 0 : 11 - remainder;
@@ -524,17 +550,19 @@
   }
 
   function isCnpjValid(value) {
-    var digits = digitsOnly(value);
-    if (digits.length !== 14 || repeatedDigits(digits)) return false;
-    var first = documentDigit(digits, [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
-    var second = documentDigit(digits, [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
-    return first === parseInt(digits.charAt(12), 10) && second === parseInt(digits.charAt(13), 10);
+    var document = documentLettersNumbers(value);
+    if (document.length !== 14 || repeatedChars(document)) return false;
+    if (!/^\d$/.test(document.charAt(12)) || !/^\d$/.test(document.charAt(13))) return false;
+    var first = cnpjDocumentDigit(document.substr(0, 12), [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+    var second = cnpjDocumentDigit(document.substr(0, 12) + String(first), [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+    return first >= 0 && second >= 0 && first === parseInt(document.charAt(12), 10) && second === parseInt(document.charAt(13), 10);
   }
 
   function isCpfCnpjValid(value) {
     var digits = digitsOnly(value);
-    if (digits.length === 11) return isCpfValid(digits);
-    if (digits.length === 14) return isCnpjValid(digits);
+    var document = documentLettersNumbers(value);
+    if (document.length === 11 && digits.length === 11) return isCpfValid(digits);
+    if (document.length === 14) return isCnpjValid(document);
     return false;
   }
 
@@ -1948,7 +1976,7 @@
 
   function requiredMessageFor(id) {
     if (id === 'txtCliente' || id === 'txtEdCliente') return 'Informe o nome completo do cliente.';
-    if (id === 'txtCPFCNPJ' || id === 'txtEdCPF') return 'Informe CPF/CNPJ do cliente. Exemplo: 000.000.000-00.';
+    if (id === 'txtCPFCNPJ' || id === 'txtEdCPF') return 'Informe CPF/CNPJ do cliente. Exemplo: 000.000.000-00 ou 12.ABC.345/01DE-35.';
     if (id === 'txtMarca' || id === 'txtEdMarca') return 'Informe a marca do veículo.';
     if (id === 'txtModelo' || id === 'txtEdModelo') return 'Informe o modelo do veículo.';
     if (id === 'txtChassiPlaca' || id === 'txtEdChassi') return 'Informe placa ou chassi com pelo menos 7 caracteres.';
@@ -3797,7 +3825,13 @@
     }
   }
 
-  function requestDealernetClients(cpfDigits, callback) {
+  function isDealernetDocumentSearchValid(document) {
+    if (document.length === 11) return /^\d{11}$/.test(document);
+    if (document.length === 14) return /^[0-9A-Z]{12}\d{2}$/.test(document);
+    return false;
+  }
+
+  function requestDealernetClients(document, callback) {
     var xhr = new XMLHttpRequest();
     var path = window.location.pathname || '';
     var endpoint = path.replace(/\/$/, '') + '/ConsultarClienteDealernet';
@@ -3816,17 +3850,17 @@
         callback(parseDealernetError(xhr));
       }
     };
-    xhr.send(JSON.stringify({ cpf: cpfDigits }));
+    xhr.send(JSON.stringify({ cpf: document }));
   }
 
   function consultDealernetCpf(button) {
     var targetId = button.getAttribute('data-cpf-target') || 'txtCPFCNPJ';
     var mode = button.getAttribute('data-cpf-mode') || (targetId.indexOf('Ed') >= 0 ? 'edicao' : 'novo');
     var cpfField = bySuffix(targetId);
-    var digits = digitsOnly(cpfField ? cpfField.value : '');
+    var document = documentLettersNumbers(cpfField ? cpfField.value : '');
 
-    if (digits.length !== 11 && digits.length !== 14) {
-      showFieldMessage(cpfField, 'Informe um CPF com 11 n\u00fameros ou CNPJ com 14 n\u00fameros para consultar.');
+    if (!isDealernetDocumentSearchValid(document)) {
+      showFieldMessage(cpfField, 'Informe um CPF com 11 n\u00fameros ou CNPJ com 14 caracteres para consultar.');
       if (window.BaliContractToast) {
         window.BaliContractToast('Informe um CPF/CNPJ v\u00e1lido antes de consultar.', 'warning');
       }
@@ -3836,7 +3870,7 @@
     button.disabled = true;
     button.setAttribute('aria-busy', 'true');
     addClass(button, 'is-loading');
-    requestDealernetClients(digits, function (error, results) {
+    requestDealernetClients(document, function (error, results) {
       button.disabled = false;
       button.setAttribute('aria-busy', 'false');
       removeClass(button, 'is-loading');
@@ -3853,7 +3887,7 @@
         return;
       }
 
-      renderDealernetResults(results, mode, digits);
+      renderDealernetResults(results, mode, document);
     });
   }
 
@@ -3865,7 +3899,8 @@
       var target = bySuffix(button.getAttribute('data-cpf-target') || '');
       if (target) {
         target.setAttribute('autocomplete', 'off');
-        target.setAttribute('inputmode', 'numeric');
+        target.setAttribute('inputmode', 'text');
+        target.setAttribute('autocapitalize', 'characters');
       }
       button.addEventListener('click', function () {
         consultDealernetCpf(button);
@@ -3903,12 +3938,12 @@
   }
 
   function countLookupMatches(value, digitsMode) {
-    var term = digitsMode ? digitsOnly(value) : normalizeText(value);
+    var term = digitsMode ? documentLettersNumbers(value) : normalizeText(value);
     if (!term || term.length < (digitsMode ? 11 : 7)) return 0;
 
     return allLookupRows(true).filter(function (row) {
       var text = row ? row.textContent || '' : '';
-      var haystack = digitsMode ? digitsOnly(text) : normalizeText(text);
+      var haystack = digitsMode ? documentLettersNumbers(text) : normalizeText(text);
       return haystack.indexOf(term) >= 0;
     }).length;
   }
@@ -3964,8 +3999,8 @@
 
   function enhanceIdentityFields() {
     [
-      { id: 'txtCPFCNPJ', uppercase: false },
-      { id: 'txtEdCPF', uppercase: false },
+      { id: 'txtCPFCNPJ', uppercase: true },
+      { id: 'txtEdCPF', uppercase: true },
       { id: 'txtChassiPlaca', uppercase: true, placeholder: 'Placa ou chassi' },
       { id: 'txtPlacaVU', uppercase: true, placeholder: 'Placa do usado' },
       { id: 'txtEdChassi', uppercase: true, placeholder: 'Placa ou chassi' },

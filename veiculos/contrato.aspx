@@ -84,7 +84,7 @@
             $('.phone').attr('inputmode', 'tel');
            
         });
-    </script><script src="../js/bali-contract.js?v=20260626-cpfdealernet01"></script></head><body class="bali-contract-page contrato-fiat contract-no-sidebar"><form id="form1" style="height: 100%;" runat="server">
+    </script><script src="../js/bali-contract.js?v=20260708-cnpjalfanumerico01"></script></head><body class="bali-contract-page contrato-fiat contract-no-sidebar"><form id="form1" style="height: 100%;" runat="server">
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
         <div id="topo">
             <table id="table-menu">
