@@ -49,6 +49,8 @@ public partial class veiculos_Recibo_desconto : System.Web.UI.Page
             lblNota.Text = nota;
             lblPlaca.Text = placa;
             lblVendedor.Text = vendedor;
+            lblPedidoRecibo.Text = txtPedido.Text.Trim();
+            lblLojaRecibo.Text = txtLoja.Text.Trim();
             lblextenso.Text = valorpoextenso(valor.ToString("N2"));
 
         }
@@ -64,7 +66,7 @@ public partial class veiculos_Recibo_desconto : System.Web.UI.Page
 
  public string valorpoextenso(string wvalor)
     {
-        string[] wunidade = { "", " e um", " e dois", " e trez", " e quatro", " e cinco", " e seis", " e sete", " e oito", " e nove" };
+        string[] wunidade = { "", " e um", " e dois", " e três", " e quatro", " e cinco", " e seis", " e sete", " e oito", " e nove" };
         string[] wdezes = { "", " e onze", " e doze", " e treze", " e quatorze", " e quinze", " e dezesseis", " e dezessete", " e dezoito", " e dezenove" };
         string[] wdezenas = { "", " e dez", " e vinte", " e trinta", " e quarenta", " e cinquenta", " e sessenta", " e setenta", " e oitenta", " e noventa" };
         string[] wcentenas = { "", " e cento", " e duzentos", " e trezentos", " e quatrocentos", " e quinhentos", " e seiscentos", " e setecentos", " e oitocentos", " e novecentos" };

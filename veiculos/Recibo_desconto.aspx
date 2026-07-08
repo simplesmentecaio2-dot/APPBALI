@@ -139,18 +139,61 @@
 
 <br />
                             <br />
-                            <div class="bali-receipt-flow"><article><span>1</span><strong>Consultar</strong><small>Pedido e código da loja.</small></article><article><span>2</span><strong>Conferir</strong><small>Cliente, veículo, valor e NF.</small></article><article><span>3</span><strong>Assinar</strong><small>Documento assinado pelo cliente.</small></article></div><div class="bali-receipt-data-vault" aria-hidden="true"><asp:Label ID="lblPlaca" runat="server"></asp:Label><asp:Label ID="lblVendedor" runat="server"></asp:Label></div><img src="../img/imprimir.png" style="width: 30px; cursor: pointer;" onclick="javascript: imprimePanel()" /> <asp:Panel ID="pnlImpressao" runat="server" Width="100%" Height="100%"><div style="width: 19cm; border: 1px solid black; font-family: 'Times New Roman'; padding: 20px;" id="recibo"><div style="text-align: center"><img src="../img/rebibodedesconto.png" style="width: 671px" /></div>
-
-                                    <br /><br /><br /><div style="text-align: center; font-size: 26px; font-weight: bold;">Recibo de Desconto</div><br /><br /><br /><div style="font-size: large; text-align: center">Recebi da <asp:Label ID="Label1" Font-Bold="True" runat="server" Text="BALI BRASÍLIA AUTOMÓVEIS LTDA"></asp:Label>, como desconto incondicional, <br />o valor de <asp:Label ID="Label3" runat="server" Font-Bold="True"  Text="R$"></asp:Label><asp:Label ID="lblValor" Font-Bold="True" runat="server" onKeyPress="return(MascaraMoeda(this,'.',',',event))"></asp:Label>(<asp:Label ID="lblextenso" Font-Bold="True" runat="server"></asp:Label>)
-
-referente à compra do veículo: <asp:Label ID="lblVeículo" Font-Bold="True" runat="server" ></asp:Label>,
-                                        chassi : <asp:Label ID="lblChassi" Font-Bold="True" runat="server" ></asp:Label>,
-                                        cor: <asp:Label ID="lblCor" runat="server" Font-Bold="True" ></asp:Label>,
-
-                                        ano/modelo: <asp:Label ID="lblAno" runat="server" Font-Bold="True" ></asp:Label>,
-                                        faturado por meio de nota Fiscal nº: <asp:Label ID="lblNota" Font-Bold="True" runat="server" ></asp:Label>.<br /> <br /><br /><br />Declaro que estou ciente que haverá incidência de percentual em relação à cobrança <br />do valor do IPVA do veículo zero quilometro acima descriminado e neste ato, dou pena <br />e total quitação desse valor para <asp:Label ID="Label2" Font-Bold="True" runat="server" Text="BALI BRASÍLIA AUTOMÓVEIS  LTDA"></asp:Label></div><br /><br /><br /><br /><div style="text-align: center; font-size: large;">Por ser a expressão de verdade firmo o presente recibo.</div><br /><br /><br /><div style="font-size: large; text-align: center">Brasília&#160;DF&#160;-&#160; <script language="javascript">
-                                                        document.write(DiaExtenso());
-                                        </script></div><br /><br /><br /><br /><br /><br /><br /><div style="text-align: center; align-items: center; width: 100%;"><div>_____________________________________</div><br /><div style="font-size: large"><asp:Label ID="lblCliente" runat="server" style="font-size: large"  Font-Bold="True"></asp:Label></div></div></div></asp:Panel></fieldset>
+                            <div class="bali-receipt-flow"><article><span>1</span><strong>Consultar</strong><small>Pedido e código da loja.</small></article><article><span>2</span><strong>Conferir</strong><small>Cliente, veículo, valor e NF.</small></article><article><span>3</span><strong>Assinar</strong><small>Documento assinado pelo cliente.</small></article></div><img src="../img/imprimir.png" style="width: 30px; cursor: pointer;" onclick="javascript: imprimePanel()" /> <asp:Panel ID="pnlImpressao" runat="server" Width="100%" Height="100%"><div style="width: 18.6cm; box-sizing: border-box; margin: 0 auto; border: 1px solid #111; font-family: 'Times New Roman', serif; padding: 14px 16px; color: #111; background: #fff;" id="recibo"><div style="text-align: center; margin-bottom: 8px;"><img src="../img/rebibodedesconto.png" style="width: 650px; max-width: 100%;" /></div>
+                                    <div style="border: 1px solid #111;">
+                                        <div style="text-align: center; font-size: 21px; font-weight: bold; text-transform: uppercase; padding: 7px 8px; border-bottom: 1px solid #111; background: #e7e7e7;">Recibo de Desconto Incondicional</div>
+                                        <table style="width: 100%; border-collapse: collapse; font-size: 13.5px;">
+                                            <tr>
+                                                <td style="width: 16%; padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Cliente</td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111;" colspan="5"><asp:Label ID="lblCliente" runat="server" Font-Bold="True"></asp:Label></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Empresa</td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111;" colspan="3"><asp:Label ID="Label1" Font-Bold="True" runat="server" Text="BALI BRASÍLIA AUTOMÓVEIS LTDA"></asp:Label></td>
+                                                <td style="width: 15%; padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Nota fiscal</td>
+                                                <td style="width: 17%; padding: 5px 7px; border: 1px solid #111;"><asp:Label ID="lblNota" Font-Bold="True" runat="server"></asp:Label></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Pedido</td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111;"><asp:Label ID="lblPedidoRecibo" runat="server" Font-Bold="True"></asp:Label></td>
+                                                <td style="width: 12%; padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Loja</td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111;"><asp:Label ID="lblLojaRecibo" runat="server" Font-Bold="True"></asp:Label></td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Vendedor</td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111;"><asp:Label ID="lblVendedor" runat="server" Font-Bold="True"></asp:Label></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Veículo</td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111;" colspan="3"><asp:Label ID="lblVeículo" Font-Bold="True" runat="server"></asp:Label></td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Ano/Modelo</td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111;"><asp:Label ID="lblAno" runat="server" Font-Bold="True"></asp:Label></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 5px 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Chassi</td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111;" colspan="2"><asp:Label ID="lblChassi" Font-Bold="True" runat="server"></asp:Label></td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111;"><strong>Placa:</strong> <asp:Label ID="lblPlaca" runat="server" Font-Bold="True"></asp:Label></td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111;"><strong>Cor:</strong></td>
+                                                <td style="padding: 5px 7px; border: 1px solid #111;"><asp:Label ID="lblCor" runat="server" Font-Bold="True"></asp:Label></td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 7px; border: 1px solid #111; font-weight: bold; background: #f2f2f2;">Valor do desconto</td>
+                                                <td style="padding: 7px; border: 1px solid #111; font-size: 15px;" colspan="5"><asp:Label ID="Label3" runat="server" Font-Bold="True" Text="R$"></asp:Label> <asp:Label ID="lblValor" Font-Bold="True" runat="server" onKeyPress="return(MascaraMoeda(this,'.',',',event))"></asp:Label> (<asp:Label ID="lblextenso" Font-Bold="True" runat="server"></asp:Label>)</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div style="font-size: 15px; line-height: 1.42; text-align: justify; margin-top: 14px;">
+                                        <p style="margin: 0 0 9px;">Pelo presente recibo, o cliente acima identificado declara ter recebido da concessionária o desconto incondicional indicado no quadro de identificação, vinculado à aquisição do veículo descrito neste documento e à respectiva nota fiscal.</p>
+                                        <p style="margin: 0 0 9px;">O desconto ora registrado foi concedido de forma definitiva no âmbito da negociação comercial do veículo, servindo este recibo como comprovação da ciência, conferência e aceitação do valor abatido.</p>
+                                        <p style="margin: 0 0 9px;">O cliente declara estar ciente de que tributos, taxas, IPVA, licenciamento, emplacamento, seguros, acessórios, serviços ou quaisquer despesas não expressamente descritas neste recibo não se confundem com o desconto aqui recebido, salvo condição específica formalizada em documento próprio.</p>
+                                        <p style="margin: 0;">Após conferir os dados acima, o cliente dá plena, geral e irrevogável quitação exclusivamente quanto ao desconto descrito neste recibo, para nada mais reclamar sobre esse valor perante <strong><asp:Label ID="Label2" runat="server" Text="BALI BRASÍLIA AUTOMÓVEIS LTDA"></asp:Label></strong>, ressalvados os direitos e garantias legais aplicáveis.</p>
+                                    </div>
+                                    <div style="text-align: center; font-size: 15px; margin-top: 22px;">Por ser expressão da verdade, firma o presente recibo.</div>
+                                    <div style="font-size: 15px; text-align: center; margin-top: 18px;">Brasília-DF - <script language="javascript">document.write(DiaExtenso());</script></div>
+                                    <div style="text-align: center; width: 100%; margin-top: 68px;">
+                                        <div style="width: 70%; margin: 0 auto; border-top: 1px solid #111; height: 1px;"></div>
+                                        <div style="font-size: 15px; font-weight: bold; margin-top: 9px;">Assinatura do cliente</div>
+                                        <div style="font-size: 13px; margin-top: 3px;">Cliente acima identificado</div>
+                                    </div>
+                                </div></asp:Panel></fieldset>
 </ContentTemplate>
 
 
