@@ -122,9 +122,8 @@
                                                 .delivery-print { width: 19.2cm; margin: 0 auto; color: #111; font-family: 'Times New Roman', serif; font-size: 12.5px; line-height: 1.2; }
                                                 .delivery-print * { box-sizing: border-box; }
                                                 .delivery-part { border: 1px solid #222; background: #fff; }
-                                                .delivery-header { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; min-height: 52px; padding: 6px 10px; border-bottom: 1px solid #222; }
-                                                .delivery-header img { max-width: 430px; max-height: 48px; object-fit: contain; }
-                                                .delivery-header strong { font-size: 19px; letter-spacing: .02em; text-transform: uppercase; white-space: nowrap; }
+                                                .delivery-header { display: flex; align-items: center; justify-content: center; min-height: 52px; padding: 6px 10px; border-bottom: 1px solid #222; }
+                                                .delivery-header img { width: 100%; max-width: 652px; max-height: 49px; object-fit: contain; }
                                                 .delivery-main-grid { display: grid; grid-template-columns: 1.2fr .8fr; border-bottom: 1px solid #222; }
                                                 .delivery-card, .delivery-portaria { min-height: 104px; padding: 8px 10px; }
                                                 .delivery-card { border-right: 1px solid #222; }
@@ -176,8 +175,7 @@
                                             <div class="delivery-print">
                                                 <section class="delivery-part">
                                                     <div class="delivery-header">
-                                                        <img src="../../img/entrega_saida.png" alt="BALI Fiat" />
-                                                        <strong>Autorização para entrega de veículo</strong>
+                                                        <img src="../../img/entrega_saida.png?v=20260708-entrega-header" alt="BALI Fiat" />
                                                     </div>
                                                     <div class="delivery-main-grid">
                                                         <div class="delivery-card">
@@ -258,7 +256,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="delivery-mini">
-                                                        <div class="delivery-mini-head"><img src="../../img/entrega_saida.png" alt="BALI Fiat" /></div>
+                                                        <div class="delivery-mini-head"><img src="../../img/entrega_saida.png?v=20260708-entrega-header" alt="BALI Fiat" /></div>
                                                         <div class="delivery-mini-data">
                                                             <span>Cliente:</span> <b><asp:Label ID="lblClienteEntreg" runat="server"></asp:Label></b>
                                                             <span>Chassi:</span> <b><asp:Label ID="lblChassiEntreg" runat="server"></asp:Label></b><br />
