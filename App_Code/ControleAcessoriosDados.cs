@@ -97,6 +97,28 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_controle_acessorios_nf
 IF COL_LENGTH('dbo.controle_acessorios_nf_log', 'observacao') IS NULL
     ALTER TABLE dbo.controle_acessorios_nf_log ADD observacao NVARCHAR(300) NULL;
 
+IF OBJECT_ID('dbo.controle_acessorios_nf_log_arquivo','U') IS NULL
+BEGIN
+    CREATE TABLE dbo.controle_acessorios_nf_log_arquivo
+    (
+        id_arquivo BIGINT IDENTITY(1,1) NOT NULL CONSTRAINT PK_controle_acessorios_nf_log_arquivo PRIMARY KEY,
+        id_log BIGINT NOT NULL,
+        chave_controle NVARCHAR(180) NOT NULL,
+        lancamento BIGINT NULL,
+        acao NVARCHAR(40) NOT NULL,
+        usuario_codigo NVARCHAR(50) NULL,
+        usuario_nome NVARCHAR(160) NULL,
+        observacao NVARCHAR(300) NULL,
+        ip NVARCHAR(80) NULL,
+        pagina NVARCHAR(260) NULL,
+        criado_em DATETIME2(0) NOT NULL,
+        arquivado_em DATETIME2(0) NOT NULL CONSTRAINT DF_controle_acessorios_nf_log_arquivo_arquivado DEFAULT(SYSDATETIME())
+    );
+END;
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_controle_acessorios_nf_log_arquivo_chave' AND object_id = OBJECT_ID('dbo.controle_acessorios_nf_log_arquivo'))
+    CREATE INDEX IX_controle_acessorios_nf_log_arquivo_chave ON dbo.controle_acessorios_nf_log_arquivo (chave_controle, criado_em DESC);
+
 IF OBJECT_ID('dbo.controle_acessorios_nf_relatorio','U') IS NULL
 BEGIN
     CREATE TABLE dbo.controle_acessorios_nf_relatorio
@@ -165,6 +187,8 @@ SELECT
     CONVERT(VARCHAR(10), ti.Titulo_DataVencimento, 103) AS DataVencimento,
     CAST(cr.titulo_valor AS DECIMAL(18,2)) AS TituloValor,
     CAST(ti.titulo_saldo AS DECIMAL(18,2)) AS Saldo,
+    DATEDIFF(DAY, cr.Titulo_DataEmissao, CAST(GETDATE() AS DATE)) AS DiasEmAberto,
+    DATEDIFF(DAY, CAST(GETDATE() AS DATE), ti.Titulo_DataVencimento) AS DiasAteVencimento,
     v.Veiculo_Chassi,
     SUBSTRING(v.Veiculo_Descricao, 1, 25) AS Veiculo,
     chave.ChaveControle,
@@ -207,6 +231,48 @@ ORDER BY ISNULL(ctrl.emitido, 0), ti.Titulo_DataVencimento, cr.Titulo_Codigo;", 
     public static int DesmarcarEmitidas(IEnumerable<string> chaves, string usuarioCodigo, string usuarioNome, string observacao, HttpContext contexto)
     {
         return AlterarMarcacao(chaves, false, usuarioCodigo, usuarioNome, observacao, contexto);
+    }
+
+    public static void RegistrarEventoOperacao(IEnumerable<string> chaves, string acao, string usuarioCodigo, string usuarioNome, string observacao, HttpContext contexto)
+    {
+        GarantirEstrutura();
+
+        HashSet<string> selecionadas = NormalizarChaves(chaves);
+        if (selecionadas.Count == 0)
+        {
+            selecionadas.Add("__operacao__");
+        }
+
+        using (SqlConnection con = new SqlConnection(ConnectionString))
+        {
+            con.Open();
+            foreach (string chave in selecionadas)
+            {
+                long lancamento = LancamentoDaChave(chave);
+                using (SqlCommand cmd = new SqlCommand(@"
+INSERT INTO dbo.controle_acessorios_nf_log
+(
+    chave_controle, lancamento, acao, usuario_codigo, usuario_nome, observacao, ip, pagina
+)
+VALUES
+(
+    @chave_controle, @lancamento, NULLIF(@acao, N''), NULLIF(@usuario_codigo, N''), NULLIF(@usuario_nome, N''), NULLIF(@observacao, N''), NULLIF(@ip, N''), NULLIF(@pagina, N'')
+);", con))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandTimeout = TimeoutSqlSegundos;
+                    cmd.Parameters.Add("@chave_controle", SqlDbType.NVarChar, 180).Value = Limitar(chave, 180);
+                    cmd.Parameters.Add("@lancamento", SqlDbType.BigInt).Value = lancamento == 0 ? (object)DBNull.Value : lancamento;
+                    cmd.Parameters.Add("@acao", SqlDbType.NVarChar, 40).Value = Limitar(acao, 40);
+                    cmd.Parameters.Add("@usuario_codigo", SqlDbType.NVarChar, 50).Value = Limitar(usuarioCodigo, 50);
+                    cmd.Parameters.Add("@usuario_nome", SqlDbType.NVarChar, 160).Value = Limitar(usuarioNome, 160);
+                    cmd.Parameters.Add("@observacao", SqlDbType.NVarChar, 300).Value = Limitar(observacao, 300);
+                    cmd.Parameters.Add("@ip", SqlDbType.NVarChar, 80).Value = Limitar(Ip(contexto), 80);
+                    cmd.Parameters.Add("@pagina", SqlDbType.NVarChar, 260).Value = Limitar(Pagina(contexto), 260);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 
     public static DataTable ListarItensRelatorio(long idRelatorio)
@@ -329,6 +395,113 @@ ORDER BY gerado_em DESC, id_relatorio DESC;", con))
             cmd.Parameters.Add("@fim", SqlDbType.DateTime2).Value = data.Date.AddDays(1);
             cmd.Parameters.Add("@usuario_codigo", SqlDbType.NVarChar, 50).Value = Limitar(usuarioCodigo, 50);
             cmd.Parameters.Add("@usuario_nome", SqlDbType.NVarChar, 160).Value = Limitar(usuarioNome, 160);
+            DataTable tabela = new DataTable();
+            adapter.Fill(tabela);
+            return tabela;
+        }
+    }
+
+    public static DataTable ListarConciliadosResolvidos()
+    {
+        GarantirEstrutura();
+
+        using (SqlConnection con = new SqlConnection(ConnectionString))
+        using (SqlCommand cmd = new SqlCommand(@"
+WITH Abertos AS
+(
+    SELECT
+        CONVERT(NVARCHAR(40), cr.Titulo_Codigo) + N'|' + ISNULL(CONVERT(NVARCHAR(60), cr.titulo_numero), N'') + N'|' + ISNULL(v.Veiculo_Chassi, N'') AS ChaveControle
+    FROM [GrupoBali_DealernetWF].[dbo].RFN_ContasAPagar cr WITH (NOLOCK)
+    INNER JOIN [GrupoBali_DealernetWF].[dbo].titulo ti WITH (NOLOCK)
+        ON ti.Titulo_Codigo = cr.Titulo_Codigo
+       AND ti.Titulo_EmpresaCod = cr.Titulo_EmpresaCod
+    INNER JOIN [GrupoBali_DealernetWF].[dbo].veiculo v WITH (NOLOCK)
+        ON v.veiculo_Codigo = ti.Titulo_VeiculoCod
+    WHERE cr.titulo_status = 'AUT'
+      AND cr.titulo_pessoacod = 219982
+)
+SELECT TOP (300)
+    c.chave_controle AS ChaveControle,
+    c.lancamento AS Lancamento,
+    c.numero_titulo AS NumeroTitulo,
+    c.loja AS Loja,
+    c.fornecedor AS Fornecedor,
+    CONVERT(VARCHAR(10), c.data_vencimento, 103) AS DataVencimento,
+    c.saldo AS ValorNF,
+    c.veiculo_chassi AS VeiculoChassi,
+    c.veiculo AS Veiculo,
+    c.marcado_usuario_nome AS UsuarioNome,
+    c.marcado_em AS MarcadoEm,
+    c.atualizado_em AS AtualizadoEm
+FROM dbo.controle_acessorios_nf c WITH (NOLOCK)
+LEFT JOIN Abertos a
+    ON a.ChaveControle = c.chave_controle
+WHERE c.emitido = 1
+  AND a.ChaveControle IS NULL
+ORDER BY c.atualizado_em DESC, c.lancamento DESC;", con))
+        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+        {
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
+            DataTable tabela = new DataTable();
+            adapter.Fill(tabela);
+            return tabela;
+        }
+    }
+
+    public static DataTable ListarUltimosEventos(int total)
+    {
+        GarantirEstrutura();
+        if (total <= 0) total = 20;
+        if (total > 100) total = 100;
+
+        using (SqlConnection con = new SqlConnection(ConnectionString))
+        using (SqlCommand cmd = new SqlCommand(@"
+SELECT TOP (@total)
+    criado_em AS DataHora,
+    chave_controle AS ChaveControle,
+    lancamento AS Lancamento,
+    acao AS Acao,
+    usuario_nome AS UsuarioNome,
+    observacao AS Observacao,
+    ip AS Ip
+FROM dbo.controle_acessorios_nf_log WITH (NOLOCK)
+ORDER BY criado_em DESC, id_log DESC;", con))
+        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+        {
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
+            cmd.Parameters.Add("@total", SqlDbType.Int).Value = total;
+            DataTable tabela = new DataTable();
+            adapter.Fill(tabela);
+            return tabela;
+        }
+    }
+
+    public static DataTable ListarAuditoriaRelatorio(long idRelatorio)
+    {
+        GarantirEstrutura();
+
+        using (SqlConnection con = new SqlConnection(ConnectionString))
+        using (SqlCommand cmd = new SqlCommand(@"
+SELECT TOP (200)
+    i.criado_em AS DataHora,
+    N'ITEM_RELATORIO' AS Acao,
+    r.usuario_nome AS UsuarioNome,
+    r.usuario_codigo AS UsuarioCodigo,
+    N'Lan' + NCHAR(231) + N'amento ' + CONVERT(NVARCHAR(30), i.lancamento) + N' - ' + ISNULL(i.veiculo_chassi, N'') AS Observacao,
+    r.ip AS Ip,
+    i.chave_controle AS ChaveControle
+FROM dbo.controle_acessorios_nf_relatorio_item i WITH (NOLOCK)
+INNER JOIN dbo.controle_acessorios_nf_relatorio r WITH (NOLOCK)
+    ON r.id_relatorio = i.id_relatorio
+WHERE i.id_relatorio = @id_relatorio
+ORDER BY i.criado_em DESC, i.id_item DESC;", con))
+        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+        {
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
+            cmd.Parameters.Add("@id_relatorio", SqlDbType.BigInt).Value = idRelatorio;
             DataTable tabela = new DataTable();
             adapter.Fill(tabela);
             return tabela;
@@ -664,6 +837,16 @@ VALUES
         long valor;
         if (Int64.TryParse(Valor(row, coluna), out valor)) return valor;
         return 0;
+    }
+
+    private static long LancamentoDaChave(string chave)
+    {
+        string valor = (chave ?? "").Trim();
+        int separador = valor.IndexOf('|');
+        if (separador >= 0) valor = valor.Substring(0, separador);
+
+        long lancamento;
+        return Int64.TryParse(valor, out lancamento) ? lancamento : 0;
     }
 
     private static object ConverterDataOuNulo(DataRow row, string coluna)
