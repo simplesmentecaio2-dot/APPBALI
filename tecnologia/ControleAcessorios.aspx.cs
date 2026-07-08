@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Globalization;
+using System.Text;
 using System.Web;
 
 public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
@@ -9,6 +10,13 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (String.Equals(Request.QueryString["ajax"], "historico", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!UsuarioTecnologiaValido()) return;
+            RenderizarHistoricoJson();
+            return;
+        }
+
         if (!UsuarioTecnologiaValido())
         {
             return;
@@ -206,6 +214,7 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
             CarregarDashboard(dados, emitidos, pendentes, saldoPendente);
             CarregarPendencias(dados);
             CarregarAtencao(dados);
+            CarregarRelatoriosGerenciais(dados);
 
             MostrarMensagem(mensagem, sucesso);
         }
@@ -235,6 +244,46 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
 
         string classe = sucesso ? "accessory-alert is-success" : "accessory-alert is-error";
         litMensagem.Text = "<div class=\"" + classe + "\">" + HttpUtility.HtmlEncode(mensagem) + "</div>";
+    }
+
+    private void RenderizarHistoricoJson()
+    {
+        string chave = (Request.QueryString["chave"] ?? "").Trim();
+        if (chave.Length == 0 || chave.Length > 180)
+        {
+            Response.StatusCode = 400;
+            Response.ContentType = "application/json";
+            Response.Write("{\"erro\":\"Chave inválida.\"}");
+            Context.ApplicationInstance.CompleteRequest();
+            return;
+        }
+
+        DataTable historico = ControleAcessoriosDados.ListarHistorico(chave);
+        StringBuilder json = new StringBuilder();
+        json.Append("{\"chave\":\"").Append(Json(chave)).Append("\",\"itens\":[");
+        for (int i = 0; i < historico.Rows.Count; i++)
+        {
+            DataRow row = historico.Rows[i];
+            if (i > 0) json.Append(",");
+            json.Append("{");
+            json.Append("\"acao\":\"").Append(Json(AcaoHistorico(row["Acao"]))).Append("\",");
+            json.Append("\"data\":\"").Append(Json(DataHora(row["DataHora"]))).Append("\",");
+            json.Append("\"usuario\":\"").Append(Json(Convert.ToString(row["UsuarioNome"]))).Append("\",");
+            json.Append("\"observacao\":\"").Append(Json(Convert.ToString(row["Observacao"]))).Append("\"");
+            json.Append("}");
+        }
+        json.Append("]}");
+
+        Response.Clear();
+        Response.ContentType = "application/json";
+        Response.ContentEncoding = Encoding.UTF8;
+        Response.Write(json.ToString());
+        Context.ApplicationInstance.CompleteRequest();
+    }
+
+    private string Json(string texto)
+    {
+        return HttpUtility.JavaScriptStringEncode(texto ?? "");
     }
 
     private void CarregarDashboard(DataTable dados, int emitidos, int pendentes, decimal saldoPendente)
@@ -289,6 +338,27 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
         rptAtencao.DataSource = atencao;
         rptAtencao.DataBind();
         pnlSemAtencao.Visible = atencao.Rows.Count == 0;
+    }
+
+    private void CarregarRelatoriosGerenciais(DataTable dados)
+    {
+        DataTable mensal = RelatorioMensal(dados);
+        DataTable lojas = ResumoPorLoja(dados);
+        DataTable fornecedores = RelatorioPorFornecedor(dados);
+        DataTable vencidos = RelatorioVencidos(dados);
+
+        rptRelatorioMensal.DataSource = mensal;
+        rptRelatorioMensal.DataBind();
+        rptRelatorioLoja.DataSource = lojas;
+        rptRelatorioLoja.DataBind();
+        rptRelatorioFornecedor.DataSource = fornecedores;
+        rptRelatorioFornecedor.DataBind();
+        rptRelatorioVencidos.DataSource = vencidos;
+        rptRelatorioVencidos.DataBind();
+        rptGraficoLojaStatus.DataSource = lojas;
+        rptGraficoLojaStatus.DataBind();
+
+        pnlSemRelatoriosGerenciais.Visible = dados == null || dados.Rows.Count == 0;
     }
 
     private void CarregarConciliacao()
@@ -566,6 +636,132 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
         return resumo.DefaultView.ToTable();
     }
 
+    private DataTable RelatorioMensal(DataTable dados)
+    {
+        DataTable resumo = new DataTable();
+        resumo.Columns.Add("Mes", typeof(string));
+        resumo.Columns.Add("Total", typeof(int));
+        resumo.Columns.Add("Pendentes", typeof(int));
+        resumo.Columns.Add("Emitidos", typeof(int));
+        resumo.Columns.Add("ValorPendente", typeof(decimal));
+        resumo.Columns.Add("Ordem", typeof(string));
+
+        if (dados == null || !dados.Columns.Contains("DataEmissaoValor")) return resumo;
+
+        foreach (DataRow row in dados.Rows)
+        {
+            DateTime data;
+            if (!DateTime.TryParse(Convert.ToString(row["DataEmissaoValor"]), out data)) continue;
+
+            string ordem = data.ToString("yyyyMM");
+            string mes = data.ToString("MMMM/yyyy", new CultureInfo("pt-BR"));
+            DataRow destino = EncontrarLinha(resumo, "Ordem", ordem);
+            if (destino == null)
+            {
+                destino = resumo.NewRow();
+                destino["Mes"] = new CultureInfo("pt-BR").TextInfo.ToTitleCase(mes);
+                destino["Total"] = 0;
+                destino["Pendentes"] = 0;
+                destino["Emitidos"] = 0;
+                destino["ValorPendente"] = 0m;
+                destino["Ordem"] = ordem;
+                resumo.Rows.Add(destino);
+            }
+
+            destino["Total"] = Convert.ToInt32(destino["Total"]) + 1;
+            if (EstaEmitido(row["Emitido"]))
+            {
+                destino["Emitidos"] = Convert.ToInt32(destino["Emitidos"]) + 1;
+            }
+            else
+            {
+                destino["Pendentes"] = Convert.ToInt32(destino["Pendentes"]) + 1;
+                destino["ValorPendente"] = DecimalValor(destino["ValorPendente"]) + DecimalValor(row["Saldo"]);
+            }
+        }
+
+        resumo.DefaultView.Sort = "Ordem DESC";
+        return resumo.DefaultView.ToTable();
+    }
+
+    private DataTable RelatorioPorFornecedor(DataTable dados)
+    {
+        DataTable resumo = new DataTable();
+        resumo.Columns.Add("Fornecedor", typeof(string));
+        resumo.Columns.Add("Total", typeof(int));
+        resumo.Columns.Add("Pendentes", typeof(int));
+        resumo.Columns.Add("Emitidos", typeof(int));
+        resumo.Columns.Add("ValorPendente", typeof(decimal));
+
+        if (dados == null || !dados.Columns.Contains("Fornecedor")) return resumo;
+
+        foreach (DataRow row in dados.Rows)
+        {
+            string fornecedor = Convert.ToString(row["Fornecedor"]).Trim();
+            if (String.IsNullOrWhiteSpace(fornecedor)) fornecedor = "-";
+
+            DataRow destino = EncontrarLinha(resumo, "Fornecedor", fornecedor);
+            if (destino == null)
+            {
+                destino = resumo.NewRow();
+                destino["Fornecedor"] = fornecedor;
+                destino["Total"] = 0;
+                destino["Pendentes"] = 0;
+                destino["Emitidos"] = 0;
+                destino["ValorPendente"] = 0m;
+                resumo.Rows.Add(destino);
+            }
+
+            destino["Total"] = Convert.ToInt32(destino["Total"]) + 1;
+            if (EstaEmitido(row["Emitido"]))
+            {
+                destino["Emitidos"] = Convert.ToInt32(destino["Emitidos"]) + 1;
+            }
+            else
+            {
+                destino["Pendentes"] = Convert.ToInt32(destino["Pendentes"]) + 1;
+                destino["ValorPendente"] = DecimalValor(destino["ValorPendente"]) + DecimalValor(row["Saldo"]);
+            }
+        }
+
+        resumo.DefaultView.Sort = "Pendentes DESC, ValorPendente DESC, Fornecedor ASC";
+        return resumo.DefaultView.ToTable();
+    }
+
+    private DataTable RelatorioVencidos(DataTable dados)
+    {
+        DataTable vencidos = dados == null ? new DataTable() : dados.Clone();
+        if (dados == null) return vencidos;
+
+        foreach (DataRow row in dados.Rows)
+        {
+            if (EstaEmitido(row["Emitido"])) continue;
+
+            DateTime vencimento;
+            if (!DateTime.TryParse(Convert.ToString(row["DataVencimentoValor"]), out vencimento)) continue;
+            if (vencimento.Date < DateTime.Today)
+            {
+                vencidos.ImportRow(row);
+            }
+        }
+
+        vencidos.DefaultView.Sort = "DataVencimentoValor ASC, Loja ASC, Lancamento ASC";
+        return vencidos.DefaultView.ToTable();
+    }
+
+    private DataRow EncontrarLinha(DataTable tabela, string coluna, string valor)
+    {
+        foreach (DataRow row in tabela.Rows)
+        {
+            if (String.Equals(Convert.ToString(row[coluna]), valor, StringComparison.OrdinalIgnoreCase))
+            {
+                return row;
+            }
+        }
+
+        return null;
+    }
+
     private DataTable FiltrarPendentes(DataTable dados)
     {
         DataTable pendencias = dados == null ? new DataTable() : dados.Clone();
@@ -671,6 +867,19 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
     protected string NumeroData(object valor)
     {
         return DecimalValor(valor).ToString("0.00", CultureInfo.InvariantCulture);
+    }
+
+    protected string Percentual(object parte, object total)
+    {
+        decimal valorParte = DecimalValor(parte);
+        decimal valorTotal = DecimalValor(total);
+        if (valorParte <= 0 || valorTotal <= 0) return "0";
+
+        decimal percentual = (valorParte * 100m) / valorTotal;
+        if (percentual > 100m) percentual = 100m;
+        if (percentual < 2m) percentual = 2m;
+
+        return percentual.ToString("0.##", CultureInfo.InvariantCulture);
     }
 
     protected string UrlHistorico(object chave)

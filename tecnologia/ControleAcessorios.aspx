@@ -579,6 +579,166 @@
             padding: 18px 22px;
         }
 
+        .accessory-selection-bar {
+            position: fixed;
+            left: 50%;
+            bottom: 18px;
+            z-index: 9998;
+            display: none;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 14px;
+            align-items: center;
+            width: min(980px, calc(100vw - 32px));
+            border: 1px solid rgba(47, 111, 189, .22);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .96);
+            box-shadow: 0 24px 60px rgba(15, 23, 42, .18);
+            padding: 12px 14px;
+            transform: translateX(-50%);
+        }
+
+        .accessory-selection-bar.is-visible {
+            display: grid;
+        }
+
+        .accessory-selection-info strong,
+        .accessory-selection-info span {
+            display: block;
+        }
+
+        .accessory-selection-info strong {
+            color: var(--tech-ink);
+            font-size: 14px;
+            font-weight: 950;
+        }
+
+        .accessory-selection-info span {
+            color: var(--tech-muted);
+            font-size: 11px;
+            font-weight: 850;
+            margin-top: 3px;
+        }
+
+        .accessory-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, .52);
+            padding: 20px;
+        }
+
+        .accessory-modal.is-visible {
+            display: flex;
+        }
+
+        .accessory-modal-box {
+            width: min(760px, 100%);
+            max-height: min(780px, calc(100vh - 48px));
+            overflow: auto;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 30px 90px rgba(15, 23, 42, .28);
+        }
+
+        .accessory-modal-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            border-bottom: 1px solid var(--tech-line);
+            padding: 18px;
+        }
+
+        .accessory-modal-head span,
+        .accessory-modal-grid span {
+            display: block;
+            color: var(--tech-muted);
+            font-size: 10px;
+            font-weight: 950;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+        }
+
+        .accessory-modal-head h3 {
+            margin: 4px 0 0;
+            color: var(--tech-ink);
+            font-size: 22px;
+            font-weight: 950;
+        }
+
+        .accessory-modal-close {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--tech-line);
+            border-radius: 999px;
+            background: #fff;
+            color: var(--tech-ink);
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 950;
+        }
+
+        .accessory-modal-body {
+            padding: 18px;
+        }
+
+        .accessory-modal-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .accessory-modal-grid div {
+            border: 1px solid var(--tech-line);
+            border-radius: var(--tech-radius);
+            background: #fbfdff;
+            padding: 12px;
+        }
+
+        .accessory-modal-grid strong {
+            display: block;
+            color: var(--tech-ink);
+            font-size: 13px;
+            font-weight: 950;
+            margin-top: 5px;
+            overflow-wrap: anywhere;
+        }
+
+        .accessory-chart {
+            display: grid;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .accessory-chart-row {
+            display: grid;
+            grid-template-columns: minmax(120px, 210px) minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .accessory-chart-label,
+        .accessory-chart-value {
+            color: var(--tech-muted);
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .accessory-chart-track {
+            height: 12px;
+            border-radius: 999px;
+            background: #eef2f7;
+            overflow: hidden;
+        }
+
+        .accessory-chart-bar {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--tech-brand), #19a974);
+        }
+
         @media (max-width: 980px) {
             .accessory-summary {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -605,7 +765,10 @@
             .accessory-report-head,
             .accessory-report-meta,
             .accessory-report-filters,
-            .accessory-lot-item {
+            .accessory-lot-item,
+            .accessory-selection-bar,
+            .accessory-modal-grid,
+            .accessory-chart-row {
                 grid-template-columns: 1fr;
             }
 
@@ -688,6 +851,7 @@
                 <button type="button" class="accessory-tab-button" data-accessory-tab="pendencias">Pend&ecirc;ncias</button>
                 <button type="button" class="accessory-tab-button" data-accessory-tab="conciliacao">Concilia&ccedil;&atilde;o</button>
                 <button type="button" class="accessory-tab-button" data-accessory-tab="auditoria">Auditoria</button>
+                <button type="button" class="accessory-tab-button" data-accessory-tab="relatorios">Relat&oacute;rios</button>
                 <button type="button" class="accessory-tab-button" data-accessory-tab="reimpressao">Reimpress&atilde;o</button>
             </div>
 
@@ -972,7 +1136,7 @@
                                 <tbody>
                         </HeaderTemplate>
                         <ItemTemplate>
-                                    <tr class="<%# LinhaClasse(Eval("Emitido"), Eval("DataVencimentoValor")) %>" data-accessory-row data-issued="<%# EstaEmitido(Eval("Emitido")) ? "1" : "0" %>" data-store="<%# Chave(Eval("Loja")) %>" data-due="<%# DataIso(Eval("DataVencimentoValor")) %>" data-value="<%# NumeroData(Eval("Saldo")) %>" data-search="<%# Chave(String.Concat(Eval("Lancamento"), " ", Eval("NumeroTitulo"), " ", Eval("Loja"), " ", Eval("Fornecedor"), " ", Eval("Veiculo_Chassi"), " ", Eval("Veiculo"))) %>">
+                                    <tr class="<%# LinhaClasse(Eval("Emitido"), Eval("DataVencimentoValor")) %>" data-accessory-row data-issued="<%# EstaEmitido(Eval("Emitido")) ? "1" : "0" %>" data-store="<%# Chave(Eval("Loja")) %>" data-due="<%# DataIso(Eval("DataVencimentoValor")) %>" data-value="<%# NumeroData(Eval("Saldo")) %>" data-key="<%# Chave(Eval("ChaveControle")) %>" data-launch="<%# Chave(Eval("Lancamento")) %>" data-title-number="<%# Chave(Eval("NumeroTitulo")) %>" data-supplier="<%# Chave(Eval("Fornecedor")) %>" data-emission-label="<%# Chave(Eval("DataEmissao")) %>" data-due-label="<%# Chave(Eval("DataVencimento")) %>" data-value-label="<%# Chave(Moeda(Eval("Saldo"))) %>" data-original-label="<%# Chave(Moeda(Eval("TituloValor"))) %>" data-vehicle="<%# Chave(Eval("Veiculo")) %>" data-chassis="<%# Chave(Eval("Veiculo_Chassi")) %>" data-status-label="<%# Chave(StatusTexto(Eval("Emitido"))) %>" data-note="<%# Chave(Eval("Observacao")) %>" data-search="<%# Chave(String.Concat(Eval("Lancamento"), " ", Eval("NumeroTitulo"), " ", Eval("Loja"), " ", Eval("Fornecedor"), " ", Eval("Veiculo_Chassi"), " ", Eval("Veiculo"))) %>">
                                         <td class="accessory-check">
                                             <input type="checkbox" name="acessorioSelecionado" value="<%# Chave(Eval("ChaveControle")) %>" aria-label="Selecionar lan&ccedil;amento <%# Html(Eval("Lancamento")) %>" />
                                         </td>
@@ -1002,9 +1166,10 @@
                                             <small><%# Html(Eval("Observacao")) %></small>
                                         </td>
                                         <td>
+                                            <button type="button" class="accessory-mini-link" data-detail-button>detalhes</button>
+                                            <button type="button" class="accessory-mini-link" data-history-key="<%# Chave(Eval("ChaveControle")) %>">hist&oacute;rico</button>
                                             <button type="button" class="accessory-mini-link is-copy" data-copy="<%# Chave(Eval("Veiculo_Chassi")) %>">chassi</button>
                                             <button type="button" class="accessory-mini-link is-copy" data-copy="<%# Chave(Eval("NumeroTitulo")) %>">t&iacute;tulo</button>
-                                            <a class="accessory-mini-link" href="<%# UrlHistorico(Eval("ChaveControle")) %>">hist&oacute;rico</a>
                                         </td>
                                     </tr>
                         </ItemTemplate>
@@ -1103,6 +1268,130 @@
                         <button type="button" class="tech-button" onclick="imprimirRelatorioAcessorios('relatorioAtual')">Imprimir relat&oacute;rio</button>
                     </div>
                 </asp:Panel>
+            </section>
+
+            <section class="tech-panel accessory-tab-panel" id="tab-relatorios" data-accessory-tab-panel="relatorios" hidden>
+                <div class="tech-panel-head">
+                    <div>
+                        <span class="tech-panel-kicker">Relat&oacute;rios gerenciais</span>
+                        <h2>Consolida&ccedil;&atilde;o de acess&oacute;rios</h2>
+                        <p>Acompanhe volume mensal, lojas, fornecedores, vencidos e o gr&aacute;fico de pend&ecirc;ncias por loja.</p>
+                    </div>
+                </div>
+
+                <asp:Panel ID="pnlSemRelatoriosGerenciais" runat="server" CssClass="tech-empty" Visible="false">
+                    Nenhum dado dispon&iacute;vel para montar relat&oacute;rios agora.
+                </asp:Panel>
+
+                <h3 class="accessory-section-title">Mensal consolidado</h3>
+                <div class="accessory-table-wrap">
+                    <asp:Repeater ID="rptRelatorioMensal" runat="server" EnableViewState="false">
+                        <HeaderTemplate>
+                            <table class="tech-table accessory-table">
+                                <thead><tr><th>M&ecirc;s</th><th>Total</th><th>Pendentes</th><th>Emitidos</th><th>Valor pendente</th></tr></thead>
+                                <tbody>
+                        </HeaderTemplate>
+                        <ItemTemplate>
+                                    <tr>
+                                        <td><strong><%# Html(Eval("Mes")) %></strong></td>
+                                        <td><%# Html(Eval("Total")) %></td>
+                                        <td><%# Html(Eval("Pendentes")) %></td>
+                                        <td><%# Html(Eval("Emitidos")) %></td>
+                                        <td><strong><%# Moeda(Eval("ValorPendente")) %></strong></td>
+                                    </tr>
+                        </ItemTemplate>
+                        <FooterTemplate>
+                                </tbody>
+                            </table>
+                        </FooterTemplate>
+                    </asp:Repeater>
+                </div>
+
+                <h3 class="accessory-section-title">Por loja</h3>
+                <div class="accessory-table-wrap">
+                    <asp:Repeater ID="rptRelatorioLoja" runat="server" EnableViewState="false">
+                        <HeaderTemplate>
+                            <table class="tech-table accessory-table">
+                                <thead><tr><th>Loja</th><th>Total</th><th>Pendentes</th><th>Emitidos</th><th>Valor pendente</th></tr></thead>
+                                <tbody>
+                        </HeaderTemplate>
+                        <ItemTemplate>
+                                    <tr>
+                                        <td><strong><%# Html(Eval("Loja")) %></strong></td>
+                                        <td><%# Html(Eval("Total")) %></td>
+                                        <td><%# Html(Eval("Pendentes")) %></td>
+                                        <td><%# Html(Eval("Emitidos")) %></td>
+                                        <td><strong><%# Moeda(Eval("ValorPendente")) %></strong></td>
+                                    </tr>
+                        </ItemTemplate>
+                        <FooterTemplate>
+                                </tbody>
+                            </table>
+                        </FooterTemplate>
+                    </asp:Repeater>
+                </div>
+
+                <h3 class="accessory-section-title">Por fornecedor</h3>
+                <div class="accessory-table-wrap">
+                    <asp:Repeater ID="rptRelatorioFornecedor" runat="server" EnableViewState="false">
+                        <HeaderTemplate>
+                            <table class="tech-table accessory-table">
+                                <thead><tr><th>Fornecedor</th><th>Total</th><th>Pendentes</th><th>Emitidos</th><th>Valor pendente</th></tr></thead>
+                                <tbody>
+                        </HeaderTemplate>
+                        <ItemTemplate>
+                                    <tr>
+                                        <td><strong><%# Html(Eval("Fornecedor")) %></strong></td>
+                                        <td><%# Html(Eval("Total")) %></td>
+                                        <td><%# Html(Eval("Pendentes")) %></td>
+                                        <td><%# Html(Eval("Emitidos")) %></td>
+                                        <td><strong><%# Moeda(Eval("ValorPendente")) %></strong></td>
+                                    </tr>
+                        </ItemTemplate>
+                        <FooterTemplate>
+                                </tbody>
+                            </table>
+                        </FooterTemplate>
+                    </asp:Repeater>
+                </div>
+
+                <h3 class="accessory-section-title">Vencidos</h3>
+                <div class="accessory-table-wrap">
+                    <asp:Repeater ID="rptRelatorioVencidos" runat="server" EnableViewState="false">
+                        <HeaderTemplate>
+                            <table class="tech-table accessory-table">
+                                <thead><tr><th>Vencimento</th><th>Loja</th><th>Lan&ccedil;amento</th><th>Fornecedor</th><th>Chassi</th><th>Valor</th></tr></thead>
+                                <tbody>
+                        </HeaderTemplate>
+                        <ItemTemplate>
+                                    <tr>
+                                        <td><strong><%# Html(Eval("DataVencimento")) %></strong><%# DiasEmAbertoTexto(Eval("Emitido"), Eval("DiasEmAberto")) %></td>
+                                        <td><%# Html(Eval("Loja")) %></td>
+                                        <td><%# Html(Eval("Lancamento")) %></td>
+                                        <td><%# Html(Eval("Fornecedor")) %></td>
+                                        <td><code><%# Html(Eval("Veiculo_Chassi")) %></code></td>
+                                        <td><strong><%# Moeda(Eval("Saldo")) %></strong></td>
+                                    </tr>
+                        </ItemTemplate>
+                        <FooterTemplate>
+                                </tbody>
+                            </table>
+                        </FooterTemplate>
+                    </asp:Repeater>
+                </div>
+
+                <h3 class="accessory-section-title">Gr&aacute;fico de pend&ecirc;ncias por loja</h3>
+                <div class="accessory-chart">
+                    <asp:Repeater ID="rptGraficoLojaStatus" runat="server" EnableViewState="false">
+                        <ItemTemplate>
+                            <div class="accessory-chart-row">
+                                <span class="accessory-chart-label"><%# Html(Eval("Loja")) %></span>
+                                <div class="accessory-chart-track"><div class="accessory-chart-bar" style="width:<%# Percentual(Eval("Pendentes"), Eval("Total")) %>%"></div></div>
+                                <span class="accessory-chart-value"><%# Html(Eval("Pendentes")) %>/<%# Html(Eval("Total")) %></span>
+                            </div>
+                        </ItemTemplate>
+                    </asp:Repeater>
+                </div>
             </section>
 
             <section class="tech-panel accessory-tab-panel" id="tab-reimpressao" data-accessory-tab-panel="reimpressao" hidden>
@@ -1224,6 +1513,31 @@
             </section>
         </main>
     </form>
+    <div class="accessory-selection-bar" id="accessorySelectionBar" aria-live="polite">
+        <div class="accessory-selection-info">
+            <strong id="accessorySelectionTitle">0 selecionados</strong>
+            <span id="accessorySelectionMeta">Valor total: R$ 0,00</span>
+        </div>
+        <div class="accessory-buttons">
+            <button type="button" class="tech-button" id="accessoryBarMark">Marcar NFs emitidas</button>
+            <button type="button" class="tech-button-secondary" id="accessoryBarUnmark">Desmarcar</button>
+            <button type="button" class="tech-button-secondary" id="accessoryBarClear">Limpar sele&ccedil;&atilde;o</button>
+        </div>
+    </div>
+
+    <div class="accessory-modal" id="accessoryModal" aria-hidden="true">
+        <div class="accessory-modal-box" role="dialog" aria-modal="true" aria-labelledby="accessoryModalTitle">
+            <div class="accessory-modal-head">
+                <div>
+                    <span id="accessoryModalKicker">Detalhes</span>
+                    <h3 id="accessoryModalTitle">Lan&ccedil;amento</h3>
+                </div>
+                <button type="button" class="accessory-modal-close" id="accessoryModalClose" aria-label="Fechar">&times;</button>
+            </div>
+            <div class="accessory-modal-body" id="accessoryModalBody"></div>
+        </div>
+    </div>
+
     <div class="accessory-busy" id="accessoryBusy" aria-live="polite" aria-hidden="true">
         <div class="accessory-busy-box" id="accessoryBusyText">Processando...</div>
     </div>
@@ -1248,6 +1562,18 @@
             var tabButtons = document.querySelectorAll('[data-accessory-tab]');
             var tabPanels = document.querySelectorAll('[data-accessory-tab-panel]');
             var currentPage = 1;
+            var selectionBar = document.getElementById('accessorySelectionBar');
+            var selectionTitle = document.getElementById('accessorySelectionTitle');
+            var selectionMeta = document.getElementById('accessorySelectionMeta');
+            var barMark = document.getElementById('accessoryBarMark');
+            var barUnmark = document.getElementById('accessoryBarUnmark');
+            var barClear = document.getElementById('accessoryBarClear');
+            var modal = document.getElementById('accessoryModal');
+            var modalTitle = document.getElementById('accessoryModalTitle');
+            var modalKicker = document.getElementById('accessoryModalKicker');
+            var modalBody = document.getElementById('accessoryModalBody');
+            var modalClose = document.getElementById('accessoryModalClose');
+            var lastChecked = null;
 
             function rows() {
                 return document.querySelectorAll('[data-accessory-row]');
@@ -1334,7 +1660,7 @@
 
                 if (pager) pager.hidden = visibleRows.length === 0;
                 if (pagerInfo) {
-                    pagerInfo.textContent = visibleRows.length + ' registro(s) filtrado(s) · página ' + currentPage + ' de ' + pages;
+                    pagerInfo.textContent = visibleRows.length + ' registro(s) filtrado(s) - pagina ' + currentPage + ' de ' + pages;
                 }
                 if (prevPage) prevPage.disabled = currentPage <= 1;
                 if (nextPage) nextPage.disabled = currentPage >= pages;
@@ -1342,6 +1668,7 @@
                 if (empty) {
                     empty.hidden = visibleRows.length > 0 || list.length === 0;
                 }
+                updateSelectionBar();
             }
 
             function applyFilters(resetPage) {
@@ -1381,6 +1708,106 @@
                 var number = parseFloat(value || '0');
                 if (isNaN(number)) number = 0;
                 return number.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            }
+
+            function updateSelectionBar() {
+                var selected = selectedRows();
+                var total = 0;
+                for (var i = 0; i < selected.length; i++) {
+                    total += parseFloat(selected[i].getAttribute('data-value') || '0') || 0;
+                }
+
+                if (selectionTitle) {
+                    selectionTitle.textContent = selected.length + (selected.length === 1 ? ' selecionado' : ' selecionados');
+                }
+                if (selectionMeta) {
+                    selectionMeta.textContent = 'Valor total: ' + formatMoney(total);
+                }
+                if (selectionBar) {
+                    selectionBar.className = selected.length ? 'accessory-selection-bar is-visible' : 'accessory-selection-bar';
+                }
+            }
+
+            function clearSelection() {
+                var checked = document.querySelectorAll('input[name="acessorioSelecionado"]:checked');
+                for (var i = 0; i < checked.length; i++) {
+                    checked[i].checked = false;
+                }
+                if (selectAll) selectAll.checked = false;
+                lastChecked = null;
+                updateSelectionBar();
+            }
+
+            function serverClick(id) {
+                var button = document.getElementById(id);
+                if (button) button.click();
+            }
+
+            function escapeHtml(value) {
+                return String(value || '').replace(/[&<>"']/g, function (char) {
+                    return {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;'
+                    }[char];
+                });
+            }
+
+            function openModal(kicker, title, html) {
+                if (!modal || !modalBody) return;
+                if (modalKicker) modalKicker.textContent = kicker || 'Detalhes';
+                if (modalTitle) modalTitle.textContent = title || 'Lancamento';
+                modalBody.innerHTML = html || '';
+                modal.className = 'accessory-modal is-visible';
+                modal.setAttribute('aria-hidden', 'false');
+            }
+
+            function closeModal() {
+                if (!modal) return;
+                modal.className = 'accessory-modal';
+                modal.setAttribute('aria-hidden', 'true');
+                if (modalBody) modalBody.innerHTML = '';
+            }
+
+            function fieldHtml(label, value) {
+                return '<div><span>' + escapeHtml(label) + '</span><strong>' + escapeHtml(value || '-') + '</strong></div>';
+            }
+
+            function detailsHtml(row) {
+                return '<div class="accessory-modal-grid">' +
+                    fieldHtml('Status', row.getAttribute('data-status-label')) +
+                    fieldHtml('Loja', row.getAttribute('data-store')) +
+                    fieldHtml('Lancamento', row.getAttribute('data-launch')) +
+                    fieldHtml('Titulo', row.getAttribute('data-title-number')) +
+                    fieldHtml('Fornecedor', row.getAttribute('data-supplier')) +
+                    fieldHtml('Emissao', row.getAttribute('data-emission-label')) +
+                    fieldHtml('Vencimento', row.getAttribute('data-due-label')) +
+                    fieldHtml('Valor saldo', row.getAttribute('data-value-label')) +
+                    fieldHtml('Valor original', row.getAttribute('data-original-label')) +
+                    fieldHtml('Veiculo', row.getAttribute('data-vehicle')) +
+                    fieldHtml('Chassi', row.getAttribute('data-chassis')) +
+                    fieldHtml('Observacao', row.getAttribute('data-note')) +
+                    '</div>';
+            }
+
+            function historyHtml(data) {
+                var itens = data && data.itens ? data.itens : [];
+                if (!itens.length) {
+                    return '<div class="tech-empty">Nenhum historico encontrado para este lancamento.</div>';
+                }
+
+                var html = '<div class="accessory-history-list">';
+                for (var i = 0; i < itens.length; i++) {
+                    html += '<div class="accessory-history-item">' +
+                        '<strong>' + escapeHtml(itens[i].acao) + '</strong>' +
+                        '<span>' + escapeHtml(itens[i].data) + ' - ' + escapeHtml(itens[i].usuario) + '</span>' +
+                        '<small>' + escapeHtml(itens[i].observacao) + '</small>' +
+                        '</div>';
+                }
+                html += '</div>';
+                return html;
             }
 
             window.acionarCarregando = function (message) {
@@ -1440,6 +1867,37 @@
                 }
             }
 
+            function bindModalButtons() {
+                var details = document.querySelectorAll('[data-detail-button]');
+                for (var i = 0; i < details.length; i++) {
+                    details[i].addEventListener('click', function () {
+                        var row = this.closest ? this.closest('tr') : this.parentNode.parentNode;
+                        if (!row) return;
+                        openModal('Detalhes do lancamento', 'Lancamento ' + (row.getAttribute('data-launch') || '-'), detailsHtml(row));
+                    });
+                }
+
+                var history = document.querySelectorAll('[data-history-key]');
+                for (var h = 0; h < history.length; h++) {
+                    history[h].addEventListener('click', function () {
+                        var key = this.getAttribute('data-history-key') || '';
+                        if (!key) return;
+                        openModal('Historico', 'Carregando...', '<div class="tech-empty">Buscando historico do lancamento...</div>');
+                        fetch('ControleAcessorios.aspx?ajax=historico&chave=' + encodeURIComponent(key), { credentials: 'same-origin' })
+                            .then(function (response) {
+                                if (!response.ok) throw new Error('Falha ao carregar historico');
+                                return response.json();
+                            })
+                            .then(function (data) {
+                                openModal('Historico do lancamento', 'Lancamento ' + key, historyHtml(data));
+                            })
+                            .catch(function () {
+                                openModal('Historico', 'Nao foi possivel carregar', '<div class="tech-empty">Tente novamente em alguns instantes.</div>');
+                            });
+                    });
+                }
+            }
+
             window.confirmarSelecionadosAntigo = function (message) {
                 var checked = document.querySelectorAll('input[name="acessorioSelecionado"]:checked');
                 if (!checked.length) {
@@ -1456,6 +1914,38 @@
             if (pageSize) pageSize.addEventListener('change', function () { currentPage = 1; renderPage(); });
             if (prevPage) prevPage.addEventListener('click', function () { currentPage--; renderPage(); });
             if (nextPage) nextPage.addEventListener('click', function () { currentPage++; renderPage(); });
+            if (barMark) barMark.addEventListener('click', function () { serverClick('<%= btnMarcarEmitidas.ClientID %>'); });
+            if (barUnmark) barUnmark.addEventListener('click', function () { serverClick('<%= btnDesmarcarEmitidas.ClientID %>'); });
+            if (barClear) barClear.addEventListener('click', clearSelection);
+            if (modalClose) modalClose.addEventListener('click', closeModal);
+            if (modal) {
+                modal.addEventListener('click', function (event) {
+                    if (event.target === modal) closeModal();
+                });
+            }
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') closeModal();
+            });
+            document.addEventListener('click', function (event) {
+                var target = event.target || event.srcElement;
+                if (!target || target.name !== 'acessorioSelecionado') return;
+
+                var checks = Array.prototype.slice.call(document.querySelectorAll('input[name="acessorioSelecionado"]'));
+                if (event.shiftKey && lastChecked) {
+                    var start = checks.indexOf(lastChecked);
+                    var end = checks.indexOf(target);
+                    if (start > -1 && end > -1) {
+                        var min = Math.min(start, end);
+                        var max = Math.max(start, end);
+                        for (var i = min; i <= max; i++) {
+                            var row = checks[i].closest ? checks[i].closest('tr') : checks[i].parentNode.parentNode;
+                            if (row && row.style.display !== 'none') checks[i].checked = target.checked;
+                        }
+                    }
+                }
+                lastChecked = target;
+                updateSelectionBar();
+            });
 
             var fastFilters = document.querySelectorAll('[data-accessory-fast]');
             for (var f = 0; f < fastFilters.length; f++) {
@@ -1480,6 +1970,7 @@
                         var check = list[i].querySelector('input[name="acessorioSelecionado"]');
                         if (check) check.checked = selectAll.checked;
                     }
+                    updateSelectionBar();
                 });
             }
 
@@ -1492,6 +1983,7 @@
                         var check = list[i].querySelector('input[name="acessorioSelecionado"]');
                         if (check) check.checked = true;
                     }
+                    updateSelectionBar();
                 });
             }
 
@@ -1518,6 +2010,7 @@
 
             fillStores();
             bindCopyButtons();
+            bindModalButtons();
             applyFilters(true);
 
             window.imprimirRelatorioAcessorios = function (id) {
@@ -1531,10 +2024,12 @@
                 }
 
                 janela.document.open();
-                janela.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Relat\\u00f3rio de NF</title>');
-                janela.document.write('<style>body{font-family:Arial,Helvetica,sans-serif;margin:24px;color:#111827}h3{margin:0;font-size:22px}.accessory-report{border:0}.accessory-report-head{display:grid;grid-template-columns:1fr auto;gap:18px;border-bottom:1px solid #d1d5db;padding-bottom:12px}.accessory-report-head p{margin:6px 0 0;color:#4b5563;font-size:12px}.accessory-report-total{border:1px solid #d1fae5;background:#ecfdf3;padding:12px;min-width:190px;text-align:right}.accessory-report-total span,.accessory-report-meta span{display:block;color:#047857;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.accessory-report-total strong{display:block;color:#065f46;font-size:24px;margin-top:5px}.accessory-report-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;border-bottom:1px solid #e5e7eb;background:#f9fafb;padding:10px 0;margin-bottom:12px}.accessory-report-meta div{padding:0 8px}.accessory-report-meta strong{display:block;font-size:12px;margin-top:4px}.accessory-report-body{padding-top:4px}.accessory-report-table{width:100%;border-collapse:collapse}.accessory-report-table th,.accessory-report-table td{border-bottom:1px solid #e5e7eb;padding:7px 6px;font-size:12px;text-align:left}.accessory-report-table th{background:#f3f4f6;color:#4b5563;font-size:10px;text-transform:uppercase;letter-spacing:.04em}@page{size:A4 portrait;margin:12mm}@media print{body{margin:0}}</style>');
+                janela.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Relatorio de NF</title>');
+                janela.document.write('<style>body{font-family:Segoe UI,Arial,Helvetica,sans-serif;margin:0;background:#eef3f8;color:#172033}.print-shell{max-width:980px;margin:22px auto;background:#fff;border:1px solid #dce7f2;border-radius:18px;box-shadow:0 24px 60px rgba(15,23,42,.13);padding:22px}.print-brand{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;border-bottom:2px solid #172033;padding-bottom:14px;margin-bottom:16px}.print-brand strong{display:block;color:#172033;font-size:24px;font-weight:950;letter-spacing:.04em}.print-brand span{display:block;color:#64748b;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.12em}.accessory-report{border:0}.accessory-report-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:start;border-bottom:1px solid #d8e2ee;padding-bottom:12px}.accessory-report-head h3{margin:0;color:#111827;font-size:22px;font-weight:950}.accessory-report-head p{margin:6px 0 0;color:#526175;font-size:12px;font-weight:650}.accessory-report-total{border:1px solid #b7efd2;border-radius:14px;background:linear-gradient(135deg,#ecfdf3,#f8fffb);padding:12px 14px;min-width:200px;text-align:right}.accessory-report-total span,.accessory-report-meta span{display:block;color:#047857;font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.06em}.accessory-report-total strong{display:block;color:#065f46;font-size:25px;font-weight:950;margin-top:5px}.accessory-report-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;border:1px solid #e2eaf3;border-radius:14px;background:#f8fafc;padding:10px;margin:14px 0}.accessory-report-meta div{padding:2px 4px}.accessory-report-meta strong{display:block;color:#172033;font-size:12px;font-weight:900;margin-top:4px}.accessory-report-body{padding-top:2px}.accessory-report-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #dce7f2;border-radius:13px;overflow:hidden;margin-bottom:12px}.accessory-report-table th,.accessory-report-table td{border-bottom:1px solid #e6edf5;padding:8px 9px;font-size:12px;text-align:left;vertical-align:top}.accessory-report-table tr:last-child td{border-bottom:0}.accessory-report-table th{background:#f1f5f9;color:#475569;font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.06em}.accessory-report-table td{color:#172033;font-weight:700}.accessory-section-title{margin:14px 0 8px;color:#172033;font-size:14px;font-weight:950}@page{size:A4 portrait;margin:10mm}@media print{body{background:#fff}.print-shell{max-width:none;margin:0;border:0;border-radius:0;box-shadow:none;padding:0}.print-brand{break-after:avoid}.accessory-report-table{break-inside:auto}.accessory-report-table tr{break-inside:avoid}.accessory-report-actions{display:none!important}}</style>');
                 janela.document.write('</head><body>');
+                janela.document.write('<div class="print-shell"><div class="print-brand"><div><strong>GRUPO BALI</strong><span>Controle de acessorios</span></div><span>Relatorio para conferencia de NF</span></div>');
                 janela.document.write(area.innerHTML);
+                janela.document.write('</div>');
                 janela.document.write('</body></html>');
                 janela.document.close();
                 janela.focus();
