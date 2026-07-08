@@ -65,7 +65,7 @@
 
         .accessory-tools {
             display: grid;
-            grid-template-columns: minmax(240px, 420px) auto;
+            grid-template-columns: minmax(150px, 190px) minmax(190px, 250px) minmax(170px, 220px) minmax(260px, 1fr);
             align-items: end;
             gap: 14px;
             margin-bottom: 14px;
@@ -112,6 +112,14 @@
             background: #e5f6eb !important;
         }
 
+        .accessory-row.is-overdue td {
+            background: #fff1f2 !important;
+        }
+
+        .accessory-row.is-due-soon td {
+            background: #fffbeb !important;
+        }
+
         .accessory-check {
             width: 46px;
             text-align: center !important;
@@ -147,6 +155,98 @@
 
         .accessory-mark small {
             margin-top: 4px;
+        }
+
+        .accessory-due {
+            display: inline-flex;
+            align-items: center;
+            min-height: 22px;
+            margin-top: 5px;
+            padding: 0 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 950;
+        }
+
+        .accessory-due.is-overdue {
+            background: #ffe4e6;
+            color: #be123c;
+        }
+
+        .accessory-due.is-today,
+        .accessory-due.is-soon {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .accessory-operation-fields {
+            display: grid;
+            grid-template-columns: minmax(220px, 1fr) minmax(160px, 240px);
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .accessory-mini-link {
+            display: inline-flex;
+            align-items: center;
+            min-height: 28px;
+            border: 1px solid rgba(47, 111, 189, .18);
+            border-radius: var(--tech-radius);
+            background: rgba(47, 111, 189, .08);
+            color: var(--tech-brand);
+            font-size: 11px;
+            font-weight: 950;
+            padding: 0 9px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .accessory-history {
+            border: 1px solid var(--tech-line);
+            border-radius: var(--tech-radius);
+            background: #fff;
+            margin: 0 0 14px;
+            padding: 14px;
+        }
+
+        .accessory-history h3 {
+            margin: 0;
+            color: var(--tech-ink);
+            font-size: 17px;
+            font-weight: 950;
+        }
+
+        .accessory-history-list {
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .accessory-history-item {
+            border: 1px solid #edf2f7;
+            border-radius: var(--tech-radius);
+            background: #fbfdff;
+            padding: 10px;
+        }
+
+        .accessory-history-item strong,
+        .accessory-history-item span,
+        .accessory-history-item small {
+            display: block;
+        }
+
+        .accessory-history-item strong {
+            color: var(--tech-ink);
+            font-size: 13px;
+            font-weight: 950;
+        }
+
+        .accessory-history-item span,
+        .accessory-history-item small {
+            color: var(--tech-muted);
+            font-size: 11px;
+            font-weight: 800;
+            margin-top: 3px;
         }
 
         .accessory-tabs {
@@ -300,7 +400,7 @@
 
         .accessory-report-filters {
             display: grid;
-            grid-template-columns: minmax(180px, 240px) auto;
+            grid-template-columns: minmax(180px, 240px) auto auto;
             gap: 10px;
             align-items: end;
             margin-bottom: 14px;
@@ -357,6 +457,7 @@
                 flex: 1 1 180px;
             }
 
+            .accessory-operation-fields,
             .accessory-report-head,
             .accessory-report-meta,
             .accessory-report-filters,
@@ -453,19 +554,66 @@
 
                 <div class="accessory-tools">
                     <label class="tech-search" for="accessoryStatus">
-                        <span>Visualizar</span>
+                        <span>Status</span>
                         <select id="accessoryStatus">
                             <option value="todos">Todos</option>
                             <option value="pendentes">Somente pendentes</option>
                             <option value="emitidos">Somente emitidos</option>
                         </select>
                     </label>
+                    <label class="tech-search" for="accessoryStore">
+                        <span>Loja</span>
+                        <select id="accessoryStore">
+                            <option value="todas">Todas as lojas</option>
+                        </select>
+                    </label>
+                    <label class="tech-search" for="accessoryDue">
+                        <span>Vencimento</span>
+                        <select id="accessoryDue">
+                            <option value="todos">Todos</option>
+                            <option value="vencidos">Vencidos</option>
+                            <option value="hoje">Vence hoje</option>
+                            <option value="proximos">Hoje e amanh&atilde;</option>
+                        </select>
+                    </label>
                     <div class="accessory-buttons">
                         <asp:Button ID="btnAtualizar" runat="server" Text="Atualizar listagem" CssClass="tech-button-secondary" OnClick="btnAtualizar_Click" />
+                        <button type="button" class="tech-button-secondary" id="btnSelectPendingVisible">Selecionar pendentes vis&iacute;veis</button>
+                        <asp:Button ID="btnExportarLista" runat="server" Text="Exportar Excel" CssClass="tech-button-secondary" OnClick="btnExportarLista_Click" />
                         <asp:Button ID="btnMarcarEmitidas" runat="server" Text="Marcar NFs emitidas" CssClass="tech-button" OnClientClick="return confirmarSelecionados('Marcar as linhas selecionadas como NFs emitidas?');" OnClick="btnMarcarEmitidas_Click" />
                         <asp:Button ID="btnDesmarcarEmitidas" runat="server" Text="Desmarcar selecionadas" CssClass="tech-danger-button" OnClientClick="return confirmarSelecionados('Desmarcar as linhas selecionadas?');" OnClick="btnDesmarcarEmitidas_Click" />
                     </div>
                 </div>
+
+                <div class="accessory-operation-fields">
+                    <label class="tech-field" for="<%= txtObservacao.ClientID %>">
+                        <span>Observa&ccedil;&atilde;o da opera&ccedil;&atilde;o</span>
+                        <asp:TextBox ID="txtObservacao" runat="server" MaxLength="300" autocomplete="off" placeholder="Ex.: conferido com financeiro" />
+                    </label>
+                    <label class="tech-field" for="<%= txtSenhaDesmarcar.ClientID %>">
+                        <span>Senha para desmarcar</span>
+                        <asp:TextBox ID="txtSenhaDesmarcar" runat="server" TextMode="Password" autocomplete="new-password" placeholder="@bali2025" />
+                    </label>
+                </div>
+
+                <asp:Panel ID="pnlHistorico" runat="server" CssClass="accessory-history" Visible="false">
+                    <h3>Hist&oacute;rico do lan&ccedil;amento</h3>
+                    <small>Chave: <asp:Literal ID="litHistoricoChave" runat="server" /></small>
+                    <div class="accessory-history-list">
+                        <asp:Repeater ID="rptHistorico" runat="server" EnableViewState="false">
+                            <ItemTemplate>
+                                <div class="accessory-history-item">
+                                    <strong><%# AcaoHistorico(Eval("Acao")) %></strong>
+                                    <span><%# DataHora(Eval("DataHora")) %> &middot; <%# Html(Eval("UsuarioNome")) %></span>
+                                    <small><%# Html(Eval("Observacao")) %></small>
+                                </div>
+                            </ItemTemplate>
+                        </asp:Repeater>
+                    </div>
+                    <asp:Panel ID="pnlSemHistorico" runat="server" CssClass="tech-empty" Visible="false">
+                        Nenhum hist&oacute;rico encontrado para este lan&ccedil;amento.
+                    </asp:Panel>
+                </asp:Panel>
 
                 <div class="accessory-table-wrap">
                     <asp:Repeater ID="rptAcessorios" runat="server" EnableViewState="false">
@@ -482,12 +630,13 @@
                                         <th>Valores</th>
                                         <th>Ve&iacute;culo</th>
                                         <th>Marca&ccedil;&atilde;o</th>
+                                        <th>A&ccedil;&otilde;es</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                         </HeaderTemplate>
                         <ItemTemplate>
-                                    <tr class="<%# LinhaClasse(Eval("Emitido")) %>" data-accessory-row data-search="<%# Chave(String.Concat(Eval("Lancamento"), " ", Eval("NumeroTitulo"), " ", Eval("Loja"), " ", Eval("Fornecedor"), " ", Eval("Veiculo_Chassi"), " ", Eval("Veiculo"))) %>">
+                                    <tr class="<%# LinhaClasse(Eval("Emitido"), Eval("DataVencimentoValor")) %>" data-accessory-row data-issued="<%# EstaEmitido(Eval("Emitido")) ? "1" : "0" %>" data-store="<%# Chave(Eval("Loja")) %>" data-due="<%# DataIso(Eval("DataVencimentoValor")) %>" data-search="<%# Chave(String.Concat(Eval("Lancamento"), " ", Eval("NumeroTitulo"), " ", Eval("Loja"), " ", Eval("Fornecedor"), " ", Eval("Veiculo_Chassi"), " ", Eval("Veiculo"))) %>">
                                         <td class="accessory-check">
                                             <input type="checkbox" name="acessorioSelecionado" value="<%# Chave(Eval("ChaveControle")) %>" aria-label="Selecionar lan&ccedil;amento <%# Html(Eval("Lancamento")) %>" />
                                         </td>
@@ -501,6 +650,7 @@
                                         <td>
                                             <strong>Emiss&atilde;o: <%# Html(Eval("DataEmissao")) %></strong>
                                             <small>Vencimento: <%# Html(Eval("DataVencimento")) %></small>
+                                            <%# VencimentoTexto(Eval("Emitido"), Eval("DataVencimentoValor")) %>
                                         </td>
                                         <td>
                                             <strong><%# Moeda(Eval("Saldo")) %></strong>
@@ -510,7 +660,11 @@
                                             <strong><%# Html(Eval("Veiculo")) %></strong>
                                             <code><%# Html(Eval("Veiculo_Chassi")) %></code>
                                         </td>
-                                        <td class="accessory-mark"><%# Marcacao(Eval("Emitido"), Eval("MarcadoUsuario"), Eval("MarcadoEm")) %></td>
+                                        <td class="accessory-mark">
+                                            <%# Marcacao(Eval("Emitido"), Eval("MarcadoUsuario"), Eval("MarcadoEm")) %>
+                                            <small><%# Html(Eval("Observacao")) %></small>
+                                        </td>
+                                        <td><a class="accessory-mini-link" href="<%# UrlHistorico(Eval("ChaveControle")) %>">Hist&oacute;rico</a></td>
                                     </tr>
                         </ItemTemplate>
                         <FooterTemplate>
@@ -544,11 +698,30 @@
                             <div><span>Itens</span><strong><asp:Literal ID="litRelatorioAtualItens" runat="server" /></strong></div>
                         </div>
                         <div class="accessory-report-body">
+                            <asp:Repeater ID="rptSubtotaisAtual" runat="server" EnableViewState="false">
+                                <HeaderTemplate>
+                                    <table class="accessory-report-table" style="margin-bottom:12px">
+                                        <thead><tr><th>Loja</th><th>Itens</th><th>Subtotal</th></tr></thead>
+                                        <tbody>
+                                </HeaderTemplate>
+                                <ItemTemplate>
+                                            <tr>
+                                                <td><%# Html(Eval("Loja")) %></td>
+                                                <td><%# Html(Eval("Itens")) %></td>
+                                                <td><%# Moeda(Eval("ValorTotal")) %></td>
+                                            </tr>
+                                </ItemTemplate>
+                                <FooterTemplate>
+                                        </tbody>
+                                    </table>
+                                </FooterTemplate>
+                            </asp:Repeater>
                             <asp:Repeater ID="rptRelatorioAtual" runat="server" EnableViewState="false">
                                 <HeaderTemplate>
                                     <table class="accessory-report-table">
                                         <thead>
                                             <tr>
+                                                <th>Loja</th>
                                                 <th>Lan&ccedil;amento</th>
                                                 <th>T&iacute;tulo</th>
                                                 <th>Chassi</th>
@@ -559,6 +732,7 @@
                                 </HeaderTemplate>
                                 <ItemTemplate>
                                             <tr>
+                                                <td><%# Html(Eval("Loja")) %></td>
                                                 <td><%# Html(Eval("Lancamento")) %></td>
                                                 <td><%# Html(Eval("NumeroTitulo")) %></td>
                                                 <td><%# Html(Eval("VeiculoChassi")) %></td>
@@ -595,6 +769,7 @@
                         <asp:TextBox ID="txtRelatorioData" runat="server" autocomplete="off" />
                     </label>
                     <asp:Button ID="btnBuscarRelatorioDia" runat="server" Text="Carregar relat&#243;rio do dia" CssClass="tech-button" OnClick="btnBuscarRelatorioDia_Click" />
+                    <asp:Button ID="btnExportarRelatorioDia" runat="server" Text="Exportar Excel" CssClass="tech-button-secondary" OnClick="btnExportarRelatorioDia_Click" />
                 </div>
 
                 <asp:Panel ID="pnlLotesDia" runat="server" Visible="false">
@@ -606,7 +781,7 @@
                                         <strong>Relat&oacute;rio #<%# Html(Eval("IdRelatorio")) %></strong>
                                         <span><%# DataHora(Eval("GeradoEm")) %> &middot; <%# Html(Eval("UsuarioNome")) %></span>
                                     </div>
-                                    <small><%# Html(Eval("TotalItens")) %> itens &middot; <%# Moeda(Eval("ValorTotal")) %></small>
+                                    <small><%# Html(Eval("TotalItens")) %> itens &middot; <%# Moeda(Eval("ValorTotal")) %> &middot; <a href="<%# UrlRelatorio(Eval("IdRelatorio")) %>">abrir lote</a></small>
                                 </div>
                             </ItemTemplate>
                         </asp:Repeater>
@@ -632,11 +807,30 @@
                             <div><span>Origem</span><strong>Marca&ccedil;&otilde;es do dia</strong></div>
                         </div>
                         <div class="accessory-report-body">
+                            <asp:Repeater ID="rptSubtotaisDia" runat="server" EnableViewState="false">
+                                <HeaderTemplate>
+                                    <table class="accessory-report-table" style="margin-bottom:12px">
+                                        <thead><tr><th>Loja</th><th>Itens</th><th>Subtotal</th></tr></thead>
+                                        <tbody>
+                                </HeaderTemplate>
+                                <ItemTemplate>
+                                            <tr>
+                                                <td><%# Html(Eval("Loja")) %></td>
+                                                <td><%# Html(Eval("Itens")) %></td>
+                                                <td><%# Moeda(Eval("ValorTotal")) %></td>
+                                            </tr>
+                                </ItemTemplate>
+                                <FooterTemplate>
+                                        </tbody>
+                                    </table>
+                                </FooterTemplate>
+                            </asp:Repeater>
                             <asp:Repeater ID="rptRelatorioDia" runat="server" EnableViewState="false">
                                 <HeaderTemplate>
                                     <table class="accessory-report-table">
                                         <thead>
                                             <tr>
+                                                <th>Loja</th>
                                                 <th>Lan&ccedil;amento</th>
                                                 <th>T&iacute;tulo</th>
                                                 <th>Chassi</th>
@@ -647,6 +841,7 @@
                                 </HeaderTemplate>
                                 <ItemTemplate>
                                             <tr>
+                                                <td><%# Html(Eval("Loja")) %></td>
                                                 <td><%# Html(Eval("Lancamento")) %></td>
                                                 <td><%# Html(Eval("NumeroTitulo")) %></td>
                                                 <td><%# Html(Eval("VeiculoChassi")) %></td>
@@ -677,8 +872,11 @@
         (function () {
             var search = document.getElementById('accessorySearch');
             var status = document.getElementById('accessoryStatus');
+            var store = document.getElementById('accessoryStore');
+            var due = document.getElementById('accessoryDue');
             var empty = document.getElementById('accessoryEmptyFilter');
             var selectAll = document.getElementById('accessorySelectAll');
+            var selectPendingVisible = document.getElementById('btnSelectPendingVisible');
             var tabButtons = document.querySelectorAll('[data-accessory-tab]');
             var tabPanels = document.querySelectorAll('[data-accessory-tab-panel]');
 
@@ -686,19 +884,75 @@
                 return document.querySelectorAll('[data-accessory-row]');
             }
 
+            function two(value) {
+                return value < 10 ? '0' + value : '' + value;
+            }
+
+            function dateIso(offset) {
+                var data = new Date();
+                data.setHours(0, 0, 0, 0);
+                data.setDate(data.getDate() + offset);
+                return data.getFullYear() + '-' + two(data.getMonth() + 1) + '-' + two(data.getDate());
+            }
+
+            function dueOk(row, filter) {
+                if (filter === 'todos') return true;
+                if (row.getAttribute('data-issued') === '1') return false;
+
+                var value = row.getAttribute('data-due') || '';
+                if (!value) return false;
+
+                var today = dateIso(0);
+                var tomorrow = dateIso(1);
+
+                if (filter === 'vencidos') return value < today;
+                if (filter === 'hoje') return value === today;
+                if (filter === 'proximos') return value <= tomorrow;
+                return true;
+            }
+
+            function fillStores() {
+                if (!store) return;
+                var list = rows();
+                var seen = {};
+
+                for (var i = 0; i < list.length; i++) {
+                    var value = list[i].getAttribute('data-store') || '';
+                    if (!value || seen[value]) continue;
+                    seen[value] = true;
+                }
+
+                var names = [];
+                for (var key in seen) {
+                    if (Object.prototype.hasOwnProperty.call(seen, key)) names.push(key);
+                }
+
+                names.sort();
+                for (var n = 0; n < names.length; n++) {
+                    var option = document.createElement('option');
+                    option.value = names[n];
+                    option.textContent = names[n];
+                    store.appendChild(option);
+                }
+            }
+
             function applyFilters() {
                 var query = search ? search.value.toLowerCase().trim() : '';
                 var filter = status ? status.value : 'todos';
+                var storeFilter = store ? store.value : 'todas';
+                var dueFilter = due ? due.value : 'todos';
                 var list = rows();
                 var visible = 0;
 
                 for (var i = 0; i < list.length; i++) {
                     var row = list[i];
                     var haystack = (row.getAttribute('data-search') || row.textContent || '').toLowerCase();
-                    var issued = row.className.indexOf('is-issued') >= 0;
+                    var issued = row.getAttribute('data-issued') === '1';
                     var statusOk = filter === 'todos' || (filter === 'emitidos' && issued) || (filter === 'pendentes' && !issued);
+                    var storeOk = storeFilter === 'todas' || row.getAttribute('data-store') === storeFilter;
+                    var dueFilterOk = dueOk(row, dueFilter);
                     var searchOk = !query || haystack.indexOf(query) >= 0;
-                    var show = statusOk && searchOk;
+                    var show = statusOk && storeOk && dueFilterOk && searchOk;
                     row.style.display = show ? '' : 'none';
                     if (show) visible++;
                 }
@@ -719,6 +973,8 @@
 
             if (search) search.addEventListener('input', applyFilters);
             if (status) status.addEventListener('change', applyFilters);
+            if (store) store.addEventListener('change', applyFilters);
+            if (due) due.addEventListener('change', applyFilters);
 
             if (selectAll) {
                 selectAll.addEventListener('change', function () {
@@ -727,6 +983,18 @@
                         if (list[i].style.display === 'none') continue;
                         var check = list[i].querySelector('input[name="acessorioSelecionado"]');
                         if (check) check.checked = selectAll.checked;
+                    }
+                });
+            }
+
+            if (selectPendingVisible) {
+                selectPendingVisible.addEventListener('click', function () {
+                    var list = rows();
+                    for (var i = 0; i < list.length; i++) {
+                        if (list[i].style.display === 'none') continue;
+                        if (list[i].getAttribute('data-issued') === '1') continue;
+                        var check = list[i].querySelector('input[name="acessorioSelecionado"]');
+                        if (check) check.checked = true;
                     }
                 });
             }
@@ -751,6 +1019,9 @@
             if (window.__accessoryInitialTab) {
                 window.abrirAbaAcessorios(window.__accessoryInitialTab);
             }
+
+            fillStores();
+            applyFilters();
 
             window.imprimirRelatorioAcessorios = function (id) {
                 var area = document.getElementById(id);

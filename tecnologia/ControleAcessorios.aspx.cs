@@ -5,6 +5,8 @@ using System.Web;
 
 public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
 {
+    private const string SenhaDesmarcar = "@bali2025";
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!UsuarioTecnologiaValido())
@@ -20,6 +22,8 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
             txtRelatorioData.Text = DateTime.Today.ToString("dd/MM/yyyy");
             CarregarDados("", false);
             CarregarRelatorioDia(DateTime.Today, false);
+            CarregarRelatorioQueryString();
+            CarregarHistoricoQueryString();
         }
     }
 
@@ -34,7 +38,7 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
         if (!UsuarioTecnologiaValido()) return;
 
         string[] chaves = Request.Form.GetValues("acessorioSelecionado");
-        ControleAcessoriosDados.ControleAcessoriosRelatorioResumo relatorio = ControleAcessoriosDados.MarcarEmitidas(chaves, UsuarioCodigo(), UsuarioNome(), Context);
+        ControleAcessoriosDados.ControleAcessoriosRelatorioResumo relatorio = ControleAcessoriosDados.MarcarEmitidas(chaves, UsuarioCodigo(), UsuarioNome(), ObservacaoOperacao(), Context);
 
         if (relatorio.TotalItens == 0)
         {
@@ -51,8 +55,15 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
     {
         if (!UsuarioTecnologiaValido()) return;
 
+        if (!SenhaDesmarcar.Equals((txtSenhaDesmarcar.Text ?? "").Trim()))
+        {
+            CarregarDados("Informe a senha correta para desmarcar NFs emitidas.", false);
+            CarregarRelatorioDia(DataRelatorioSelecionada(), false);
+            return;
+        }
+
         string[] chaves = Request.Form.GetValues("acessorioSelecionado");
-        int total = ControleAcessoriosDados.DesmarcarEmitidas(chaves, UsuarioCodigo(), UsuarioNome(), Context);
+        int total = ControleAcessoriosDados.DesmarcarEmitidas(chaves, UsuarioCodigo(), UsuarioNome(), ObservacaoOperacao(), Context);
 
         if (total == 0)
         {
@@ -62,6 +73,21 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
 
         CarregarDados(total.ToString() + " registro(s) desmarcado(s).", true);
         CarregarRelatorioDia(DataRelatorioSelecionada(), false);
+    }
+
+    protected void btnExportarLista_Click(object sender, EventArgs e)
+    {
+        if (!UsuarioTecnologiaValido()) return;
+        DataTable dados = ControleAcessoriosDados.ListarAbertos();
+        ExportarExcel("controle-acessorios-listagem.xls", "Listagem atual", dados, false);
+    }
+
+    protected void btnExportarRelatorioDia_Click(object sender, EventArgs e)
+    {
+        if (!UsuarioTecnologiaValido()) return;
+        DateTime data = DataRelatorioSelecionada();
+        DataTable dados = ControleAcessoriosDados.ListarItensMarcadosNoDia(UsuarioCodigo(), UsuarioNome(), data);
+        ExportarExcel("controle-acessorios-relatorio-dia.xls", "Relat\u00f3rio do dia " + data.ToString("dd/MM/yyyy"), dados, true);
     }
 
     protected void btnBuscarRelatorioDia_Click(object sender, EventArgs e)
@@ -168,6 +194,8 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
         litRelatorioAtualTotal.Text = Moeda(SomarValor(itens));
         rptRelatorioAtual.DataSource = itens;
         rptRelatorioAtual.DataBind();
+        rptSubtotaisAtual.DataSource = SubtotaisPorLoja(itens);
+        rptSubtotaisAtual.DataBind();
         pnlRelatorioAtual.Visible = true;
     }
 
@@ -191,6 +219,8 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
         litRelatorioDiaUsuario.Text = Html(UsuarioNome());
         litRelatorioDiaItens.Text = itens.Rows.Count.ToString();
         litRelatorioDiaTotal.Text = Moeda(SomarValor(itens));
+        rptSubtotaisDia.DataSource = SubtotaisPorLoja(itens);
+        rptSubtotaisDia.DataBind();
 
         if (mostrarMensagem)
         {
@@ -203,6 +233,32 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
         {
             litMensagemRelatorio.Text = "";
         }
+    }
+
+    private void CarregarRelatorioQueryString()
+    {
+        long idRelatorio;
+        if (!Int64.TryParse(Request.QueryString["relatorio"], out idRelatorio) || idRelatorio <= 0) return;
+        CarregarRelatorioAtual(idRelatorio);
+        ClientScript.RegisterStartupScript(GetType(), "abrirOperacaoRelatorio", "window.__accessoryInitialTab='operacao';", true);
+    }
+
+    private void CarregarHistoricoQueryString()
+    {
+        string chave = (Request.QueryString["historico"] ?? "").Trim();
+        if (chave.Length == 0 || chave.Length > 180)
+        {
+            pnlHistorico.Visible = false;
+            return;
+        }
+
+        DataTable historico = ControleAcessoriosDados.ListarHistorico(chave);
+        rptHistorico.DataSource = historico;
+        rptHistorico.DataBind();
+        pnlHistorico.Visible = true;
+        pnlSemHistorico.Visible = historico.Rows.Count == 0;
+        litHistoricoChave.Text = Html(chave);
+        ClientScript.RegisterStartupScript(GetType(), "abrirOperacaoHistorico", "window.__accessoryInitialTab='operacao';", true);
     }
 
     private DateTime DataRelatorioSelecionada()
@@ -234,6 +290,47 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
         return total;
     }
 
+    private DataTable SubtotaisPorLoja(DataTable itens)
+    {
+        DataTable subtotais = new DataTable();
+        subtotais.Columns.Add("Loja", typeof(string));
+        subtotais.Columns.Add("Itens", typeof(int));
+        subtotais.Columns.Add("ValorTotal", typeof(decimal));
+
+        if (itens == null || !itens.Columns.Contains("Loja")) return subtotais;
+
+        DataView view = new DataView(itens);
+        DataTable lojas = view.ToTable(true, "Loja");
+        foreach (DataRow lojaRow in lojas.Rows)
+        {
+            string loja = Convert.ToString(lojaRow["Loja"]).Trim();
+            decimal total = 0;
+            int quantidade = 0;
+
+            foreach (DataRow item in itens.Rows)
+            {
+                if (!String.Equals(Convert.ToString(item["Loja"]).Trim(), loja, StringComparison.OrdinalIgnoreCase)) continue;
+                total += DecimalValor(item["ValorNF"]);
+                quantidade++;
+            }
+
+            DataRow subtotal = subtotais.NewRow();
+            subtotal["Loja"] = String.IsNullOrWhiteSpace(loja) ? "-" : loja;
+            subtotal["Itens"] = quantidade;
+            subtotal["ValorTotal"] = total;
+            subtotais.Rows.Add(subtotal);
+        }
+
+        return subtotais;
+    }
+
+    private string ObservacaoOperacao()
+    {
+        string texto = (txtObservacao.Text ?? "").Trim();
+        if (texto.Length > 300) texto = texto.Substring(0, 300);
+        return texto;
+    }
+
     protected string Html(object valor)
     {
         string texto = Convert.ToString(valor);
@@ -246,9 +343,18 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
         return HttpUtility.HtmlAttributeEncode(String.IsNullOrWhiteSpace(texto) ? "" : texto.Trim());
     }
 
-    protected string LinhaClasse(object emitido)
+    protected string LinhaClasse(object emitido, object vencimento)
     {
-        return EstaEmitido(emitido) ? "accessory-row is-issued" : "accessory-row";
+        if (EstaEmitido(emitido)) return "accessory-row is-issued";
+
+        DateTime data;
+        if (DateTime.TryParse(Convert.ToString(vencimento), out data))
+        {
+            if (data.Date < DateTime.Today) return "accessory-row is-overdue";
+            if (data.Date <= DateTime.Today.AddDays(1)) return "accessory-row is-due-soon";
+        }
+
+        return "accessory-row";
     }
 
     protected string StatusClasse(object emitido)
@@ -259,6 +365,35 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
     protected string StatusTexto(object emitido)
     {
         return EstaEmitido(emitido) ? "NF emitida" : "Pendente";
+    }
+
+    protected string VencimentoTexto(object emitido, object vencimento)
+    {
+        if (EstaEmitido(emitido)) return "";
+
+        DateTime data;
+        if (!DateTime.TryParse(Convert.ToString(vencimento), out data)) return "";
+        if (data.Date < DateTime.Today) return "<span class=\"accessory-due is-overdue\">Vencido</span>";
+        if (data.Date == DateTime.Today) return "<span class=\"accessory-due is-today\">Vence hoje</span>";
+        if (data.Date == DateTime.Today.AddDays(1)) return "<span class=\"accessory-due is-soon\">Vence amanh\u00e3</span>";
+        return "";
+    }
+
+    protected string DataIso(object valor)
+    {
+        DateTime data;
+        if (!DateTime.TryParse(Convert.ToString(valor), out data)) return "";
+        return data.ToString("yyyy-MM-dd");
+    }
+
+    protected string UrlHistorico(object chave)
+    {
+        return "ControleAcessorios.aspx?historico=" + Server.UrlEncode(Convert.ToString(chave));
+    }
+
+    protected string UrlRelatorio(object id)
+    {
+        return "ControleAcessorios.aspx?relatorio=" + Server.UrlEncode(Convert.ToString(id));
     }
 
     protected string Moeda(object valor)
@@ -275,6 +410,15 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
         return data.ToString("dd/MM/yyyy HH:mm:ss");
     }
 
+    protected string AcaoHistorico(object valor)
+    {
+        string acao = Convert.ToString(valor);
+        if (acao == "MARCAR_NF_EMITIDA") return "NF emitida";
+        if (acao == "DESMARCAR_NF_EMITIDA") return "NF desmarcada";
+        if (acao == "RELATORIO_GERADO") return "Relat\u00f3rio gerado";
+        return Html(acao);
+    }
+
     protected string Marcacao(object emitido, object usuario, object data)
     {
         if (!EstaEmitido(emitido)) return "-";
@@ -288,12 +432,62 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
         return HttpUtility.HtmlEncode(usuarioTexto.Trim()) + "<small>" + HttpUtility.HtmlEncode(dataTexto.Trim()) + "</small>";
     }
 
-    private bool EstaEmitido(object valor)
+    protected bool EstaEmitido(object valor)
     {
         if (valor == null || valor == DBNull.Value) return false;
         bool booleano;
         if (Boolean.TryParse(Convert.ToString(valor), out booleano)) return booleano;
         return Convert.ToString(valor) == "1";
+    }
+
+    private void ExportarExcel(string nomeArquivo, string titulo, DataTable dados, bool relatorio)
+    {
+        Response.Clear();
+        Response.Buffer = true;
+        Response.ContentEncoding = System.Text.Encoding.UTF8;
+        Response.Charset = "utf-8";
+        Response.ContentType = "application/vnd.ms-excel";
+        Response.AddHeader("Content-Disposition", "attachment; filename=" + nomeArquivo);
+        Response.Write("<html><head><meta charset='utf-8'></head><body>");
+        Response.Write("<h2>" + HttpUtility.HtmlEncode(titulo) + "</h2>");
+        Response.Write("<table border='1'>");
+
+        if (relatorio)
+        {
+            Response.Write("<tr><th>Loja</th><th>Lan\u00e7amento</th><th>T\u00edtulo</th><th>Chassi</th><th>Valor</th></tr>");
+            foreach (DataRow row in dados.Rows)
+            {
+                Response.Write("<tr>");
+                Response.Write("<td>" + Html(row["Loja"]) + "</td>");
+                Response.Write("<td>" + Html(row["Lancamento"]) + "</td>");
+                Response.Write("<td>" + Html(row["NumeroTitulo"]) + "</td>");
+                Response.Write("<td>" + Html(row["VeiculoChassi"]) + "</td>");
+                Response.Write("<td>" + Moeda(row["ValorNF"]) + "</td>");
+                Response.Write("</tr>");
+            }
+        }
+        else
+        {
+            Response.Write("<tr><th>Status</th><th>Loja</th><th>Lan\u00e7amento</th><th>T\u00edtulo</th><th>Fornecedor</th><th>Vencimento</th><th>Saldo</th><th>Chassi</th><th>Ve\u00edculo</th></tr>");
+            foreach (DataRow row in dados.Rows)
+            {
+                Response.Write("<tr>");
+                Response.Write("<td>" + StatusTexto(row["Emitido"]) + "</td>");
+                Response.Write("<td>" + Html(row["Loja"]) + "</td>");
+                Response.Write("<td>" + Html(row["Lancamento"]) + "</td>");
+                Response.Write("<td>" + Html(row["NumeroTitulo"]) + "</td>");
+                Response.Write("<td>" + Html(row["Fornecedor"]) + "</td>");
+                Response.Write("<td>" + Html(row["DataVencimento"]) + "</td>");
+                Response.Write("<td>" + Moeda(row["Saldo"]) + "</td>");
+                Response.Write("<td>" + Html(row["Veiculo_Chassi"]) + "</td>");
+                Response.Write("<td>" + Html(row["Veiculo"]) + "</td>");
+                Response.Write("</tr>");
+            }
+        }
+
+        Response.Write("</table></body></html>");
+        Response.Flush();
+        Response.End();
     }
 
     private decimal DecimalValor(object valor)

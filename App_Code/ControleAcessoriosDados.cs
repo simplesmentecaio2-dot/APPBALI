@@ -55,6 +55,7 @@ BEGIN
         desmarcado_em DATETIME2(0) NULL,
         desmarcado_usuario_codigo NVARCHAR(50) NULL,
         desmarcado_usuario_nome NVARCHAR(160) NULL,
+        observacao NVARCHAR(300) NULL,
         ip NVARCHAR(80) NULL,
         pagina NVARCHAR(260) NULL,
         atualizado_em DATETIME2(0) NOT NULL CONSTRAINT DF_controle_acessorios_nf_atualizado DEFAULT(SYSDATETIME())
@@ -70,6 +71,9 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_controle_acessorios_nf
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_controle_acessorios_nf_chassi' AND object_id = OBJECT_ID('dbo.controle_acessorios_nf'))
     CREATE INDEX IX_controle_acessorios_nf_chassi ON dbo.controle_acessorios_nf (veiculo_chassi) INCLUDE (emitido, lancamento, loja, atualizado_em);
 
+IF COL_LENGTH('dbo.controle_acessorios_nf', 'observacao') IS NULL
+    ALTER TABLE dbo.controle_acessorios_nf ADD observacao NVARCHAR(300) NULL;
+
 IF OBJECT_ID('dbo.controle_acessorios_nf_log','U') IS NULL
 BEGIN
     CREATE TABLE dbo.controle_acessorios_nf_log
@@ -80,6 +84,7 @@ BEGIN
         acao NVARCHAR(40) NOT NULL,
         usuario_codigo NVARCHAR(50) NULL,
         usuario_nome NVARCHAR(160) NULL,
+        observacao NVARCHAR(300) NULL,
         ip NVARCHAR(80) NULL,
         pagina NVARCHAR(260) NULL,
         criado_em DATETIME2(0) NOT NULL CONSTRAINT DF_controle_acessorios_nf_log_criado DEFAULT(SYSDATETIME())
@@ -88,6 +93,9 @@ END;
 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_controle_acessorios_nf_log_chave' AND object_id = OBJECT_ID('dbo.controle_acessorios_nf_log'))
     CREATE INDEX IX_controle_acessorios_nf_log_chave ON dbo.controle_acessorios_nf_log (chave_controle, criado_em DESC);
+
+IF COL_LENGTH('dbo.controle_acessorios_nf_log', 'observacao') IS NULL
+    ALTER TABLE dbo.controle_acessorios_nf_log ADD observacao NVARCHAR(300) NULL;
 
 IF OBJECT_ID('dbo.controle_acessorios_nf_relatorio','U') IS NULL
 BEGIN
@@ -116,6 +124,7 @@ BEGIN
         chave_controle NVARCHAR(180) NOT NULL,
         lancamento BIGINT NOT NULL,
         numero_titulo NVARCHAR(60) NULL,
+        loja NVARCHAR(120) NULL,
         veiculo_chassi NVARCHAR(60) NULL,
         valor_nf DECIMAL(18,2) NOT NULL,
         criado_em DATETIME2(0) NOT NULL CONSTRAINT DF_controle_acessorios_nf_relatorio_item_criado DEFAULT(SYSDATETIME())
@@ -124,6 +133,9 @@ END;
 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_controle_acessorios_nf_relatorio_item_relatorio' AND object_id = OBJECT_ID('dbo.controle_acessorios_nf_relatorio_item'))
     CREATE INDEX IX_controle_acessorios_nf_relatorio_item_relatorio ON dbo.controle_acessorios_nf_relatorio_item (id_relatorio, lancamento);
+
+IF COL_LENGTH('dbo.controle_acessorios_nf_relatorio_item', 'loja') IS NULL
+    ALTER TABLE dbo.controle_acessorios_nf_relatorio_item ADD loja NVARCHAR(120) NULL;
 ", con))
             {
                 cmd.CommandType = CommandType.Text;
@@ -160,6 +172,7 @@ SELECT
     ctrl.marcado_usuario_nome AS MarcadoUsuario,
     ctrl.marcado_usuario_codigo AS MarcadoCodigo,
     CASE WHEN ctrl.marcado_em IS NULL THEN NULL ELSE CONVERT(VARCHAR(10), ctrl.marcado_em, 103) + ' ' + CONVERT(VARCHAR(5), ctrl.marcado_em, 108) END AS MarcadoEm,
+    ctrl.observacao AS Observacao,
     ctrl.atualizado_em AS AtualizadoEm
 FROM [GrupoBali_DealernetWF].[dbo].RFN_ContasAPagar cr WITH (NOLOCK)
 INNER JOIN [GrupoBali_DealernetWF].[dbo].titulo ti WITH (NOLOCK)
@@ -186,14 +199,14 @@ ORDER BY ISNULL(ctrl.emitido, 0), ti.Titulo_DataVencimento, cr.Titulo_Codigo;", 
         }
     }
 
-    public static ControleAcessoriosRelatorioResumo MarcarEmitidas(IEnumerable<string> chaves, string usuarioCodigo, string usuarioNome, HttpContext contexto)
+    public static ControleAcessoriosRelatorioResumo MarcarEmitidas(IEnumerable<string> chaves, string usuarioCodigo, string usuarioNome, string observacao, HttpContext contexto)
     {
-        return MarcarEmitidasComRelatorio(chaves, usuarioCodigo, usuarioNome, contexto);
+        return MarcarEmitidasComRelatorio(chaves, usuarioCodigo, usuarioNome, observacao, contexto);
     }
 
-    public static int DesmarcarEmitidas(IEnumerable<string> chaves, string usuarioCodigo, string usuarioNome, HttpContext contexto)
+    public static int DesmarcarEmitidas(IEnumerable<string> chaves, string usuarioCodigo, string usuarioNome, string observacao, HttpContext contexto)
     {
-        return AlterarMarcacao(chaves, false, usuarioCodigo, usuarioNome, contexto);
+        return AlterarMarcacao(chaves, false, usuarioCodigo, usuarioNome, observacao, contexto);
     }
 
     public static DataTable ListarItensRelatorio(long idRelatorio)
@@ -205,6 +218,7 @@ ORDER BY ISNULL(ctrl.emitido, 0), ti.Titulo_DataVencimento, cr.Titulo_Codigo;", 
 SELECT
     lancamento AS Lancamento,
     numero_titulo AS NumeroTitulo,
+    ISNULL(loja, N'') AS Loja,
     veiculo_chassi AS VeiculoChassi,
     valor_nf AS ValorNF
 FROM dbo.controle_acessorios_nf_relatorio_item WITH (NOLOCK)
@@ -256,10 +270,12 @@ WHERE id_relatorio = @id_relatorio;", con))
 SELECT
     lancamento AS Lancamento,
     numero_titulo AS NumeroTitulo,
+    loja AS Loja,
     veiculo_chassi AS VeiculoChassi,
     saldo AS ValorNF,
     marcado_em AS MarcadoEm,
-    marcado_usuario_nome AS UsuarioNome
+    marcado_usuario_nome AS UsuarioNome,
+    observacao AS Observacao
 FROM dbo.controle_acessorios_nf WITH (NOLOCK)
 WHERE emitido = 1
   AND marcado_em >= @inicio
@@ -319,7 +335,48 @@ ORDER BY gerado_em DESC, id_relatorio DESC;", con))
         }
     }
 
-    private static ControleAcessoriosRelatorioResumo MarcarEmitidasComRelatorio(IEnumerable<string> chaves, string usuarioCodigo, string usuarioNome, HttpContext contexto)
+    public static DataTable ListarHistorico(string chaveControle)
+    {
+        GarantirEstrutura();
+
+        using (SqlConnection con = new SqlConnection(ConnectionString))
+        using (SqlCommand cmd = new SqlCommand(@"
+SELECT TOP (100)
+    criado_em AS DataHora,
+    acao AS Acao,
+    usuario_nome AS UsuarioNome,
+    usuario_codigo AS UsuarioCodigo,
+    observacao AS Observacao,
+    ip AS Ip,
+    CAST(NULL AS BIGINT) AS IdRelatorio
+FROM dbo.controle_acessorios_nf_log WITH (NOLOCK)
+WHERE chave_controle = @chave_controle
+UNION ALL
+SELECT TOP (100)
+    r.gerado_em AS DataHora,
+    N'RELATORIO_GERADO' AS Acao,
+    r.usuario_nome AS UsuarioNome,
+    r.usuario_codigo AS UsuarioCodigo,
+    N'Relat' + NCHAR(243) + N'rio #' + CONVERT(NVARCHAR(30), r.id_relatorio) AS Observacao,
+    r.ip AS Ip,
+    r.id_relatorio AS IdRelatorio
+FROM dbo.controle_acessorios_nf_relatorio_item i WITH (NOLOCK)
+INNER JOIN dbo.controle_acessorios_nf_relatorio r WITH (NOLOCK)
+    ON r.id_relatorio = i.id_relatorio
+WHERE i.chave_controle = @chave_controle
+ORDER BY DataHora DESC;", con))
+        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+        {
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandTimeout = TimeoutSqlSegundos;
+            cmd.Parameters.Add("@chave_controle", SqlDbType.NVarChar, 180).Value = Limitar(chaveControle, 180);
+            DataTable tabela = new DataTable();
+            adapter.Fill(tabela);
+            return tabela;
+        }
+    }
+
+    private static ControleAcessoriosRelatorioResumo MarcarEmitidasComRelatorio(IEnumerable<string> chaves, string usuarioCodigo, string usuarioNome, string observacao, HttpContext contexto)
     {
         HashSet<string> selecionadas = NormalizarChaves(chaves);
         if (selecionadas.Count == 0) return new ControleAcessoriosRelatorioResumo();
@@ -333,7 +390,7 @@ ORDER BY gerado_em DESC, id_relatorio DESC;", con))
             string chave = Valor(row, "ChaveControle");
             if (!selecionadas.Contains(chave)) continue;
 
-            SalvarMarcacao(row, true, usuarioCodigo, usuarioNome, contexto);
+            SalvarMarcacao(row, true, usuarioCodigo, usuarioNome, observacao, contexto);
             AdicionarItemRelatorio(itensRelatorio, row);
             total++;
         }
@@ -343,7 +400,7 @@ ORDER BY gerado_em DESC, id_relatorio DESC;", con))
         return CriarRelatorio(itensRelatorio, usuarioCodigo, usuarioNome, contexto);
     }
 
-    private static int AlterarMarcacao(IEnumerable<string> chaves, bool emitido, string usuarioCodigo, string usuarioNome, HttpContext contexto)
+    private static int AlterarMarcacao(IEnumerable<string> chaves, bool emitido, string usuarioCodigo, string usuarioNome, string observacao, HttpContext contexto)
     {
         HashSet<string> selecionadas = NormalizarChaves(chaves);
         if (selecionadas.Count == 0) return 0;
@@ -356,7 +413,7 @@ ORDER BY gerado_em DESC, id_relatorio DESC;", con))
             string chave = Valor(row, "ChaveControle");
             if (!selecionadas.Contains(chave)) continue;
 
-            SalvarMarcacao(row, emitido, usuarioCodigo, usuarioNome, contexto);
+            SalvarMarcacao(row, emitido, usuarioCodigo, usuarioNome, observacao, contexto);
             total++;
         }
 
@@ -411,11 +468,11 @@ VALUES
                         using (SqlCommand cmdItem = new SqlCommand(@"
 INSERT INTO dbo.controle_acessorios_nf_relatorio_item
 (
-    id_relatorio, chave_controle, lancamento, numero_titulo, veiculo_chassi, valor_nf
+    id_relatorio, chave_controle, lancamento, numero_titulo, loja, veiculo_chassi, valor_nf
 )
 VALUES
 (
-    @id_relatorio, @chave_controle, @lancamento, NULLIF(@numero_titulo, N''), NULLIF(@veiculo_chassi, N''), @valor_nf
+    @id_relatorio, @chave_controle, @lancamento, NULLIF(@numero_titulo, N''), NULLIF(@loja, N''), NULLIF(@veiculo_chassi, N''), @valor_nf
 );", con, transacao))
                         {
                             cmdItem.CommandType = CommandType.Text;
@@ -424,6 +481,7 @@ VALUES
                             cmdItem.Parameters.Add("@chave_controle", SqlDbType.NVarChar, 180).Value = Limitar(Valor(row, "ChaveControle"), 180);
                             cmdItem.Parameters.Add("@lancamento", SqlDbType.BigInt).Value = ConverterLong(row, "Lancamento");
                             cmdItem.Parameters.Add("@numero_titulo", SqlDbType.NVarChar, 60).Value = Limitar(Valor(row, "NumeroTitulo"), 60);
+                            cmdItem.Parameters.Add("@loja", SqlDbType.NVarChar, 120).Value = Limitar(Valor(row, "Loja"), 120);
                             cmdItem.Parameters.Add("@veiculo_chassi", SqlDbType.NVarChar, 60).Value = Limitar(Valor(row, "VeiculoChassi"), 60);
                             cmdItem.Parameters.Add("@valor_nf", SqlDbType.Decimal).Value = DecimalValor(row["ValorNF"]);
                             cmdItem.Parameters["@valor_nf"].Precision = 18;
@@ -454,6 +512,7 @@ VALUES
         tabela.Columns.Add("ChaveControle", typeof(string));
         tabela.Columns.Add("Lancamento", typeof(long));
         tabela.Columns.Add("NumeroTitulo", typeof(string));
+        tabela.Columns.Add("Loja", typeof(string));
         tabela.Columns.Add("VeiculoChassi", typeof(string));
         tabela.Columns.Add("ValorNF", typeof(decimal));
         return tabela;
@@ -465,12 +524,13 @@ VALUES
         item["ChaveControle"] = Valor(origem, "ChaveControle");
         item["Lancamento"] = ConverterLong(origem, "Lancamento");
         item["NumeroTitulo"] = Valor(origem, "NumeroTitulo");
+        item["Loja"] = Valor(origem, "Loja");
         item["VeiculoChassi"] = Valor(origem, "Veiculo_Chassi");
         item["ValorNF"] = DecimalValor(origem["Saldo"]);
         tabela.Rows.Add(item);
     }
 
-    private static void SalvarMarcacao(DataRow row, bool emitido, string usuarioCodigo, string usuarioNome, HttpContext contexto)
+    private static void SalvarMarcacao(DataRow row, bool emitido, string usuarioCodigo, string usuarioNome, string observacao, HttpContext contexto)
     {
         using (SqlConnection con = new SqlConnection(ConnectionString))
         using (SqlCommand cmd = new SqlCommand(@"
@@ -488,7 +548,7 @@ BEGIN
         titulo_valor, saldo, veiculo_chassi, veiculo, emitido,
         marcado_em, marcado_usuario_codigo, marcado_usuario_nome,
         desmarcado_em, desmarcado_usuario_codigo, desmarcado_usuario_nome,
-        ip, pagina, atualizado_em
+        observacao, ip, pagina, atualizado_em
     )
     VALUES
     (
@@ -501,7 +561,7 @@ BEGIN
         CASE WHEN @emitido = 0 THEN SYSDATETIME() ELSE NULL END,
         CASE WHEN @emitido = 0 THEN NULLIF(@usuario_codigo, N'') ELSE NULL END,
         CASE WHEN @emitido = 0 THEN NULLIF(@usuario_nome, N'') ELSE NULL END,
-        NULLIF(@ip, N''), NULLIF(@pagina, N''), SYSDATETIME()
+        NULLIF(@observacao, N''), NULLIF(@ip, N''), NULLIF(@pagina, N''), SYSDATETIME()
     );
 END
 ELSE
@@ -524,6 +584,7 @@ BEGIN
            desmarcado_em = CASE WHEN @emitido = 0 THEN SYSDATETIME() ELSE desmarcado_em END,
            desmarcado_usuario_codigo = CASE WHEN @emitido = 0 THEN NULLIF(@usuario_codigo, N'') ELSE desmarcado_usuario_codigo END,
            desmarcado_usuario_nome = CASE WHEN @emitido = 0 THEN NULLIF(@usuario_nome, N'') ELSE desmarcado_usuario_nome END,
+           observacao = NULLIF(@observacao, N''),
            ip = NULLIF(@ip, N''),
            pagina = NULLIF(@pagina, N''),
            atualizado_em = SYSDATETIME()
@@ -532,12 +593,12 @@ END;
 
 INSERT INTO dbo.controle_acessorios_nf_log
 (
-    chave_controle, lancamento, acao, usuario_codigo, usuario_nome, ip, pagina
+    chave_controle, lancamento, acao, usuario_codigo, usuario_nome, observacao, ip, pagina
 )
 VALUES
 (
     @chave_controle, @lancamento, CASE WHEN @emitido = 1 THEN N'MARCAR_NF_EMITIDA' ELSE N'DESMARCAR_NF_EMITIDA' END,
-    NULLIF(@usuario_codigo, N''), NULLIF(@usuario_nome, N''), NULLIF(@ip, N''), NULLIF(@pagina, N'')
+    NULLIF(@usuario_codigo, N''), NULLIF(@usuario_nome, N''), NULLIF(@observacao, N''), NULLIF(@ip, N''), NULLIF(@pagina, N'')
 );", con))
         {
             cmd.CommandType = CommandType.Text;
@@ -560,6 +621,7 @@ VALUES
             cmd.Parameters.Add("@emitido", SqlDbType.Bit).Value = emitido;
             cmd.Parameters.Add("@usuario_codigo", SqlDbType.NVarChar, 50).Value = Limitar(usuarioCodigo, 50);
             cmd.Parameters.Add("@usuario_nome", SqlDbType.NVarChar, 160).Value = Limitar(usuarioNome, 160);
+            cmd.Parameters.Add("@observacao", SqlDbType.NVarChar, 300).Value = Limitar(observacao, 300);
             cmd.Parameters.Add("@ip", SqlDbType.NVarChar, 80).Value = Limitar(Ip(contexto), 80);
             cmd.Parameters.Add("@pagina", SqlDbType.NVarChar, 260).Value = Limitar(Pagina(contexto), 260);
 
