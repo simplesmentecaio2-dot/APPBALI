@@ -189,9 +189,34 @@ public partial class tecnologia_ControleAcessorios : System.Web.UI.Page
     private decimal DecimalValor(object valor)
     {
         if (valor == null || valor == DBNull.Value) return 0;
+
+        if (valor is decimal) return (decimal)valor;
+        if (valor is int || valor is long || valor is short || valor is byte)
+        {
+            return Convert.ToDecimal(valor, CultureInfo.InvariantCulture);
+        }
+
+        if (valor is double || valor is float)
+        {
+            return Convert.ToDecimal(valor, CultureInfo.InvariantCulture);
+        }
+
+        string texto = Convert.ToString(valor).Trim();
+        if (texto.Length == 0) return 0;
+
         decimal numero;
-        if (Decimal.TryParse(Convert.ToString(valor), NumberStyles.Any, CultureInfo.InvariantCulture, out numero)) return numero;
-        if (Decimal.TryParse(Convert.ToString(valor), NumberStyles.Any, new CultureInfo("pt-BR"), out numero)) return numero;
+        CultureInfo ptBr = new CultureInfo("pt-BR");
+
+        bool temVirgula = texto.IndexOf(',') >= 0;
+        bool temPonto = texto.IndexOf('.') >= 0;
+
+        if (temVirgula && (!temPonto || texto.LastIndexOf(',') > texto.LastIndexOf('.')))
+        {
+            if (Decimal.TryParse(texto, NumberStyles.Any, ptBr, out numero)) return numero;
+        }
+
+        if (Decimal.TryParse(texto, NumberStyles.Any, CultureInfo.InvariantCulture, out numero)) return numero;
+        if (Decimal.TryParse(texto, NumberStyles.Any, ptBr, out numero)) return numero;
         return 0;
     }
 

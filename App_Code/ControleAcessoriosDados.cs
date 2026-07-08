@@ -325,9 +325,35 @@ VALUES
     private static object ConverterDecimalOuNulo(DataRow row, string coluna)
     {
         if (row == null || !row.Table.Columns.Contains(coluna) || row[coluna] == DBNull.Value) return DBNull.Value;
+
+        object valorOriginal = row[coluna];
+        if (valorOriginal is decimal) return (decimal)valorOriginal;
+        if (valorOriginal is int || valorOriginal is long || valorOriginal is short || valorOriginal is byte)
+        {
+            return Convert.ToDecimal(valorOriginal, CultureInfo.InvariantCulture);
+        }
+
+        if (valorOriginal is double || valorOriginal is float)
+        {
+            return Convert.ToDecimal(valorOriginal, CultureInfo.InvariantCulture);
+        }
+
+        string texto = Convert.ToString(valorOriginal).Trim();
+        if (texto.Length == 0) return DBNull.Value;
+
         decimal valor;
-        if (Decimal.TryParse(Convert.ToString(row[coluna]), NumberStyles.Any, CultureInfo.InvariantCulture, out valor)) return valor;
-        if (Decimal.TryParse(Convert.ToString(row[coluna]), NumberStyles.Any, new CultureInfo("pt-BR"), out valor)) return valor;
+        CultureInfo ptBr = new CultureInfo("pt-BR");
+
+        bool temVirgula = texto.IndexOf(',') >= 0;
+        bool temPonto = texto.IndexOf('.') >= 0;
+
+        if (temVirgula && (!temPonto || texto.LastIndexOf(',') > texto.LastIndexOf('.')))
+        {
+            if (Decimal.TryParse(texto, NumberStyles.Any, ptBr, out valor)) return valor;
+        }
+
+        if (Decimal.TryParse(texto, NumberStyles.Any, CultureInfo.InvariantCulture, out valor)) return valor;
+        if (Decimal.TryParse(texto, NumberStyles.Any, ptBr, out valor)) return valor;
         return DBNull.Value;
     }
 
