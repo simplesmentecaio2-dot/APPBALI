@@ -737,6 +737,7 @@ body.bali-utility-page .bali-copy-action:focus,
 
 .bali-utility-page .bali-receipt-helper {
   grid-column: 1 / -1;
+  flex: 1 1 100%;
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -770,6 +771,60 @@ body.bali-utility-page .bali-copy-action:focus,
   text-align: right;
   text-transform: none;
   letter-spacing: 0;
+}
+
+.bali-utility-page .bali-receipt-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.bali-utility-page .bali-receipt-flow article {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--utility-line);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(248, 251, 255, .96)),
+    var(--utility-brand-soft);
+}
+
+.bali-utility-page .bali-receipt-flow span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-bottom: 8px;
+  border-radius: 999px;
+  background: var(--utility-brand-soft);
+  color: var(--utility-brand-strong);
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.bali-utility-page .bali-receipt-flow strong,
+.bali-utility-page .bali-receipt-flow small {
+  display: block;
+}
+
+.bali-utility-page .bali-receipt-flow strong {
+  color: var(--utility-ink);
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.bali-utility-page .bali-receipt-flow small {
+  margin-top: 4px;
+  color: var(--utility-muted);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.bali-utility-page .bali-receipt-data-vault {
+  display: none;
 }
 
 body.bali-utility-page .bali-print-toolbar {
@@ -1396,6 +1451,7 @@ body.bali-utility-page button.bali-print-action:focus {
 
   body.bali-utility-page .bali-preview-summary-grid,
   body.bali-utility-page .bali-local-history-list,
+  .bali-utility-page .bali-receipt-flow,
   .bali-audit-filters,
   .bali-audit-summary,
   .polimento-bi-grid {

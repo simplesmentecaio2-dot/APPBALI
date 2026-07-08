@@ -8,7 +8,7 @@
 <head runat="server">
     <title>Recibo de Desconto - BYD</title>
     <link href="../css/estilo.css" rel="stylesheet" />
-    <link href="../css/bali-utility.css?v=20260707-recibo13" rel="stylesheet" />
+    <link href="../css/bali-utility.css?v=20260708-recibo14" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
@@ -129,11 +129,11 @@
 
 
 <ContentTemplate>
-<fieldset><legend>Recibo </legend>Pedido: <asp:TextBox ID="txtPedido" runat="server"></asp:TextBox>Cód. Loja: <asp:TextBox ID="txtLoja" runat="server"></asp:TextBox><asp:Button ID="btnGerar" runat="server" OnClientClick="aguarde();" Text="Gerar" OnClick="btnGerar_Click" CssClass="btns"/>
+<fieldset class="bali-receipt-card"><legend>Recibo de desconto</legend><div class="bali-receipt-helper"><div><small>Documento do cliente</small><strong>Recibo para assinatura</strong></div><em>Informe pedido e loja, gere a prévia e confira valor, veículo, chassi e nota fiscal antes de imprimir.</em></div>Pedido: <asp:TextBox ID="txtPedido" runat="server" autocomplete="off" inputmode="numeric" placeholder="Ex.: 12345"></asp:TextBox>Cód. Loja: <asp:TextBox ID="txtLoja" runat="server" autocomplete="off" inputmode="numeric" placeholder="Ex.: 01"></asp:TextBox><asp:Button ID="btnGerar" runat="server" OnClientClick="aguarde();" Text="Gerar prévia" OnClick="btnGerar_Click" CssClass="btns"/>
 
 <br />
                             <br />
-                            <img src="../img/imprimir.png" style="width: 30px; cursor: pointer;" onclick="javascript: imprimePanel()" /> <asp:Panel ID="pnlImpressao" runat="server" Width="100%" Height="100%"><div style="width: 19cm; border: 1px solid black; font-family: 'Times New Roman'; padding: 20px;" id="recibo"><div style="text-align: center"><img src="../img/header-contratoBYD.png" style="width: 671px" /></div>
+                            <div class="bali-receipt-flow"><article><span>1</span><strong>Consultar</strong><small>Pedido e código da loja.</small></article><article><span>2</span><strong>Conferir</strong><small>Cliente, veículo, valor e NF.</small></article><article><span>3</span><strong>Assinar</strong><small>Documento assinado pelo cliente.</small></article></div><div class="bali-receipt-data-vault" aria-hidden="true"><asp:Label ID="lblPlaca" runat="server"></asp:Label><asp:Label ID="lblVendedor" runat="server"></asp:Label></div><img src="../img/imprimir.png" style="width: 30px; cursor: pointer;" onclick="javascript: imprimePanel()" /> <asp:Panel ID="pnlImpressao" runat="server" Width="100%" Height="100%"><div style="width: 19cm; border: 1px solid black; font-family: 'Times New Roman'; padding: 20px;" id="recibo"><div style="text-align: center"><img src="../img/header-contratoBYD.png" style="width: 671px" /></div>
 
                                     <br /><br /><br /><div style="text-align: center; font-size: 26px; font-weight: bold;">Recibo de Desconto</div><br /><br /><br /><div style="font-size: large; text-align: center">Recebi da <asp:Label ID="Label1" Font-Bold="True" runat="server" Text="BALI AUTO ELETRICS LTDA"></asp:Label>, como desconto incondicional, <br />o valor de <asp:Label ID="Label3" runat="server" Font-Bold="True"  Text="R$"></asp:Label><asp:Label ID="lblValor" Font-Bold="True" runat="server" onKeyPress="return(MascaraMoeda(this,'.',',',event))"></asp:Label>(<asp:Label ID="lblextenso" Font-Bold="True" runat="server"></asp:Label>)
 
