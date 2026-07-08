@@ -50,6 +50,10 @@
                 <legend>Autorização</legend>
                 Pedido: <asp:TextBox ID="txtPedido" runat="server"></asp:TextBox>
                 Cód. Loja: <asp:TextBox ID="txtLoja" runat="server"></asp:TextBox>
+                Tipo: <asp:DropDownList ID="ddlTipoPolimento" runat="server">
+                    <asp:ListItem Text="Polimento completo do veículo" Value="Polimento completo do veículo"></asp:ListItem>
+                    <asp:ListItem Text="Polimento do Black Piano" Value="Polimento do Black Piano"></asp:ListItem>
+                </asp:DropDownList>
                 <asp:Button ID="btnGerar" runat="server" OnClientClick="aguarde();" Text="Gerar" OnClick="btnGerar_Click" CssClass="btns" />
                 <br /><br />
                 <img src="../img/imprimir.png" style="width: 30px; cursor: pointer;" onclick="javascript: imprimePanel()" />
@@ -123,10 +127,13 @@
                         <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">
                             Esta autorização deverá ser arquivada no sistema interno da empresa para fins de controle, rastreabilidade e comprovação da aprovação gerencial.
                         </p>
+                        <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 8px 0 7px;">
+                            <strong>Serviço autorizado: <asp:Label ID="lblTipoPolimento" runat="server" Text="Polimento completo do veículo"></asp:Label>.</strong>
+                        </p>
 
                         <div style="margin-top: 14px; font-size: 13px;"><asp:Label ID="lblData" runat="server"></asp:Label></div>
 
-                        <div style="margin-top: 44px; text-align: center; font-size: 12.5px;">
+                        <div style="margin-top: 30px; text-align: center; font-size: 12.5px;">
                             <div style="width: 64%; margin: 0 auto; border-top: 1px solid #111; padding-top: 7px;">
                                 <strong>GERÊNCIA DE VENDAS</strong><br />
                                 Gerente de Vendas<br />
@@ -167,6 +174,7 @@
                         <asp:GridView ID="gvPolimentoResumo" runat="server" AutoGenerateColumns="False" CssClass="bali-data-table" GridLines="None" EmptyDataText="Nenhuma autorização encontrada neste período.">
                             <Columns>
                                 <asp:BoundField DataField="Mes" HeaderText="Mês" />
+                                <asp:BoundField DataField="TipoPolimento" HeaderText="Tipo" />
                                 <asp:BoundField DataField="Cor" HeaderText="Cor" />
                                 <asp:BoundField DataField="Quantidade" HeaderText="Quantidade" />
                                 <asp:BoundField DataField="UltimaGeracao" HeaderText="Última geração" />
@@ -181,6 +189,7 @@
                                 <asp:BoundField DataField="GeradoEm" HeaderText="Gerado em" />
                                 <asp:BoundField DataField="Pedido" HeaderText="Pedido" />
                                 <asp:BoundField DataField="Loja" HeaderText="Loja" />
+                                <asp:BoundField DataField="TipoPolimento" HeaderText="Tipo" />
                                 <asp:BoundField DataField="Cor" HeaderText="Cor" />
                                 <asp:BoundField DataField="Veiculo" HeaderText="Veículo" />
                                 <asp:BoundField DataField="Chassi" HeaderText="Chassi" />

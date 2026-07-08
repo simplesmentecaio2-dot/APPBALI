@@ -26,6 +26,7 @@ public partial class byd_Autorizacao_polimento : System.Web.UI.Page
             lblEmpresa.Text = EmpresaDocumento;
             lblEmpresaAssinatura.Text = EmpresaDocumento;
             lblData.Text = DataExtenso(DateTime.Today);
+            lblTipoPolimento.Text = TipoPolimentoSelecionado();
             txtBIDataInicial.Text = PrimeiroDiaMes().ToString("dd/MM/yyyy");
             txtBIDataFinal.Text = DateTime.Today.ToString("dd/MM/yyyy");
             CarregarBI(false);
@@ -36,6 +37,7 @@ public partial class byd_Autorizacao_polimento : System.Web.UI.Page
     {
         string pedido = SomenteNumeros(txtPedido.Text, 12);
         string loja = SomenteNumeros(txtLoja.Text, 3);
+        string tipoPolimento = TipoPolimentoSelecionado();
         txtPedido.Text = pedido;
         txtLoja.Text = loja;
 
@@ -70,8 +72,9 @@ public partial class byd_Autorizacao_polimento : System.Web.UI.Page
             lblEmpresa.Text = EmpresaDocumento;
             lblEmpresaAssinatura.Text = EmpresaDocumento;
             lblData.Text = DataExtenso(DateTime.Today);
+            lblTipoPolimento.Text = tipoPolimento;
 
-            bool registrado = PolimentoAutorizacao.RegistrarGeracao(MarcaPolimento, pedido, loja, dados, Context);
+            bool registrado = PolimentoAutorizacao.RegistrarGeracao(MarcaPolimento, pedido, loja, tipoPolimento, dados, Context);
             CarregarBI(false);
             if (!registrado)
             {
@@ -246,6 +249,13 @@ GROUP BY
         }
         if (retorno.Length > maximo) retorno = retorno.Substring(0, maximo);
         return retorno;
+    }
+
+    private string TipoPolimentoSelecionado()
+    {
+        string tipo = ddlTipoPolimento == null ? "" : (ddlTipoPolimento.SelectedValue ?? "").Trim();
+        if (tipo.Equals("Polimento do Black Piano", StringComparison.OrdinalIgnoreCase)) return "Polimento do Black Piano";
+        return "Polimento completo do veículo";
     }
 
     private string Valor(DataRow row, string coluna)

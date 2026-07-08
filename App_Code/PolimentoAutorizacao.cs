@@ -48,6 +48,7 @@ BEGIN
         chassi NVARCHAR(60) NULL,
         placa NVARCHAR(20) NULL,
         cor NVARCHAR(80) NULL,
+        tipo_polimento NVARCHAR(80) NOT NULL CONSTRAINT DF_polimento_autorizacao_log_tipo DEFAULT(N'Polimento completo do veículo'),
         ano_modelo NVARCHAR(40) NULL,
         valor DECIMAL(18,2) NULL,
         vendedor NVARCHAR(160) NULL,
@@ -62,8 +63,27 @@ BEGIN
     );
 END;
 
+IF COL_LENGTH('dbo.polimento_autorizacao_log', 'tipo_polimento') IS NULL
+BEGIN
+    EXEC(N'ALTER TABLE dbo.polimento_autorizacao_log
+        ADD tipo_polimento NVARCHAR(80) NOT NULL
+            CONSTRAINT DF_polimento_autorizacao_log_tipo DEFAULT(N''Polimento completo do veículo'')');
+END;
+
+EXEC(N'UPDATE dbo.polimento_autorizacao_log
+   SET tipo_polimento = N''Polimento completo do veículo''
+ WHERE tipo_polimento IS NULL OR LTRIM(RTRIM(tipo_polimento)) = N''''');
+
+EXEC(N'UPDATE dbo.polimento_autorizacao_log
+   SET tipo_polimento = N''Polimento completo do veículo''
+ WHERE tipo_polimento LIKE N''Polimento completo do ve%''
+   AND tipo_polimento <> N''Polimento completo do veículo''');
+
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_polimento_autorizacao_log_marca_data_cor' AND object_id = OBJECT_ID('dbo.polimento_autorizacao_log'))
     CREATE INDEX IX_polimento_autorizacao_log_marca_data_cor ON dbo.polimento_autorizacao_log (marca, gerado_em, cor) INCLUDE (loja, unidade, pedido, chassi);
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_polimento_autorizacao_log_marca_data_tipo_cor' AND object_id = OBJECT_ID('dbo.polimento_autorizacao_log'))
+    EXEC(N'CREATE INDEX IX_polimento_autorizacao_log_marca_data_tipo_cor ON dbo.polimento_autorizacao_log (marca, gerado_em, tipo_polimento, cor) INCLUDE (loja, unidade, pedido, chassi)');
 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_polimento_autorizacao_log_chassi' AND object_id = OBJECT_ID('dbo.polimento_autorizacao_log'))
     CREATE INDEX IX_polimento_autorizacao_log_chassi ON dbo.polimento_autorizacao_log (chassi) INCLUDE (marca, pedido, loja, cor, gerado_em);
@@ -82,7 +102,7 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_polimento_autorizacao_
         }
     }
 
-    public static bool RegistrarGeracao(string marca, string pedido, string loja, DataRow dados, HttpContext contexto)
+    public static bool RegistrarGeracao(string marca, string pedido, string loja, string tipoPolimento, DataRow dados, HttpContext contexto)
     {
         try
         {
@@ -97,6 +117,7 @@ FROM dbo.polimento_autorizacao_log WITH (UPDLOCK, HOLDLOCK)
 WHERE marca = @marca
   AND pedido = @pedido
   AND loja = @loja
+  AND tipo_polimento = @tipo_polimento
   AND ISNULL(proposta_codigo, N'') = ISNULL(@proposta_codigo, N'')
   AND ISNULL(chassi, N'') = ISNULL(@chassi, N'');
 
@@ -105,14 +126,14 @@ BEGIN
     INSERT INTO dbo.polimento_autorizacao_log
     (
         marca, pedido, loja, unidade, proposta_codigo, nota_fiscal, cliente, veiculo, chassi, placa,
-        cor, ano_modelo, valor, vendedor, usuario_codigo, usuario_nome, ip, pagina,
+        cor, tipo_polimento, ano_modelo, valor, vendedor, usuario_codigo, usuario_nome, ip, pagina,
         total_geracoes, gerado_em, ultima_geracao_em, atualizado_em
     )
     VALUES
     (
         @marca, @pedido, @loja, NULLIF(@unidade, N''), NULLIF(@proposta_codigo, N''), NULLIF(@nota_fiscal, N''),
         NULLIF(@cliente, N''), NULLIF(@veiculo, N''), NULLIF(@chassi, N''), NULLIF(@placa, N''),
-        NULLIF(@cor, N''), NULLIF(@ano_modelo, N''), @valor, NULLIF(@vendedor, N''),
+        NULLIF(@cor, N''), @tipo_polimento, NULLIF(@ano_modelo, N''), @valor, NULLIF(@vendedor, N''),
         NULLIF(@usuario_codigo, N''), NULLIF(@usuario_nome, N''), NULLIF(@ip, N''), NULLIF(@pagina, N''),
         1, SYSDATETIME(), SYSDATETIME(), SYSDATETIME()
     );
@@ -126,6 +147,7 @@ BEGIN
            veiculo = NULLIF(@veiculo, N''),
            placa = NULLIF(@placa, N''),
            cor = NULLIF(@cor, N''),
+           tipo_polimento = @tipo_polimento,
            ano_modelo = NULLIF(@ano_modelo, N''),
            valor = @valor,
            vendedor = NULLIF(@vendedor, N''),
@@ -144,6 +166,7 @@ END;", con))
                 cmd.Parameters.Add("@marca", SqlDbType.NVarChar, 20).Value = Limitar(marca, 20);
                 cmd.Parameters.Add("@pedido", SqlDbType.NVarChar, 20).Value = Limitar(pedido, 20);
                 cmd.Parameters.Add("@loja", SqlDbType.NVarChar, 10).Value = Limitar(loja, 10);
+                cmd.Parameters.Add("@tipo_polimento", SqlDbType.NVarChar, 80).Value = Limitar(NormalizarTipoPolimento(tipoPolimento), 80);
                 cmd.Parameters.Add("@unidade", SqlDbType.NVarChar, 80).Value = Limitar(Valor(dados, "Unidade"), 80);
                 cmd.Parameters.Add("@proposta_codigo", SqlDbType.NVarChar, 40).Value = Limitar(Valor(dados, "Proposta_Codigo"), 40);
                 cmd.Parameters.Add("@nota_fiscal", SqlDbType.NVarChar, 40).Value = Limitar(Valor(dados, "Nota Fiscal"), 40);
@@ -182,6 +205,7 @@ END;", con))
         using (SqlCommand cmd = new SqlCommand(@"
 SELECT
     CONVERT(char(7), gerado_em, 120) AS Mes,
+    ISNULL(NULLIF(tipo_polimento, N''), N'Polimento completo do veículo') AS TipoPolimento,
     ISNULL(NULLIF(cor, N''), N'SEM COR') AS Cor,
     COUNT(1) AS Quantidade,
     CONVERT(varchar(10), MAX(ultima_geracao_em), 103) + ' ' + CONVERT(varchar(5), MAX(ultima_geracao_em), 108) AS [UltimaGeracao]
@@ -189,8 +213,8 @@ FROM dbo.polimento_autorizacao_log
 WHERE marca = @marca
   AND gerado_em >= @inicio
   AND gerado_em < @fim
-GROUP BY CONVERT(char(7), gerado_em, 120), ISNULL(NULLIF(cor, N''), N'SEM COR')
-ORDER BY Mes DESC, Quantidade DESC, Cor ASC;", con))
+GROUP BY CONVERT(char(7), gerado_em, 120), ISNULL(NULLIF(tipo_polimento, N''), N'Polimento completo do veículo'), ISNULL(NULLIF(cor, N''), N'SEM COR')
+ORDER BY Mes DESC, Quantidade DESC, TipoPolimento ASC, Cor ASC;", con))
         using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
         {
             cmd.CommandType = CommandType.Text;
@@ -215,6 +239,7 @@ SELECT TOP (200)
     CONVERT(varchar(10), gerado_em, 103) + ' ' + CONVERT(varchar(5), gerado_em, 108) AS [GeradoEm],
     pedido AS [Pedido],
     loja AS [Loja],
+    ISNULL(NULLIF(tipo_polimento, N''), N'Polimento completo do veículo') AS [TipoPolimento],
     ISNULL(NULLIF(cor, N''), N'SEM COR') AS [Cor],
     veiculo AS [Veiculo],
     chassi AS [Chassi],
@@ -292,6 +317,13 @@ ORDER BY gerado_em DESC, id_polimento DESC;", con))
         cor = (cor ?? "").Trim();
         while (cor.Contains("  ")) cor = cor.Replace("  ", " ");
         return cor.ToUpper(new CultureInfo("pt-BR"));
+    }
+
+    private static string NormalizarTipoPolimento(string tipoPolimento)
+    {
+        tipoPolimento = (tipoPolimento ?? "").Trim();
+        if (tipoPolimento.Equals("Polimento do Black Piano", StringComparison.OrdinalIgnoreCase)) return "Polimento do Black Piano";
+        return "Polimento completo do veículo";
     }
 
     private static string ValorSessao(HttpContext contexto, string chave)
