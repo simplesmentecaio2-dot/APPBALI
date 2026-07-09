@@ -3,6 +3,38 @@ body.delivery-receipt-page .delivery-query-card {
   gap: 16px;
 }
 
+body.delivery-receipt-page .delivery-screen-hero {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid var(--utility-line);
+  border-radius: 10px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .98), rgba(248, 251, 255, .94)),
+    var(--utility-brand-soft);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, .07);
+}
+
+body.delivery-receipt-page .delivery-screen-hero small {
+  color: var(--utility-muted);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+body.delivery-receipt-page .delivery-screen-hero strong {
+  color: var(--utility-ink);
+  font-size: 22px;
+  font-weight: 950;
+}
+
+body.delivery-receipt-page .delivery-screen-hero span {
+  color: var(--utility-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
 body.delivery-receipt-page .bali-query-row {
   grid-template-columns: minmax(160px, 240px) minmax(110px, 160px) minmax(280px, auto);
   padding: 16px;
@@ -16,6 +48,42 @@ body.delivery-receipt-page .bali-query-row {
 
 body.delivery-receipt-page .bali-query-actions {
   justify-content: flex-end;
+}
+
+body.delivery-receipt-page .bali-print-toolbar {
+  gap: 10px;
+}
+
+body.delivery-receipt-page button.bali-confirm-print-action {
+  appearance: none !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 138px;
+  min-height: 38px;
+  padding: 0 14px !important;
+  border: 1px solid var(--utility-line) !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  color: var(--utility-brand-strong) !important;
+  cursor: pointer;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, .08);
+}
+
+body.delivery-receipt-page button.bali-confirm-print-action:disabled {
+  opacity: .56;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+body.delivery-receipt-page.bali-print-confirmed button.bali-confirm-print-action {
+  border-color: rgba(22, 163, 74, .42) !important;
+  background: #ecfdf3 !important;
+  color: #166534 !important;
 }
 
 body.delivery-receipt-page .delivery-inline-back,
@@ -40,6 +108,40 @@ body.delivery-receipt-page .bali-preview-state {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(248, 251, 255, .98)),
     var(--utility-brand-soft);
+}
+
+body.delivery-receipt-page .delivery-print-warning {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(245, 158, 11, .34);
+  border-radius: 10px;
+  background: #fffbeb;
+  color: #92400e;
+  box-shadow: 0 12px 28px rgba(146, 64, 14, .08);
+}
+
+body.delivery-receipt-page.bali-preview-ready .delivery-print-warning {
+  display: flex;
+}
+
+body.delivery-receipt-page .delivery-print-warning strong,
+body.delivery-receipt-page .delivery-print-warning span {
+  display: block;
+}
+
+body.delivery-receipt-page .delivery-print-warning strong {
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+body.delivery-receipt-page .delivery-print-warning span {
+  font-size: 13px;
+  font-weight: 800;
 }
 
 body.delivery-receipt-page:not(.bali-preview-ready) [id$="pnlImpressao"] {
@@ -86,6 +188,7 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 }
 
 .delivery-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -100,7 +203,41 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
   width: 100%;
   max-width: 620px;
   max-height: 47px;
+  filter: contrast(1.14) saturate(1.05);
   object-fit: contain;
+}
+
+.delivery-doc-meta {
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  justify-content: flex-end;
+  max-width: 42%;
+  color: #344054;
+  font-family: Arial, sans-serif;
+  font-size: 7.5px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.delivery-doc-meta strong,
+.delivery-doc-meta span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 13px;
+  padding: 1px 5px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .86);
+}
+
+.delivery-doc-meta strong {
+  color: #1f2937;
 }
 
 .delivery-main-grid {
@@ -417,11 +554,24 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
   }
 
   body.delivery-receipt-page .bali-query-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 15;
     justify-content: stretch;
+    margin: 0 -14px -14px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--utility-line);
+    background: rgba(255, 255, 255, .96);
+    box-shadow: 0 -10px 28px rgba(15, 23, 42, .12);
   }
 
   body.delivery-receipt-page .bali-query-actions > * {
     flex: 1 1 100%;
+  }
+
+  body.delivery-receipt-page .delivery-print-warning {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   body.delivery-receipt-page [id$="pnlImpressao"] {
@@ -447,6 +597,8 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
   body.delivery-receipt-page .delivery-query-card > legend,
   body.delivery-receipt-page .bali-query-row,
   body.delivery-receipt-page .bali-preview-state,
+  body.delivery-receipt-page .delivery-screen-hero,
+  body.delivery-receipt-page .delivery-print-warning,
   body.delivery-receipt-page .bali-local-history,
   body.delivery-receipt-page .bali-preview-summary,
   body.delivery-receipt-page .bali-preview-tools {

@@ -10,10 +10,10 @@
     <title>Entrega de Veículo - Jeep</title>
     <link href="../../css/estilo.css" rel="stylesheet" />
     <link href="../../css/bali-utility.css?v=20260707-recibo13" rel="stylesheet" />
-    <link href="../../css/entrega-veiculo.css?v=20260708-entrega05" rel="stylesheet" />
+    <link href="../../css/entrega-veiculo.css?v=20260708-entrega06" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../js/js.js"></script>
-    <script src="../../js/bali-utility-print.js?v=20260708-entrega05"></script>
+    <script src="../../js/bali-utility-print.js?v=20260708-entrega06"></script>
 
 </head>
 
@@ -62,7 +62,7 @@
                             <asp:TabPanel Style="padding: 20px;" runat="server" HeaderText="TabPanel1"
                                 ID="TabPanelProcessos">
                                 <headertemplate>
-                                    Recibo
+                                    Autorização de entrega
 
                                 </headertemplate>
                                 <contenttemplate>
@@ -86,6 +86,11 @@
                                                 <section class="delivery-part">
                                                     <div class="delivery-header">
                                                         <img src="../../img/entrega_saida_jeep.png?v=20260708-entrega-header" alt="BALI JEEP" />
+                                                        <div class="delivery-doc-meta">
+                                                            <strong>Via interna</strong>
+                                                            <span>Pedido: <asp:Label ID="lblPedidoPrint" runat="server"></asp:Label></span>
+                                                            <span>Loja: <asp:Label ID="lblLojaPrint" runat="server"></asp:Label></span>
+                                                        </div>
                                                     </div>
                                                     <div class="delivery-main-grid">
                                                         <div class="delivery-card">

@@ -35,6 +35,8 @@ public partial class admfinanceiro_Recibo_Entrega : System.Web.UI.Page
         lblCor.Text = "";
         lblVendedor.Text = "";
         lblVendedorEntreg.Text = "";
+        lblPedidoPrint.Text = "";
+        lblLojaPrint.Text = "";
     }
 
     protected void btnLimpar_Click(object sender, EventArgs e)
@@ -62,6 +64,8 @@ public partial class admfinanceiro_Recibo_Entrega : System.Web.UI.Page
 
         txtpedido.Text = pedido;
         txtLoja.Text = loja;
+        lblPedidoPrint.Text = pedido;
+        lblLojaPrint.Text = loja;
 
         try
         {

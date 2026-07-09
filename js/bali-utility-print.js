@@ -48,6 +48,10 @@
     return titulo.indexOf('entrega') >= 0 ? 'Entrega de veiculo' : 'Recibo de desconto';
   }
 
+  function ehEntrega() {
+    return !!(document.body && document.body.classList && document.body.classList.contains('delivery-receipt-page'));
+  }
+
   function somenteDigitos(valor) {
     return (valor || '').replace(/\D/g, '');
   }
@@ -258,8 +262,16 @@
 
   function invalidarPrevia() {
     document.body.classList.remove('bali-preview-ready');
+    document.body.classList.remove('bali-print-confirmed');
     document.body.removeAttribute('data-bali-preview-key');
     atualizarResumoPrevia(false);
+
+    var confirmButton = document.querySelector('.bali-confirm-print-action');
+    if (confirmButton) {
+      confirmButton.disabled = true;
+      confirmButton.setAttribute('aria-disabled', 'true');
+      confirmButton.textContent = 'Conferi os dados';
+    }
 
     var printButton = document.querySelector('.bali-print-action');
     if (printButton) {
@@ -403,10 +415,24 @@
     var legend = fieldset.querySelector('legend');
     fieldset.insertBefore(row, legend && legend.nextSibling ? legend.nextSibling : fieldset.firstChild);
 
+    if (ehEntrega()) {
+      var hero = document.createElement('div');
+      hero.className = 'delivery-screen-hero';
+      hero.innerHTML = '<small>Autorização interna</small><strong>Entrega de veículo</strong><span>Consulte o pedido, confira cliente, chassi e pagamentos, depois libere a impressão.</span>';
+      fieldset.insertBefore(hero, row);
+    }
+
     var state = document.createElement('div');
     state.className = 'bali-preview-state';
     state.innerHTML = '<strong>Prévia ainda não gerada</strong><span>Informe pedido e loja, clique em Gerar e confira os dados antes de imprimir.</span>';
     fieldset.insertBefore(state, painel || row.nextSibling);
+
+    if (ehEntrega()) {
+      var warning = document.createElement('div');
+      warning.className = 'delivery-print-warning';
+      warning.innerHTML = '<div><strong>Conferência obrigatória</strong><span>Imprima somente após conferir cliente, chassi e pagamentos.</span></div>';
+      fieldset.insertBefore(warning, painel || state.nextSibling);
+    }
 
     var history = document.createElement('div');
     history.className = 'bali-local-history';
@@ -420,7 +446,11 @@
 
     var tools = document.createElement('div');
     tools.className = 'bali-preview-tools';
-    tools.innerHTML = '<strong>Visualização</strong><div><button type="button" data-zoom="-0.1">-</button><span>100%</span><button type="button" data-zoom="0.1">+</button><button type="button" data-zoom="reset">Resetar</button></div>';
+    if (ehEntrega()) {
+      tools.innerHTML = '<strong>Visualização</strong><div><button type="button" data-zoom="fit">A4 inteiro</button><button type="button" data-zoom="compact">Compacto</button><button type="button" data-zoom="reset">Normal</button><span>100%</span><button type="button" data-zoom="-0.1">-</button><button type="button" data-zoom="0.1">+</button></div>';
+    } else {
+      tools.innerHTML = '<strong>Visualização</strong><div><button type="button" data-zoom="-0.1">-</button><span>100%</span><button type="button" data-zoom="0.1">+</button><button type="button" data-zoom="reset">Resetar</button></div>';
+    }
     fieldset.insertBefore(tools, painel || summary.nextSibling);
 
     var nodes = Array.prototype.slice.call(fieldset.childNodes);
@@ -539,6 +569,29 @@
     var barra = document.createElement('div');
     barra.className = 'bali-print-toolbar';
 
+    if (ehEntrega()) {
+      var confirmar = document.createElement('button');
+      confirmar.type = 'button';
+      confirmar.className = 'bali-confirm-print-action';
+      confirmar.disabled = true;
+      confirmar.setAttribute('aria-disabled', 'true');
+      confirmar.textContent = 'Conferi os dados';
+      confirmar.addEventListener('click', function () {
+        if (!previewGerada()) {
+          toast('Gere a prévia antes de confirmar a conferência.', 'error');
+          return;
+        }
+
+        document.body.classList.add('bali-print-confirmed');
+        confirmar.disabled = false;
+        confirmar.setAttribute('aria-disabled', 'false');
+        confirmar.textContent = 'Dados conferidos';
+        atualizarEstadoPrevia();
+        toast('Conferência registrada nesta tela. Impressão liberada.', 'info');
+      });
+      barra.appendChild(confirmar);
+    }
+
     var botao = document.createElement('button');
     botao.type = 'button';
     botao.className = 'bali-print-action';
@@ -653,6 +706,19 @@
     if (label) label.textContent = Math.round(previewZoom * 100) + '%';
   }
 
+  function ajustarZoomA4Inteiro() {
+    var painel = painelImpressao();
+    var folha = painel ? painel.querySelector('.delivery-print') : null;
+    if (!painel || !folha) {
+      previewZoom = 0.82;
+      return;
+    }
+
+    var larguraFolha = folha.offsetWidth || folha.scrollWidth || 760;
+    var larguraDisponivel = Math.max(260, painel.clientWidth - 44);
+    previewZoom = Math.max(0.48, Math.min(1, larguraDisponivel / larguraFolha));
+  }
+
   function vincularFerramentasPrevia() {
     var tools = document.querySelector('.bali-preview-tools');
     if (!tools || tools.getAttribute('data-bali-tools-bound') === '1') return;
@@ -663,7 +729,9 @@
       if (!button) return;
 
       var acao = button.getAttribute('data-zoom');
-      if (acao === 'reset') previewZoom = 1;
+      if (acao === 'fit') ajustarZoomA4Inteiro();
+      else if (acao === 'compact') previewZoom = 0.82;
+      else if (acao === 'reset') previewZoom = 1;
       else previewZoom = Math.max(0.7, Math.min(1.2, previewZoom + parseFloat(acao)));
 
       aplicarZoomPrevia();
@@ -714,11 +782,25 @@
     setGerarProcessando(false);
     atualizarResumoPrevia(pronta);
 
+    var confirmButton = document.querySelector('.bali-confirm-print-action');
+    var confirmado = document.body.classList.contains('bali-print-confirmed');
+    if (confirmButton) {
+      confirmButton.disabled = !pronta;
+      confirmButton.setAttribute('aria-disabled', pronta ? 'false' : 'true');
+      if (!pronta) {
+        confirmButton.textContent = 'Conferi os dados';
+      } else if (confirmado) {
+        confirmButton.textContent = 'Dados conferidos';
+      }
+      confirmButton.title = pronta ? 'Confirme que cliente, chassi e pagamentos foram conferidos' : 'Gere a prévia antes de conferir';
+    }
+
     var printButton = document.querySelector('.bali-print-action');
     if (printButton) {
-      printButton.disabled = !pronta;
-      printButton.setAttribute('aria-disabled', pronta ? 'false' : 'true');
-      printButton.title = pronta ? 'Imprimir documento gerado' : 'Gere a pr\u00e9via antes de imprimir';
+      var podeImprimir = pronta && (!ehEntrega() || confirmado);
+      printButton.disabled = !podeImprimir;
+      printButton.setAttribute('aria-disabled', podeImprimir ? 'false' : 'true');
+      printButton.title = !pronta ? 'Gere a prévia antes de imprimir' : (podeImprimir ? 'Imprimir documento gerado' : 'Confirme a conferência dos dados antes de imprimir');
     }
 
     if (pronta) {
@@ -781,6 +863,11 @@
       return;
     }
 
+    if (ehEntrega() && !document.body.classList.contains('bali-print-confirmed')) {
+      toast('Confirme que cliente, chassi e pagamentos foram conferidos antes de imprimir.', 'error');
+      return;
+    }
+
     var printWindow = window.open('formPadrao.aspx', 'ReciboBaliPrint', 'left=50000,top=50000,width=0,height=0');
     if (!printWindow) {
       toast('O navegador bloqueou a janela de impress\u00e3o. Permita pop-ups para continuar.', 'error');
@@ -791,7 +878,7 @@
     var printHtml = html;
     if (isEntrega) {
       printHtml = '<!doctype html><html><head><meta charset="utf-8"><title>Entrega de veiculo</title>' +
-        '<link rel="stylesheet" href="/css/entrega-veiculo.css?v=20260708-entrega05">' +
+        '<link rel="stylesheet" href="/css/entrega-veiculo.css?v=20260708-entrega06">' +
         '</head><body class="delivery-print-popup">' + html + '</body></html>';
     }
 
