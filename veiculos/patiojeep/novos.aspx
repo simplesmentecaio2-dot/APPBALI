@@ -788,7 +788,7 @@
         };
     </script>
     <script src="./assets/js/patio-barcode-scanner.js?v=20260706-1" charset="utf-8"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260706-5"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260709-1"></script>
     <script>
         (function () {
             function textOf(el) { return el ? (el.textContent || '').trim() : ''; }

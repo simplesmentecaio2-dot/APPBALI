@@ -324,7 +324,7 @@
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/jspdf.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260706-4"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260709-1"></script>
 </body>
 
 </html>

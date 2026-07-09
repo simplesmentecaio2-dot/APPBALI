@@ -180,7 +180,7 @@
     <script src="../assets/popper.min.js"></script>
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260706-5"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260709-1"></script>
     <script>
         $(function () {
             if ($('#barcodeLogTable').length) {
