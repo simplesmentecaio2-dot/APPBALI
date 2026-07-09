@@ -137,6 +137,7 @@
                                 <li><a href="./historico.aspx"><i class="metismenu-icon fas fa-history"></i>Consultar</a></li>
                                 <li><a href="./relatorios.aspx"><i class="metismenu-icon fas fa-chart-line"></i>Relat&oacute;rios</a></li>
                                 <li><a href="./lojas.aspx"><i class="metismenu-icon fas fa-store"></i>Lojas</a></li>
+                                <li><a href="./permissoes.aspx"><i class="metismenu-icon fas fa-user-shield"></i>Permiss&otilde;es</a></li>
                                 <li><a href="./barcode-logs.aspx" class="mm-active"><i class="metismenu-icon fas fa-clipboard-list"></i>Logs do leitor</a></li>
                             </ul>
                         </div>

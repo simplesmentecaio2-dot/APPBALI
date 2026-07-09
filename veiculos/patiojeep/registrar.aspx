@@ -663,6 +663,12 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="./permissoes.aspx">
+                                        <i class="metismenu-icon fas fa-user-shield"></i>
+                                        Permiss&otilde;es
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="./barcode-logs.aspx">
                                         <i class="metismenu-icon fas fa-clipboard-list"></i>
                                         Logs do leitor

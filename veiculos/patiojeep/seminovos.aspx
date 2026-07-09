@@ -846,6 +846,7 @@
                                 <li><a href="./novos.aspx"><i class="metismenu-icon fas fa-car"></i>Novos</a></li>
                                 <li><a href="./seminovos.aspx" class="mm-active"><i class="metismenu-icon fas fa-car-side"></i>Seminovos</a></li>
                                 <li><a href="./lojas.aspx"><i class="metismenu-icon fas fa-store"></i>Lojas</a></li>
+                                <li><a href="./permissoes.aspx"><i class="metismenu-icon fas fa-user-shield"></i>Permiss&otilde;es</a></li>
                                 <li><a href="./barcode-logs.aspx"><i class="metismenu-icon fas fa-clipboard-list"></i>Logs do leitor</a></li>
                             </ul>
                         </div>
