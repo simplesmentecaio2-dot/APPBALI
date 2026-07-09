@@ -10,10 +10,10 @@
     <title>Entrega de Veículo - Fiat</title>
     <link href="../../css/estilo.css" rel="stylesheet" />
     <link href="../../css/bali-utility.css?v=20260707-recibo13" rel="stylesheet" />
-    <link href="../../css/entrega-veiculo.css?v=20260708-entrega06" rel="stylesheet" />
+    <link href="../../css/entrega-veiculo.css?v=20260708-entrega07" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../js/js.js"></script>
-    <script src="../../js/bali-utility-print.js?v=20260708-entrega06"></script>
+    <script src="../../js/bali-utility-print.js?v=20260708-entrega07"></script>
 
 </head>
 
@@ -86,11 +86,6 @@
                                                 <section class="delivery-part">
                                                     <div class="delivery-header">
                                                         <img src="../../img/entrega_saida.png?v=20260708-entrega-header" alt="BALI Fiat" />
-                                                        <div class="delivery-doc-meta">
-                                                            <strong>Via interna</strong>
-                                                            <span>Pedido: <asp:Label ID="lblPedidoPrint" runat="server"></asp:Label></span>
-                                                            <span>Loja: <asp:Label ID="lblLojaPrint" runat="server"></asp:Label></span>
-                                                        </div>
                                                     </div>
                                                     <div class="delivery-main-grid">
                                                         <div class="delivery-card">
@@ -188,7 +183,10 @@
                                                         <div class="delivery-release-field"><strong>Acessórios:</strong><span class="delivery-release-line"></span></div>
                                                         <div class="delivery-release-field"><strong>Acessórios Externos:</strong><span class="delivery-release-line"></span></div>
                                                     </div>
-                                                    <div class="delivery-footnote">Documento interno. Conferir dados antes da liberação.</div>
+                                                    <div class="delivery-footnote">
+                                                        Documento interno. Conferir dados antes da liberação.
+                                                        <span class="delivery-footnote-meta">Via interna | Pedido: <asp:Label ID="lblPedidoPrint" runat="server"></asp:Label> | Loja: <asp:Label ID="lblLojaPrint" runat="server"></asp:Label></span>
+                                                    </div>
                                                 </section>
                                             </div>
                                         </asp:Panel>
