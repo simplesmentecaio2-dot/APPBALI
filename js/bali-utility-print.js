@@ -878,7 +878,7 @@
     var printHtml = html;
     if (isEntrega) {
       printHtml = '<!doctype html><html><head><meta charset="utf-8"><title>Entrega de veiculo</title>' +
-        '<link rel="stylesheet" href="/css/entrega-veiculo.css?v=20260708-entrega08">' +
+        '<link rel="stylesheet" href="/css/entrega-veiculo.css?v=20260708-entrega09">' +
         '</head><body class="delivery-print-popup">' + html + '</body></html>';
     }
 

@@ -10,10 +10,10 @@
     <title>Entrega de Veículo - BYD</title>
     <link href="../../css/estilo.css" rel="stylesheet" />
     <link href="../../css/bali-utility.css?v=20260707-recibo13" rel="stylesheet" />
-    <link href="../../css/entrega-veiculo.css?v=20260708-entrega08" rel="stylesheet" />
+    <link href="../../css/entrega-veiculo.css?v=20260708-entrega09" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../js/js.js"></script>
-    <script src="../../js/bali-utility-print.js?v=20260708-entrega08"></script>
+    <script src="../../js/bali-utility-print.js?v=20260708-entrega09"></script>
 
 </head>
 

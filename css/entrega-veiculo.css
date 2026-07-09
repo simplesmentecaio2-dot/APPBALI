@@ -558,7 +558,7 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 5mm;
+    margin: 6mm;
   }
 
   body {
@@ -596,24 +596,24 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
   body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print,
   body.delivery-print-popup .delivery-print {
     width: 19cm;
-    font-size: 12px;
-    line-height: 1.12;
+    font-size: 12.3px;
+    line-height: 1.16;
     box-shadow: none !important;
   }
 
   .delivery-header {
-    min-height: 48px;
-    padding: 4px 8px;
+    min-height: 52px;
+    padding: 6px 10px;
   }
 
   .delivery-header img {
-    max-height: 43px;
+    max-height: 46px;
   }
 
   .delivery-card,
   .delivery-portaria {
-    min-height: 94px;
-    padding: 6px 8px;
+    min-height: 102px;
+    padding: 8px 10px;
   }
 
   .delivery-card div {
@@ -622,7 +622,7 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 
   .delivery-card b,
   .delivery-mini b {
-    font-size: 12.5px;
+    font-size: 12.8px;
   }
 
   .delivery-section-label,
@@ -631,13 +631,13 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
   }
 
   .delivery-portaria h2 {
-    margin-bottom: 10px;
-    padding-bottom: 3px;
+    margin-bottom: 12px;
+    padding-bottom: 4px;
   }
 
   .delivery-date {
-    margin-bottom: 16px;
-    font-size: 12.5px;
+    margin-bottom: 20px;
+    font-size: 12.8px;
   }
 
   .delivery-sign-heading {
@@ -645,25 +645,25 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
   }
 
   .delivery-sign-box {
-    min-height: 124px;
-    padding: 8px 14px 7px;
+    min-height: 138px;
+    padding: 10px 15px 8px;
   }
 
   .delivery-line {
-    margin: 22px auto 5px;
+    margin: 25px auto 6px;
   }
 
   .delivery-observation-grid {
-    min-height: 46px;
+    min-height: 56px;
   }
 
   .delivery-observation-grid div {
-    padding: 4px 8px;
-    background-size: 100% 24px;
+    padding: 5px 8px;
+    background-size: 100% 28px;
   }
 
   .delivery-cut {
-    margin: 6px 0;
+    margin: 8px 0;
   }
 
   .delivery-cut span {
@@ -672,53 +672,53 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 
   .delivery-finance-heading {
     margin-bottom: 4px;
-    padding: 3px 8px;
+    padding: 4px 8px;
   }
 
   .delivery-note {
-    margin-bottom: 4px;
-    padding: 4px 7px;
+    margin-bottom: 5px;
+    padding: 5px 8px;
   }
 
   .delivery-title {
-    padding: 3px 8px;
+    padding: 4px 8px;
   }
 
   .delivery-grid {
-    font-size: 11px;
+    font-size: 11.3px;
   }
 
   .delivery-grid th,
   .delivery-grid td {
-    padding: 1px 4px !important;
+    padding: 1.5px 5px !important;
   }
 
   .delivery-mini {
-    margin-top: 5px;
+    margin-top: 7px;
   }
 
   .delivery-mini-head {
-    padding: 3px 8px;
+    padding: 4px 8px;
   }
 
   .delivery-mini-head img {
-    max-height: 36px;
+    max-height: 39px;
   }
 
   .delivery-mini-data {
-    padding: 3px 8px;
-    font-size: 12px;
+    padding: 4px 8px;
+    font-size: 12.3px;
   }
 
   .delivery-release-grid {
-    gap: 20px 38px;
-    margin-top: 16px;
-    padding-bottom: 2px;
-    font-size: 13px;
+    gap: 24px 40px;
+    margin-top: 22px;
+    padding-bottom: 5px;
+    font-size: 13.4px;
   }
 
   .delivery-release-line {
-    min-height: 20px;
+    min-height: 24px;
   }
 
   .delivery-footnote {
