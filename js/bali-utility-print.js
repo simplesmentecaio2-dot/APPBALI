@@ -26,6 +26,10 @@
     return bySuffix('btnGerar');
   }
 
+  function limparButton() {
+    return bySuffix('btnLimpar');
+  }
+
   function painelImpressao() {
     return bySuffix('pnlImpressao');
   }
@@ -369,6 +373,8 @@
     var pedido = pedidoField();
     var loja = lojaField();
     var gerar = gerarButton();
+    var limpar = limparButton();
+    var voltar = fieldset.querySelector('.delivery-inline-back');
     var painel = painelImpressao();
     if (!pedido || !loja || !gerar || fieldset.querySelector('.bali-query-row')) return;
 
@@ -386,7 +392,9 @@
 
     var actions = document.createElement('div');
     actions.className = 'bali-query-actions';
+    if (voltar) actions.appendChild(voltar);
     actions.appendChild(gerar);
+    if (limpar) actions.appendChild(limpar);
 
     row.appendChild(grupo('Pedido', pedido));
     row.appendChild(grupo('C\u00f3d. Loja', loja));
@@ -779,18 +787,28 @@
       return;
     }
 
+    var isEntrega = html.indexOf('delivery-print') >= 0;
+    var printHtml = html;
+    if (isEntrega) {
+      printHtml = '<!doctype html><html><head><meta charset="utf-8"><title>Entrega de veiculo</title>' +
+        '<link rel="stylesheet" href="/css/entrega-veiculo.css?v=20260708-entrega04">' +
+        '</head><body class="delivery-print-popup">' + html + '</body></html>';
+    }
+
     printWindow.document.open();
-    printWindow.document.write(html);
+    printWindow.document.write(printHtml);
     printWindow.document.close();
 
     esperarImagens(printWindow, function () {
-      try {
-        logEvento('impressao');
-        printWindow.focus();
-        printWindow.print();
-      } finally {
-        setTimeout(function () { printWindow.close(); }, 250);
-      }
+      setTimeout(function () {
+        try {
+          logEvento('impressao');
+          printWindow.focus();
+          printWindow.print();
+        } finally {
+          setTimeout(function () { printWindow.close(); }, 250);
+        }
+      }, isEntrega ? 300 : 0);
     });
   }
 
