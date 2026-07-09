@@ -501,23 +501,23 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 }
 
 .delivery-footnote {
-  margin-top: 9px;
-  padding-top: 4px;
-  border-top: 1px solid #cbd5e1;
+  margin-top: 3px;
+  padding-top: 1px;
   color: #4b5563;
   font-family: Arial, sans-serif;
-  font-size: 8px;
+  font-size: 7px;
   font-weight: 700;
   letter-spacing: .03em;
+  line-height: 1.05;
   text-align: center;
   text-transform: uppercase;
 }
 
 .delivery-footnote-meta {
-  display: block;
-  margin-top: 2px;
+  display: inline;
+  margin-left: 8px;
   color: #667085;
-  font-size: 7px;
+  font-size: 6.6px;
   font-weight: 700;
   letter-spacing: .04em;
 }
@@ -558,7 +558,7 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 7mm;
+    margin: 5mm;
   }
 
   body {
@@ -596,7 +596,136 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
   body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print,
   body.delivery-print-popup .delivery-print {
     width: 19cm;
+    font-size: 12px;
+    line-height: 1.12;
     box-shadow: none !important;
+  }
+
+  .delivery-header {
+    min-height: 48px;
+    padding: 4px 8px;
+  }
+
+  .delivery-header img {
+    max-height: 43px;
+  }
+
+  .delivery-card,
+  .delivery-portaria {
+    min-height: 94px;
+    padding: 6px 8px;
+  }
+
+  .delivery-card div {
+    margin-bottom: 1px;
+  }
+
+  .delivery-card b,
+  .delivery-mini b {
+    font-size: 12.5px;
+  }
+
+  .delivery-section-label,
+  .delivery-finance-heading {
+    margin-bottom: 4px;
+  }
+
+  .delivery-portaria h2 {
+    margin-bottom: 10px;
+    padding-bottom: 3px;
+  }
+
+  .delivery-date {
+    margin-bottom: 16px;
+    font-size: 12.5px;
+  }
+
+  .delivery-sign-heading {
+    padding: 3px 8px;
+  }
+
+  .delivery-sign-box {
+    min-height: 124px;
+    padding: 8px 14px 7px;
+  }
+
+  .delivery-line {
+    margin: 22px auto 5px;
+  }
+
+  .delivery-observation-grid {
+    min-height: 46px;
+  }
+
+  .delivery-observation-grid div {
+    padding: 4px 8px;
+    background-size: 100% 24px;
+  }
+
+  .delivery-cut {
+    margin: 6px 0;
+  }
+
+  .delivery-cut span {
+    top: -6px;
+  }
+
+  .delivery-finance-heading {
+    margin-bottom: 4px;
+    padding: 3px 8px;
+  }
+
+  .delivery-note {
+    margin-bottom: 4px;
+    padding: 4px 7px;
+  }
+
+  .delivery-title {
+    padding: 3px 8px;
+  }
+
+  .delivery-grid {
+    font-size: 11px;
+  }
+
+  .delivery-grid th,
+  .delivery-grid td {
+    padding: 1px 4px !important;
+  }
+
+  .delivery-mini {
+    margin-top: 5px;
+  }
+
+  .delivery-mini-head {
+    padding: 3px 8px;
+  }
+
+  .delivery-mini-head img {
+    max-height: 36px;
+  }
+
+  .delivery-mini-data {
+    padding: 3px 8px;
+    font-size: 12px;
+  }
+
+  .delivery-release-grid {
+    gap: 20px 38px;
+    margin-top: 16px;
+    padding-bottom: 2px;
+    font-size: 13px;
+  }
+
+  .delivery-release-line {
+    min-height: 20px;
+  }
+
+  .delivery-footnote {
+    margin-top: 2px;
+    padding-top: 1px;
+    font-size: 6.8px;
+    line-height: 1;
   }
 
   .delivery-cut {
