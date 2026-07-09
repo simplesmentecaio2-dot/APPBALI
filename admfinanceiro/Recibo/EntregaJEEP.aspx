@@ -10,10 +10,10 @@
     <title>Entrega de Veículo - Jeep</title>
     <link href="../../css/estilo.css" rel="stylesheet" />
     <link href="../../css/bali-utility.css?v=20260707-recibo13" rel="stylesheet" />
-    <link href="../../css/entrega-veiculo.css?v=20260708-entrega04" rel="stylesheet" />
+    <link href="../../css/entrega-veiculo.css?v=20260708-entrega05" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../js/js.js"></script>
-    <script src="../../js/bali-utility-print.js?v=20260708-entrega04"></script>
+    <script src="../../js/bali-utility-print.js?v=20260708-entrega05"></script>
 
 </head>
 
@@ -89,6 +89,7 @@
                                                     </div>
                                                     <div class="delivery-main-grid">
                                                         <div class="delivery-card">
+                                                            <div class="delivery-section-label">Dados do veículo</div>
                                                             <div><span>Cliente:</span> <b><asp:Label ID="lblCliente" runat="server"></asp:Label></b></div>
                                                             <div><span>Veículo:</span> <b><asp:Label ID="lblVeiculo" runat="server"></asp:Label></b></div>
                                                             <div><span>Chassi:</span> <b><asp:Label ID="lblChassi" runat="server"></asp:Label></b> <span>Placa:</span> <b><asp:Label ID="lblPlaca" runat="server"></asp:Label></b></div>
@@ -103,6 +104,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="delivery-sign-grid">
+                                                        <div class="delivery-section-label delivery-sign-heading">Assinaturas internas</div>
                                                         <div class="delivery-sign-box">
                                                             <div class="delivery-date">Brasília-DF, <asp:Label ID="lblDataGerencia" runat="server"></asp:Label></div>
                                                             <div class="delivery-line"></div>
@@ -125,6 +127,7 @@
                                                 <div class="delivery-cut"><span>Cortar aqui</span></div>
 
                                                 <section class="delivery-finance">
+                                                    <div class="delivery-finance-heading">Autorização Financeira</div>
                                                     <div class="delivery-note">
                                                         * Em caso de recebimento de veículo usado, a liberação concedida está vinculada ao recebimento do mesmo, em total conformidade com as normas exigidas.<br />
                                                         * Somente liberar com o recibo de desconto assinado pelo cliente, quando aplicável.
@@ -180,6 +183,7 @@
                                                         <div class="delivery-release-field"><strong>Acessórios:</strong><span class="delivery-release-line"></span></div>
                                                         <div class="delivery-release-field"><strong>Acessórios Externos:</strong><span class="delivery-release-line"></span></div>
                                                     </div>
+                                                    <div class="delivery-footnote">Documento interno. Conferir dados antes da liberação.</div>
                                                 </section>
                                             </div>
                                         </asp:Panel>

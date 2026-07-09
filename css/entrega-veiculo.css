@@ -64,6 +64,10 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 }
 
 .delivery-print {
+  --delivery-border: #4b5563;
+  --delivery-border-soft: #8a94a3;
+  --delivery-fill: #f4f6f8;
+  --delivery-fill-strong: #e6ebf0;
   width: 19.2cm;
   margin: 0 auto;
   color: #111;
@@ -77,7 +81,7 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 }
 
 .delivery-part {
-  border: 1px solid #222;
+  border: 1px solid var(--delivery-border);
   background: #fff;
 }
 
@@ -85,36 +89,58 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 52px;
-  padding: 6px 10px;
-  border-bottom: 1px solid #222;
+  min-height: 54px;
+  padding: 7px 12px 8px;
+  border-bottom: 1px solid var(--delivery-border);
+  background:
+    linear-gradient(180deg, #fff, #f8fafc);
 }
 
 .delivery-header img {
   width: 100%;
-  max-width: 652px;
-  max-height: 49px;
+  max-width: 620px;
+  max-height: 47px;
   object-fit: contain;
 }
 
 .delivery-main-grid {
   display: grid;
   grid-template-columns: 1.2fr .8fr;
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid var(--delivery-border);
 }
 
 .delivery-card,
 .delivery-portaria {
-  min-height: 104px;
+  min-height: 106px;
   padding: 8px 10px;
 }
 
 .delivery-card {
-  border-right: 1px solid #222;
+  border-right: 1px solid var(--delivery-border);
 }
 
 .delivery-card div {
-  margin-bottom: 3px;
+  margin-bottom: 2px;
+}
+
+.delivery-section-label,
+.delivery-finance-heading {
+  margin: -1px 0 5px;
+  color: #1f2937;
+  font-family: Arial, sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.delivery-finance-heading {
+  margin: 0 0 6px;
+  padding: 4px 8px;
+  border: 1px solid var(--delivery-border);
+  background: var(--delivery-fill-strong);
+  font-size: 10px;
+  text-align: center;
 }
 
 .delivery-card span,
@@ -135,13 +161,16 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 }
 
 .delivery-portaria h2 {
-  margin: 0 0 18px;
+  margin: 0 0 14px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--delivery-border-soft);
   font-size: 17px;
+  letter-spacing: .04em;
   text-transform: uppercase;
 }
 
 .delivery-date {
-  margin-bottom: 24px;
+  margin-bottom: 22px;
   font-size: 13px;
   font-weight: bold;
   text-align: center;
@@ -150,24 +179,33 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 .delivery-sign-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid var(--delivery-border);
+}
+
+.delivery-sign-heading {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--delivery-border);
+  background: var(--delivery-fill);
+  text-align: center;
 }
 
 .delivery-sign-box {
-  min-height: 152px;
-  padding: 13px 16px 10px;
+  min-height: 145px;
+  padding: 11px 16px 9px;
   text-align: center;
 }
 
 .delivery-sign-box:first-child {
-  border-right: 1px solid #222;
+  border-right: 1px solid var(--delivery-border);
 }
 
 .delivery-line {
   width: 84%;
   height: 1px;
-  margin: 29px auto 6px;
-  border-top: 1px solid #111;
+  margin: 27px auto 6px;
+  border-top: 1px solid #1f2937;
 }
 
 .delivery-sign-box strong {
@@ -178,50 +216,53 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 .delivery-observation-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: 62px;
+  min-height: 58px;
 }
 
 .delivery-observation-grid div {
-  padding: 6px 8px;
+  padding: 5px 8px;
+  background:
+    linear-gradient(to bottom, #fff 0, #fff 17px, rgba(75, 85, 99, .34) 17px, rgba(75, 85, 99, .34) 18px, #fff 18px, #fff 29px);
+  background-size: 100% 29px;
   font-weight: bold;
   text-transform: uppercase;
 }
 
 .delivery-observation-grid div:first-child {
-  border-right: 1px solid #222;
+  border-right: 1px solid var(--delivery-border);
 }
 
 .delivery-cut {
   position: relative;
-  margin: 12px 0;
-  border-top: 1px dashed #b42318;
-  color: #b42318;
+  margin: 10px 0;
+  border-top: 1px dashed #98a2b3;
+  color: #667085;
   font-family: Arial, sans-serif;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: bold;
-  letter-spacing: .08em;
+  letter-spacing: .12em;
   text-align: center;
   text-transform: uppercase;
 }
 
 .delivery-cut span {
   position: relative;
-  top: -7px;
-  padding: 0 8px;
+  top: -6px;
+  padding: 0 10px;
   background: #fff;
 }
 
 .delivery-note {
-  margin-bottom: 8px;
-  padding: 6px 8px;
-  border: 1px solid #222;
+  margin-bottom: 6px;
+  padding: 5px 8px;
+  border: 1px solid var(--delivery-border);
   font-weight: bold;
 }
 
 .delivery-title {
-  padding: 5px 8px;
-  border-bottom: 1px solid #222;
-  background: #eee;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--delivery-border);
+  background: var(--delivery-fill);
   font-weight: bold;
   text-align: center;
   text-transform: uppercase;
@@ -234,17 +275,17 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 .delivery-grid {
   width: 100% !important;
   border-collapse: collapse !important;
-  font-size: 12px;
+  font-size: 11.5px;
 }
 
 .delivery-grid th,
 .delivery-grid td {
-  padding: 3px 5px !important;
-  border: 1px solid #222 !important;
+  padding: 2px 5px !important;
+  border: 1px solid var(--delivery-border) !important;
 }
 
 .delivery-grid th {
-  background: #f0f0f0;
+  background: var(--delivery-fill);
   text-align: center;
   font-weight: bold;
 }
@@ -303,16 +344,22 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 
 .delivery-mini {
   margin-top: 8px;
-  border: 1px solid #222;
+  border: 1px solid var(--delivery-border);
 }
 
 .delivery-mini-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 5px 8px;
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid var(--delivery-border);
+  background:
+    linear-gradient(180deg, #fff, #f8fafc);
   text-align: center;
 }
 
 .delivery-mini-head img {
+  display: block;
   max-width: 410px;
   max-height: 42px;
   object-fit: contain;
@@ -327,8 +374,8 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 .delivery-release-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 28px 42px;
-  margin-top: 28px;
+  gap: 26px 42px;
+  margin-top: 26px;
   padding: 0 8px 8px;
   font-size: 14px;
 }
@@ -345,8 +392,21 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
 }
 
 .delivery-release-line {
-  border-bottom: 1px solid #111;
+  border-bottom: 1px solid #1f2937;
   min-height: 26px;
+}
+
+.delivery-footnote {
+  margin-top: 9px;
+  padding-top: 4px;
+  border-top: 1px solid #cbd5e1;
+  color: #4b5563;
+  font-family: Arial, sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 @media (max-width: 760px) {
