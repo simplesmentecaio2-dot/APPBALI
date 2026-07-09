@@ -154,6 +154,12 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="./permissoes.aspx">
+                                        <i class="metismenu-icon fas fa-user-shield"></i>
+                                        Permiss&otilde;es
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="./barcode-logs.aspx">
                                         <i class="metismenu-icon fas fa-clipboard-list"></i>
                                         Logs do leitor
@@ -231,6 +237,11 @@
                                                         <span class="patio-home-icon"><i class="fa fa-store"></i></span>
                                                         <strong>Lojas</strong>
                                                         <small>Cadastre, edite, ative e desative lojas do p&aacute;tio.</small>
+                                                    </a>
+                                                    <a class="patio-home-card" href="./permissoes.aspx">
+                                                        <span class="patio-home-icon"><i class="fa fa-user-shield"></i></span>
+                                                        <strong>Permiss&otilde;es</strong>
+                                                        <small>Libere registro e transfer&ecirc;ncia de ve&iacute;culos por usu&aacute;rio.</small>
                                                     </a>
                                                     <a class="patio-home-card" href="./barcode-logs.aspx">
                                                         <span class="patio-home-icon"><i class="fa fa-clipboard-list"></i></span>
