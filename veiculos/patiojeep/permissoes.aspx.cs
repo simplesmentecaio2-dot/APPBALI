@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -37,6 +38,7 @@ public partial class veiculos_patio_permissoes : System.Web.UI.Page
     {
         if (!String.Equals(txtSenhaAcesso.Text, SenhaTela, StringComparison.Ordinal))
         {
+            PatioJeepAuditoria.Registrar("PATIO_PERMISSAO_SENHA_INVALIDA", Session["usuario"], "TELA", "Tentativa de abertura da tela de permiss\u00f5es.");
             txtSenhaAcesso.Text = "";
             Session.Remove(SessionLiberado);
             AtualizarVisibilidade();
@@ -76,20 +78,65 @@ public partial class veiculos_patio_permissoes : System.Web.UI.Page
             return;
         }
 
-        PermissaoInfo anterior = BuscarPermissao(usuario);
-        PermissaoInfo novo = new PermissaoInfo
+        if (!UsuarioValido(usuario))
         {
-            Usuario = usuario,
-            Registrar = chkRegistrar.Checked,
-            Transferir = chkTransferir.Checked
-        };
+            MostrarMensagem("error", "Usu\u00e1rio inv\u00e1lido", "Use apenas letras, n\u00fameros, espa\u00e7os, ponto, h\u00edfen, underline ou @.");
+            txtUsuario.Focus();
+            CarregarTela();
+            return;
+        }
 
-        SalvarPermissao(usuario, novo.Registrar, novo.Transferir);
-        RegistrarAuditoria("SALVAR", usuario, anterior.Registrar, novo.Registrar, anterior.Transferir, novo.Transferir, "Permiss\u00f5es atualizadas pela tela.");
-        LimparCacheSeForUsuarioAtual(usuario);
-        LimparFormulario();
+        if (!chkRegistrar.Checked && !chkTransferir.Checked)
+        {
+            MostrarMensagem("error", "Selecione uma permiss\u00e3o", "Marque Registrar, Transferir ou use o bot\u00e3o Revogar na lista para remover acessos.");
+            CarregarTela();
+            return;
+        }
+
+        try
+        {
+            PermissaoInfo anterior = BuscarPermissao(usuario);
+            PermissaoInfo novo = new PermissaoInfo
+            {
+                Usuario = usuario,
+                Registrar = chkRegistrar.Checked,
+                Transferir = chkTransferir.Checked
+            };
+
+            SalvarPermissao(usuario, novo.Registrar, novo.Transferir);
+            RegistrarAuditoria("SALVAR", usuario, anterior.Registrar, novo.Registrar, anterior.Transferir, novo.Transferir, "Permiss\u00f5es atualizadas pela tela.");
+            LimparCacheSeForUsuarioAtual(usuario);
+            LimparFormulario();
+            CarregarTela();
+            MostrarMensagem("success", "Permiss\u00f5es salvas", "Usu\u00e1rio " + usuario + " atualizado com sucesso.");
+        }
+        catch (Exception ex)
+        {
+            PatioJeepAuditoria.Registrar("PATIO_PERMISSAO_SALVAR_ERRO", Session["usuario"], usuario, ex.Message);
+            MostrarMensagem("error", "Erro ao salvar", "N\u00e3o foi poss\u00edvel atualizar as permiss\u00f5es agora. Tente novamente.");
+            CarregarTela();
+        }
+    }
+
+    protected void btnMeuUsuario_Click(object sender, EventArgs e)
+    {
+        if (!GarantirLiberado()) return;
+
+        txtUsuario.Text = NormalizarUsuario(Convert.ToString(Session["usuario"]));
+        chkRegistrar.Checked = true;
+        chkTransferir.Checked = true;
+        MostrarMensagem("info", "Usu\u00e1rio preenchido", "Seu usu\u00e1rio foi carregado com o perfil completo marcado.");
         CarregarTela();
-        MostrarMensagem("success", "Permiss\u00f5es salvas", "Usu\u00e1rio " + usuario + " atualizado com sucesso.");
+    }
+
+    protected void PerfilRapido_Click(object sender, EventArgs e)
+    {
+        if (!GarantirLiberado()) return;
+
+        LinkButton botao = sender as LinkButton;
+        string perfil = botao != null ? Convert.ToString(botao.CommandArgument) : "";
+        AplicarPerfilFormulario(perfil);
+        CarregarTela();
     }
 
     protected void btnLimpar_Click(object sender, EventArgs e)
@@ -127,15 +174,42 @@ public partial class veiculos_patio_permissoes : System.Web.UI.Page
             return;
         }
 
+        if (e.CommandName == "AcessoCompleto")
+        {
+            AplicarPermissaoRapida(usuario, true, true, "ACESSO_COMPLETO", "Usu\u00e1rio liberado para registrar e transferir.");
+            return;
+        }
+
+        if (e.CommandName == "AcessoRegistrar")
+        {
+            AplicarPermissaoRapida(usuario, true, false, "SOMENTE_REGISTRAR", "Usu\u00e1rio liberado apenas para registrar.");
+            return;
+        }
+
+        if (e.CommandName == "AcessoTransferir")
+        {
+            AplicarPermissaoRapida(usuario, false, true, "SOMENTE_TRANSFERIR", "Usu\u00e1rio liberado apenas para transferir.");
+            return;
+        }
+
         if (e.CommandName == "RevogarUsuario")
         {
-            PermissaoInfo anterior = BuscarPermissao(usuario);
-            SalvarPermissao(usuario, false, false);
-            RegistrarAuditoria("REVOGAR", usuario, anterior.Registrar, false, anterior.Transferir, false, "Todas as permiss\u00f5es foram revogadas.");
-            LimparCacheSeForUsuarioAtual(usuario);
-            LimparFormulario();
-            CarregarTela();
-            MostrarMensagem("success", "Permiss\u00f5es revogadas", "Usu\u00e1rio " + usuario + " ficou sem acessos de p\u00e1tio.");
+            try
+            {
+                PermissaoInfo anterior = BuscarPermissao(usuario);
+                SalvarPermissao(usuario, false, false);
+                RegistrarAuditoria("REVOGAR", usuario, anterior.Registrar, false, anterior.Transferir, false, "Todas as permiss\u00f5es foram revogadas.");
+                LimparCacheSeForUsuarioAtual(usuario);
+                LimparFormulario();
+                CarregarTela();
+                MostrarMensagem("success", "Permiss\u00f5es revogadas", "Usu\u00e1rio " + usuario + " ficou sem acessos de p\u00e1tio.");
+            }
+            catch (Exception ex)
+            {
+                PatioJeepAuditoria.Registrar("PATIO_PERMISSAO_REVOGAR_ERRO", Session["usuario"], usuario, ex.Message);
+                MostrarMensagem("error", "Erro ao revogar", "N\u00e3o foi poss\u00edvel revogar as permiss\u00f5es agora.");
+                CarregarTela();
+            }
         }
     }
 
@@ -178,6 +252,53 @@ public partial class veiculos_patio_permissoes : System.Web.UI.Page
         chkTransferir.Checked = permissao.Transferir;
         MostrarMensagem("info", "Editando permiss\u00f5es", "Ajuste os acessos de " + permissao.Usuario + " e clique em Salvar.");
         txtUsuario.Focus();
+    }
+
+    private void AplicarPerfilFormulario(string perfil)
+    {
+        switch ((perfil ?? "").ToLowerInvariant())
+        {
+            case "completo":
+                chkRegistrar.Checked = true;
+                chkTransferir.Checked = true;
+                MostrarMensagem("info", "Perfil completo", "Registrar e transferir foram marcados.");
+                break;
+            case "registrar":
+                chkRegistrar.Checked = true;
+                chkTransferir.Checked = false;
+                MostrarMensagem("info", "Perfil de registro", "Somente registrar foi marcado.");
+                break;
+            case "transferir":
+                chkRegistrar.Checked = false;
+                chkTransferir.Checked = true;
+                MostrarMensagem("info", "Perfil de transfer\u00eancia", "Somente transferir foi marcado.");
+                break;
+            default:
+                chkRegistrar.Checked = false;
+                chkTransferir.Checked = false;
+                MostrarMensagem("info", "Acessos limpos", "Nenhuma permiss\u00e3o est\u00e1 marcada no formul\u00e1rio.");
+                break;
+        }
+    }
+
+    private void AplicarPermissaoRapida(string usuario, bool registrar, bool transferir, string acao, string mensagem)
+    {
+        try
+        {
+            PermissaoInfo anterior = BuscarPermissao(usuario);
+            SalvarPermissao(usuario, registrar, transferir);
+            RegistrarAuditoria(acao, usuario, anterior.Registrar, registrar, anterior.Transferir, transferir, mensagem);
+            LimparCacheSeForUsuarioAtual(usuario);
+            LimparFormulario();
+            CarregarTela();
+            MostrarMensagem("success", "Permiss\u00f5es atualizadas", mensagem);
+        }
+        catch (Exception ex)
+        {
+            PatioJeepAuditoria.Registrar("PATIO_PERMISSAO_RAPIDA_ERRO", Session["usuario"], usuario, ex.Message);
+            MostrarMensagem("error", "Erro ao alterar", "N\u00e3o foi poss\u00edvel atualizar as permiss\u00f5es agora.");
+            CarregarTela();
+        }
     }
 
     private void SalvarPermissao(string usuario, bool registrar, bool transferir)
@@ -278,17 +399,33 @@ GROUP BY UPPER(LTRIM(RTRIM(fun_cad)));", banco.oCon2);
         {
             banco.Conexao2();
             SqlCommand cmd = new SqlCommand(@"
+;WITH base AS
+(
+    SELECT
+        UPPER(LTRIM(RTRIM(fun_cad))) AS fun_cad,
+        MAX(CASE WHEN acesso_id = 1 THEN 1 ELSE 0 END) AS registrar,
+        MAX(CASE WHEN acesso_id = 2 THEN 1 ELSE 0 END) AS transferir
+    FROM dbo.veiculos_patio_usuario_acesso WITH (NOLOCK)
+    WHERE (@filtro = '' OR fun_cad LIKE @filtroLike)
+    GROUP BY UPPER(LTRIM(RTRIM(fun_cad)))
+)
 SELECT
-    UPPER(LTRIM(RTRIM(fun_cad))) AS fun_cad,
-    CONVERT(bit, MAX(CASE WHEN acesso_id = 1 THEN 1 ELSE 0 END)) AS registrar,
-    CONVERT(bit, MAX(CASE WHEN acesso_id = 2 THEN 1 ELSE 0 END)) AS transferir
-FROM dbo.veiculos_patio_usuario_acesso WITH (NOLOCK)
-WHERE (@filtro = '' OR fun_cad LIKE @filtroLike)
-GROUP BY UPPER(LTRIM(RTRIM(fun_cad)))
-ORDER BY UPPER(LTRIM(RTRIM(fun_cad)));", banco.oCon2);
+    fun_cad,
+    CONVERT(bit, registrar) AS registrar,
+    CONVERT(bit, transferir) AS transferir
+FROM base
+WHERE
+    @perfil = 'todos'
+    OR (@perfil = 'completo' AND registrar = 1 AND transferir = 1)
+    OR (@perfil = 'registrar' AND registrar = 1)
+    OR (@perfil = 'transferir' AND transferir = 1)
+    OR (@perfil = 'somente_registrar' AND registrar = 1 AND transferir = 0)
+ORDER BY fun_cad;", banco.oCon2);
             string filtro = (txtFiltro.Text ?? "").Trim();
+            string perfil = ddlFiltroPerfil.SelectedValue ?? "todos";
             cmd.Parameters.Add("@filtro", SqlDbType.VarChar, 100).Value = filtro;
             cmd.Parameters.Add("@filtroLike", SqlDbType.VarChar, 120).Value = "%" + filtro + "%";
+            cmd.Parameters.Add("@perfil", SqlDbType.VarChar, 30).Value = perfil;
             SqlDataAdapter adapter = new SqlDataAdapter(cmd);
             adapter.Fill(tabela);
         }
@@ -315,16 +452,25 @@ ORDER BY UPPER(LTRIM(RTRIM(fun_cad)));", banco.oCon2);
         int usuarios = permissoes.Rows.Count;
         int registrar = 0;
         int transferir = 0;
+        int completo = 0;
+        int somenteRegistrar = 0;
 
         foreach (DataRow row in permissoes.Rows)
         {
-            if (Convert.ToBoolean(row["registrar"])) registrar++;
-            if (Convert.ToBoolean(row["transferir"])) transferir++;
+            bool podeRegistrar = Convert.ToBoolean(row["registrar"]);
+            bool podeTransferir = Convert.ToBoolean(row["transferir"]);
+
+            if (podeRegistrar) registrar++;
+            if (podeTransferir) transferir++;
+            if (podeRegistrar && podeTransferir) completo++;
+            if (podeRegistrar && !podeTransferir) somenteRegistrar++;
         }
 
         StringBuilder html = new StringBuilder();
         html.Append("<div class=\"perm-summary\">");
         html.Append(CardResumo("Usu\u00e1rios", usuarios.ToString()));
+        html.Append(CardResumo("Acesso completo", completo.ToString()));
+        html.Append(CardResumo("Somente registrar", somenteRegistrar.ToString()));
         html.Append(CardResumo("Podem registrar", registrar.ToString()));
         html.Append(CardResumo("Podem transferir", transferir.ToString()));
         html.Append("</div>");
@@ -471,6 +617,11 @@ END;
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_veiculos_patio_permissao_auditoria_usuario_dt' AND object_id = OBJECT_ID('dbo.veiculos_patio_permissao_auditoria'))
 BEGIN
     CREATE INDEX IX_veiculos_patio_permissao_auditoria_usuario_dt ON dbo.veiculos_patio_permissao_auditoria(usuario_alvo, dt DESC);
+END;
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_veiculos_patio_permissao_auditoria_responsavel_dt' AND object_id = OBJECT_ID('dbo.veiculos_patio_permissao_auditoria'))
+BEGIN
+    CREATE INDEX IX_veiculos_patio_permissao_auditoria_responsavel_dt ON dbo.veiculos_patio_permissao_auditoria(usuario_responsavel, dt DESC);
 END;", banco.oCon2);
             cmd.ExecuteNonQuery();
         }
@@ -499,7 +650,15 @@ END;", banco.oCon2);
 
     private string NormalizarUsuario(string valor)
     {
-        return (valor ?? "").Trim().ToUpperInvariant();
+        string usuario = (valor ?? "").Trim().ToUpperInvariant();
+        return Regex.Replace(usuario, @"\s+", " ");
+    }
+
+    private bool UsuarioValido(string usuario)
+    {
+        return usuario.Length >= 2
+            && usuario.Length <= 100
+            && Regex.IsMatch(usuario, @"^[\p{L}\p{N}@._\-\s]+$");
     }
 
     private object TextoOuDbNull(string valor)

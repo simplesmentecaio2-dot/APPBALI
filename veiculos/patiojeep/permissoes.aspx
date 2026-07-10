@@ -57,7 +57,7 @@
 
         .perm-form {
             display: grid;
-            grid-template-columns: minmax(240px, 1fr) repeat(2, minmax(150px, auto)) auto auto;
+            grid-template-columns: minmax(260px, 1fr) repeat(2, minmax(150px, auto)) auto auto;
             gap: .85rem;
             align-items: end;
             padding: 1rem;
@@ -65,7 +65,7 @@
 
         .perm-filter {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) auto;
+            grid-template-columns: minmax(0, 1fr) minmax(190px, 240px) auto;
             gap: .75rem;
             align-items: end;
             padding: 1rem;
@@ -86,11 +86,32 @@
         }
 
         .perm-form .form-control,
+        .perm-filter .custom-select,
         .perm-filter .form-control,
         .perm-lock .form-control {
             min-height: 44px;
             border-radius: 12px;
             font-weight: 800;
+        }
+
+        .perm-user-actions {
+            display: flex;
+            gap: .45rem;
+            flex-wrap: wrap;
+            margin-top: .45rem;
+        }
+
+        .perm-toolbar {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+            padding: 0 1rem 1rem;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        .perm-toolbar .btn {
+            border-radius: 999px;
+            font-weight: 900;
         }
 
         .perm-check {
@@ -115,8 +136,50 @@
 
         .perm-summary {
             display: grid;
-            grid-template-columns: repeat(3, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: .9rem;
+        }
+
+        .perm-help-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: .9rem;
+        }
+
+        .perm-help-card {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            gap: .85rem;
+            align-items: start;
+            padding: 1rem;
+            border: 1px solid #dbe4ef;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            box-shadow: 0 14px 34px rgba(15, 23, 42, .07);
+        }
+
+        .perm-help-card i {
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .perm-help-card strong {
+            display: block;
+            color: #0f172a;
+        }
+
+        .perm-help-card span {
+            display: block;
+            margin-top: .2rem;
+            color: #64748b;
+            font-weight: 700;
+            line-height: 1.35;
         }
 
         .perm-card {
@@ -188,6 +251,11 @@
             flex-wrap: wrap;
         }
 
+        .perm-actions .btn {
+            border-radius: 999px;
+            font-weight: 900;
+        }
+
         .perm-message {
             display: grid;
             grid-template-columns: auto minmax(0, 1fr);
@@ -235,6 +303,7 @@
             .perm-lock,
             .perm-form,
             .perm-filter,
+            .perm-help-grid,
             .perm-summary {
                 grid-template-columns: 1fr;
             }
@@ -332,6 +401,30 @@
                                 <asp:Panel ID="pnlConteudo" runat="server" CssClass="perm-shell" Visible="false">
                                     <asp:Literal ID="litResumo" runat="server"></asp:Literal>
 
+                                    <div class="perm-help-grid">
+                                        <div class="perm-help-card">
+                                            <i class="fa fa-clipboard-check"></i>
+                                            <div>
+                                                <strong>Registrar</strong>
+                                                <span>Permite incluir ve&iacute;culos no p&aacute;tio e confirmar a loja inicial.</span>
+                                            </div>
+                                        </div>
+                                        <div class="perm-help-card">
+                                            <i class="fa fa-random"></i>
+                                            <div>
+                                                <strong>Transferir</strong>
+                                                <span>Permite mover ve&iacute;culos entre lojas e gravar o hist&oacute;rico de movimenta&ccedil;&atilde;o.</span>
+                                            </div>
+                                        </div>
+                                        <div class="perm-help-card">
+                                            <i class="fa fa-history"></i>
+                                            <div>
+                                                <strong>Auditoria</strong>
+                                                <span>Toda libera&ccedil;&atilde;o, altera&ccedil;&atilde;o ou revoga&ccedil;&atilde;o fica registrada com usu&aacute;rio, data e IP.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="perm-panel">
                                         <div class="perm-panel-header">
                                             <strong><i class="fa fa-user-cog mr-1"></i> Usu&aacute;rio e permiss&otilde;es</strong>
@@ -342,6 +435,9 @@
                                             <div>
                                                 <label>Usu&aacute;rio</label>
                                                 <asp:TextBox ID="txtUsuario" runat="server" CssClass="form-control" MaxLength="100" autocomplete="off" placeholder="Ex.: MARCIO"></asp:TextBox>
+                                                <div class="perm-user-actions">
+                                                    <asp:LinkButton ID="btnMeuUsuario" runat="server" CssClass="btn btn-sm btn-outline-secondary" OnClick="btnMeuUsuario_Click" CausesValidation="false"><i class="fa fa-user mr-1"></i> Usar meu usu&aacute;rio</asp:LinkButton>
+                                                </div>
                                             </div>
                                             <label class="perm-check">
                                                 <asp:CheckBox ID="chkRegistrar" runat="server" />
@@ -354,10 +450,26 @@
                                             <asp:LinkButton ID="btnSalvar" runat="server" CssClass="btn btn-success" OnClick="btnSalvar_Click"><i class="fa fa-save mr-1"></i> Salvar</asp:LinkButton>
                                             <asp:LinkButton ID="btnLimpar" runat="server" CssClass="btn btn-outline-secondary" OnClick="btnLimpar_Click" CausesValidation="false"><i class="fa fa-eraser mr-1"></i> Limpar</asp:LinkButton>
                                         </div>
+                                        <div class="perm-toolbar">
+                                            <asp:LinkButton ID="btnPerfilCompleto" runat="server" CssClass="btn btn-outline-success" CommandArgument="completo" OnClick="PerfilRapido_Click" CausesValidation="false"><i class="fa fa-check-double mr-1"></i> Perfil completo</asp:LinkButton>
+                                            <asp:LinkButton ID="btnPerfilRegistrar" runat="server" CssClass="btn btn-outline-primary" CommandArgument="registrar" OnClick="PerfilRapido_Click" CausesValidation="false"><i class="fa fa-clipboard-check mr-1"></i> Somente registrar</asp:LinkButton>
+                                            <asp:LinkButton ID="btnPerfilTransferir" runat="server" CssClass="btn btn-outline-info" CommandArgument="transferir" OnClick="PerfilRapido_Click" CausesValidation="false"><i class="fa fa-random mr-1"></i> Somente transferir</asp:LinkButton>
+                                            <asp:LinkButton ID="btnPerfilLimpar" runat="server" CssClass="btn btn-outline-secondary" CommandArgument="limpar" OnClick="PerfilRapido_Click" CausesValidation="false"><i class="fa fa-times mr-1"></i> Limpar acessos</asp:LinkButton>
+                                        </div>
                                         <div class="perm-filter">
                                             <div>
                                                 <label>Filtro</label>
                                                 <asp:TextBox ID="txtFiltro" runat="server" CssClass="form-control" autocomplete="off" placeholder="Buscar usu&aacute;rio"></asp:TextBox>
+                                            </div>
+                                            <div>
+                                                <label>Perfil</label>
+                                                <asp:DropDownList ID="ddlFiltroPerfil" runat="server" CssClass="custom-select">
+                                                    <asp:ListItem Value="todos" Text="Todos"></asp:ListItem>
+                                                    <asp:ListItem Value="completo" Text="Acesso completo"></asp:ListItem>
+                                                    <asp:ListItem Value="registrar" Text="Podem registrar"></asp:ListItem>
+                                                    <asp:ListItem Value="transferir" Text="Podem transferir"></asp:ListItem>
+                                                    <asp:ListItem Value="somente_registrar" Text="Somente registrar"></asp:ListItem>
+                                                </asp:DropDownList>
                                             </div>
                                             <asp:LinkButton ID="btnFiltrar" runat="server" CssClass="btn btn-dark" OnClick="btnFiltrar_Click"><i class="fa fa-search mr-1"></i> Filtrar</asp:LinkButton>
                                         </div>
@@ -385,7 +497,10 @@
                                                         <ItemTemplate>
                                                             <div class="perm-actions">
                                                                 <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-primary" CommandName="EditarUsuario" CommandArgument='<%# Eval("fun_cad") %>'><i class="fa fa-pen mr-1"></i>Editar</asp:LinkButton>
-                                                                <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-danger" CommandName="RevogarUsuario" CommandArgument='<%# Eval("fun_cad") %>' OnClientClick="return confirm('Revogar todas as permissões deste usuário?');"><i class="fa fa-ban mr-1"></i>Revogar</asp:LinkButton>
+                                                                <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-success" CommandName="AcessoCompleto" CommandArgument='<%# Eval("fun_cad") %>'><i class="fa fa-check-double mr-1"></i>Completo</asp:LinkButton>
+                                                                <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-info" CommandName="AcessoRegistrar" CommandArgument='<%# Eval("fun_cad") %>'><i class="fa fa-clipboard-check mr-1"></i>Registrar</asp:LinkButton>
+                                                                <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="AcessoTransferir" CommandArgument='<%# Eval("fun_cad") %>'><i class="fa fa-random mr-1"></i>Transferir</asp:LinkButton>
+                                                                <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-danger" CommandName="RevogarUsuario" CommandArgument='<%# Eval("fun_cad") %>' OnClientClick="return confirm('Revogar todas as permissoes deste usuario?');"><i class="fa fa-ban mr-1"></i>Revogar</asp:LinkButton>
                                                             </div>
                                                         </ItemTemplate>
                                                     </asp:TemplateField>
