@@ -65,7 +65,7 @@
 
         .perm-filter {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(190px, 240px) auto;
+            grid-template-columns: minmax(0, 1fr) minmax(190px, 240px) auto auto;
             gap: .75rem;
             align-items: end;
             padding: 1rem;
@@ -213,7 +213,7 @@
 
         .perm-table {
             width: 100%;
-            min-width: 820px;
+            min-width: 1180px;
         }
 
         .perm-table th {
@@ -254,6 +254,12 @@
         .perm-actions .btn {
             border-radius: 999px;
             font-weight: 900;
+        }
+
+        .perm-history-note {
+            color: #64748b;
+            font-weight: 800;
+            line-height: 1.35;
         }
 
         .perm-message {
@@ -472,6 +478,7 @@
                                                 </asp:DropDownList>
                                             </div>
                                             <asp:LinkButton ID="btnFiltrar" runat="server" CssClass="btn btn-dark" OnClick="btnFiltrar_Click"><i class="fa fa-search mr-1"></i> Filtrar</asp:LinkButton>
+                                            <asp:LinkButton ID="btnExportar" runat="server" CssClass="btn btn-outline-success" OnClick="btnExportar_Click" CausesValidation="false"><i class="fa fa-file-export mr-1"></i> Exportar</asp:LinkButton>
                                         </div>
                                         <div class="perm-table-wrap">
                                             <asp:GridView ID="gridPermissoes" runat="server" AutoGenerateColumns="false" CssClass="table table-striped table-hover perm-table" GridLines="None" OnRowCommand="gridPermissoes_RowCommand">
@@ -493,10 +500,18 @@
                                                             </span>
                                                         </ItemTemplate>
                                                     </asp:TemplateField>
+                                                    <asp:TemplateField HeaderText="&Uacute;ltima altera&ccedil;&atilde;o">
+                                                        <ItemTemplate>
+                                                            <%# FormatarDataGrid(Eval("ultima_alteracao")) %>
+                                                        </ItemTemplate>
+                                                    </asp:TemplateField>
+                                                    <asp:BoundField DataField="ultima_acao" HeaderText="&Uacute;ltima a&ccedil;&atilde;o" />
+                                                    <asp:BoundField DataField="ultimo_responsavel" HeaderText="Respons&aacute;vel" />
                                                     <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                                         <ItemTemplate>
                                                             <div class="perm-actions">
                                                                 <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-primary" CommandName="EditarUsuario" CommandArgument='<%# Eval("fun_cad") %>'><i class="fa fa-pen mr-1"></i>Editar</asp:LinkButton>
+                                                                <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-dark" CommandName="HistoricoUsuario" CommandArgument='<%# Eval("fun_cad") %>'><i class="fa fa-clock mr-1"></i>Hist&oacute;rico</asp:LinkButton>
                                                                 <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-success" CommandName="AcessoCompleto" CommandArgument='<%# Eval("fun_cad") %>'><i class="fa fa-check-double mr-1"></i>Completo</asp:LinkButton>
                                                                 <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-info" CommandName="AcessoRegistrar" CommandArgument='<%# Eval("fun_cad") %>'><i class="fa fa-clipboard-check mr-1"></i>Registrar</asp:LinkButton>
                                                                 <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-secondary" CommandName="AcessoTransferir" CommandArgument='<%# Eval("fun_cad") %>'><i class="fa fa-random mr-1"></i>Transferir</asp:LinkButton>
@@ -511,6 +526,19 @@
                                             </asp:GridView>
                                         </div>
                                     </div>
+
+                                    <asp:Panel ID="pnlHistoricoUsuario" runat="server" CssClass="perm-panel" Visible="false">
+                                        <div class="perm-panel-header">
+                                            <div>
+                                                <strong><i class="fa fa-clock mr-1"></i> Hist&oacute;rico do usu&aacute;rio</strong>
+                                                <div class="perm-history-note"><asp:Literal ID="litHistoricoTitulo" runat="server"></asp:Literal></div>
+                                            </div>
+                                            <asp:LinkButton ID="btnFecharHistorico" runat="server" CssClass="btn btn-outline-secondary" OnClick="btnFecharHistorico_Click" CausesValidation="false"><i class="fa fa-times mr-1"></i> Fechar</asp:LinkButton>
+                                        </div>
+                                        <div class="perm-table-wrap">
+                                            <asp:Literal ID="litHistoricoUsuario" runat="server"></asp:Literal>
+                                        </div>
+                                    </asp:Panel>
 
                                     <div class="perm-panel">
                                         <div class="perm-panel-header">

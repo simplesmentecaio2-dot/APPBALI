@@ -21,6 +21,11 @@ public partial class veiculos_patio_permissoes : System.Web.UI.Page
         }
 
         usuarioLogado.Text = Html(Session["usuario"]);
+        ScriptManager scriptManager = ScriptManager.GetCurrent(Page);
+        if (scriptManager != null)
+        {
+            scriptManager.RegisterPostBackControl(btnExportar);
+        }
 
         if (!IsPostBack)
         {
@@ -155,6 +160,52 @@ public partial class veiculos_patio_permissoes : System.Web.UI.Page
         CarregarTela();
     }
 
+    protected void btnExportar_Click(object sender, EventArgs e)
+    {
+        if (!GarantirLiberado()) return;
+
+        DataTable permissoes = ObterPermissoes();
+        StringBuilder csv = new StringBuilder();
+        csv.AppendLine("Usuario;Registrar;Transferir;UltimaAlteracao;UltimaAcao;Responsavel");
+
+        foreach (DataRow row in permissoes.Rows)
+        {
+            csv.Append(Csv(row["fun_cad"]));
+            csv.Append(";");
+            csv.Append(Csv(Convert.ToBoolean(row["registrar"]) ? "Sim" : "Nao"));
+            csv.Append(";");
+            csv.Append(Csv(Convert.ToBoolean(row["transferir"]) ? "Sim" : "Nao"));
+            csv.Append(";");
+            csv.Append(Csv(FormatarDataGrid(row["ultima_alteracao"])));
+            csv.Append(";");
+            csv.Append(Csv(row["ultima_acao"]));
+            csv.Append(";");
+            csv.AppendLine(Csv(row["ultimo_responsavel"]));
+        }
+
+        PatioJeepAuditoria.Registrar("PATIO_PERMISSAO_EXPORTAR", Session["usuario"], "TELA", "Exportou permiss\u00f5es filtradas do p\u00e1tio.");
+
+        Response.Clear();
+        Response.Buffer = true;
+        Response.ContentType = "text/csv";
+        Response.ContentEncoding = Encoding.UTF8;
+        Response.AddHeader("Content-Disposition", "attachment; filename=permissoes-patio-" + DateTime.Now.ToString("yyyyMMdd-HHmm") + ".csv");
+        Response.Write("\uFEFF");
+        Response.Write(csv.ToString());
+        Response.Flush();
+        Context.ApplicationInstance.CompleteRequest();
+    }
+
+    protected void btnFecharHistorico_Click(object sender, EventArgs e)
+    {
+        if (!GarantirLiberado()) return;
+
+        pnlHistoricoUsuario.Visible = false;
+        litHistoricoTitulo.Text = "";
+        litHistoricoUsuario.Text = "";
+        CarregarTela();
+    }
+
     protected void gridPermissoes_RowCommand(object sender, GridViewCommandEventArgs e)
     {
         if (!GarantirLiberado()) return;
@@ -171,6 +222,13 @@ public partial class veiculos_patio_permissoes : System.Web.UI.Page
         {
             CarregarUsuarioParaEdicao(usuario);
             CarregarTela();
+            return;
+        }
+
+        if (e.CommandName == "HistoricoUsuario")
+        {
+            CarregarTela();
+            RenderizarHistoricoUsuario(usuario);
             return;
         }
 
@@ -412,8 +470,18 @@ GROUP BY UPPER(LTRIM(RTRIM(fun_cad)));", banco.oCon2);
 SELECT
     fun_cad,
     CONVERT(bit, registrar) AS registrar,
-    CONVERT(bit, transferir) AS transferir
+    CONVERT(bit, transferir) AS transferir,
+    auditoria.dt AS ultima_alteracao,
+    ISNULL(auditoria.acao, '') AS ultima_acao,
+    ISNULL(auditoria.usuario_responsavel, '') AS ultimo_responsavel
 FROM base
+OUTER APPLY
+(
+    SELECT TOP 1 dt, acao, usuario_responsavel
+    FROM dbo.veiculos_patio_permissao_auditoria WITH (NOLOCK)
+    WHERE UPPER(LTRIM(RTRIM(usuario_alvo))) = base.fun_cad
+    ORDER BY dt DESC, id DESC
+) auditoria
 WHERE
     @perfil = 'todos'
     OR (@perfil = 'completo' AND registrar = 1 AND transferir = 1)
@@ -530,6 +598,62 @@ ORDER BY dt DESC, id DESC;", banco.oCon2);
 
         html.Append("</tbody></table>");
         litLogs.Text = html.ToString();
+    }
+
+    private void RenderizarHistoricoUsuario(string usuario)
+    {
+        GarantirEstrutura();
+        DataTable tabela = new DataTable();
+        Jeep banco = new Jeep();
+        try
+        {
+            banco.Conexao2();
+            SqlCommand cmd = new SqlCommand(@"
+SELECT TOP 50 dt, acao, usuario_alvo, registrar_anterior, registrar_novo,
+       transferir_anterior, transferir_novo, usuario_responsavel, detalhe, ip
+FROM dbo.veiculos_patio_permissao_auditoria WITH (NOLOCK)
+WHERE UPPER(LTRIM(RTRIM(usuario_alvo))) = @usuario
+ORDER BY dt DESC, id DESC;", banco.oCon2);
+            cmd.Parameters.Add("@usuario", SqlDbType.VarChar, 100).Value = usuario;
+            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+            adapter.Fill(tabela);
+        }
+        finally
+        {
+            banco.FecharConexao2();
+        }
+
+        pnlHistoricoUsuario.Visible = true;
+        litHistoricoTitulo.Text = Html("Usu\u00e1rio: " + usuario + " | " + tabela.Rows.Count + " evento(s) encontrado(s)");
+
+        if (tabela.Rows.Count == 0)
+        {
+            litHistoricoUsuario.Text = "<div class=\"alert alert-light mb-0\">Este usu&aacute;rio ainda n&atilde;o possui altera&ccedil;&otilde;es auditadas.</div>";
+            MostrarMensagem("info", "Hist\u00f3rico vazio", "Nenhuma altera\u00e7\u00e3o auditada para " + usuario + ".");
+            return;
+        }
+
+        StringBuilder html = new StringBuilder();
+        html.Append("<table class=\"table table-striped table-hover perm-table\"><thead><tr>");
+        html.Append("<th>Data</th><th>A&ccedil;&atilde;o</th><th>Antes</th><th>Depois</th><th>Respons&aacute;vel</th><th>Detalhe</th><th>IP</th>");
+        html.Append("</tr></thead><tbody>");
+
+        foreach (DataRow row in tabela.Rows)
+        {
+            html.Append("<tr>");
+            html.Append("<td>" + Html(FormatarData(row["dt"])) + "</td>");
+            html.Append("<td><span class=\"perm-badge perm-badge-on\">" + Html(row["acao"]) + "</span></td>");
+            html.Append("<td>" + Html(ResumoPermissao(row["registrar_anterior"], row["transferir_anterior"])) + "</td>");
+            html.Append("<td>" + Html(ResumoPermissao(row["registrar_novo"], row["transferir_novo"])) + "</td>");
+            html.Append("<td>" + Html(row["usuario_responsavel"]) + "</td>");
+            html.Append("<td>" + Html(row["detalhe"]) + "</td>");
+            html.Append("<td>" + Html(row["ip"]) + "</td>");
+            html.Append("</tr>");
+        }
+
+        html.Append("</tbody></table>");
+        litHistoricoUsuario.Text = html.ToString();
+        MostrarMensagem("info", "Hist\u00f3rico carregado", "Eventos de permiss\u00e3o de " + usuario + " carregados abaixo da lista.");
     }
 
     private string ResumoPermissao(object registrar, object transferir)
@@ -667,6 +791,12 @@ END;", banco.oCon2);
         return valor.Length == 0 ? (object)DBNull.Value : valor;
     }
 
+    protected string FormatarDataGrid(object valor)
+    {
+        string data = FormatarData(valor);
+        return String.IsNullOrWhiteSpace(data) ? "-" : data;
+    }
+
     private string FormatarData(object valor)
     {
         DateTime data;
@@ -676,6 +806,13 @@ END;", banco.oCon2);
         }
 
         return Convert.ToString(valor);
+    }
+
+    private string Csv(object valor)
+    {
+        string texto = Convert.ToString(valor) ?? "";
+        texto = texto.Replace("\r", " ").Replace("\n", " ");
+        return "\"" + texto.Replace("\"", "\"\"") + "\"";
     }
 
     private void MostrarMensagem(string tipo, string titulo, string texto)
