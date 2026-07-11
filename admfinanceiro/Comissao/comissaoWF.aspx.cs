@@ -10,6 +10,7 @@ using Microsoft.ReportingServices;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 
@@ -104,8 +105,9 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
 
             txtComissaoTotal.Text = (Numero(comissaoVU) + Numero(totalComissaoVN) + Numero(txtComissaoVD.Text)).ToString("N2");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            RegistrarErro(ex, "Selecionar comissão geral");
             MostrarMensagem("Não foi possível calcular esta comissão agora. Confira o período e tente selecionar o vendedor novamente.");
         }
     }
@@ -136,8 +138,9 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
 
             txtEmplacamento.Text = ValorDecimalTexto(comissaoEMPL);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            RegistrarErro(ex, "Selecionar emplacamento");
             MostrarMensagem("Não foi possível carregar o emplacamento deste vendedor. Confira o período e tente novamente.");
         }
     }
@@ -165,8 +168,9 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             txtmvp.Text = ValorDecimalTexto(mvp);
             txtavulsos.Text = ValorDecimalTexto(avulsos);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            RegistrarErro(ex, "Selecionar premiação");
             MostrarMensagem("Não foi possível carregar a premiação deste vendedor. Confira o período e tente novamente.");
         }
     }
@@ -361,8 +365,9 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             MostrarMensagem("Comissão salva com sucesso.");
            
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            RegistrarErro(ex, "Salvar comissão geral");
             sqldsListarVendedores.DataBind();
             gViewListarVendedores.DataBind();
             MostrarMensagem("Comissão já cadastrada ou não foi possível salvar. Confira o período e o vendedor.");
@@ -396,8 +401,9 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             MostrarMensagem("Comissão salva com sucesso.");
            
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            RegistrarErro(ex, "Salvar venda direta");
             sqldsListarVendedoresPrem.DataBind();
             gViewListarVendedoresVD.DataBind();
             MostrarMensagem("Comissão já cadastrada ou não foi possível salvar. Confira o período e o vendedor.");
@@ -428,8 +434,9 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             MostrarMensagem("Emplacamento salvo com sucesso.");
 
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            RegistrarErro(ex, "Salvar emplacamento");
             sqldsListarVendedoresEmplac.DataBind();
             gViewListarVendedoresEMPLACAMENTO.DataBind();
             MostrarMensagem("Emplacamento já cadastrado ou não foi possível salvar. Confira o período e o vendedor.");
@@ -462,8 +469,9 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             MostrarMensagem("Premiação salva com sucesso.");
 
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            RegistrarErro(ex, "Salvar premiação");
             sqldsListarVendedoresPremiacao.DataBind();
             gViewListarVendedoresPREMIACAO.DataBind();
             MostrarMensagem("Premiação já cadastrada ou não foi possível salvar. Confira o período e o vendedor.");
@@ -674,6 +682,35 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
         if (Session[chave] == null) return padrao;
         string valor = Convert.ToString(Session[chave]).Trim();
         return valor.Length == 0 ? padrao : valor;
+    }
+
+    private void RegistrarErro(Exception ex, string contexto)
+    {
+        try
+        {
+            string pasta = Server.MapPath("~/App_Data/logs");
+            Directory.CreateDirectory(pasta);
+            string arquivo = Path.Combine(pasta, "comissao-wf-erros.log");
+            string usuario = ValorSessao("login", "sem-login");
+            string codigo = ValorSessao("codigo_usuario", ValorSessao("usuariocodigo", "sem-codigo"));
+            string ip = Request.UserHostAddress ?? "";
+            string mensagem = String.Format(CultureInfo.InvariantCulture,
+                "{0:yyyy-MM-dd HH:mm:ss};usuario={1};codigo={2};ip={3};contexto={4};erro={5};stack={6}{7}",
+                DateTime.Now,
+                usuario.Replace(";", ","),
+                codigo.Replace(";", ","),
+                ip.Replace(";", ","),
+                (contexto ?? "").Replace(";", ","),
+                (ex == null ? "" : ex.Message).Replace(";", ",").Replace(Environment.NewLine, " "),
+                (ex == null ? "" : ex.ToString()).Replace(Environment.NewLine, " "),
+                Environment.NewLine);
+
+            File.AppendAllText(arquivo, mensagem);
+        }
+        catch
+        {
+            // Nunca deixa uma falha no log quebrar a tela operacional.
+        }
     }
 
     private void MostrarMensagem(string mensagem)
