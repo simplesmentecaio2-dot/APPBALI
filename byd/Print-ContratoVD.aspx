@@ -1436,36 +1436,28 @@
                     </span>
 
                     <br />
-                    <br />
-                    Brasília,
-                    <asp:Label ID="lbldeclaracaodata" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>
-                    <br />
-                    Cliente: 
-                    <asp:Label ID="lbldeclaracaocliente" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>
-                    <br />
-                    CPF: 
-                    <asp:Label ID="lbldeclaracaocpf2" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>
-                    <br />
-                    Carro:
-                    <asp:Label ID="lbldeclaracaoveiculo" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>
-                    <br />
-                    Placa:
-                    <asp:Label ID="lbleclaracaoplaca" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>
-                    <br />
-                    <br />
-
-                    <asp:Label ID="lbltexto" CssClass="form-aviso" runat="server" Text=" ATENÇÃO! O VEÍCULO SOMENTE SERÁ ENTREGUE PARA O PROPRIETÁRIO. NO CASO DE TERCEIROS, DEVE TER EM MÃOS UMA AUTORIZAÇÃO DO PROPRIETÁRIO DO VEÍCULO REGISTRADA EM CARTÓRIO,
-                     O MESMO OCORRE PARA RETIRADA DO CRLV (DOCUMENTO). "></asp:Label>
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-
-
-                    _______________________________________		  
-                    <br />
-
-                    <asp:Label ID="lbldeclaracaocliente1" runat="server" CssClass="form-aviso" Text="Label"></asp:Label>
+                    <div style="width: 17.2cm; margin: 8px auto 6px; text-align: left;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                            <tr>
+                                <td style="width: 38%; border: 1px solid #666; padding: 4px 6px;"><strong>Data:</strong> Brasília, <asp:Label ID="lbldeclaracaodata" CssClass="form-aviso" runat="server" Text="Label"></asp:Label></td>
+                                <td style="border: 1px solid #666; padding: 4px 6px;"><strong>Cliente:</strong> <asp:Label ID="lbldeclaracaocliente" CssClass="form-aviso" runat="server" Text="Label"></asp:Label></td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #666; padding: 4px 6px;"><strong>CPF/CNPJ:</strong> <asp:Label ID="lbldeclaracaocpf2" CssClass="form-aviso" runat="server" Text="Label"></asp:Label></td>
+                                <td style="border: 1px solid #666; padding: 4px 6px;"><strong>Veículo usado:</strong> <asp:Label ID="lbldeclaracaoveiculo" CssClass="form-aviso" runat="server" Text="Label"></asp:Label> &nbsp; <strong>Placa:</strong> <asp:Label ID="lbleclaracaoplaca" CssClass="form-aviso" runat="server" Text="Label"></asp:Label></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="width: 17.2cm; margin: 7px auto 0; padding: 7px 9px; border: 1px solid #777; text-align: justify; font-size: 12.5px; line-height: 1.22;">
+                        <strong>ATENÇÃO:</strong> a entrega ou retirada do veículo usado e/ou do CRLV será realizada somente ao proprietário. No caso de retirada por terceiro, é obrigatória autorização do proprietário com firma reconhecida em cartório, acompanhada de documento oficial de identificação.
+                    </div>
+                    <div style="margin-top: 22px; text-align: center;">
+                        <div style="width: 10.5cm; margin: 0 auto; border-top: 1px solid #000;"></div>
+                        <div style="margin-top: 5px; font-weight: bold;">
+                            <asp:Label ID="lbldeclaracaocliente1" runat="server" CssClass="form-aviso" Text="Label"></asp:Label>
+                        </div>
+                        <div style="font-size: 11px;">Cliente/Proprietário</div>
+                    </div>
 
                 </div>
             </span>
@@ -1481,35 +1473,28 @@
                     </span>
 
                     <br />
-                    <br />
-                    Brasília,
-                    <asp:Label ID="lbldeclaracaodata2" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>
-                    <br />
-                    Cliente: 
-                    <asp:Label ID="lbldeclaracaocliente2" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>
-                    <br />
-                    CPF: 
-                    <asp:Label ID="lbldeclaracaocpf22" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>
-                    <br />
-                    Carro:
-                    <asp:Label ID="lbldeclaracaoveiculo2" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>
-                    <br />
-                    Placa:
-                    <asp:Label ID="lbleclaracaoplaca2" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>
-                    <br />
-                    <br />
-                    <asp:Label ID="lbltexto2" CssClass="form-aviso" runat="server" Text=" ATENÇÃO! O VEÍCULO SOMENTE SERÁ ENTREGUE PARA O PROPRIETÁRIO. NO CASO DE TERCEIROS, DEVE TER EM MÃOS UMA AUTORIZAÇÃO DO PROPRIETÁRIO DO VEÍCULO REGISTRADA EM CARTÓRIO,
-                     O MESMO OCORRE PARA RETIRADA DO CRLV (DOCUMENTO). "></asp:Label>
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-
-
-                    _______________________________________		  
-                    <br />
-
-                    <asp:Label ID="lbldeclaracaocliente12" runat="server" CssClass="form-aviso" Text="Label"></asp:Label>
+                    <div style="width: 17.2cm; margin: 8px auto 6px; text-align: left;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                            <tr>
+                                <td style="width: 38%; border: 1px solid #666; padding: 4px 6px;"><strong>Data:</strong> Brasília, <asp:Label ID="lbldeclaracaodata2" CssClass="form-aviso" runat="server" Text="Label"></asp:Label></td>
+                                <td style="border: 1px solid #666; padding: 4px 6px;"><strong>Cliente:</strong> <asp:Label ID="lbldeclaracaocliente2" CssClass="form-aviso" runat="server" Text="Label"></asp:Label></td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #666; padding: 4px 6px;"><strong>CPF/CNPJ:</strong> <asp:Label ID="lbldeclaracaocpf22" CssClass="form-aviso" runat="server" Text="Label"></asp:Label></td>
+                                <td style="border: 1px solid #666; padding: 4px 6px;"><strong>Veículo usado:</strong> <asp:Label ID="lbldeclaracaoveiculo2" CssClass="form-aviso" runat="server" Text="Label"></asp:Label> &nbsp; <strong>Placa:</strong> <asp:Label ID="lbleclaracaoplaca2" CssClass="form-aviso" runat="server" Text="Label"></asp:Label></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="width: 17.2cm; margin: 7px auto 0; padding: 7px 9px; border: 1px solid #777; text-align: justify; font-size: 12.5px; line-height: 1.22;">
+                        <strong>ATENÇÃO:</strong> a entrega ou retirada do veículo usado e/ou do CRLV será realizada somente ao proprietário. No caso de retirada por terceiro, é obrigatória autorização do proprietário com firma reconhecida em cartório, acompanhada de documento oficial de identificação.
+                    </div>
+                    <div style="margin-top: 22px; text-align: center;">
+                        <div style="width: 10.5cm; margin: 0 auto; border-top: 1px solid #000;"></div>
+                        <div style="margin-top: 5px; font-weight: bold;">
+                            <asp:Label ID="lbldeclaracaocliente12" runat="server" CssClass="form-aviso" Text="Label"></asp:Label>
+                        </div>
+                        <div style="font-size: 11px;">Cliente/Proprietário</div>
+                    </div>
 
                 </div>
             </span>
