@@ -891,7 +891,7 @@
                                             <div>
                                                 <span>Arquivo financeiro</span>
                                                 <h2>Relat&oacute;rio de comiss&otilde;es</h2>
-                                                <p>Escolha o per&iacute;odo e gere uma pr&eacute;via para confer&ecirc;ncia, exporta&ccedil;&atilde;o ou impress&atilde;o.</p>
+                                                <p>Escolha at&eacute; 62 dias por gera&ccedil;&atilde;o e gere uma pr&eacute;via para confer&ecirc;ncia, exporta&ccedil;&atilde;o ou impress&atilde;o.</p>
                                             </div>
                                             <div class="comissao-report-actions">
                                                 <asp:Label ID="lblRelatorioComissaoStatus" runat="server" CssClass="comissao-report-status" Text="Aguardando gera&ccedil;&atilde;o"></asp:Label>
@@ -914,7 +914,7 @@
                                             <asp:Button ID="Button2" runat="server" Text="Gerar relat&oacute;rio" OnClick="Button2_Click" />
                                         </div>
                                         <div class="comissao-report-tip">
-                                            Use os bot&otilde;es do pr&oacute;prio relat&oacute;rio para exportar ou imprimir. Se a pr&eacute;via ficar larga, arraste lateralmente dentro do quadro.
+                                            Use os bot&otilde;es do pr&oacute;prio relat&oacute;rio para exportar ou imprimir. Para manter a tela r&aacute;pida, gere no m&aacute;ximo 62 dias por vez.
                                         </div>
                                         <div class="comissao-report-viewer">
                                             <rsweb:reportviewer id="ReportViewer1" width="100%" height="720px" runat="server" font-names="Arial" font-size="8pt" waitmessagefont-names="Arial" waitmessagefont-size="12pt">
@@ -952,7 +952,7 @@
                                             <div>
                                                 <span>Arquivo financeiro</span>
                                                 <h2>Relat&oacute;rio de premia&ccedil;&otilde;es</h2>
-                                                <p>Gere a pr&eacute;via consolidada de premia&ccedil;&otilde;es, retornos, b&ocirc;nus e avulsos no per&iacute;odo.</p>
+                                                <p>Gere a pr&eacute;via consolidada de premia&ccedil;&otilde;es, retornos, b&ocirc;nus e avulsos em per&iacute;odos de at&eacute; 62 dias.</p>
                                             </div>
                                             <div class="comissao-report-actions">
                                                 <asp:Label ID="lblRelatorioPremiacaoStatus" runat="server" CssClass="comissao-report-status" Text="Aguardando gera&ccedil;&atilde;o"></asp:Label>
@@ -975,7 +975,7 @@
                                             <asp:Button ID="Button7" runat="server" Text="Gerar relat&oacute;rio" OnClick="Button3_Click" />
                                         </div>
                                         <div class="comissao-report-tip">
-                                            Confira o per&iacute;odo antes de exportar. A pr&eacute;via abaixo preserva o desenho original do RDLC.
+                                            Confira o per&iacute;odo antes de exportar. Para preservar performance, o limite por gera&ccedil;&atilde;o &eacute; de 62 dias.
                                         </div>
                                         <div class="comissao-report-viewer">
                                             <rsweb:reportviewer id="ReportViewer2" width="100%" height="720px" runat="server" font-names="Arial" font-size="8pt" waitmessagefont-names="Arial" waitmessagefont-size="12pt">

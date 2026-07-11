@@ -492,7 +492,7 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
     protected void Button2_Click(object sender, EventArgs e)
     {
         DateTime dataInicial, dataFinal;
-        if (!ValidarPeriodo(TextBox1, TextBox2, out dataInicial, out dataFinal)) return;
+        if (!ValidarPeriodoMaximo(TextBox1, TextBox2, 62, "O relatório de comissões", out dataInicial, out dataFinal)) return;
 
         try
         {
@@ -517,7 +517,7 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
     protected void Button3_Click(object sender, EventArgs e)
     {
         DateTime dataInicial, dataFinal;
-        if (!ValidarPeriodo(TextBox5, TextBox6, out dataInicial, out dataFinal)) return;
+        if (!ValidarPeriodoMaximo(TextBox5, TextBox6, 62, "O relatório de premiações", out dataInicial, out dataFinal)) return;
 
         try
         {
@@ -606,6 +606,21 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
         CultureInfo cultura = CultureInfo.GetCultureInfo("pt-BR");
         return DateTime.TryParseExact(texto, "dd/MM/yyyy", cultura, DateTimeStyles.None, out data)
             || DateTime.TryParse(texto, cultura, DateTimeStyles.None, out data);
+    }
+
+    private bool ValidarPeriodoMaximo(TextBox campoInicial, TextBox campoFinal, int diasMaximos, string nomeRotina, out DateTime dataInicial, out DateTime dataFinal)
+    {
+        if (!ValidarPeriodo(campoInicial, campoFinal, out dataInicial, out dataFinal)) return false;
+
+        int dias = (dataFinal.Date - dataInicial.Date).Days + 1;
+        if (dias > diasMaximos)
+        {
+            MostrarMensagem((nomeRotina ?? "Este relatório") + " permite no máximo " + diasMaximos.ToString(CultureInfo.InvariantCulture) + " dias por geração. Reduza o período para manter a tela rápida.");
+            if (campoInicial != null) campoInicial.Focus();
+            return false;
+        }
+
+        return true;
     }
 
     private bool GarantirLinhaSelecionada(GridView grid, string mensagem)
