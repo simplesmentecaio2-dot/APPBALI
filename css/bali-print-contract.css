@@ -146,6 +146,27 @@ body.bali-print-page textarea.form-aviso {
     }
 }
 
+body.contrato-vu-print #pnlImpressao table[border="1"] {
+    border-color: #4b5563 !important;
+}
+
+body.contrato-vu-print #pnlImpressao table[border="1"] td {
+    border-color: #4b5563 !important;
+}
+
+body.contrato-vu-print #pnlImpressao td[style*="background-color: silver"] {
+    color: #111827 !important;
+    background-color: #d9dde3 !important;
+}
+
+body.contrato-vu-print #pnlImpressao td[style*="font-size: 14px"][style*="background-color: silver"] {
+    background-color: #cbd2dc !important;
+}
+
+body.contrato-vu-print #pnlImpressao td[style*="padding-bottom: 40px"] {
+    color: #000 !important;
+}
+
 @media print {
     @page {
         size: A4 portrait;
