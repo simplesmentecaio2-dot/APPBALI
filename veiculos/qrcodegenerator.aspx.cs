@@ -22,11 +22,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
             try
             {
                 vec.select_prospeccao_qrcode(code, out cliente, out vendedor, out loja, out equipe, out evento, out data);
-                lblCliente.Text = cliente;
-                lblvendedor.Text = vendedor;
-                lblloja.Text = loja;
-                lblequipe.Text = equipe;
-                lblevento.Text = evento;
+                lblCliente.Text = TextoSeguro(cliente);
+                lblvendedor.Text = TextoSeguro(vendedor);
+                lblloja.Text = TextoSeguro(loja);
+                lblequipe.Text = TextoSeguro(equipe);
+                lblevento.Text = TextoSeguro(evento);
                 codigoEncontrado = true;
             }
             catch
@@ -46,7 +46,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
 
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
-        QRCodeGenerator.QRCode qrcode = qrGenerator.CreateQrCode("http://app.bali.com.br/veiculos/confirmafluxo.aspx?id=" + code, QRCodeGenerator.ECCLevel.Q);
+        QRCodeGenerator.QRCode qrcode = qrGenerator.CreateQrCode("https://app.bali.com.br/veiculos/confirmafluxo.aspx?id=" + HttpUtility.UrlEncode(code), QRCodeGenerator.ECCLevel.Q);
         System.Web.UI.WebControls.Image imgQRcode = new System.Web.UI.WebControls.Image();
         imgQRcode.Height = 200;
         imgQRcode.Width = 200;
@@ -83,6 +83,11 @@ public partial class veiculos_contrato : System.Web.UI.Page
         string code = (Request.QueryString["code"] ?? "").Trim();
         int numero;
         return Int32.TryParse(code, out numero) && numero > 0 ? numero.ToString() : "";
+    }
+
+    private string TextoSeguro(string valor)
+    {
+        return HttpUtility.HtmlEncode(valor ?? "");
     }
 }
    
