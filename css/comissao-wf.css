@@ -537,6 +537,18 @@ body.comissao-wf-page *::after {
   white-space: nowrap;
 }
 
+.comissao-report-status.is-success {
+  border-color: rgba(47, 107, 60, .24);
+  background: rgba(47, 107, 60, .10);
+  color: var(--comissao-success);
+}
+
+.comissao-report-status.is-error {
+  border-color: rgba(165, 40, 40, .24);
+  background: rgba(165, 40, 40, .10);
+  color: var(--comissao-danger);
+}
+
 .comissao-report-actions {
   display: flex;
   flex-wrap: wrap;

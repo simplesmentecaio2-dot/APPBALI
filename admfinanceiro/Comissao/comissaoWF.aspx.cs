@@ -508,12 +508,14 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             sqldsComissaoRV.SelectParameters["dtFinal"].DefaultValue = final;
             ReportViewer1.LocalReport.Refresh();
             lblRelatorioComissaoStatus.Text = "Gerado de " + inicial + " a " + final;
+            lblRelatorioComissaoStatus.CssClass = "comissao-report-status is-success";
             RegistrarAuditoria("Gerar relatório de comissões", "periodo=" + inicial + " a " + final);
         }
         catch (Exception ex)
         {
             RegistrarErro(ex, "Gerar relatório de comissões");
             lblRelatorioComissaoStatus.Text = "Não foi possível gerar agora";
+            lblRelatorioComissaoStatus.CssClass = "comissao-report-status is-error";
             MostrarMensagem("Não foi possível gerar o relatório de comissões agora. Confira o período e tente novamente.");
         }
     }
@@ -534,12 +536,14 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             sqldsComissaoRV2.SelectParameters["dtFinal"].DefaultValue = final;
             ReportViewer2.LocalReport.Refresh();
             lblRelatorioPremiacaoStatus.Text = "Gerado de " + inicial + " a " + final;
+            lblRelatorioPremiacaoStatus.CssClass = "comissao-report-status is-success";
             RegistrarAuditoria("Gerar relatório de premiações", "periodo=" + inicial + " a " + final);
         }
         catch (Exception ex)
         {
             RegistrarErro(ex, "Gerar relatório de premiações");
             lblRelatorioPremiacaoStatus.Text = "Não foi possível gerar agora";
+            lblRelatorioPremiacaoStatus.CssClass = "comissao-report-status is-error";
             MostrarMensagem("Não foi possível gerar o relatório de premiações agora. Confira o período e tente novamente.");
         }
     }

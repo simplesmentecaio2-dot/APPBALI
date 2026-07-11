@@ -104,6 +104,14 @@
     var ini = hoje;
     var fim = hoje;
 
+    if (tipo === "limpar") {
+      inicial.value = "";
+      final.value = "";
+      dispararAlteracao(inicial);
+      dispararAlteracao(final);
+      return;
+    }
+
     if (tipo === "mes") {
       ini = inicioMes(hoje);
       fim = fimMes(hoje);
@@ -113,6 +121,8 @@
       fim = fimMes(anterior);
     } else if (tipo === "sete") {
       ini = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 6);
+    } else if (tipo === "trinta") {
+      ini = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 29);
     }
 
     inicial.value = formatarData(ini);
@@ -162,7 +172,9 @@
         ["mes", "Este m\u00eas"],
         ["anterior", "M\u00eas anterior"],
         ["sete", "\u00daltimos 7 dias"],
-        ["hoje", "Hoje"]
+        ["trinta", "\u00daltimos 30 dias"],
+        ["hoje", "Hoje"],
+        ["limpar", "Limpar"]
       ].forEach(function (item) {
         var botao = document.createElement("button");
         botao.type = "button";
