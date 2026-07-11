@@ -389,25 +389,25 @@
                                 <colgroup width="89">
                                 </colgroup>
                                 <caption class="auto-style5" style="text-align: left">
-                                    1) Autorizo a FCA FIAT CHRYSLER AUTOMÓVEIS BRASIL S/A a faturar em meu Nome/ nome da Empresa e CPF/ CNPJ o(s) veículo(s) objeto do presente contrato;
+                                    1) Autorizo a FCA FIAT CHRYSLER AUTOMÓVEIS BRASIL S/A a faturar, em meu nome/nome da empresa e CPF/CNPJ, o(s) veículo(s) objeto deste contrato;
                                     <br />
-                                    2) Preços e condições apresentados referem-se a faturamento direto de fabrica, elaborados dentro da política de comercialização do corrente mês, podendo a critério do fabricante, ou da financeira, sofrer alterações ou modificações, devido a mudança nas alíquotas de impostos, taxa de juros, reajustes nos preços ou substituição de componentes na linha de montagem, prevalecendo para todos os efeitos, os preços e condições praticados na data de faturamento;
+                                    2) Preços e condições referem-se a faturamento direto de fábrica, conforme política comercial vigente no mês, podendo ser alterados pelo fabricante, financeira ou legislação tributária por mudança em alíquotas, juros, preços ou componentes, prevalecendo as condições da data do faturamento;
                                     <br />
-                                    3) Caso o objeto do presente contrato esteja sendo financiado por instituição financeira, as taxas de juros e parcelas poderão sofrer alterações conforme mercado financeiro e/ ou política/ normativa da instituição e/ ou do Banco Central;
+                                    3) Se houver financiamento, taxas, prazos e parcelas poderão ser ajustados conforme aprovação, regras e política da instituição financeira e/ou do Banco Central;
                                     <br />
-                                    4) Prazo de entrega também pode ser alterado pela montadora sem prévio aviso, devido a mudanças na linha de montagem;
+                                    4) O prazo de entrega é estimado e poderá ser alterado pela montadora por motivo de produção, logística, faturamento ou mudança na linha de montagem;
                                     <br />
-                                    5) O(s) veículo(s) destina(m)-se à atividade profissional ou ativo imobilizado do comprador e não poderá(ão) ser comercializado(s) em prazo inferior a 180 dias da data de emissão da Nota Fiscal;
+                                    5) O(s) veículo(s) destina(m)-se à atividade profissional ou ativo imobilizado do comprador e não poderá(ão) ser comercializado(s) antes de 180 dias da emissão da Nota Fiscal;
                                     <br />
-                                    6) Declara o Cliente que tem ciência de que o(s) veículo(s) só poderá(ão) ser entregue(s) após confirmação do recebimento do pagamento dado pela FCA FIAT CHRYSLER AUTOMÓVEIS BRASIL S/A via sistema informatizado e que assume compromisso de que as duplicatas referentes às vendas sejam quitadas até o vencimento, sob pena de assumir, sem ressalvas e desde já, os encargos financeiros correspondentes ao(s) dia(s) de atraso, pela mora.
+                                    6) O Cliente declara ciência de que a entrega ocorrerá somente após confirmação do pagamento pela FCA FIAT CHRYSLER AUTOMÓVEIS BRASIL S/A em sistema informatizado, comprometendo-se a quitar duplicatas até o vencimento e a arcar com encargos financeiros em caso de mora.
                                     <br />
-                                    7) Prazo de pagamentos: 10 (dez) dias após a data da emissão da nota fiscal direto da fabrica, caso haja algum atraso será cobrado uma multa de 0.067% ao dia;
+                                    7) Prazo de pagamento: 10 (dez) dias após a emissão da Nota Fiscal direto da fábrica. Em caso de atraso, incidirá multa de 0,067% ao dia;
                                     <br />
-                                    8) Em caso de desistência será cobrada uma multa de 5% sobre o valor do veículo, conforme Nota Promissória/Cheque Caução abaixo; Ass. Do Cliente:_____________________________________________________________________________________
+                                    8) Em caso de desistência ou cancelamento, será devida multa de 5% sobre o valor do veículo, conforme Nota Promissória/Cheque Caução abaixo. Ass. do Cliente:_____________________________________________________________________________________
                                     <br />
-                                    9) No caso de entrega de veículo usado como forma de pagamento, é de responsabilidade do cliente a transferência de UF do veículo que será entregue. O cliente também deverá entregar o DUT em branco e uma procuração em nome da Bali, a qual poderá ser feita em qualquer cartório de Brasília, caso o cliente não esteja de acordo o mesmo deverá pagar a despesa com a transferência e o IPVA do ano corrente;
+                                    9) Se houver veículo usado como forma de pagamento, o Cliente é responsável pela transferência de UF, entrega do DUT em branco e procuração em nome da Bali, lavrada em cartório de Brasília. Se não concordar, arcará com transferência e IPVA do ano corrente;
                                     <br />
-                                    10) O veículo que será entregue como entrada, na ocasião da entrega não poderá conter avarias diversas das que já continha na data da avaliação e deverá conter todos os acessórios que estavam instalados, o mesmo também deverá ser entregue com a chave reserva, manuais e todos os itens de segurança (macaco, estepe, triangulo, e chave de roda), a avaliação do veículo usado terá validade de 15 (quinze) dias úteis, necessitando ser revalidada após este prazo.
+                                    10) O veículo entregue como entrada deverá estar nas mesmas condições da avaliação, sem novas avarias, com acessórios instalados, chave reserva, manuais e itens de segurança (macaco, estepe, triângulo e chave de roda). A avaliação do usado vale por 15 (quinze) dias úteis e deverá ser revalidada após esse prazo.
                                 </caption>
 
                             </table>
@@ -791,25 +791,25 @@
                                 <colgroup width="89">
                                 </colgroup>
                                 <caption class="auto-style5" style="text-align: left">
-                                    1) Autorizo a FCA FIAT CHRYSLER AUTOMÓVEIS BRASIL S/A a faturar em meu Nome/ nome da Empresa e CPF/ CNPJ o(s) veículo(s) objeto do presente contrato;
+                                    1) Autorizo a FCA FIAT CHRYSLER AUTOMÓVEIS BRASIL S/A a faturar, em meu nome/nome da empresa e CPF/CNPJ, o(s) veículo(s) objeto deste contrato;
                                     <br />
-                                    2) Preços e condições apresentados referem-se a faturamento direto de fabrica, elaborados dentro da política de comercialização do corrente mês, podendo a critério do fabricante, ou da financeira, sofrer alterações ou modificações, devido a mudança nas alíquotas de impostos, taxa de juros, reajustes nos preços ou substituição de componentes na linha de montagem, prevalecendo para todos os efeitos, os preços e condições praticados na data de faturamento;
+                                    2) Preços e condições referem-se a faturamento direto de fábrica, conforme política comercial vigente no mês, podendo ser alterados pelo fabricante, financeira ou legislação tributária por mudança em alíquotas, juros, preços ou componentes, prevalecendo as condições da data do faturamento;
                                     <br />
-                                    3) Caso o objeto do presente contrato esteja sendo financiado por instituição financeira, as taxas de juros e parcelas poderão sofrer alterações conforme mercado financeiro e/ ou política/ normativa da instituição e/ ou do Banco Central;
+                                    3) Se houver financiamento, taxas, prazos e parcelas poderão ser ajustados conforme aprovação, regras e política da instituição financeira e/ou do Banco Central;
                                     <br />
-                                    4) Prazo de entrega também pode ser alterado pela montadora sem prévio aviso, devido a mudanças na linha de montagem;
+                                    4) O prazo de entrega é estimado e poderá ser alterado pela montadora por motivo de produção, logística, faturamento ou mudança na linha de montagem;
                                     <br />
-                                    5) O(s) veículo(s) destina(m)-se à atividade profissional ou ativo imobilizado do comprador e não poderá(ão) ser comercializado(s) em prazo inferior a 180 dias da data de emissão da Nota Fiscal;
+                                    5) O(s) veículo(s) destina(m)-se à atividade profissional ou ativo imobilizado do comprador e não poderá(ão) ser comercializado(s) antes de 180 dias da emissão da Nota Fiscal;
                                     <br />
-                                    6) Declara o Cliente que tem ciência de que o(s) veículo(s) só poderá(ão) ser entregue(s) após confirmação do recebimento do pagamento dado pela FCA FIAT CHRYSLER AUTOMÓVEIS BRASIL S/A via sistema informatizado e que assume compromisso de que as duplicatas referentes às vendas sejam quitadas até o vencimento, sob pena de assumir, sem ressalvas e desde já, os encargos financeiros correspondentes ao(s) dia(s) de atraso, pela mora.
+                                    6) O Cliente declara ciência de que a entrega ocorrerá somente após confirmação do pagamento pela FCA FIAT CHRYSLER AUTOMÓVEIS BRASIL S/A em sistema informatizado, comprometendo-se a quitar duplicatas até o vencimento e a arcar com encargos financeiros em caso de mora.
                                     <br />
-                                    7) Prazo de pagamentos: 10 (dez) dias após a data da emissão da nota fiscal direto da fabrica, caso haja algum atraso será cobrado uma multa de 0.067% ao dia;
+                                    7) Prazo de pagamento: 10 (dez) dias após a emissão da Nota Fiscal direto da fábrica. Em caso de atraso, incidirá multa de 0,067% ao dia;
                                     <br />
-                                    8) Em caso de desistência será cobrada uma multa de 5% sobre o valor do veículo, conforme Nota Promissória/Cheque Caução abaixo; Ass. Do Cliente:_____________________________________________________________________________________
+                                    8) Em caso de desistência ou cancelamento, será devida multa de 5% sobre o valor do veículo, conforme Nota Promissória/Cheque Caução abaixo. Ass. do Cliente:_____________________________________________________________________________________
                                     <br />
-                                    9) No caso de entrega de veículo usado como forma de pagamento, é de responsabilidade do cliente a transferência de UF do veículo que será entregue. O cliente também deverá entregar o DUT em branco e uma procuração em nome da Bali, a qual poderá ser feita em qualquer cartório de Brasília, caso o cliente não esteja de acordo o mesmo deverá pagar a despesa com a transferência e o IPVA do ano corrente;
+                                    9) Se houver veículo usado como forma de pagamento, o Cliente é responsável pela transferência de UF, entrega do DUT em branco e procuração em nome da Bali, lavrada em cartório de Brasília. Se não concordar, arcará com transferência e IPVA do ano corrente;
                                     <br />
-                                    10) O veículo que será entregue como entrada, na ocasião da entrega não poderá conter avarias diversas das que já continha na data da avaliação e deverá conter todos os acessórios que estavam instalados, o mesmo também deverá ser entregue com a chave reserva, manuais e todos os itens de segurança (macaco, estepe, triangulo, e chave de roda), a avaliação do veículo usado terá validade de 15 (quinze) dias úteis, necessitando ser revalidada após este prazo.
+                                    10) O veículo entregue como entrada deverá estar nas mesmas condições da avaliação, sem novas avarias, com acessórios instalados, chave reserva, manuais e itens de segurança (macaco, estepe, triângulo e chave de roda). A avaliação do usado vale por 15 (quinze) dias úteis e deverá ser revalidada após esse prazo.
                                 </caption>
 
                             </table>
@@ -1187,25 +1187,25 @@
                                 <colgroup width="89">
                                 </colgroup>
                                 <caption class="auto-style5" style="text-align: left">
-                                    1) Autorizo a FCA FIAT CHRYSLER AUTOMÓVEIS BRASIL S/A a faturar em meu Nome/ nome da Empresa e CPF/ CNPJ o(s) veículo(s) objeto do presente contrato;
+                                    1) Autorizo a FCA FIAT CHRYSLER AUTOMÓVEIS BRASIL S/A a faturar, em meu nome/nome da empresa e CPF/CNPJ, o(s) veículo(s) objeto deste contrato;
                                     <br />
-                                    2) Preços e condições apresentados referem-se a faturamento direto de fabrica, elaborados dentro da política de comercialização do corrente mês, podendo a critério do fabricante, ou da financeira, sofrer alterações ou modificações, devido a mudança nas alíquotas de impostos, taxa de juros, reajustes nos preços ou substituição de componentes na linha de montagem, prevalecendo para todos os efeitos, os preços e condições praticados na data de faturamento;
+                                    2) Preços e condições referem-se a faturamento direto de fábrica, conforme política comercial vigente no mês, podendo ser alterados pelo fabricante, financeira ou legislação tributária por mudança em alíquotas, juros, preços ou componentes, prevalecendo as condições da data do faturamento;
                                     <br />
-                                    3) Caso o objeto do presente contrato esteja sendo financiado por instituição financeira, as taxas de juros e parcelas poderão sofrer alterações conforme mercado financeiro e/ ou política/ normativa da instituição e/ ou do Banco Central;
+                                    3) Se houver financiamento, taxas, prazos e parcelas poderão ser ajustados conforme aprovação, regras e política da instituição financeira e/ou do Banco Central;
                                     <br />
-                                    4) Prazo de entrega também pode ser alterado pela montadora sem prévio aviso, devido a mudanças na linha de montagem;
+                                    4) O prazo de entrega é estimado e poderá ser alterado pela montadora por motivo de produção, logística, faturamento ou mudança na linha de montagem;
                                     <br />
-                                    5) O(s) veículo(s) destina(m)-se à atividade profissional ou ativo imobilizado do comprador e não poderá(ão) ser comercializado(s) em prazo inferior a 180 dias da data de emissão da Nota Fiscal;
+                                    5) O(s) veículo(s) destina(m)-se à atividade profissional ou ativo imobilizado do comprador e não poderá(ão) ser comercializado(s) antes de 180 dias da emissão da Nota Fiscal;
                                     <br />
-                                    6) Declara o Cliente que tem ciência de que o(s) veículo(s) só poderá(ão) ser entregue(s) após confirmação do recebimento do pagamento dado pela FCA FIAT CHRYSLER AUTOMÓVEIS BRASIL S/A via sistema informatizado e que assume compromisso de que as duplicatas referentes às vendas sejam quitadas até o vencimento, sob pena de assumir, sem ressalvas e desde já, os encargos financeiros correspondentes ao(s) dia(s) de atraso, pela mora.
+                                    6) O Cliente declara ciência de que a entrega ocorrerá somente após confirmação do pagamento pela FCA FIAT CHRYSLER AUTOMÓVEIS BRASIL S/A em sistema informatizado, comprometendo-se a quitar duplicatas até o vencimento e a arcar com encargos financeiros em caso de mora.
                                     <br />
-                                    7) Prazo de pagamentos: 10 (dez) dias após a data da emissão da nota fiscal direto da fabrica, caso haja algum atraso será cobrado uma multa de 0.067% ao dia;
+                                    7) Prazo de pagamento: 10 (dez) dias após a emissão da Nota Fiscal direto da fábrica. Em caso de atraso, incidirá multa de 0,067% ao dia;
                                     <br />
-                                    8) Em caso de desistência será cobrada uma multa de 5% sobre o valor do veículo, conforme Nota Promissória/Cheque Caução abaixo; Ass. Do Cliente:_____________________________________________________________________________________
+                                    8) Em caso de desistência ou cancelamento, será devida multa de 5% sobre o valor do veículo, conforme Nota Promissória/Cheque Caução abaixo. Ass. do Cliente:_____________________________________________________________________________________
                                     <br />
-                                    9) No caso de entrega de veículo usado como forma de pagamento, é de responsabilidade do cliente a transferência de UF do veículo que será entregue. O cliente também deverá entregar o DUT em branco e uma procuração em nome da Bali, a qual poderá ser feita em qualquer cartório de Brasília, caso o cliente não esteja de acordo o mesmo deverá pagar a despesa com a transferência e o IPVA do ano corrente;
+                                    9) Se houver veículo usado como forma de pagamento, o Cliente é responsável pela transferência de UF, entrega do DUT em branco e procuração em nome da Bali, lavrada em cartório de Brasília. Se não concordar, arcará com transferência e IPVA do ano corrente;
                                     <br />
-                                    10) O veículo que será entregue como entrada, na ocasião da entrega não poderá conter avarias diversas das que já continha na data da avaliação e deverá conter todos os acessórios que estavam instalados, o mesmo também deverá ser entregue com a chave reserva, manuais e todos os itens de segurança (macaco, estepe, triangulo, e chave de roda), a avaliação do veículo usado terá validade de 15 (quinze) dias úteis, necessitando ser revalidada após este prazo.
+                                    10) O veículo entregue como entrada deverá estar nas mesmas condições da avaliação, sem novas avarias, com acessórios instalados, chave reserva, manuais e itens de segurança (macaco, estepe, triângulo e chave de roda). A avaliação do usado vale por 15 (quinze) dias úteis e deverá ser revalidada após esse prazo.
                                 </caption>
 
                             </table>
