@@ -369,18 +369,17 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><span style="font-size:11px; ">1) Autorizo a Bali Eletrics a faturar em meu nome e CPF o (s) veiculo (s) objeto do presente contrato nas condições de preço e forma de pagamento acima descrito.<br />
-                        2) Caso o objeto do presente contrato esteja sendo financiado por instituição financeira, as taxas de juros e parcelas poderão sofrer alterações conforme mercado financeiro e/ou política/ normativa da instituição financeira e/ ou do banco central. 
-                     <br />
-                        3) Estou ciente de que a previsão de entrega do veiculo poderá sofrer alteração sem prévio aviso.<br />
-                        4)  Os preços e os itens de série da tabela GAMA BYD estão sujeitos a alteração, conforme tabela de preços da fabrica vigentes à data de  faturamento do(s) veiculo(s).<br />
-                        <span style="font-size: 11px; font-weight: bold;">5) Em caso de desistência ou cancelamento do contrato, será cobrado multa de 5% (CINCO POR CENTO)  sobre o valor total do contrato, conforme nota promissória abaixo. Ass. do Cliente:__________________________________________________________________<br />
+                    <td><span style="font-size:11px; ">1) Autorizo a Bali Eletrics a faturar, em meu nome e CPF/CNPJ, o(s) veículo(s) objeto deste contrato, conforme preço e forma de pagamento acima descritos.<br />
+                        2) Se houver financiamento, taxas, prazos e parcelas dependerão da aprovação e das regras da instituição financeira, podendo sofrer alterações conforme mercado financeiro, política interna e normas aplicáveis.<br />
+                        3) Estou ciente de que a previsão de entrega do veículo é estimada e poderá ser alterada sem prévio aviso por motivo operacional, logístico ou de faturamento.<br />
+                        4) Os preços, itens de série e condições da tabela GAMA BYD poderão ser alterados conforme tabela vigente na data de faturamento do(s) veículo(s).<br />
+                        <span style="font-size: 11px; font-weight: bold;">5) Em caso de desistência ou cancelamento, será devida multa de 5% (CINCO POR CENTO) sobre o valor total do contrato, conforme nota promissória abaixo. Se o veículo já estiver emplacado, a multa será de 10% (DEZ POR CENTO), em razão do deságio de automóvel 0 km. Havendo financiamento efetivado, o consumidor arcará com custos, despesas e taxas de cancelamento.<br />Ass. do Cliente:__________________________________________________________________<br />
                         </span>
                         6) O Cliente compromete-se a entregar em Dação em Pagamento o veículo Placa
                      <asp:Label ID="lblPlaca" runat="server"  CssClass="form-contrato" Text=""></asp:Label>
-                        , conforme negociação descrita no contrato de compra e venda sob pena de não ser concretizada, nos termos, condições e benefícios negociados na compra.<br />
-                        7) O IPVA 2026 será isento desde que o cliente atenda as regras da Lei Distrital Nº 4.733/2011. Essa condição não contempla Seg. Obrigatório 2026;<br />
-                        8) Estou ciente que a contratação do serviço de emplacamento e despachante oferecido pela Bali é opcional, e que esse serviço poderá ser feito diretamente junto ao Detran/DF.
+                        , conforme negociação descrita neste contrato, sob pena de a venda não ser concretizada nas condições e benefícios pactuados.<br />
+                        7) A eventual isenção do IPVA 2026 depende do atendimento às regras da Lei Distrital nº 4.733/2011 e não contempla o Seguro Obrigatório 2026.<br />
+                        8) Estou ciente de que o serviço de emplacamento e despachante oferecido pela Bali é opcional, podendo ser contratado diretamente junto ao Detran/DF.
                         
                         </span>
                     </td>
@@ -755,18 +754,17 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><span style="font-size:11px; ">1) Autorizo a Bali Eletrics a faturar em meu nome e CPF o (s) veiculo (s) objeto do presente contrato nas condições de preço e forma de pagamento acima descrito.<br />
-                        2) Caso o objeto do presente contrato esteja sendo financiado por instituição financeira, as taxas de juros e parcelas poderão sofrer alterações conforme mercado financeiro e/ou política/ normativa da instituição financeira e/ ou do banco central. 
-                     <br />
-                        3) Estou ciente de que a previsão de entrega do veiculo poderá sofrer alteração sem prévio aviso.<br />
-                        4)  Os preços e os itens de série da tabela GAMA BYD estão sujeitos a alteração, conforme tabela de preços da fabrica vigentes à data de  faturamento do(s) veiculo(s).<br />
-                        <span style="font-size: 11px; font-weight: bold;">5) Em caso de desistência ou cancelamento do contrato, será cobrado multa de 5% (CINCO POR CENTO)  sobre o valor total do contrato, conforme nota promissória abaixo. Ass. do Cliente:__________________________________________________________________<br />
+                    <td><span style="font-size:11px; ">1) Autorizo a Bali Eletrics a faturar, em meu nome e CPF/CNPJ, o(s) veículo(s) objeto deste contrato, conforme preço e forma de pagamento acima descritos.<br />
+                        2) Se houver financiamento, taxas, prazos e parcelas dependerão da aprovação e das regras da instituição financeira, podendo sofrer alterações conforme mercado financeiro, política interna e normas aplicáveis.<br />
+                        3) Estou ciente de que a previsão de entrega do veículo é estimada e poderá ser alterada sem prévio aviso por motivo operacional, logístico ou de faturamento.<br />
+                        4) Os preços, itens de série e condições da tabela GAMA BYD poderão ser alterados conforme tabela vigente na data de faturamento do(s) veículo(s).<br />
+                        <span style="font-size: 11px; font-weight: bold;">5) Em caso de desistência ou cancelamento, será devida multa de 5% (CINCO POR CENTO) sobre o valor total do contrato, conforme nota promissória abaixo. Se o veículo já estiver emplacado, a multa será de 10% (DEZ POR CENTO), em razão do deságio de automóvel 0 km. Havendo financiamento efetivado, o consumidor arcará com custos, despesas e taxas de cancelamento.<br />Ass. do Cliente:__________________________________________________________________<br />
                         </span>
                         6) O Cliente compromete-se a entregar em Dação em Pagamento o veículo Placa
                      <asp:Label ID="lblPlaca2"  CssClass="form-contrato" runat="server" Text=""></asp:Label>
-                        , conforme negociação descrita no contrato de compra e venda sob pena de não ser concretizada, nos termos, condições e benefícios negociados na compra.<br />
-                        7) O IPVA 2026 será isento desde que o cliente atenda as regras da Lei Distrital Nº 4.733/2011. Essa condição não contempla Seg. Obrigatório 2026;<br />
-                        8) Estou ciente que a contratação do serviço de emplacamento e despachante oferecido pela Bali é opcional, e que esse serviço poderá ser feito diretamente junto ao Detran/DF.
+                        , conforme negociação descrita neste contrato, sob pena de a venda não ser concretizada nas condições e benefícios pactuados.<br />
+                        7) A eventual isenção do IPVA 2026 depende do atendimento às regras da Lei Distrital nº 4.733/2011 e não contempla o Seguro Obrigatório 2026.<br />
+                        8) Estou ciente de que o serviço de emplacamento e despachante oferecido pela Bali é opcional, podendo ser contratado diretamente junto ao Detran/DF.
                         </span>
                     </td>
                 </tr>
@@ -1135,18 +1133,17 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><span style="font-size:11px; ">1) Autorizo a Bali Eletrics a faturar em meu nome e CPF o (s) veiculo (s) objeto do presente contrato nas condições de preço e forma de pagamento acima descrito.<br />
-                        2) Caso o objeto do presente contrato esteja sendo financiado por instituição financeira, as taxas de juros e parcelas poderão sofrer alterações conforme mercado financeiro e/ou política/ normativa da instituição financeira e/ ou do banco central. 
-                     <br />
-                        3) Estou ciente de que a previsão de entrega do veiculo poderá sofrer alteração sem prévio aviso.<br />
-                        4)  Os preços e os itens de série da tabela GAMA BYD estão sujeitos a alteração, conforme tabela de preços da fabrica vigentes à data de  faturamento do(s) veiculo(s).<br />
-                        <span style="font-size: 11px; font-weight: bold;">5) Em caso de desistência ou cancelamento do contrato, será cobrado multa de 5% (CINCO POR CENTO)  sobre o valor total do contrato, conforme nota promissória abaixo. Ass. do Cliente:__________________________________________________________________<br />
+                    <td><span style="font-size:11px; ">1) Autorizo a Bali Eletrics a faturar, em meu nome e CPF/CNPJ, o(s) veículo(s) objeto deste contrato, conforme preço e forma de pagamento acima descritos.<br />
+                        2) Se houver financiamento, taxas, prazos e parcelas dependerão da aprovação e das regras da instituição financeira, podendo sofrer alterações conforme mercado financeiro, política interna e normas aplicáveis.<br />
+                        3) Estou ciente de que a previsão de entrega do veículo é estimada e poderá ser alterada sem prévio aviso por motivo operacional, logístico ou de faturamento.<br />
+                        4) Os preços, itens de série e condições da tabela GAMA BYD poderão ser alterados conforme tabela vigente na data de faturamento do(s) veículo(s).<br />
+                        <span style="font-size: 11px; font-weight: bold;">5) Em caso de desistência ou cancelamento, será devida multa de 5% (CINCO POR CENTO) sobre o valor total do contrato, conforme nota promissória abaixo. Se o veículo já estiver emplacado, a multa será de 10% (DEZ POR CENTO), em razão do deságio de automóvel 0 km. Havendo financiamento efetivado, o consumidor arcará com custos, despesas e taxas de cancelamento.<br />Ass. do Cliente:__________________________________________________________________<br />
                         </span>
                         6) O Cliente compromete-se a entregar em Dação em Pagamento o veículo Placa
                      <asp:Label ID="lblPlaca3" CssClass="form-contrato" runat="server" Text=""></asp:Label>
-                        , conforme negociação descrita no contrato de compra e venda sob pena de não ser concretizada, nos termos, condições e benefícios negociados na compra.<br />
-                        7) O IPVA 2026 será isento desde que o cliente atenda as regras da Lei Distrital Nº 4.733/2011. Essa condição não contempla Seg. Obrigatório 2026;<br />
-                        8) Estou ciente que a contratação do serviço de emplacamento e despachante oferecido pela Bali é opcional,e que esse serviço poderá ser feito diretamente junto ao Detran/DF.
+                        , conforme negociação descrita neste contrato, sob pena de a venda não ser concretizada nas condições e benefícios pactuados.<br />
+                        7) A eventual isenção do IPVA 2026 depende do atendimento às regras da Lei Distrital nº 4.733/2011 e não contempla o Seguro Obrigatório 2026.<br />
+                        8) Estou ciente de que o serviço de emplacamento e despachante oferecido pela Bali é opcional, podendo ser contratado diretamente junto ao Detran/DF.
                         </span>
                     </td>
                 </tr>
