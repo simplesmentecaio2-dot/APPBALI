@@ -745,12 +745,12 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
   }
 
   .delivery-mini-field span {
-    font-size: 8.2px;
+    font-size: 8.8px;
   }
 
   .delivery-mini-field b {
-    font-size: 11px;
-    line-height: 1.06;
+    font-size: 12.2px;
+    line-height: 1.04;
   }
 
   .delivery-release-grid {
