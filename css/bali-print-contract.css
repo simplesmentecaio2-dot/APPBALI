@@ -182,6 +182,10 @@ body.contrato-vd-print #pnlImpressao td[style*="padding-bottom: 40px"] {
 }
 
 @media print {
+    :root {
+        --bali-print-sheet-width: 204mm;
+    }
+
     @page {
         size: A4 portrait;
         margin: 0;
@@ -189,10 +193,12 @@ body.contrato-vd-print #pnlImpressao td[style*="padding-bottom: 40px"] {
 
     html,
     body {
-        width: 210mm;
+        width: 100% !important;
+        min-width: 0 !important;
         margin: 0 !important;
         padding: 0 !important;
         background: #fff !important;
+        overflow: visible !important;
     }
 
     body {
@@ -201,7 +207,8 @@ body.contrato-vd-print #pnlImpressao td[style*="padding-bottom: 40px"] {
     }
 
     body.bali-print-page {
-        width: 210mm !important;
+        width: 100% !important;
+        min-width: 0 !important;
         margin: 0 !important;
         padding: 0 !important;
         background: #fff !important;
@@ -211,9 +218,9 @@ body.contrato-vd-print #pnlImpressao td[style*="padding-bottom: 40px"] {
     #form1,
     body.bali-print-page form,
     body.bali-print-page #form1 {
-        width: 210mm !important;
-        max-width: none !important;
-        margin: 0 !important;
+        width: var(--bali-print-sheet-width) !important;
+        max-width: var(--bali-print-sheet-width) !important;
+        margin: 0 auto !important;
         padding: 0 !important;
     }
 
