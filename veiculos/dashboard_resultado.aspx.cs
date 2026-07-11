@@ -135,7 +135,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
             // more detais
             for (int i = 0; i < equipes.Count; i++)
-                eqp += equipes[i] + "','";
+                eqp += Js(equipes[i]) + "','";
             eqp = eqp.Substring(0, eqp.Length - 3);
             chart += eqp;
             chart += "'],datasets: [{ data: [";
@@ -153,7 +153,10 @@ public partial class veiculos_contrato : System.Web.UI.Page
             String border = "";
             for (int i = 0; i < equipes.Count; i++)
             {
-                switch (equipes[i].ToString())
+                string equipeCor = equipes[i].ToString();
+                equipes[i] = Html(equipes[i]);
+                lojas[i] = Html(lojas[i]);
+                switch (equipeCor)
                 {
                     case "BRANCA":
                         eqpRnk += "<div class=\"col-md-6\"><div class=\"card mb-3 ml-3 widget-content text-white\" style=\"background-color:rgba(128, 128, 128, 0.9)\" widget-content-wrapper=\"\" text-white\"=\"\"><div class=\"widget-content-left\"><div class=\"widget-heading\">" + equipes[i] + "</div><div class=\"widget-subheading\">Loja: " + lojas[i] + "</div></div><div class=\"widget-content-right\"><div class=\"widget-numbers text-white\"><span>" + convites[i] + "</span></div></div></div></div>";
@@ -283,8 +286,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
                                           "<span class=\"fas fa-circle fa-2x\" style='color:" + color + "'></span>" +
                                      "</div>" +
                                       "<div class=\"widget-content-left\">" +
-                                          " <div class=\"widget-heading\">" + topProspectores[i].vendedor + "</div>" +
-                                          " <div class=\"widget-subheading\" >" + topProspectores[i].equipe + "</div>" +
+                                          " <div class=\"widget-heading\">" + Html(topProspectores[i].vendedor) + "</div>" +
+                                          " <div class=\"widget-subheading\" >" + Html(topProspectores[i].equipe) + "</div>" +
                                       "</div>" +
                                       "<div class=\"widget-content-right\">" +
                                           " <div class=\"font-size-xlg text-muted\">" +
@@ -410,8 +413,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
             foot = @"</tbody></table>";
             while (odr.Read())
             {
-                body += @"<tr><td>" + odr["vendedor"].ToString() +
-                               "</td><td>" + odr["equipe"].ToString() +
+                body += @"<tr><td>" + Html(odr["vendedor"].ToString()) +
+                               "</td><td>" + Html(odr["equipe"].ToString()) +
                                "</td><td>" + odr["quente"].ToString() +
                                "</td><td>" + odr["manual"].ToString() +
                                "</td><td>" + odr["Fluxo"].ToString() +
@@ -548,6 +551,16 @@ public partial class veiculos_contrato : System.Web.UI.Page
         catch { }
         finally { veiculos.FecharConexao(); }
         return qtde;
+    }
+
+    private string Js(string valor)
+    {
+        return HttpUtility.JavaScriptStringEncode(valor ?? "");
+    }
+
+    private string Html(string valor)
+    {
+        return HttpUtility.HtmlEncode(valor ?? "");
     }
 }
 
