@@ -530,6 +530,48 @@ body.comissao-wf-page *::after {
   white-space: nowrap;
 }
 
+.comissao-report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.comissao-report-expand {
+  min-height: 34px !important;
+  padding: 0 12px !important;
+  border-color: var(--comissao-line) !important;
+  background: #fff !important;
+  color: var(--comissao-brand-strong) !important;
+  font-size: 11px !important;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.comissao-report-panel.is-expanded {
+  position: fixed;
+  inset: 14px;
+  z-index: 99999;
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid var(--comissao-line);
+  border-radius: 8px;
+  background: var(--comissao-page);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, .34);
+}
+
+.comissao-report-panel.is-expanded .comissao-report-viewer {
+  min-height: calc(100vh - 210px);
+}
+
+.comissao-report-panel.is-expanded .comissao-report-expand {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--comissao-brand) !important;
+  color: #fff !important;
+}
+
 .comissao-report-filter {
   display: grid;
   grid-template-columns: repeat(2, minmax(160px, 220px)) auto;

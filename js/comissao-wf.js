@@ -308,6 +308,30 @@
     });
   }
 
+  function prepararRelatorios() {
+    var botoes = document.querySelectorAll(".comissao-report-expand");
+    Array.prototype.forEach.call(botoes, function (botao) {
+      if (botao.getAttribute("data-comissao-expand") === "1") return;
+      botao.setAttribute("data-comissao-expand", "1");
+      botao.addEventListener("click", function () {
+        var painel = botao.closest ? botao.closest(".comissao-report-panel") : null;
+        if (!painel) return;
+        var ativo = painel.className.indexOf("is-expanded") >= 0;
+        painel.className = ativo ? painel.className.replace(/\bis-expanded\b/g, "").trim() : painel.className + " is-expanded";
+        botao.textContent = ativo ? "Tela cheia" : "Fechar tela cheia";
+      });
+    });
+  }
+
+  function fecharRelatoriosExpandidos() {
+    var paineis = document.querySelectorAll(".comissao-report-panel.is-expanded");
+    Array.prototype.forEach.call(paineis, function (painel) {
+      painel.className = painel.className.replace(/\bis-expanded\b/g, "").trim();
+      var botao = painel.querySelector(".comissao-report-expand");
+      if (botao) botao.textContent = "Tela cheia";
+    });
+  }
+
   function prepararTela() {
     prepararDatas();
     prepararAtalhosPeriodo();
@@ -317,6 +341,7 @@
     prepararResumoSelecionado();
     prepararTabelas();
     prepararBuscaTabelas();
+    prepararRelatorios();
     hideLoading();
   }
 
@@ -335,4 +360,10 @@
   if (window.Sys && window.Sys.WebForms && window.Sys.WebForms.PageRequestManager) {
     window.Sys.WebForms.PageRequestManager.getInstance().add_endRequest(prepararTela);
   }
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      fecharRelatoriosExpandidos();
+    }
+  });
 }());

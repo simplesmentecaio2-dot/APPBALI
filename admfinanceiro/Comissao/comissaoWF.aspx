@@ -12,11 +12,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comiss&otilde;es WF | Grupo Bali</title>
     <link href="../../css/estilo.css" rel="stylesheet" />
-    <link href="../../css/comissao-wf.css?v=20260711-04" rel="stylesheet" />
+    <link href="../../css/comissao-wf.css?v=20260711-05" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
     <script src="../../js/js.js"></script>
-    <script src="../../js/comissao-wf.js?v=20260711-04" defer="defer"></script>
+    <script src="../../js/comissao-wf.js?v=20260711-05" defer="defer"></script>
     <script type="text/javascript">
         function aguarde() {
             if (window.BaliComissao && window.BaliComissao.showLoading) {
@@ -893,7 +893,10 @@
                                                 <h2>Relat&oacute;rio de comiss&otilde;es</h2>
                                                 <p>Escolha o per&iacute;odo e gere uma pr&eacute;via para confer&ecirc;ncia, exporta&ccedil;&atilde;o ou impress&atilde;o.</p>
                                             </div>
-                                            <asp:Label ID="lblRelatorioComissaoStatus" runat="server" CssClass="comissao-report-status" Text="Aguardando gera&ccedil;&atilde;o"></asp:Label>
+                                            <div class="comissao-report-actions">
+                                                <asp:Label ID="lblRelatorioComissaoStatus" runat="server" CssClass="comissao-report-status" Text="Aguardando gera&ccedil;&atilde;o"></asp:Label>
+                                                <button type="button" class="comissao-report-expand">Tela cheia</button>
+                                            </div>
                                         </div>
                                         <div class="comissao-report-filter">
                                             <label>
@@ -951,7 +954,10 @@
                                                 <h2>Relat&oacute;rio de premia&ccedil;&otilde;es</h2>
                                                 <p>Gere a pr&eacute;via consolidada de premia&ccedil;&otilde;es, retornos, b&ocirc;nus e avulsos no per&iacute;odo.</p>
                                             </div>
-                                            <asp:Label ID="lblRelatorioPremiacaoStatus" runat="server" CssClass="comissao-report-status" Text="Aguardando gera&ccedil;&atilde;o"></asp:Label>
+                                            <div class="comissao-report-actions">
+                                                <asp:Label ID="lblRelatorioPremiacaoStatus" runat="server" CssClass="comissao-report-status" Text="Aguardando gera&ccedil;&atilde;o"></asp:Label>
+                                                <button type="button" class="comissao-report-expand">Tela cheia</button>
+                                            </div>
                                         </div>
                                         <div class="comissao-report-filter">
                                             <label>
