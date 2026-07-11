@@ -80,7 +80,7 @@
          </style>
     
 </head>
-<body>
+<body class="contrato-vn-print">
     <form id="form1" runat="server">
         <asp:ScriptManager ID="ScriptManager1" EnableScriptGlobalization="true" runat="server"></asp:ScriptManager>
                   
@@ -1266,7 +1266,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="5" class="auto-style4">ORGÃO EXPEDIDOR: SSP-DF</td>
+                    <td colspan="5" class="auto-style4">ÓRGÃO EXPEDIDOR: SSP-DF</td>
                     
                 </tr>
                 <tr>
@@ -1439,24 +1439,6 @@ CLÁUSULA DE CONSENTIMENTO<br /><br />
          
         
     </form>
-
-    <script language="javascript" type="text/jscript">
-        function imprimePanel() {
-            var printContent = document.getElementById("<%=pnlImpressao.ClientID%>");
-        var windowUrl = 'formPadrao.aspx';
-        var uniqueName = new Date();
-        var windowName = 'Processos Enviados ao Despachante';//'Print' + uniqueName.getTime();
-        var printWindow = window.open(windowUrl, windowName, 'left=50000,top=50000,width=0,height=0');
-
-        printWindow.document.write(printContent.innerHTML);
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
-    }
-
-</script>
-
 
 </body>
 </html>

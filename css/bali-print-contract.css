@@ -140,30 +140,44 @@ body.bali-print-page textarea.form-aviso {
 
 @media screen {
     body.bali-print-page.contrato-vu-print input,
-    body.bali-print-page.contrato-vu-print textarea {
+    body.bali-print-page.contrato-vn-print input,
+    body.bali-print-page.contrato-vd-print input,
+    body.bali-print-page.contrato-vu-print textarea,
+    body.bali-print-page.contrato-vn-print textarea,
+    body.bali-print-page.contrato-vd-print textarea {
         pointer-events: none;
         caret-color: transparent;
     }
 }
 
-body.contrato-vu-print #pnlImpressao table[border="1"] {
+body.contrato-vu-print #pnlImpressao table[border="1"],
+body.contrato-vn-print #pnlImpressao table[border="1"],
+body.contrato-vd-print #pnlImpressao table[border="1"] {
     border-color: #4b5563 !important;
 }
 
-body.contrato-vu-print #pnlImpressao table[border="1"] td {
+body.contrato-vu-print #pnlImpressao table[border="1"] td,
+body.contrato-vn-print #pnlImpressao table[border="1"] td,
+body.contrato-vd-print #pnlImpressao table[border="1"] td {
     border-color: #4b5563 !important;
 }
 
-body.contrato-vu-print #pnlImpressao td[style*="background-color: silver"] {
+body.contrato-vu-print #pnlImpressao td[style*="background-color: silver"],
+body.contrato-vn-print #pnlImpressao td[style*="background-color: silver"],
+body.contrato-vd-print #pnlImpressao td[style*="background-color: silver"] {
     color: #111827 !important;
     background-color: #d9dde3 !important;
 }
 
-body.contrato-vu-print #pnlImpressao td[style*="font-size: 14px"][style*="background-color: silver"] {
+body.contrato-vu-print #pnlImpressao td[style*="font-size: 14px"][style*="background-color: silver"],
+body.contrato-vn-print #pnlImpressao td[style*="font-size: 14px"][style*="background-color: silver"],
+body.contrato-vd-print #pnlImpressao td[style*="font-size: 14px"][style*="background-color: silver"] {
     background-color: #cbd2dc !important;
 }
 
-body.contrato-vu-print #pnlImpressao td[style*="padding-bottom: 40px"] {
+body.contrato-vu-print #pnlImpressao td[style*="padding-bottom: 40px"],
+body.contrato-vn-print #pnlImpressao td[style*="padding-bottom: 40px"],
+body.contrato-vd-print #pnlImpressao td[style*="padding-bottom: 40px"] {
     color: #000 !important;
 }
 
