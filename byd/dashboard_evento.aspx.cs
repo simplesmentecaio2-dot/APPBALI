@@ -201,7 +201,7 @@ public partial class veiculos_contrato : System.Web.UI.Page
 
             // more detais
             for (int i = 0; i < equipes.Count; i++)
-                eqp += equipes[i] + " (" + convites[i] + ")','";
+                eqp += Js(equipes[i] + " (" + convites[i] + ")") + "','";
             eqp = eqp.Substring(0, eqp.Length - 3);
             chart += eqp;
             chart += "'],datasets: [{ data: [";
@@ -362,8 +362,8 @@ public partial class veiculos_contrato : System.Web.UI.Page
                                           "<span class=\"fas fa-circle fa-2x\" style='color:" + color + "'></span>" +
                                      "</div>" +
                                       "<div class=\"widget-content-left\">" +
-                                          " <div class=\"widget-heading\">" + topProspectores[i].vendedor + "</div>" +
-                                          " <div class=\"widget-subheading\" >" + topProspectores[i].equipe + "</div>" +
+                                          " <div class=\"widget-heading\">" + Html(topProspectores[i].vendedor) + "</div>" +
+                                          " <div class=\"widget-subheading\" >" + Html(topProspectores[i].equipe) + "</div>" +
                                       "</div>" +
                                       "<div class=\"widget-content-right\">" +
                                           " <div class=\"font-size-xlg text-muted\">" +
@@ -450,6 +450,16 @@ public partial class veiculos_contrato : System.Web.UI.Page
         }
 
         return chart;
+    }
+
+    private string Js(string valor)
+    {
+        return HttpUtility.JavaScriptStringEncode(valor ?? "");
+    }
+
+    private string Html(string valor)
+    {
+        return HttpUtility.HtmlEncode(valor ?? "");
     }
     public void btnSair_Click(object sender, EventArgs e)
     {
