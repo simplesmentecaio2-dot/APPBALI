@@ -12,11 +12,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comiss&otilde;es WF | Grupo Bali</title>
     <link href="../../css/estilo.css" rel="stylesheet" />
-    <link href="../../css/comissao-wf.css?v=20260711-05" rel="stylesheet" />
+    <link href="../../css/comissao-wf.css?v=20260711-06" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
     <script src="../../js/js.js"></script>
-    <script src="../../js/comissao-wf.js?v=20260711-05" defer="defer"></script>
+    <script src="../../js/comissao-wf.js?v=20260711-06" defer="defer"></script>
     <script type="text/javascript">
         function aguarde() {
             if (window.BaliComissao && window.BaliComissao.showLoading) {

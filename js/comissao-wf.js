@@ -18,6 +18,45 @@
     if (!loading) return;
     loading.className = loading.className.replace(/\bis-visible\b/g, "").trim();
     loading.setAttribute("aria-hidden", "true");
+    liberarBotoesOcupados();
+  }
+
+  function liberarBotoesOcupados() {
+    var botoes = document.querySelectorAll("[data-comissao-busy='1']");
+    Array.prototype.forEach.call(botoes, function (botao) {
+      botao.setAttribute("data-comissao-busy", "0");
+      botao.className = botao.className.replace(/\bis-processing\b/g, "").trim();
+      if (botao.getAttribute("data-comissao-original-value")) {
+        botao.value = botao.getAttribute("data-comissao-original-value");
+      }
+    });
+  }
+
+  function toast(mensagem, tipo) {
+    var raiz = byId("comissao-toast-root");
+    if (!raiz) {
+      raiz = document.createElement("div");
+      raiz.id = "comissao-toast-root";
+      raiz.className = "comissao-toast-root";
+      raiz.setAttribute("aria-live", "polite");
+      document.body.appendChild(raiz);
+    }
+
+    var item = document.createElement("div");
+    item.className = "comissao-toast " + (tipo || "info");
+    item.textContent = mensagem || "";
+    raiz.appendChild(item);
+
+    window.setTimeout(function () {
+      item.className += " is-visible";
+    }, 20);
+
+    window.setTimeout(function () {
+      item.className = item.className.replace(/\bis-visible\b/g, "").trim();
+      window.setTimeout(function () {
+        if (item.parentNode) item.parentNode.removeChild(item);
+      }, 260);
+    }, 5200);
   }
 
   function normalizarData(valor) {
@@ -154,7 +193,22 @@
       }
 
       if (/atualizar|exibir|salvar|rec/i.test(botao.value || "")) {
-        botao.addEventListener("click", function () {
+        botao.addEventListener("click", function (event) {
+          if (botao.getAttribute("data-comissao-busy") === "1") {
+            event.preventDefault();
+            toast("Aguarde o processamento atual terminar.", "warning");
+            return false;
+          }
+
+          botao.setAttribute("data-comissao-busy", "1");
+          botao.setAttribute("data-comissao-original-value", botao.value || "");
+          botao.className = (botao.className ? botao.className + " " : "") + "is-processing";
+          if (/salvar/i.test(botao.value || "")) {
+            botao.value = "Salvando...";
+          } else if (/gerar|exibir|atualizar|rec/i.test(botao.value || "")) {
+            botao.value = "Processando...";
+          }
+
           window.setTimeout(showLoading, 80);
         });
       }
@@ -348,6 +402,7 @@
   window.BaliComissao = {
     showLoading: showLoading,
     hideLoading: hideLoading,
+    toast: toast,
     refresh: prepararTela
   };
 

@@ -384,6 +384,13 @@ body.comissao-wf-page *::after {
   font-weight: 950;
 }
 
+.comissao-wf-page input.is-processing,
+.comissao-wf-page button.is-processing {
+  cursor: wait !important;
+  opacity: .82;
+  box-shadow: 0 0 0 3px rgba(91, 107, 140, .14);
+}
+
 .comissao-wf-page input[value="Salvar"],
 .comissao-wf-page .btns {
   min-width: 112px;
@@ -872,6 +879,50 @@ body.comissao-wf-page *::after {
   margin-top: 16px;
   background: #fff;
   color: var(--comissao-brand-strong);
+}
+
+.comissao-toast-root {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 100002;
+  display: grid;
+  gap: 10px;
+  width: min(360px, calc(100vw - 28px));
+  pointer-events: none;
+}
+
+.comissao-toast {
+  transform: translateY(12px);
+  opacity: 0;
+  padding: 13px 14px;
+  border: 1px solid rgba(91, 107, 140, .24);
+  border-left: 4px solid var(--comissao-brand);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--comissao-ink);
+  font-size: 13px;
+  font-weight: 850;
+  line-height: 1.35;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, .18);
+  transition: opacity .22s ease, transform .22s ease;
+}
+
+.comissao-toast.is-visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.comissao-toast.warning {
+  border-left-color: var(--comissao-warning);
+}
+
+.comissao-toast.success {
+  border-left-color: var(--comissao-success);
+}
+
+.comissao-toast.error {
+  border-left-color: var(--comissao-danger);
 }
 
 @keyframes comissao-spin {

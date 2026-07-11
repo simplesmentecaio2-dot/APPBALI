@@ -741,7 +741,8 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
     private void MostrarMensagem(string mensagem)
     {
         string texto = HttpUtility.JavaScriptStringEncode(mensagem ?? "");
-        ScriptManager.RegisterStartupScript(this, GetType(), Guid.NewGuid().ToString("N"), "alert('" + texto + "');", true);
+        ScriptManager.RegisterStartupScript(this, GetType(), Guid.NewGuid().ToString("N"),
+            "if(window.BaliComissao&&window.BaliComissao.toast){window.BaliComissao.toast('" + texto + "');}else{alert('" + texto + "');}", true);
     }
 
 
