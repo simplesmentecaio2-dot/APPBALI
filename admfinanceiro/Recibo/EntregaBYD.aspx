@@ -10,7 +10,7 @@
     <title>Entrega de Veículo - BYD</title>
     <link href="../../css/estilo.css" rel="stylesheet" />
     <link href="../../css/bali-utility.css?v=20260707-recibo13" rel="stylesheet" />
-    <link href="../../css/entrega-veiculo.css?v=20260708-entrega09" rel="stylesheet" />
+    <link href="../../css/entrega-veiculo.css?v=20260711-entrega-mini" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../js/js.js"></script>
     <script src="../../js/bali-utility-print.js?v=20260708-entrega09"></script>
@@ -165,10 +165,10 @@
                                                                 <div class="delivery-mini">
                                                                     <div class="delivery-mini-head"><img src="../../img/entrega_saida_byd.png?v=20260708-entrega-header" alt="BALI BYD" /></div>
                                                                     <div class="delivery-mini-data">
-                                                                        <span>Cliente:</span> <b><asp:Label ID="lblClienteEntreg" runat="server"></asp:Label></b>
-                                                                        <span>Chassi:</span> <b><asp:Label ID="lblChassiEntreg" runat="server"></asp:Label></b><br />
-                                                                        <span>Veículo:</span> <b><asp:Label ID="lblVeiculoEntreg" runat="server"></asp:Label></b>
-                                                                        <span>Vendedor:</span> <b><asp:Label ID="lblVendedorEntreg" runat="server"></asp:Label></b>
+                                                                        <div class="delivery-mini-field delivery-mini-main"><span>Cliente</span><b><asp:Label ID="lblClienteEntreg" runat="server"></asp:Label></b></div>
+                                                                        <div class="delivery-mini-field"><span>Chassi</span><b><asp:Label ID="lblChassiEntreg" runat="server"></asp:Label></b></div>
+                                                                        <div class="delivery-mini-field delivery-mini-main"><span>Veículo</span><b><asp:Label ID="lblVeiculoEntreg" runat="server"></asp:Label></b></div>
+                                                                        <div class="delivery-mini-field"><span>Vendedor</span><b><asp:Label ID="lblVendedorEntreg" runat="server"></asp:Label></b></div>
                                                                     </div>
                                                                 </div>
                                                                 <div class="delivery-release-grid">
