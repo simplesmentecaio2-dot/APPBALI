@@ -1326,35 +1326,19 @@
             <br />
             <span style="font-size:17px; ">
             <div style="width: 19cm; border: 1px solid black; font-family: 'Times New Roman'; padding: 20px;" id="Declaracao">
-                Eu:
-                <asp:Label ID="lblDeclacaraoNome" runat="server" CssClass="form-aviso" Text="Label"></asp:Label>
-                <br />
-                Portador do CPF:&nbsp; nº:<asp:Label ID="lblDeclaracaoCPF" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>
-                <br />
-                declaro que , quando a aquisição do veículo:
-                <asp:Label ID="lblDeclaracaoCarro" runat="server" CssClass="form-aviso" Text="Label"></asp:Label><br />
-            CHASSI/PLACA:<asp:Label ID="lblDeclaracaoChassiPlaca" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>  
-                &nbsp;a concessionária Bali Motors Ltda, atentendo as disposições previstas na Lei nº 13.111/15 me informou previamente:<br /><br />
+                <strong>DECLARA&Ccedil;&Atilde;O DE CI&Ecirc;NCIA - LEI N&ordm; 13.111/2015</strong><br /><br />
+                Eu, <asp:Label ID="lblDeclacaraoNome" runat="server" CssClass="form-aviso" Text="Label"></asp:Label>, inscrito(a) no CPF/CNPJ n&ordm;
+                <asp:Label ID="lblDeclaracaoCPF" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>, declaro que, antes da aquisi&ccedil;&atilde;o do ve&iacute;culo
+                <asp:Label ID="lblDeclaracaoCarro" runat="server" CssClass="form-aviso" Text="Label"></asp:Label>, chassi/placa
+                <asp:Label ID="lblDeclaracaoChassiPlaca" CssClass="form-aviso" runat="server" Text="Label"></asp:Label>, a concession&aacute;ria Bali Motors Ltda. informou previamente, de forma clara e adequada:<br /><br />
 
-                I- O valor dos tributos incidentes sobre a comercialização do veículo;<br />
-                II- A situação de regularidade do veículo quanto a: <br />
-                a) Furto;<br />
-                b) Multas e Taxas anuais legalmente devidas;<br />
-                c) Débitos de impostos;<br />
-                d) Alienação fiduciária; ou<br />
-                e) Quaisquer outros registros que limitem ou impeçam a circulação do veículo.<br /><br />
+                I - o valor dos tributos incidentes sobre a comercializa&ccedil;&atilde;o do ve&iacute;culo;<br />
+                II - a situa&ccedil;&atilde;o de regularidade do ve&iacute;culo junto aos &oacute;rg&atilde;os competentes, inclusive quanto a furto, multas e taxas anuais legalmente devidas, d&eacute;bitos de impostos, aliena&ccedil;&atilde;o fiduci&aacute;ria e quaisquer outros registros ou restri&ccedil;&otilde;es que limitem ou impe&ccedil;am sua circula&ccedil;&atilde;o.<br /><br />
 
-                De igual forma fui regularmente informado quanto a situação de regularidade do veículo juntos as autoridade, de trânsito e fazendária desta unidade da Federação onde o veículo foi registrado e comercialiaziado, relata a :<br />
-                I-&nbsp;&nbsp;&nbsp;&nbsp; Furto;<br />
-                II-&nbsp;&nbsp;&nbsp; Multas e Taxas anuais legalmente devidas;<br />
-                III-&nbsp;&nbsp; Débitos quanto ao pagamento de impostos;<br />
-                IV - Alienação Fiduciária; ou<br />
-                V-&nbsp;&nbsp; Quaisquer outros registros que limitem ou impeçam a circulação do veículo.<br /><br /><br />
-CLÁUSULA DE CONSENTIMENTO<br /><br />
+                Declaro que tive ci&ecirc;ncia dessas informa&ccedil;&otilde;es antes da assinatura do contrato e da conclus&atilde;o da negocia&ccedil;&atilde;o.<br /><br />
 
-		Autorizo a disponibilização de meus dados pessoais, mediante consentimento para armazenamento em banco de dados seguro no tocante ao dever de sigilo aplicados à coleta, divulgação e tratamento dessas informações, ciente e em concordância com a Política de Privacidade da LGPD.
-
-<br /><br /><br />
+                <strong>CL&Aacute;USULA DE PROTE&Ccedil;&Atilde;O DE DADOS</strong><br /><br />
+                Declaro ci&ecirc;ncia de que meus dados pessoais poder&atilde;o ser tratados pela concession&aacute;ria para execu&ccedil;&atilde;o deste contrato, cumprimento de obriga&ccedil;&otilde;es legais e regulat&oacute;rias, registros internos, atendimento, garantia e p&oacute;s-venda, observados o sigilo, a seguran&ccedil;a da informa&ccedil;&atilde;o e os princ&iacute;pios da LGPD, conforme Pol&iacute;tica de Privacidade aplic&aacute;vel.<br /><br />
 
 
             Por ser expressão da verdade firmo o presente documento.<br /><br /><br />
