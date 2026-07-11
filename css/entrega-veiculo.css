@@ -398,6 +398,23 @@ body.delivery-receipt-page [id$="pnlImpressao"] > .delivery-print {
   min-height: 22px;
 }
 
+.delivery-grid .delivery-total-row td {
+  border-top: 2px solid var(--delivery-border) !important;
+  background: #eef2f7 !important;
+  font-weight: 800;
+}
+
+.delivery-grid .delivery-total-row td:first-child {
+  text-align: right !important;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.delivery-grid .delivery-total-row td:nth-child(2) {
+  text-align: right !important;
+  white-space: nowrap;
+}
+
 .delivery-additional-grid th:nth-child(1),
 .delivery-additional-grid td:nth-child(1) {
   width: 62%;

@@ -10,10 +10,10 @@
     <title>Entrega de Veículo - Fiat</title>
     <link href="../../css/estilo.css" rel="stylesheet" />
     <link href="../../css/bali-utility.css?v=20260707-recibo13" rel="stylesheet" />
-    <link href="../../css/entrega-veiculo.css?v=20260711-entrega-print" rel="stylesheet" />
+    <link href="../../css/entrega-veiculo.css?v=20260711-entrega-total" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../js/js.js"></script>
-    <script src="../../js/bali-utility-print.js?v=20260711-entrega-print"></script>
+    <script src="../../js/bali-utility-print.js?v=20260711-entrega-total"></script>
 
 </head>
 
@@ -135,7 +135,7 @@
                                                     <div class="delivery-part">
                                                         <div class="delivery-title">Autorização do financeiro - Serviços adicionais</div>
                                                         <div class="delivery-table-wrap">
-                                                            <asp:GridView ID="GridView2" runat="server" AutoGenerateColumns="False" DataSourceID="SqlDsEntregaAdicional" CssClass="delivery-grid delivery-additional-grid" Width="100%">
+                                                            <asp:GridView ID="GridView2" runat="server" AutoGenerateColumns="False" DataSourceID="SqlDsEntregaAdicional" CssClass="delivery-grid delivery-additional-grid" Width="100%" ShowFooter="True" OnRowDataBound="GridView2_RowDataBound">
                                                                 <Columns>
                                                                     <asp:BoundField DataField="Serviço Adicional" HeaderText="Serviço adicional" SortExpression="Serviço Adicional"></asp:BoundField>
                                                                     <asp:BoundField DataField="Valor" HeaderText="Valor" ReadOnly="True" SortExpression="Valor"></asp:BoundField>
@@ -151,7 +151,7 @@
                                                         </div>
                                                         <div class="delivery-title">Pendências e pagamentos</div>
                                                         <div class="delivery-table-wrap">
-                                                            <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" DataSourceID="SqlDsEntrega" CssClass="delivery-grid delivery-payment-grid" Width="100%">
+                                                            <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" DataSourceID="SqlDsEntrega" CssClass="delivery-grid delivery-payment-grid" Width="100%" ShowFooter="True" OnRowDataBound="GridView1_RowDataBound">
                                                                 <Columns>
                                                                     <asp:BoundField DataField="Pendencias" HeaderText="Pendências" SortExpression="Pendencias"></asp:BoundField>
                                                                     <asp:BoundField DataField="Valor" HeaderText="Valor" ReadOnly="True" SortExpression="Valor"></asp:BoundField>
