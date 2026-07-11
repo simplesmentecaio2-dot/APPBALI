@@ -1,32 +1,89 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
 public partial class veiculos_Pint_Contrato : System.Web.UI.Page
 {
+    private const string MarcaContrato = "BYD";
+    private const string TipoContrato = "VU";
+    private const string PaginaContrato = "Print-ContratoVUBYD.aspx";
+
+    private bool TryObterContrato(out string contrato)
+    {
+        contrato = "";
+        string valor = Convert.ToString(Request.QueryString["contrato"]);
+        if (String.IsNullOrEmpty(valor)) return false;
+
+        int numeroContrato;
+        if (!Int32.TryParse(valor.Trim(), out numeroContrato) || numeroContrato <= 0) return false;
+
+        contrato = numeroContrato.ToString();
+        return true;
+    }
+
+    private string LimparLog(string valor)
+    {
+        return (valor ?? "").Replace("\r", " ").Replace("\n", " ").Replace("\t", " ").Trim();
+    }
+
+    private void RegistrarErroImpressao(string contrato, Exception ex)
+    {
+        try
+        {
+            string pasta = Server.MapPath("~/App_Data");
+            if (!Directory.Exists(pasta)) Directory.CreateDirectory(pasta);
+
+            string linha = DateTime.Now.ToString("s")
+                + "\tERRO_IMPRESSAO_CONTRATO"
+                + "\tMarca=" + MarcaContrato
+                + "\tTipo=" + TipoContrato
+                + "\tContrato=" + LimparLog(contrato)
+                + "\tUsuario=" + LimparLog(Convert.ToString(Session["usuario"]))
+                + "\tErro=" + LimparLog(ex.Message);
+
+            File.AppendAllText(Path.Combine(pasta, "contrato-operacoes.log"), linha + Environment.NewLine, Encoding.UTF8);
+        }
+        catch
+        {
+        }
+    }
+
+    private void ExibirContratoNaoLocalizado()
+    {
+        string retorno = ResolveUrl("./contrato.aspx");
+        Response.Clear();
+        Response.StatusCode = 404;
+        Response.TrySkipIisCustomErrors = true;
+        Response.Write("<!DOCTYPE html><html lang=\"pt-BR\"><head><meta charset=\"utf-8\" /><title>Contrato não localizado</title><style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#eef2f7;font-family:Arial,sans-serif;color:#0f172a}.card{width:min(520px,calc(100vw - 32px));background:#fff;border:1px solid #dbe3ef;border-radius:14px;box-shadow:0 18px 45px rgba(15,23,42,.14);padding:28px;text-align:center}.tag{display:inline-flex;padding:6px 10px;border-radius:999px;background:#fee2e2;color:#991b1b;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}h1{margin:14px 0 8px;font-size:24px}p{margin:0 0 20px;color:#475569;line-height:1.45}.acoes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.btn{border:0;border-radius:9px;padding:11px 16px;background:#0f172a;color:#fff;font-weight:700;text-decoration:none;cursor:pointer}.btn.sec{background:#e2e8f0;color:#0f172a}</style></head><body><main class=\"card\"><span class=\"tag\">Impressão de contrato</span><h1>Contrato não localizado</h1><p>Verifique o código do contrato e tente novamente. Caso o problema continue, acione a TI.</p><div class=\"acoes\"><a class=\"btn\" href=\"" + retorno + "\">Voltar para contratos</a><button class=\"btn sec\" onclick=\"if(history.length>1){history.back();return false;}location.href='" + retorno + "';\">Voltar</button></div></main></body></html>");
+        Response.End();
+    }
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (Session["usuario"] == null || Session["usuario"].ToString().Equals(""))
         {
             Response.Redirect("./loginAppcontrato.aspx");
+            return;
         }
         else
         {
             lblUsuario.Text = Session["usuario"].ToString();
         }
-        string contrato = "";
-        if (Request.QueryString["contrato"] != null)
+
+        string contrato;
+        if (!TryObterContrato(out contrato))
         {
-            contrato = Request.QueryString["contrato"].ToString();
-            ContratoAuditoria.Registrar("BYD", "VU", contrato, Convert.ToString(Session["id"] ?? ""), Convert.ToString(Session["usuario"] ?? ""), Request.UserHostAddress ?? "", Request.RawUrl ?? "", "IMPRIMIR_CONTRATO", "Contrato=" + contrato + "; Tipo=VU; Marca=BYD; Pagina=Print-ContratoVUBYD.aspx", "", "");
+            ExibirContratoNaoLocalizado();
+            return;
         }
-        else
-        {
-            Response.Write("Contrato não localizado!");
-        }
+
+        ContratoAuditoria.Registrar(MarcaContrato, TipoContrato, contrato, Convert.ToString(Session["id"] ?? ""), Convert.ToString(Session["usuario"] ?? ""), Request.UserHostAddress ?? "", Request.RawUrl ?? "", "IMPRIMIR_CONTRATO", "Contrato=" + contrato + "; Tipo=" + TipoContrato + "; Marca=" + MarcaContrato + "; Pagina=" + PaginaContrato, "", "");
+
         string cliente; string endereco;        string cep;        string bairro;        string cidade;        string UF;
         string cpfcnpj;        string RGIE;        string nascimento;        string tel_residencial;        string tel_comercial;
         string tel_celular;        string email;        string marca;        string modelo;        string cor_ext;        string chassiplaca;
@@ -35,15 +92,24 @@ public partial class veiculos_Pint_Contrato : System.Web.UI.Page
         string palcavu;        string financiamento;        string qtdeparcelas;        string vlparcelas;        string planofinanciamento;
         string cortesias; string obs; string previsaoentrega; string vendedor; string tipo; string data; string multa; string vlutilizadoavaliacao; string vlquitacao; string vlsaldoavaliacao; string anomodeloVU;
         Veiculos vec = new Veiculos();
-        vec.select_contrato_vendabyd(contrato,
-        out  cliente            , out endereco            , out cep            , out bairro            , out cidade
-        , out UF            , out cpfcnpj            , out RGIE            , out nascimento            , out tel_residencial 
-        , out tel_comercial            , out tel_celular            , out email            , out marca            , out modelo
-        , out cor_ext            , out chassiplaca            , out anomodelo            , out opcinonais            , out modalidade_pagamento
-        , out financeira            , out valorveiculo            , out emp_trans            , out entrada
-        , out formaspagamento            , out carrousado            , out modmarcavu            , out palcavu            , out anomodeloVU,  out financiamento
-        , out qtdeparcelas            , out vlparcelas            , out planofinanciamento            , out cortesias
-        , out obs            , out previsaoentrega            , out vendedor            , out tipo, out data, out multa, out vlutilizadoavaliacao, out vlquitacao, out vlsaldoavaliacao );
+        try
+        {
+            vec.select_contrato_vendabyd(contrato,
+            out  cliente            , out endereco            , out cep            , out bairro            , out cidade
+            , out UF            , out cpfcnpj            , out RGIE            , out nascimento            , out tel_residencial
+            , out tel_comercial            , out tel_celular            , out email            , out marca            , out modelo
+            , out cor_ext            , out chassiplaca            , out anomodelo            , out opcinonais            , out modalidade_pagamento
+            , out financeira            , out valorveiculo            , out emp_trans            , out entrada
+            , out formaspagamento            , out carrousado            , out modmarcavu            , out palcavu            , out anomodeloVU,  out financiamento
+            , out qtdeparcelas            , out vlparcelas            , out planofinanciamento            , out cortesias
+            , out obs            , out previsaoentrega            , out vendedor            , out tipo, out data, out multa, out vlutilizadoavaliacao, out vlquitacao, out vlsaldoavaliacao );
+        }
+        catch (Exception ex)
+        {
+            RegistrarErroImpressao(contrato, ex);
+            ExibirContratoNaoLocalizado();
+            return;
+        }
 
         if (modalidade_pagamento == "A")
         {
@@ -102,7 +168,7 @@ public partial class veiculos_Pint_Contrato : System.Web.UI.Page
         txtdespachanteCHASSI.Text = chassiplaca; txtdespachanteANOMODELO.Text = anomodelo; txtdespachanteMODELO.Text = modelo;
         
         lbldeclaracaocliente.Text = cliente; lbldeclaracaodata.Text = data; lbldeclaracaocliente1.Text = cliente; lbldeclaracaocpf2.Text = cpfcnpj;
-       if(txtModMarca3.Text != "")
+       if(!String.IsNullOrEmpty(txtModMarca3.Text))
            {
                guiadocomprador.Visible = true;
            }
