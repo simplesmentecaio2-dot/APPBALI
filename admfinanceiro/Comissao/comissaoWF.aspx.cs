@@ -372,8 +372,6 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             gViewListarVendedores.DataBind();
             MostrarMensagem("Comissão já cadastrada ou não foi possível salvar. Confira o período e o vendedor.");
         }
-        sqldsListarVendedores.DataBind();
-        gViewListarVendedores.DataBind();
     }
 
     protected void btnSalvarVD_Click(object sender, EventArgs e)
@@ -464,8 +462,9 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
                                 Numero(txtmvp.Text), Numero(txtavulsos.Text), lblLojaPrem.Text);
             gViewListarVendedoresPREMIACAO.DataBind();
             sqldsListarVendedoresPremiacao.DataBind();
-            lblcodVD.Text = "";
-            lblVendVD.Text = "";
+            lblCodPrem.Text = "";
+            lblVendedorPrem.Text = "";
+            lblLojaPrem.Text = "";
             MostrarMensagem("Premiação salva com sucesso.");
 
         }
