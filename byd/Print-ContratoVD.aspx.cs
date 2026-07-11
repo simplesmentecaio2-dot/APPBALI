@@ -12,19 +12,21 @@ public partial class veiculos_Pint_Contrato : System.Web.UI.Page
         if (Session["usuario"] == null || Session["usuario"].ToString().Equals(""))
         {
             Response.Redirect("./loginAppcontrato.aspx");
+            return;
         }
         else
         {
             lblUsuario.Text = Session["usuario"].ToString();
         }
-        string contrato = (Request.QueryString["contrato"] ?? "").Trim();
-        int contratoNumero;
-        if (!Int32.TryParse(contrato, out contratoNumero) || contratoNumero <= 0)
+
+        string contrato;
+        if (!ContratoImpressao.TryObterContrato(this, out contrato))
         {
-            Response.Write("Contrato não localizado!");
+            ContratoImpressao.ExibirContratoNaoLocalizado(this, "./contrato.aspx");
             return;
         }
-        contrato = contratoNumero.ToString();
+
+        ContratoAuditoria.Registrar("BYD", "VD", contrato, Convert.ToString(Session["id"] ?? ""), Convert.ToString(Session["usuario"] ?? ""), Request.UserHostAddress ?? "", Request.RawUrl ?? "", "IMPRIMIR_CONTRATO", "Contrato=" + contrato + "; Tipo=VD; Marca=BYD; Pagina=Print-ContratoVD.aspx", "", "");
         string cliente; string endereco;        string cep;        string bairro;        string cidade;        string UF;
         string cpfcnpj;        string RGIE;        string nascimento;        string tel_residencial;        string tel_comercial;
         string tel_celular;        string email;        string marca;        string modelo;        string cor_ext;        string chassiplaca;
@@ -33,15 +35,24 @@ public partial class veiculos_Pint_Contrato : System.Web.UI.Page
         string palcavu;        string financiamento;        string qtdeparcelas;        string vlparcelas;        string planofinanciamento;
         string cortesias; string obs; string previsaoentrega; string vendedor; string tipo; string data; string multa; string vlutilizadoavaliacao; string vlquitacao; string vlsaldoavaliacao; string anomodeloVU;
         Veiculos vec = new Veiculos();
-        vec.select_contrato_venda(contrato,
-        out  cliente            , out endereco            , out cep            , out bairro            , out cidade
-        , out UF            , out cpfcnpj            , out RGIE            , out nascimento            , out tel_residencial 
-        , out tel_comercial            , out tel_celular            , out email            , out marca            , out modelo
-        , out cor_ext            , out chassiplaca            , out anomodelo            , out opcinonais            , out modalidade_pagamento
-        , out financeira            , out valorveiculo            , out emp_trans            , out entrada
-        , out formaspagamento            , out carrousado            , out modmarcavu            , out palcavu            , out anomodeloVU,  out financiamento
-        , out qtdeparcelas            , out vlparcelas            , out planofinanciamento            , out cortesias
-        , out obs            , out previsaoentrega            , out vendedor            , out tipo, out data, out multa, out vlutilizadoavaliacao, out vlquitacao, out vlsaldoavaliacao );
+        try
+        {
+            vec.select_contrato_venda(contrato,
+            out  cliente            , out endereco            , out cep            , out bairro            , out cidade
+            , out UF            , out cpfcnpj            , out RGIE            , out nascimento            , out tel_residencial
+            , out tel_comercial            , out tel_celular            , out email            , out marca            , out modelo
+            , out cor_ext            , out chassiplaca            , out anomodelo            , out opcinonais            , out modalidade_pagamento
+            , out financeira            , out valorveiculo            , out emp_trans            , out entrada
+            , out formaspagamento            , out carrousado            , out modmarcavu            , out palcavu            , out anomodeloVU,  out financiamento
+            , out qtdeparcelas            , out vlparcelas            , out planofinanciamento            , out cortesias
+            , out obs            , out previsaoentrega            , out vendedor            , out tipo, out data, out multa, out vlutilizadoavaliacao, out vlquitacao, out vlsaldoavaliacao );
+        }
+        catch (Exception ex)
+        {
+            ContratoImpressao.RegistrarErro(this, "BYD", "VD", contrato, ex);
+            ContratoImpressao.ExibirContratoNaoLocalizado(this, "./contrato.aspx");
+            return;
+        }
 
         if (modalidade_pagamento == "A")
         {
@@ -112,7 +123,7 @@ public partial class veiculos_Pint_Contrato : System.Web.UI.Page
 	lbldeclaracaocliente2.Text = cliente; lbldeclaracaodata2.Text = data; lbldeclaracaocliente2.Text = cliente; lbldeclaracaocpf22.Text = cpfcnpj; lbldeclaracaoveiculo.Text = modmarcavu;  lbleclaracaoplaca.Text = palcavu; lbldeclaracaoveiculo2.Text = modmarcavu;  lbleclaracaoplaca2.Text = palcavu; lbldeclaracaocliente12.Text = cliente;
 	
 	
-       if(txtModMarca3.Text != "")
+       if(!String.IsNullOrEmpty(txtModMarca3.Text))
            {
                guiadocomprador.Visible = true;
 		guiadocomprador2.Visible = true;
