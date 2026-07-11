@@ -82,6 +82,67 @@
         campo.setAttribute('aria-hidden', 'true');
     }
 
+    function camposFormulario() {
+        return document.querySelectorAll('input.form-contrato, input.form-contrata, input.form-despachante, input.form-aviso, textarea.form-contrato, textarea.form-contrata, textarea.form-despachante, textarea.form-aviso');
+    }
+
+    function deveIgnorarCampo(campo) {
+        var tipo = (campo.getAttribute('type') || '').toLowerCase();
+        return tipo === 'hidden' || tipo === 'button' || tipo === 'submit' || tipo === 'image' || tipo === 'checkbox' || tipo === 'radio';
+    }
+
+    function prepararCampoFormulario(campo) {
+        if (!campo || deveIgnorarCampo(campo)) return;
+
+        var valor = typeof campo.value === 'string' ? campo.value : '';
+        if (!campo.getAttribute('data-print-font-size')) {
+            campo.setAttribute('data-print-font-size', campo.style.fontSize || '');
+        }
+
+        if (/^\s*$/.test(valor)) {
+            if (!campo.getAttribute('data-print-original-value')) {
+                campo.setAttribute('data-print-original-value', valor);
+            }
+            campo.setAttribute('data-print-empty-value', '1');
+            campo.value = '-';
+            valor = '-';
+        }
+
+        var tamanho = valor.replace(/\s+/g, ' ').length;
+        if (tamanho > 52) {
+            campo.style.fontSize = '7px';
+        } else if (tamanho > 42) {
+            campo.style.fontSize = '7.5px';
+        } else if (tamanho > 32) {
+            campo.style.fontSize = '8px';
+        }
+    }
+
+    function prepararCamposFormulario() {
+        var campos = camposFormulario();
+        for (var i = 0; i < campos.length; i++) {
+            prepararCampoFormulario(campos[i]);
+        }
+    }
+
+    function restaurarCamposFormulario() {
+        var campos = camposFormulario();
+        for (var i = 0; i < campos.length; i++) {
+            var campo = campos[i];
+            if (campo.getAttribute('data-print-empty-value') === '1') {
+                campo.value = campo.getAttribute('data-print-original-value') || '';
+                campo.removeAttribute('data-print-empty-value');
+                campo.removeAttribute('data-print-original-value');
+            }
+
+            var fonteOriginal = campo.getAttribute('data-print-font-size');
+            if (fonteOriginal !== null) {
+                campo.style.fontSize = fonteOriginal;
+                campo.removeAttribute('data-print-font-size');
+            }
+        }
+    }
+
     function criarElemento(tag, classe, texto) {
         var elemento = document.createElement(tag);
         if (classe) elemento.className = classe;
@@ -131,6 +192,7 @@
         botao.type = 'button';
         botao.onclick = function () {
             atualizarTextos();
+            prepararCamposFormulario();
             window.print();
         };
 
@@ -176,7 +238,11 @@
     });
     window.addEventListener('beforeprint', function () {
         atualizarTextos();
+        prepararCamposFormulario();
         removerBarraImpressao();
     });
-    window.addEventListener('afterprint', criarBarraImpressao);
+    window.addEventListener('afterprint', function () {
+        restaurarCamposFormulario();
+        criarBarraImpressao();
+    });
 })();
