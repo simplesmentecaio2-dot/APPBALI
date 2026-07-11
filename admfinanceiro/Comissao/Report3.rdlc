@@ -65,7 +65,7 @@
                         <Paragraph>
                           <TextRuns>
                             <TextRun>
-                              <Value>Avulso</Value>
+                              <Value>AVULSOS</Value>
                               <Style>
                                 <FontWeight>Bold</FontWeight>
                               </Style>
@@ -99,7 +99,7 @@
                         <Paragraph>
                           <TextRuns>
                             <TextRun>
-                              <Value>TOTALEMPLACAMENTO</Value>
+                              <Value>TOTAL EMPLACAMENTO</Value>
                               <Style>
                                 <FontWeight>Bold</FontWeight>
                               </Style>
@@ -635,7 +635,7 @@
                                       <Paragraph>
                                         <TextRuns>
                                           <TextRun>
-                                            <Value>PremioMeta</Value>
+                                            <Value>PRÊMIO META</Value>
                                             <Style>
                                               <FontWeight>Bold</FontWeight>
                                             </Style>
@@ -672,7 +672,7 @@
                                           <Paragraph>
                                             <TextRuns>
                                               <TextRun>
-                                                <Value>PremioProdutivo</Value>
+                                                <Value>PRÊMIO PRODUTIVO</Value>
                                                 <Style>
                                                   <FontWeight>Bold</FontWeight>
                                                 </Style>
@@ -746,7 +746,7 @@
                                                   <Paragraph>
                                                     <TextRuns>
                                                       <TextRun>
-                                                        <Value>ChequeBônus</Value>
+                                                        <Value>CHEQUE BÔNUS</Value>
                                                         <Style>
                                                           <FontWeight>Bold</FontWeight>
                                                         </Style>
