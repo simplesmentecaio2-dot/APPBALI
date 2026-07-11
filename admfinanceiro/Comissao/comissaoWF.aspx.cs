@@ -346,6 +346,7 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
             adm.insert_comissao(lblCodVend.Text, lblLoja.Text, lblNomeVendedor.Text, dataInicial, dataFinal,
                               Inteiro(txtQtdeTotal.Text), Numero(txtComissaoVU.Text), Numero(txtComissaoVN.Text), Numero(txtComissaoTotal.Text), Numero(txtComissaoVD.Text), Numero(txtDif1.Text), ddlistMargem.SelectedItem.Text, Numero(txtlb.Text));
+            RegistrarAuditoria("Salvar comissão geral", "loja=" + lblLoja.Text + ";vendedor=" + lblNomeVendedor.Text + ";codigo=" + lblCodVend.Text + ";periodo=" + dataInicial.ToString("dd/MM/yyyy") + " a " + dataFinal.ToString("dd/MM/yyyy") + ";total=" + txtComissaoTotal.Text);
 
             sqldsListarVendedores.DataBind();
             gViewListarVendedores.DataBind();
@@ -390,6 +391,7 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
             adm.update_comissao(dataInicial, dataFinal, lblcodVD.Text, lblLojaVD.Text,
             lblVendVD.Text, Numero(txtcomissaoVD2.Text));
+            RegistrarAuditoria("Salvar venda direta", "loja=" + lblLojaVD.Text + ";vendedor=" + lblVendVD.Text + ";codigo=" + lblcodVD.Text + ";periodo=" + dataInicial.ToString("dd/MM/yyyy") + " a " + dataFinal.ToString("dd/MM/yyyy") + ";valor=" + txtcomissaoVD2.Text);
             sqldsListarVendedoresPrem.DataBind();
             gViewListarVendedoresVD.DataBind();
             lblcodVD.Text = "";
@@ -425,6 +427,7 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
             adm.update_comissaoEMPL(dataInicial, dataFinal, lblCodempl.Text, lblLojaempl.Text,
             lblVendempl.Text, Numero(txtEmplacamento.Text));
+            RegistrarAuditoria("Salvar emplacamento", "loja=" + lblLojaempl.Text + ";vendedor=" + lblVendempl.Text + ";codigo=" + lblCodempl.Text + ";periodo=" + dataInicial.ToString("dd/MM/yyyy") + " a " + dataFinal.ToString("dd/MM/yyyy") + ";valor=" + txtEmplacamento.Text);
             sqldsListarVendedoresEmplac.DataBind();
             gViewListarVendedoresEMPLACAMENTO.DataBind();
             txtEmplacamento.Text = "";
@@ -460,6 +463,7 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             adm.update_comissaoPREM(dataInicial, dataFinal, lblCodPrem.Text,
                                 lblVendedorPrem.Text, Numero(txtPremioProd.Text), Numero(txtPremioMeta.Text), Numero(txtRetorno.Text), Numero(txtCheque.Text),
                                 Numero(txtmvp.Text), Numero(txtavulsos.Text), lblLojaPrem.Text);
+            RegistrarAuditoria("Salvar premiação", "loja=" + lblLojaPrem.Text + ";vendedor=" + lblVendedorPrem.Text + ";codigo=" + lblCodPrem.Text + ";periodo=" + dataInicial.ToString("dd/MM/yyyy") + " a " + dataFinal.ToString("dd/MM/yyyy") + ";produtivo=" + txtPremioProd.Text + ";meta=" + txtPremioMeta.Text + ";retorno=" + txtRetorno.Text);
             gViewListarVendedoresPREMIACAO.DataBind();
             sqldsListarVendedoresPremiacao.DataBind();
             lblCodPrem.Text = "";
@@ -504,6 +508,7 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             sqldsComissaoRV.SelectParameters["dtFinal"].DefaultValue = final;
             ReportViewer1.LocalReport.Refresh();
             lblRelatorioComissaoStatus.Text = "Gerado de " + inicial + " a " + final;
+            RegistrarAuditoria("Gerar relatório de comissões", "periodo=" + inicial + " a " + final);
         }
         catch (Exception ex)
         {
@@ -529,6 +534,7 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             sqldsComissaoRV2.SelectParameters["dtFinal"].DefaultValue = final;
             ReportViewer2.LocalReport.Refresh();
             lblRelatorioPremiacaoStatus.Text = "Gerado de " + inicial + " a " + final;
+            RegistrarAuditoria("Gerar relatório de premiações", "periodo=" + inicial + " a " + final);
         }
         catch (Exception ex)
         {
@@ -751,6 +757,39 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
         {
             // Nunca deixa uma falha no log quebrar a tela operacional.
         }
+    }
+
+    private void RegistrarAuditoria(string acao, string detalhes)
+    {
+        try
+        {
+            string pasta = Server.MapPath("~/App_Data/logs");
+            Directory.CreateDirectory(pasta);
+            string arquivo = Path.Combine(pasta, "comissao-wf-auditoria.log");
+            string usuario = ValorSessao("login", ValorSessao("usuario", "sem-login"));
+            string codigo = ValorSessao("usuario_codigo", ValorSessao("tipo", "sem-codigo"));
+            string ip = Request.UserHostAddress ?? "";
+            string linha = String.Format(CultureInfo.InvariantCulture,
+                "{0:yyyy-MM-dd HH:mm:ss};usuario={1};codigo={2};ip={3};acao={4};detalhes={5}{6}",
+                DateTime.Now,
+                LimparLog(usuario),
+                LimparLog(codigo),
+                LimparLog(ip),
+                LimparLog(acao),
+                LimparLog(detalhes),
+                Environment.NewLine);
+
+            File.AppendAllText(arquivo, linha);
+        }
+        catch
+        {
+            // Log de auditoria nao pode impedir a rotina operacional.
+        }
+    }
+
+    private string LimparLog(string valor)
+    {
+        return (valor ?? "").Replace(";", ",").Replace(Environment.NewLine, " ").Trim();
     }
 
     private void MostrarMensagem(string mensagem)
