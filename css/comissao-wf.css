@@ -540,6 +540,40 @@ body.comissao-wf-page *::after {
   box-shadow: 0 10px 24px rgba(15, 23, 42, .05);
 }
 
+.comissao-selection-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(91, 107, 140, .22);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(91, 107, 140, .08), rgba(255, 255, 255, .96));
+  color: var(--comissao-ink);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .04);
+}
+
+.comissao-selection-summary strong,
+.comissao-selection-summary span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--comissao-muted);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.comissao-selection-summary strong {
+  background: var(--comissao-brand);
+  color: #fff;
+}
+
 .comissao-print-area fieldset {
   border: 1px solid var(--comissao-line);
   border-radius: 8px;

@@ -143,6 +143,16 @@
     Array.prototype.forEach.call(botoes, function (botao) {
       if (botao.getAttribute("data-comissao-button") === "1") return;
       botao.setAttribute("data-comissao-button", "1");
+      var valor = (botao.value || "").trim();
+      if (valor === "Rec...") {
+        botao.value = "Recalcular";
+        botao.title = "Recalcular comissao do vendedor selecionado";
+      } else if (valor === "Atualizar") {
+        botao.title = "Atualizar dados do periodo selecionado";
+      } else if (valor === "Salvar") {
+        botao.title = "Salvar os valores revisados";
+      }
+
       if (/atualizar|exibir|salvar|rec/i.test(botao.value || "")) {
         botao.addEventListener("click", function () {
           window.setTimeout(showLoading, 80);
@@ -184,8 +194,67 @@
     var links = document.querySelectorAll("table[id*='gView'] a, table[id*='gViewer'] a");
     Array.prototype.forEach.call(links, function (link) {
       var texto = (link.textContent || "").replace(/>/g, "").trim();
-      if (!texto) {
+      if (!texto || /^>+$/.test(texto)) {
         link.textContent = "Selecionar";
+      }
+    });
+
+    var icones = document.querySelectorAll(".comissao-print-icon");
+    Array.prototype.forEach.call(icones, function (icone) {
+      if (icone.getAttribute("data-comissao-print-icon") === "1") return;
+      icone.setAttribute("data-comissao-print-icon", "1");
+      icone.setAttribute("role", "button");
+      icone.setAttribute("tabindex", "0");
+      icone.setAttribute("title", icone.getAttribute("alt") || "Imprimir");
+      icone.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          icone.click();
+        }
+      });
+    });
+  }
+
+  function textoPorSufixo(sufixo) {
+    var elemento = document.querySelector("[id$='" + sufixo + "']");
+    if (!elemento) return "";
+    return ((elemento.value || elemento.textContent || "") + "").replace(/\s+/g, " ").trim();
+  }
+
+  function prepararResumoSelecionado() {
+    var grupos = [
+      ["print-comissao", "lblLoja", "lblCodVend", "lblNomeVendedor", "Comissao"],
+      ["print-venda-direta", "lblLojaVD", "lblcodVD", "lblVendVD", "Venda direta"],
+      ["print-emplacamento", "lblLojaempl", "lblCodempl", "lblVendempl", "Emplacamento"],
+      ["print-premiacao", "lblLojaPrem", "lblCodPrem", "lblVendedorPrem", "Premiacao"]
+    ];
+
+    grupos.forEach(function (grupo) {
+      var area = byId(grupo[0]);
+      if (!area || !area.parentNode) return;
+
+      var existente = area.parentNode.querySelector(".comissao-selection-summary[data-area='" + grupo[0] + "']");
+      var loja = textoPorSufixo(grupo[1]);
+      var codigo = textoPorSufixo(grupo[2]);
+      var vendedor = textoPorSufixo(grupo[3]);
+
+      if (!codigo && !vendedor) {
+        if (existente) existente.parentNode.removeChild(existente);
+        return;
+      }
+
+      var resumo = existente || document.createElement("div");
+      resumo.className = "comissao-selection-summary";
+      resumo.setAttribute("data-area", grupo[0]);
+      resumo.textContent = "";
+      [["strong", grupo[4]], ["span", "Loja: " + (loja || "-")], ["span", "Codigo: " + (codigo || "-")], ["span", vendedor || "Vendedor selecionado"]].forEach(function (item) {
+        var filho = document.createElement(item[0]);
+        filho.textContent = item[1];
+        resumo.appendChild(filho);
+      });
+
+      if (!existente) {
+        area.parentNode.insertBefore(resumo, area);
       }
     });
   }
@@ -245,6 +314,7 @@
     prepararBotoes();
     prepararValores();
     melhorarCommandFields();
+    prepararResumoSelecionado();
     prepararTabelas();
     prepararBuscaTabelas();
     hideLoading();
