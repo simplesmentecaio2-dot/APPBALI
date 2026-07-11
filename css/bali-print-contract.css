@@ -138,6 +138,14 @@ body.bali-print-page textarea.form-aviso {
     -webkit-text-fill-color: #000;
 }
 
+@media screen {
+    body.bali-print-page.contrato-vu-print input,
+    body.bali-print-page.contrato-vu-print textarea {
+        pointer-events: none;
+        caret-color: transparent;
+    }
+}
+
 @media print {
     @page {
         size: A4 portrait;
