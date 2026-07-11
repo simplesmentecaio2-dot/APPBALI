@@ -373,18 +373,17 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><span style="font-size: 11px;">1) Autorizo a Bali Eletrics a faturar em meu nome e CPF o (s) veiculo (s) objeto do presente contrato nas condições de preço e forma de pagamento acima descrito.<br />
-                            2) Caso o objeto do presente contrato esteja sendo financiado por instituição financeira, as taxas de juros e parcelas poderão sofrer alterações conforme mercado financeiro e/ou política/ normativa da instituição financeira e/ ou do banco central. 
+                        <td><span style="font-size: 11px;">1) Autorizo a Bali Eletrics a faturar, em meu nome e CPF/CNPJ, o(s) veículo(s) objeto deste contrato, conforme preço e forma de pagamento acima descritos.<br />
+                            2) Se houver financiamento, taxas, prazos e parcelas poderão ser ajustados conforme aprovação, regras e política da instituição financeira e/ou do Banco Central.
                      <br />
-                            3) Estou ciente de que a previsão de entrega do veiculo poderá sofrer alteração sem prévio aviso.<br />
+                            3) Estou ciente de que a previsão de entrega é estimada e poderá sofrer alteração por motivo operacional, documental ou de faturamento.<br />
 
-                            <span style="font-size: 11px; font-weight: bold;">4) Em caso de desistência ou cancelamento do contrato, será cobrado multa de 5% (CINCO POR CENTO)  sobre o valor total do contrato, conforme nota promissória abaixo. Ass. do Cliente:__________________________________________________________________<br />
+                            <span style="font-size: 11px; font-weight: bold;">4) Em caso de desistência ou cancelamento, será devida multa de 5% (CINCO POR CENTO) sobre o valor total do contrato, conforme nota promissória abaixo. Ass. do Cliente:__________________________________________________________________<br />
                             </span>
-                            5) O Cliente compromete-se a entregar em Dação em Pagamento o veículo Placa
+                            5) O Cliente compromete-se a entregar, em dação em pagamento, o veículo placa
                      <asp:Label ID="lblPlaca" runat="server" CssClass="form-contrato" Text=""></asp:Label>
-                            , conforme negociação descrita no contrato de compra e venda sob pena de não ser concretizada, nos termos, condições e benefícios negociados na compra.<br />
-                            6) Garantia: Veículos com ano/modelo até 2022/2023,  3 meses motor/câmbio.  Veículos com fabricação  a partir de 2023   6 meses  motor / câmbio, desde que sejam mantidas ás características originais do veículo e não tenha sofrido danos provocados por uso
- indevido, imperícias, negligências e abuso do veículo, após  ter sido retirado da Concessionária.
+                            , conforme negociação descrita neste contrato, sob pena de a compra não ser concretizada nos termos, condições e benefícios pactuados.<br />
+                            6) Garantia: ano/modelo até 2022/2023: 3 meses para motor/câmbio. Fabricação a partir de 2023: 6 meses para motor/câmbio, desde que preservadas as características originais e não haja danos por uso indevido, imperícia, negligência ou abuso após a retirada da Concessionária.
                         
                         </span>
                         </td>
@@ -771,18 +770,17 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><span style="font-size: 11px;">1) Autorizo a Bali Eletrics a faturar em meu nome e CPF o (s) veiculo (s) objeto do presente contrato nas condições de preço e forma de pagamento acima descrito.<br />
-                            2) Caso o objeto do presente contrato esteja sendo financiado por instituição financeira, as taxas de juros e parcelas poderão sofrer alterações conforme mercado financeiro e/ou política/ normativa da instituição financeira e/ ou do banco central. 
+                        <td><span style="font-size: 11px;">1) Autorizo a Bali Eletrics a faturar, em meu nome e CPF/CNPJ, o(s) veículo(s) objeto deste contrato, conforme preço e forma de pagamento acima descritos.<br />
+                            2) Se houver financiamento, taxas, prazos e parcelas poderão ser ajustados conforme aprovação, regras e política da instituição financeira e/ou do Banco Central.
                      <br />
-                            3) Estou ciente de que a previsão de entrega do veiculo poderá sofrer alteração sem prévio aviso.<br />
+                            3) Estou ciente de que a previsão de entrega é estimada e poderá sofrer alteração por motivo operacional, documental ou de faturamento.<br />
 
-                            <span style="font-size: 11px; font-weight: bold;">4) Em caso de desistência ou cancelamento do contrato, será cobrado multa de 5% (CINCO POR CENTO)  sobre o valor total do contrato, conforme nota promissória abaixo. Ass. do Cliente:__________________________________________________________________<br />
+                            <span style="font-size: 11px; font-weight: bold;">4) Em caso de desistência ou cancelamento, será devida multa de 5% (CINCO POR CENTO) sobre o valor total do contrato, conforme nota promissória abaixo. Ass. do Cliente:__________________________________________________________________<br />
                             </span>
-                            5) O Cliente compromete-se a entregar em Dação em Pagamento o veículo Placa
+                            5) O Cliente compromete-se a entregar, em dação em pagamento, o veículo placa
                      <asp:Label ID="lblPlaca2" CssClass="form-contrato" runat="server" Text=""></asp:Label>
-                            , conforme negociação descrita no contrato de compra e venda sob pena de não ser concretizada, nos termos, condições e benefícios negociados na compra.<br />
-                            6) Garantia: Veículos com ano/modelo até 2022/2023,  3 meses motor/câmbio.  Veículos com fabricação  a partir de 2023   6 meses  motor / câmbio, desde que sejam mantidas ás características originais do veículo e não tenha sofrido danos provocados por uso
- indevido, imperícias, negligências e abuso do veículo, após  ter sido retirado da Concessionária.
+                            , conforme negociação descrita neste contrato, sob pena de a compra não ser concretizada nos termos, condições e benefícios pactuados.<br />
+                            6) Garantia: ano/modelo até 2022/2023: 3 meses para motor/câmbio. Fabricação a partir de 2023: 6 meses para motor/câmbio, desde que preservadas as características originais e não haja danos por uso indevido, imperícia, negligência ou abuso após a retirada da Concessionária.
                         </span>
                         </td>
                     </tr>
@@ -1169,17 +1167,16 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><span style="font-size: 11px;">1) Autorizo a Bali Eletrics a faturar em meu nome e CPF o (s) veiculo (s) objeto do presente contrato nas condições de preço e forma de pagamento acima descrito.<br />
-                            2) Caso o objeto do presente contrato esteja sendo financiado por instituição financeira, as taxas de juros e parcelas poderão sofrer alterações conforme mercado financeiro e/ou política/ normativa da instituição financeira e/ ou do banco central. 
+                        <td><span style="font-size: 11px;">1) Autorizo a Bali Eletrics a faturar, em meu nome e CPF/CNPJ, o(s) veículo(s) objeto deste contrato, conforme preço e forma de pagamento acima descritos.<br />
+                            2) Se houver financiamento, taxas, prazos e parcelas poderão ser ajustados conforme aprovação, regras e política da instituição financeira e/ou do Banco Central.
                      <br />
-                            3) Estou ciente de que a previsão de entrega do veiculo poderá sofrer alteração sem prévio aviso.<br />
-                            <span style="font-size: 11px; font-weight: bold;">4) Em caso de desistência ou cancelamento do contrato, será cobrado multa de 5% (CINCO POR CENTO)  sobre o valor total do contrato, conforme nota promissória abaixo. Ass. do Cliente:__________________________________________________________________<br />
+                            3) Estou ciente de que a previsão de entrega é estimada e poderá sofrer alteração por motivo operacional, documental ou de faturamento.<br />
+                            <span style="font-size: 11px; font-weight: bold;">4) Em caso de desistência ou cancelamento, será devida multa de 5% (CINCO POR CENTO) sobre o valor total do contrato, conforme nota promissória abaixo. Ass. do Cliente:__________________________________________________________________<br />
                             </span>
-                            5) O Cliente compromete-se a entregar em Dação em Pagamento o veículo Placa
+                            5) O Cliente compromete-se a entregar, em dação em pagamento, o veículo placa
                      <asp:Label ID="lblPlaca3" CssClass="form-contrato" runat="server" Text=""></asp:Label>
-                            , conforme negociação descrita no contrato de compra e venda sob pena de não ser concretizada, nos termos, condições e benefícios negociados na compra.<br />
-                            6) Garantia: Veículos com ano/modelo até 2022/2023,  3 meses motor/câmbio.  Veículos com fabricação  a partir de 2023   6 meses  motor / câmbio, desde que sejam mantidas ás características originais do veículo e não tenha sofrido danos provocados por uso
- indevido, imperícias, negligências e abuso do veículo, após  ter sido retirado da Concessionária.
+                            , conforme negociação descrita neste contrato, sob pena de a compra não ser concretizada nos termos, condições e benefícios pactuados.<br />
+                            6) Garantia: ano/modelo até 2022/2023: 3 meses para motor/câmbio. Fabricação a partir de 2023: 6 meses para motor/câmbio, desde que preservadas as características originais e não haja danos por uso indevido, imperícia, negligência ou abuso após a retirada da Concessionária.
                             <br />
 
                         </span>
