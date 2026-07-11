@@ -434,6 +434,41 @@ body.comissao-wf-page *::after {
   box-shadow: 0 0 0 3px rgba(91, 107, 140, .18);
 }
 
+.comissao-period-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: -6px 0 16px;
+}
+
+.comissao-period-shortcuts button {
+  min-height: 32px;
+  padding: 0 11px;
+  border: 1px solid var(--comissao-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--comissao-brand-strong);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+.comissao-period-shortcuts button:hover,
+.comissao-period-shortcuts button:focus {
+  border-color: var(--comissao-brand);
+  box-shadow: 0 0 0 3px rgba(91, 107, 140, .14);
+}
+
+.comissao-grid-count {
+  margin: -4px 0 10px;
+  color: var(--comissao-muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
 .comissao-wf-page table[id*="gView"],
 .comissao-wf-page table[id*="gViewer"] {
   width: 100%;

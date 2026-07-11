@@ -12,11 +12,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comiss&otilde;es WF | Grupo Bali</title>
     <link href="../../css/estilo.css" rel="stylesheet" />
-    <link href="../../css/comissao-wf.css?v=20260711-01" rel="stylesheet" />
+    <link href="../../css/comissao-wf.css?v=20260711-02" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
     <script src="../../js/js.js"></script>
-    <script src="../../js/comissao-wf.js?v=20260711-01" defer="defer"></script>
+    <script src="../../js/comissao-wf.js?v=20260711-02" defer="defer"></script>
     <script type="text/javascript">
         function aguarde() {
             if (window.BaliComissao && window.BaliComissao.showLoading) {
@@ -873,7 +873,7 @@
                                     <asp:SqlDataSource ID="sqldsListarVendedoresPremiacao" runat="server" ConnectionString="<%$ ConnectionStrings:APPWFConnectionString %>" SelectCommand="gerencia_comissao_listar_vendedores_do_mesPREM" SelectCommandType="StoredProcedure">
                                         <selectparameters>
                                             <asp:ControlParameter ControlID="txtdtInicialPremiacao" DbType="Date" Name="dtInicial" PropertyName="Text" />
-                                            <asp:ControlParameter ControlID="txtDtfinalPremiacao" DbType="Date" Name="dtFinal" PropertyName="Text" />
+                                            <asp:ControlParameter ControlID="txtdtFinalPremiacao" DbType="Date" Name="dtFinal" PropertyName="Text" />
                                         </selectparameters>
                                     </asp:SqlDataSource>
 

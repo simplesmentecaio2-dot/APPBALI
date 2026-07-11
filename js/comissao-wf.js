@@ -41,6 +41,103 @@
     });
   }
 
+  function doisDigitos(valor) {
+    valor = String(valor);
+    return valor.length === 1 ? "0" + valor : valor;
+  }
+
+  function formatarData(data) {
+    var dia = doisDigitos(data.getDate());
+    var mes = doisDigitos(data.getMonth() + 1);
+    return dia + "/" + mes + "/" + data.getFullYear();
+  }
+
+  function inicioMes(data) {
+    return new Date(data.getFullYear(), data.getMonth(), 1);
+  }
+
+  function fimMes(data) {
+    return new Date(data.getFullYear(), data.getMonth() + 1, 0);
+  }
+
+  function aplicarPeriodo(inicial, final, tipo) {
+    var hoje = new Date();
+    var ini = hoje;
+    var fim = hoje;
+
+    if (tipo === "mes") {
+      ini = inicioMes(hoje);
+      fim = fimMes(hoje);
+    } else if (tipo === "anterior") {
+      var anterior = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1);
+      ini = inicioMes(anterior);
+      fim = fimMes(anterior);
+    } else if (tipo === "sete") {
+      ini = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - 6);
+    }
+
+    inicial.value = formatarData(ini);
+    final.value = formatarData(fim);
+    dispararAlteracao(inicial);
+    dispararAlteracao(final);
+  }
+
+  function dispararAlteracao(campo) {
+    if (typeof Event === "function") {
+      campo.dispatchEvent(new Event("change", { bubbles: true }));
+      return;
+    }
+
+    var evento = document.createEvent("HTMLEvents");
+    evento.initEvent("change", true, false);
+    campo.dispatchEvent(evento);
+  }
+
+  function encontrarCampoPorSufixo(sufixo) {
+    return document.querySelector("input[id$='" + sufixo + "']");
+  }
+
+  function prepararAtalhosPeriodo() {
+    var pares = [
+      ["txtDtInicial", "txtDtFinal"],
+      ["txtDtinicialPrem", "txtDtfinalPrem"],
+      ["txtDtinicialEmpl", "txtDtfinalEmpl"],
+      ["txtdtInicialPremiacao", "txtdtFinalPremiacao"],
+      ["TextBox1", "TextBox2"],
+      ["TextBox3", "TextBox4"],
+      ["TextBox5", "TextBox6"]
+    ];
+
+    pares.forEach(function (par) {
+      var inicial = encontrarCampoPorSufixo(par[0]);
+      var final = encontrarCampoPorSufixo(par[1]);
+      if (!inicial || !final || inicial.getAttribute("data-comissao-periodo") === "1") return;
+
+      inicial.setAttribute("data-comissao-periodo", "1");
+      var alvo = final.closest ? final.closest("table") : null;
+      if (!alvo || !alvo.parentNode) return;
+
+      var barra = document.createElement("div");
+      barra.className = "comissao-period-shortcuts";
+      [
+        ["mes", "Este m\u00eas"],
+        ["anterior", "M\u00eas anterior"],
+        ["sete", "\u00daltimos 7 dias"],
+        ["hoje", "Hoje"]
+      ].forEach(function (item) {
+        var botao = document.createElement("button");
+        botao.type = "button";
+        botao.textContent = item[1];
+        botao.addEventListener("click", function () {
+          aplicarPeriodo(inicial, final, item[0]);
+        });
+        barra.appendChild(botao);
+      });
+
+      alvo.parentNode.insertBefore(barra, alvo.nextSibling);
+    });
+  }
+
   function prepararBotoes() {
     var botoes = document.querySelectorAll("input[type='submit'], input[type='button']");
     Array.prototype.forEach.call(botoes, function (botao) {
@@ -51,6 +148,35 @@
           window.setTimeout(showLoading, 80);
         });
       }
+    });
+  }
+
+  function prepararValores() {
+    var campos = document.querySelectorAll("input.moeda, input[id*='Comissao'], input[id*='Premio'], input[id*='Retorno'], input[id*='Cheque'], input[id*='Emplacamento'], input[id*='avulsos'], input[id*='mvp']");
+    Array.prototype.forEach.call(campos, function (campo) {
+      if (campo.getAttribute("data-comissao-money") === "1") return;
+      campo.setAttribute("data-comissao-money", "1");
+      campo.setAttribute("inputmode", "decimal");
+      campo.setAttribute("autocomplete", "off");
+      if ((" " + campo.className + " ").indexOf(" moeda ") < 0) {
+        campo.className = (campo.className ? campo.className + " " : "") + "moeda";
+      }
+
+      campo.addEventListener("focus", function () {
+        window.setTimeout(function () {
+          try {
+            campo.select();
+          } catch (e) {
+            // Sem acao: alguns campos podem nao permitir selecao programatica.
+          }
+        }, 0);
+      });
+
+      campo.addEventListener("blur", function () {
+        if (window.moeda && campo.value) {
+          window.moeda();
+        }
+      });
     });
   }
 
@@ -85,25 +211,39 @@
       var busca = document.createElement("input");
       busca.type = "search";
       busca.className = "comissao-grid-search";
-      busca.placeholder = "Filtrar por loja, codigo ou vendedor";
+      busca.placeholder = "Filtrar por loja, c\u00f3digo ou vendedor";
       busca.autocomplete = "off";
+      var contador = document.createElement("div");
+      contador.className = "comissao-grid-count";
 
-      wrapper.parentNode.insertBefore(busca, wrapper);
-      busca.addEventListener("input", function () {
+      function atualizarFiltro() {
         var termo = (busca.value || "").toLowerCase();
+        var total = 0;
+        var visiveis = 0;
         var linhas = tabela.querySelectorAll("tr");
         Array.prototype.forEach.call(linhas, function (linha, indice) {
           if (indice === 0 || linha.querySelector("th")) return;
+          total += 1;
           var texto = (linha.textContent || "").toLowerCase();
-          linha.style.display = texto.indexOf(termo) >= 0 ? "" : "none";
+          var mostrar = texto.indexOf(termo) >= 0;
+          linha.style.display = mostrar ? "" : "none";
+          if (mostrar) visiveis += 1;
         });
-      });
+        contador.textContent = visiveis + " de " + total + " registro(s)";
+      }
+
+      wrapper.parentNode.insertBefore(busca, wrapper);
+      wrapper.parentNode.insertBefore(contador, wrapper);
+      busca.addEventListener("input", atualizarFiltro);
+      atualizarFiltro();
     });
   }
 
   function prepararTela() {
     prepararDatas();
+    prepararAtalhosPeriodo();
     prepararBotoes();
+    prepararValores();
     melhorarCommandFields();
     prepararTabelas();
     prepararBuscaTabelas();

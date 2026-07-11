@@ -9,6 +9,7 @@ using Microsoft.Reporting.WebForms;
 using Microsoft.ReportingServices;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 
 
@@ -33,118 +34,141 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
     }
     protected void Button1_Click(object sender, EventArgs e)
     {
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(txtDtInicial, txtDtFinal, out dataInicial, out dataFinal)) return;
         gViewListarVendedores.DataBind();
-     
+
 
     }
     protected void Button5_Click(object sender, EventArgs e)
     {
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(txtDtinicialPrem, txtDtfinalPrem, out dataInicial, out dataFinal)) return;
         gViewListarVendedoresVD.DataBind();
 
     }
 
     protected void Button8_Click(object sender, EventArgs e)
     {
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(txtDtinicialEmpl, txtDtfinalEmpl, out dataInicial, out dataFinal)) return;
         sqldsListarVendedoresEmplac.DataBind();
         gViewListarVendedoresEMPLACAMENTO.DataBind();
     }
 
     protected void Button6_Click(object sender, EventArgs e)
     {
-        sqldsListarVendedoresPrem.DataBind();
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(txtdtInicialPremiacao, txtdtFinalPremiacao, out dataInicial, out dataFinal)) return;
+        sqldsListarVendedoresPremiacao.DataBind();
         gViewListarVendedoresPREMIACAO.DataBind();
 
     }
     protected void gViewListarVendedores_SelectedIndexChanged(object sender, EventArgs e)
     {
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(txtDtInicial, txtDtFinal, out dataInicial, out dataFinal)) return;
+        if (!GarantirLinhaSelecionada(gViewListarVendedores, "Selecione um vendedor na lista para calcular a comissão.")) return;
 
-        lblLoja.Text = gViewListarVendedores.SelectedRow.Cells[0].Text;
-        lblCodVend.Text = gViewListarVendedores.SelectedRow.Cells[1].Text;
-        lblNomeVendedor.Text = gViewListarVendedores.SelectedRow.Cells[2].Text;
-        
-        double zero = 0;
-        string qtdeVN, qtdeVU, comissaoVU, totalComissaoVN, totalLiquido, margemComissao, totalLb,qtdeEMPL,comissaoEMPL; 
-        AdmFinanceiroWF adm = new AdmFinanceiroWF();
-        adm.select_Tab_Comissao_VU(Convert.ToDateTime(txtDtInicial.Text), Convert.ToDateTime(txtDtFinal.Text), gViewListarVendedores.SelectedRow.Cells[1].Text, out tabelaVU, out qtdeVU, out comissaoVU);
-        txtQtdeVU.Text = qtdeVU;
-        txtComissaoVU.Text = comissaoVU;
-        adm.select_Tab_Comissao_VN(Convert.ToDateTime(txtDtInicial.Text), Convert.ToDateTime(txtDtFinal.Text), gViewListarVendedores.SelectedRow.Cells[1].Text, out tabelaVN, out qtdeVN, Convert.ToInt16(qtdeVU), out totalComissaoVN, out totalLiquido, out margemComissao, out totalLb);
-        txtQtdeTotal.Text = (Convert.ToInt16(qtdeVN) + Convert.ToInt16(qtdeVU)).ToString();
-        txtQtdeVN.Text = qtdeVN;
-        txtLb2.Text = "0";
+        try
+        {
+            lblLoja.Text = TextoCelula(gViewListarVendedores, 0);
+            lblCodVend.Text = TextoCelula(gViewListarVendedores, 1);
+            lblNomeVendedor.Text = TextoCelula(gViewListarVendedores, 2);
 
-        adm.select_Tab_Comissao_EMPLACAMENTO(Convert.ToDateTime(txtDtInicial.Text), Convert.ToDateTime(txtDtFinal.Text), gViewListarVendedores.SelectedRow.Cells[1].Text, out tabelaEMPL, out qtdeEMPL, out comissaoEMPL);
+            double zero = 0;
+            string qtdeVN, qtdeVU, comissaoVU, totalComissaoVN, totalLiquido, margemComissao, totalLb, qtdeEMPL, comissaoEMPL;
+            AdmFinanceiroWF adm = new AdmFinanceiroWF();
+            adm.select_Tab_Comissao_VU(dataInicial, dataFinal, lblCodVend.Text, out tabelaVU, out qtdeVU, out comissaoVU);
+            txtQtdeVU.Text = ValorInteiroTexto(qtdeVU);
+            txtComissaoVU.Text = ValorDecimalTexto(comissaoVU);
+            adm.select_Tab_Comissao_VN(dataInicial, dataFinal, lblCodVend.Text, out tabelaVN, out qtdeVN, Inteiro(qtdeVU), out totalComissaoVN, out totalLiquido, out margemComissao, out totalLb);
+            txtQtdeTotal.Text = (Inteiro(qtdeVN) + Inteiro(qtdeVU)).ToString();
+            txtQtdeVN.Text = ValorInteiroTexto(qtdeVN);
+            txtLb2.Text = "0";
 
-        txtlb.Text = comissaoEMPL;
-        txtComissaoVN.Text = totalComissaoVN;
+            adm.select_Tab_Comissao_EMPLACAMENTO(dataInicial, dataFinal, lblCodVend.Text, out tabelaEMPL, out qtdeEMPL, out comissaoEMPL);
 
-        
-        txtTotalLiquido.Text = totalLiquido;
-        txtQtdeVD.Text = zero.ToString();
-        txtComissaoVD.Text = zero.ToString("N2");
-        txtDif1.Text = zero.ToString("N2");
+            txtlb.Text = ValorDecimalTexto(comissaoEMPL);
+            txtComissaoVN.Text = ValorDecimalTexto(totalComissaoVN);
+            txtTotalLiquido.Text = ValorDecimalTexto(totalLiquido);
+            txtQtdeVD.Text = zero.ToString();
+            txtComissaoVD.Text = zero.ToString("N2");
+            txtDif1.Text = zero.ToString("N2");
 
+            string comissaoLB;
+            int faixa;
+            int qtde = Inteiro(qtdeVN) + Inteiro(qtdeVU);
+            adm.CalcularComissaoLB(lblCodVend.Text, qtde, Numero(totalLb), lblNomeVendedor.Text, out comissaoLB, out faixa);
+            SelecionarMargem(faixa);
 
-        string comissaoLB;
-        int faixa;
-        int qtde = Convert.ToInt32(qtdeVN) + Convert.ToInt32(qtdeVU);
-        adm.CalcularComissaoLB(gViewListarVendedores.SelectedRow.Cells[1].Text, qtde, Convert.ToDouble(totalLb), gViewListarVendedores.SelectedRow.Cells[2].Text, out comissaoLB, out faixa);
-        ddlistMargem.SelectedValue = faixa.ToString();
-
-        
-        txtComissaoTotal.Text = (Convert.ToDouble(comissaoVU) + Convert.ToDouble(totalComissaoVN) + Convert.ToDouble(txtComissaoVD.Text)).ToString("N2");
-
-        //ddlistMargem.SelectedValue = margemComissao;
-        //adm.CalcularComissaoLB(conver
-        
+            txtComissaoTotal.Text = (Numero(comissaoVU) + Numero(totalComissaoVN) + Numero(txtComissaoVD.Text)).ToString("N2");
+        }
+        catch (Exception)
+        {
+            MostrarMensagem("Não foi possível calcular esta comissão agora. Confira o período e tente selecionar o vendedor novamente.");
+        }
     }
 
     protected void gViewListarVendedores_SelectedIndexChangedVD(object sender, EventArgs e)
     {
+        if (!GarantirLinhaSelecionada(gViewListarVendedoresVD, "Selecione um vendedor na lista de venda direta.")) return;
 
-        lblLojaVD.Text = gViewListarVendedoresVD.SelectedRow.Cells[0].Text;
-        lblcodVD.Text = gViewListarVendedoresVD.SelectedRow.Cells[1].Text;
-        lblVendVD.Text = gViewListarVendedoresVD.SelectedRow.Cells[2].Text;
-
-      
-
+        lblLojaVD.Text = TextoCelula(gViewListarVendedoresVD, 0);
+        lblcodVD.Text = TextoCelula(gViewListarVendedoresVD, 1);
+        lblVendVD.Text = TextoCelula(gViewListarVendedoresVD, 2);
     }
 
     protected void gViewListarVendedores_SelectedIndexChangedEMPL(object sender, EventArgs e)
     {
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(txtDtinicialEmpl, txtDtfinalEmpl, out dataInicial, out dataFinal)) return;
+        if (!GarantirLinhaSelecionada(gViewListarVendedoresEMPLACAMENTO, "Selecione um vendedor na lista de emplacamento.")) return;
 
-        lblLojaempl.Text = gViewListarVendedoresEMPLACAMENTO.SelectedRow.Cells[0].Text;
-        lblCodempl.Text = gViewListarVendedoresEMPLACAMENTO.SelectedRow.Cells[1].Text;
-         lblVendempl.Text = gViewListarVendedoresEMPLACAMENTO.SelectedRow.Cells[2].Text;
-        string comissaoEMPL, qtdeEMPL;
-        AdmFinanceiroWF adm = new AdmFinanceiroWF();
-        adm.select_Tab_Comissao_EMPLACAMENTO(Convert.ToDateTime(txtDtinicialEmpl.Text), Convert.ToDateTime(txtDtfinalEmpl.Text),
-            gViewListarVendedoresEMPLACAMENTO.SelectedRow.Cells[1].Text, out tabelaEMPL, out qtdeEMPL, out comissaoEMPL);
-   
-        txtEmplacamento.Text = comissaoEMPL;
+        try
+        {
+            lblLojaempl.Text = TextoCelula(gViewListarVendedoresEMPLACAMENTO, 0);
+            lblCodempl.Text = TextoCelula(gViewListarVendedoresEMPLACAMENTO, 1);
+            lblVendempl.Text = TextoCelula(gViewListarVendedoresEMPLACAMENTO, 2);
+            string comissaoEMPL, qtdeEMPL;
+            AdmFinanceiroWF adm = new AdmFinanceiroWF();
+            adm.select_Tab_Comissao_EMPLACAMENTO(dataInicial, dataFinal, lblCodempl.Text, out tabelaEMPL, out qtdeEMPL, out comissaoEMPL);
 
+            txtEmplacamento.Text = ValorDecimalTexto(comissaoEMPL);
+        }
+        catch (Exception)
+        {
+            MostrarMensagem("Não foi possível carregar o emplacamento deste vendedor. Confira o período e tente novamente.");
+        }
     }
 
     protected void gViewListarVendedores_SelectedIndexChangedPREM(object sender, EventArgs e)
     {
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(txtdtInicialPremiacao, txtdtFinalPremiacao, out dataInicial, out dataFinal)) return;
+        if (!GarantirLinhaSelecionada(gViewListarVendedoresPREMIACAO, "Selecione um vendedor na lista de premiação.")) return;
 
-        lblLojaPrem.Text = gViewListarVendedoresPREMIACAO.SelectedRow.Cells[0].Text;
-        lblCodPrem.Text = gViewListarVendedoresPREMIACAO.SelectedRow.Cells[1].Text;
-        lblVendedorPrem.Text = gViewListarVendedoresPREMIACAO.SelectedRow.Cells[2].Text;
+        try
+        {
+            lblLojaPrem.Text = TextoCelula(gViewListarVendedoresPREMIACAO, 0);
+            lblCodPrem.Text = TextoCelula(gViewListarVendedoresPREMIACAO, 1);
+            lblVendedorPrem.Text = TextoCelula(gViewListarVendedoresPREMIACAO, 2);
 
-        string premioprodutivo, premiometa, retorno, mvp, avulsos, chequebonus, qtdeEMPL, comissaoEMPL;
-        AdmFinanceiroWF adm = new AdmFinanceiroWF();
-        adm.select_dadosprem(Convert.ToDateTime(txtdtInicialPremiacao.Text), Convert.ToDateTime(txtdtFinalPremiacao.Text), gViewListarVendedoresPREMIACAO.SelectedRow.Cells[1].Text, out premioprodutivo, out premiometa, out retorno, out chequebonus, out mvp, out avulsos);
+            string premioprodutivo, premiometa, retorno, mvp, avulsos, chequebonus;
+            AdmFinanceiroWF adm = new AdmFinanceiroWF();
+            adm.select_dadosprem(dataInicial, dataFinal, lblCodPrem.Text, out premioprodutivo, out premiometa, out retorno, out chequebonus, out mvp, out avulsos);
 
-        
-        txtRetorno.Text = retorno;
-        txtCheque.Text = chequebonus;
-        txtPremioProd.Text = premioprodutivo;
-        txtPremioMeta.Text = premiometa;
-        txtmvp.Text = mvp;
-        txtavulsos.Text = avulsos;
-        
-
+            txtRetorno.Text = ValorDecimalTexto(retorno);
+            txtCheque.Text = ValorDecimalTexto(chequebonus);
+            txtPremioProd.Text = ValorDecimalTexto(premioprodutivo);
+            txtPremioMeta.Text = ValorDecimalTexto(premiometa);
+            txtmvp.Text = ValorDecimalTexto(mvp);
+            txtavulsos.Text = ValorDecimalTexto(avulsos);
+        }
+        catch (Exception)
+        {
+            MostrarMensagem("Não foi possível carregar a premiação deste vendedor. Confira o período e tente novamente.");
+        }
     }
     public string tabelaVN;
     public string tabelaVU;
@@ -156,79 +180,93 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
         string faixa;
         faixa = ddlistMargem.SelectedValue.ToString();
         txtComissaoLB.Text = "0,00";
-        string aaa = "";
+        if (!GarantirComissaoGeralCarregada()) return;
+
+        double totalLiquido = Numero(txtTotalLiquido.Text);
+        double comissaoVU = Numero(txtComissaoVU.Text);
         if (faixa == "0.4")
         {
             //txtComissaoLB.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 5 / 100).ToString("N2");
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.4 / 100).ToString("N2");
-            txtComissaoTotal.Text = ((Convert.ToDouble(txtTotalLiquido.Text) * 0.4 / 100) + Convert.ToDouble(txtComissaoVU.Text)).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.4 / 100).ToString("N2");
+            txtComissaoTotal.Text = ((totalLiquido * 0.4 / 100) + comissaoVU).ToString("N2");
         }
         if (faixa == "0.5")
         {
             //txtComissaoLB.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 5 / 100).ToString("N2");
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.5 / 100).ToString("N2");
-            txtComissaoTotal.Text = ((Convert.ToDouble(txtTotalLiquido.Text) * 0.5 / 100) + Convert.ToDouble(txtComissaoVU.Text)).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.5 / 100).ToString("N2");
+            txtComissaoTotal.Text = ((totalLiquido * 0.5 / 100) + comissaoVU).ToString("N2");
         }
         if (faixa == "0.6")
         {
 
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.6 / 100).ToString("N2");
-            txtComissaoTotal.Text = ((Convert.ToDouble(txtTotalLiquido.Text) * 0.6 / 100) + Convert.ToDouble(txtComissaoVU.Text)).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.6 / 100).ToString("N2");
+            txtComissaoTotal.Text = ((totalLiquido * 0.6 / 100) + comissaoVU).ToString("N2");
         }
 
-   
+
 }
     protected void btnREcalcularTotal_Click(object sender, EventArgs e)
     {
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(txtDtInicial, txtDtFinal, out dataInicial, out dataFinal)) return;
+        if (!GarantirComissaoGeralCarregada()) return;
+        NormalizarCamposComissaoGeral();
+
         string comissaoatual,dif;
         comissaoatual = txtQtdeVN.Text;
         double zero = 0;
+        int qtdeVN = Inteiro(txtQtdeVN.Text);
+        int qtdeVU = Inteiro(txtQtdeVU.Text);
+        int qtdeVD = Inteiro(txtQtdeVD.Text);
+        double totalLiquido = Numero(txtTotalLiquido.Text);
+        double comissaoVU = Numero(txtComissaoVU.Text);
+        double comissaoVD = Numero(txtComissaoVD.Text);
 
         //------------------------JEEP SAAN------------------------//
 
-        if (Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text)  <= 4 && lblLoja.Text == "JEEP SAAN")
+        if (qtdeVN + qtdeVD <= 4 && lblLoja.Text == "JEEP SAAN")
         {
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.4 / 100).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.4 / 100).ToString("N2");
             txtDif1.Text = zero.ToString("N2");
         }
 
-        if (Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text)  <= 10 && Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text)  >= 5 && lblLoja.Text == "JEEP SAAN")
+        if (qtdeVN + qtdeVD <= 10 && qtdeVN + qtdeVD >= 5 && lblLoja.Text == "JEEP SAAN")
         {
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.5 / 100).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.5 / 100).ToString("N2");
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
-            adm.select_dif(Convert.ToDateTime(txtDtInicial.Text), Convert.ToDateTime(txtDtFinal.Text), gViewListarVendedores.SelectedRow.Cells[1].Text, Convert.ToInt16(txtQtdeVU.Text), out dif);
+            adm.select_dif(dataInicial, dataFinal, lblCodVend.Text, qtdeVU, out dif);
             txtDif1.Text = dif;
         }
 
-        if (Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text) >= 11 && lblLoja.Text == "JEEP SAAN")
+        if (qtdeVN + qtdeVD >= 11 && lblLoja.Text == "JEEP SAAN")
         {
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.6 / 100).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.6 / 100).ToString("N2");
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
-            adm.select_dif(Convert.ToDateTime(txtDtInicial.Text), Convert.ToDateTime(txtDtFinal.Text), gViewListarVendedores.SelectedRow.Cells[1].Text, Convert.ToInt16(txtQtdeVU.Text), out dif);
+            adm.select_dif(dataInicial, dataFinal, lblCodVend.Text, qtdeVU, out dif);
             txtDif1.Text = dif;
         }
 
         //------------------------PARK SUL ------------------------//
 
-        if (Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text) <= 4 && lblLoja.Text == "PARK SUL")
+        if (qtdeVN + qtdeVD <= 4 && lblLoja.Text == "PARK SUL")
         {
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.4 / 100).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.4 / 100).ToString("N2");
             txtDif1.Text = zero.ToString("N2");
         }
 
-        if (Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text)  <= 10 && Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text) >= 5  && lblLoja.Text == "PARK SUL")
+        if (qtdeVN + qtdeVD <= 10 && qtdeVN + qtdeVD >= 5 && lblLoja.Text == "PARK SUL")
         {
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.5 / 100).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.5 / 100).ToString("N2");
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
-            adm.select_dif(Convert.ToDateTime(txtDtInicial.Text), Convert.ToDateTime(txtDtFinal.Text), gViewListarVendedores.SelectedRow.Cells[1].Text, Convert.ToInt16(txtQtdeVU.Text), out dif);
+            adm.select_dif(dataInicial, dataFinal, lblCodVend.Text, qtdeVU, out dif);
             txtDif1.Text = dif;
         }
 
-        if (Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text)  >= 11 && lblLoja.Text == "PARK SUL")
+        if (qtdeVN + qtdeVD >= 11 && lblLoja.Text == "PARK SUL")
         {
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.6 / 100).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.6 / 100).ToString("N2");
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
-            adm.select_dif(Convert.ToDateTime(txtDtInicial.Text), Convert.ToDateTime(txtDtFinal.Text), gViewListarVendedores.SelectedRow.Cells[1].Text, Convert.ToInt16(txtQtdeVU.Text), out dif);
+            adm.select_dif(dataInicial, dataFinal, lblCodVend.Text, qtdeVU, out dif);
             txtDif1.Text = dif;
         }
 
@@ -236,69 +274,74 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
 
 
 
-        if (Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text) <= 6 && lblLoja.Text == "FIAT SIA")
+        if (qtdeVN + qtdeVD <= 6 && lblLoja.Text == "FIAT SIA")
         {
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.4 / 100).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.4 / 100).ToString("N2");
             txtDif1.Text = zero.ToString("N2");
             //txtComissaoTotal.Text = ((Convert.ToDouble(txtTotalLiquido.Text) * 0.7 / 100) + Convert.ToDouble(txtComissaoVU.Text)).ToString("N2");
         }
 
-        if (Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text)  >= 8 && lblLoja.Text == "FIAT SIA")
+        if (qtdeVN + qtdeVD >= 8 && lblLoja.Text == "FIAT SIA")
         {
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.5 / 100).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.5 / 100).ToString("N2");
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
-            adm.select_dif(Convert.ToDateTime(txtDtInicial.Text), Convert.ToDateTime(txtDtFinal.Text), gViewListarVendedores.SelectedRow.Cells[1].Text, Convert.ToInt16(txtQtdeVU.Text), out dif);
+            adm.select_dif(dataInicial, dataFinal, lblCodVend.Text, qtdeVU, out dif);
             txtDif1.Text = dif;
             //txtComissaoTotal.Text = ((Convert.ToDouble(txtTotalLiquido.Text) * 0.7 / 100) + Convert.ToDouble(txtComissaoVU.Text)).ToString("N2");
         }
 
         //------------------------BALI SCIA------------------------//
-        if (Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text)  < 7 && lblLoja.Text == "FIAT SCIA")
+        if (qtdeVN + qtdeVD < 7 && lblLoja.Text == "FIAT SCIA")
         {
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.4 / 100).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.4 / 100).ToString("N2");
             txtDif1.Text = zero.ToString("N2");
             //txtComissaoTotal.Text = ((Convert.ToDouble(txtTotalLiquido.Text) * 0.7 / 100) + Convert.ToDouble(txtComissaoVU.Text)).ToString("N2");
         }
 
-        if (Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text)  >= 6 && lblLoja.Text == "FIAT SCIA")
+        if (qtdeVN + qtdeVD >= 6 && lblLoja.Text == "FIAT SCIA")
         {
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.5 / 100).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.5 / 100).ToString("N2");
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
-            adm.select_dif(Convert.ToDateTime(txtDtInicial.Text), Convert.ToDateTime(txtDtFinal.Text), gViewListarVendedores.SelectedRow.Cells[1].Text, Convert.ToInt16(txtQtdeVU.Text), out dif);
+            adm.select_dif(dataInicial, dataFinal, lblCodVend.Text, qtdeVU, out dif);
             txtDif1.Text = dif;
             //txtComissaoTotal.Text = ((Convert.ToDouble(txtTotalLiquido.Text) * 0.7 / 100) + Convert.ToDouble(txtComissaoVU.Text)).ToString("N2");
         }
 
         //------------------------BALI SAAN------------------------//
 
-        if (Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text)  < 7 && lblLoja.Text == "FIAT SAAN")
+        if (qtdeVN + qtdeVD < 7 && lblLoja.Text == "FIAT SAAN")
         {
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.4 / 100).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.4 / 100).ToString("N2");
             txtDif1.Text = zero.ToString("N2");
             //txtComissaoTotal.Text = ((Convert.ToDouble(txtTotalLiquido.Text) * 0.7 / 100) + Convert.ToDouble(txtComissaoVU.Text)).ToString("N2");
         }
 
-        if (Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVD.Text)  >= 8 && lblLoja.Text == "FIAT SAAN")
+        if (qtdeVN + qtdeVD >= 8 && lblLoja.Text == "FIAT SAAN")
         {
-            txtComissaoVN.Text = (Convert.ToDouble(txtTotalLiquido.Text) * 0.5 / 100).ToString("N2");
+            txtComissaoVN.Text = (totalLiquido * 0.5 / 100).ToString("N2");
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
-            adm.select_dif(Convert.ToDateTime(txtDtInicial.Text), Convert.ToDateTime(txtDtFinal.Text), gViewListarVendedores.SelectedRow.Cells[1].Text, Convert.ToInt16(txtQtdeVU.Text), out dif);
+            adm.select_dif(dataInicial, dataFinal, lblCodVend.Text, qtdeVU, out dif);
             txtDif1.Text = dif;
             //txtComissaoTotal.Text = ((Convert.ToDouble(txtTotalLiquido.Text) * 0.7 / 100) + Convert.ToDouble(txtComissaoVU.Text)).ToString("N2");
         }
         
-        txtQtdeTotal.Text = (Convert.ToInt16(txtQtdeVN.Text) + Convert.ToInt16(txtQtdeVU.Text) + Convert.ToInt16(txtQtdeVD.Text)).ToString();
-        txtComissaoTotal.Text = (Convert.ToDouble(txtComissaoVN.Text) + Convert.ToDouble(txtComissaoVU.Text) + Convert.ToDouble(txtComissaoVD.Text)).ToString("N2");
+        txtQtdeTotal.Text = (qtdeVN + qtdeVU + qtdeVD).ToString();
+        txtComissaoTotal.Text = (Numero(txtComissaoVN.Text) + comissaoVU + comissaoVD).ToString("N2");
         
     }
     protected void btnSalvar_Click(object sender, EventArgs e)
     {
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(txtDtInicial, txtDtFinal, out dataInicial, out dataFinal)) return;
+        if (!GarantirComissaoGeralCarregada()) return;
+        NormalizarCamposComissaoGeral();
+
         try
         {
-            
+
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
-            adm.insert_comissao(lblCodVend.Text, lblLoja.Text,lblNomeVendedor.Text, Convert.ToDateTime(txtDtInicial.Text), Convert.ToDateTime(txtDtFinal.Text),
-                              Convert.ToInt16(txtQtdeTotal.Text), Convert.ToDouble(txtComissaoVU.Text), Convert.ToDouble(txtComissaoVN.Text), Convert.ToDouble(txtComissaoTotal.Text), Convert.ToDouble(txtComissaoVD.Text), Convert.ToDouble(txtDif1.Text), ddlistMargem.SelectedItem.Text, Convert.ToDouble(txtlb.Text));
+            adm.insert_comissao(lblCodVend.Text, lblLoja.Text, lblNomeVendedor.Text, dataInicial, dataFinal,
+                              Inteiro(txtQtdeTotal.Text), Numero(txtComissaoVU.Text), Numero(txtComissaoVN.Text), Numero(txtComissaoTotal.Text), Numero(txtComissaoVD.Text), Numero(txtDif1.Text), ddlistMargem.SelectedItem.Text, Numero(txtlb.Text));
 
             sqldsListarVendedores.DataBind();
             gViewListarVendedores.DataBind();
@@ -318,7 +361,7 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             MostrarMensagem("Comissão salva com sucesso.");
            
         }
-        catch (SystemException ex)
+        catch (Exception)
         {
             sqldsListarVendedores.DataBind();
             gViewListarVendedores.DataBind();
@@ -330,12 +373,20 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
 
     protected void btnSalvarVD_Click(object sender, EventArgs e)
     {
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(txtDtinicialPrem, txtDtfinalPrem, out dataInicial, out dataFinal)) return;
+        if (String.IsNullOrWhiteSpace(lblcodVD.Text))
+        {
+            MostrarMensagem("Selecione um vendedor antes de salvar a comissão de venda direta.");
+            return;
+        }
+
         try
         {
 
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
-            adm.update_comissao(Convert.ToDateTime(txtDtinicialPrem.Text), Convert.ToDateTime(txtDtfinalPrem.Text), lblcodVD.Text, gViewListarVendedoresVD.SelectedRow.Cells[0].Text,
-            lblVendVD.Text, Convert.ToDouble(txtcomissaoVD2.Text));
+            adm.update_comissao(dataInicial, dataFinal, lblcodVD.Text, lblLojaVD.Text,
+            lblVendVD.Text, Numero(txtcomissaoVD2.Text));
             sqldsListarVendedoresPrem.DataBind();
             gViewListarVendedoresVD.DataBind();
             lblcodVD.Text = "";
@@ -345,7 +396,7 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             MostrarMensagem("Comissão salva com sucesso.");
            
         }
-        catch (SystemException ex)
+        catch (Exception)
         {
             sqldsListarVendedoresPrem.DataBind();
             gViewListarVendedoresVD.DataBind();
@@ -356,12 +407,20 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
     }
     protected void btnSalvarEmpl_Click(object sender, EventArgs e)
     {
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(txtDtinicialEmpl, txtDtfinalEmpl, out dataInicial, out dataFinal)) return;
+        if (String.IsNullOrWhiteSpace(lblCodempl.Text))
+        {
+            MostrarMensagem("Selecione um vendedor antes de salvar o emplacamento.");
+            return;
+        }
+
         try
         {
 
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
-            adm.update_comissaoEMPL(Convert.ToDateTime(txtDtinicialEmpl.Text), Convert.ToDateTime(txtDtfinalEmpl.Text), lblCodempl.Text, gViewListarVendedoresEMPLACAMENTO.SelectedRow.Cells[0].Text,
-            lblVendempl.Text, Convert.ToDouble(txtEmplacamento.Text));
+            adm.update_comissaoEMPL(dataInicial, dataFinal, lblCodempl.Text, lblLojaempl.Text,
+            lblVendempl.Text, Numero(txtEmplacamento.Text));
             sqldsListarVendedoresEmplac.DataBind();
             gViewListarVendedoresEMPLACAMENTO.DataBind();
             txtEmplacamento.Text = "";
@@ -369,10 +428,10 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             MostrarMensagem("Emplacamento salvo com sucesso.");
 
         }
-        catch (SystemException ex)
+        catch (Exception)
         {
-            sqldsListarVendedoresPrem.DataBind();
-            gViewListarVendedoresVD.DataBind();
+            sqldsListarVendedoresEmplac.DataBind();
+            gViewListarVendedoresEMPLACAMENTO.DataBind();
             MostrarMensagem("Emplacamento já cadastrado ou não foi possível salvar. Confira o período e o vendedor.");
         }
 
@@ -381,13 +440,21 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
 
     protected void btnSalvarPREM_Click(object sender, EventArgs e)
     {
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(txtdtInicialPremiacao, txtdtFinalPremiacao, out dataInicial, out dataFinal)) return;
+        if (String.IsNullOrWhiteSpace(lblCodPrem.Text))
+        {
+            MostrarMensagem("Selecione um vendedor antes de salvar a premiação.");
+            return;
+        }
+
         try
         {
 
             AdmFinanceiroWF adm = new AdmFinanceiroWF();
-            adm.update_comissaoPREM(Convert.ToDateTime(txtdtInicialPremiacao.Text), Convert.ToDateTime(txtdtFinalPremiacao.Text), lblCodPrem.Text,
-                                lblVendedorPrem.Text, Convert.ToDouble(txtPremioProd.Text), Convert.ToDouble(txtPremioMeta.Text), Convert.ToDouble(txtRetorno.Text), Convert.ToDouble(txtCheque.Text), 
-                                Convert.ToDouble(txtmvp.Text), Convert.ToDouble(txtavulsos.Text), gViewListarVendedoresPREMIACAO.SelectedRow.Cells[0].Text);
+            adm.update_comissaoPREM(dataInicial, dataFinal, lblCodPrem.Text,
+                                lblVendedorPrem.Text, Numero(txtPremioProd.Text), Numero(txtPremioMeta.Text), Numero(txtRetorno.Text), Numero(txtCheque.Text),
+                                Numero(txtmvp.Text), Numero(txtavulsos.Text), lblLojaPrem.Text);
             gViewListarVendedoresPREMIACAO.DataBind();
             sqldsListarVendedoresPremiacao.DataBind();
             lblcodVD.Text = "";
@@ -395,9 +462,9 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
             MostrarMensagem("Premiação salva com sucesso.");
 
         }
-        catch (SystemException ex)
+        catch (Exception)
         {
-            sqldsListarVendedoresPrem.DataBind();
+            sqldsListarVendedoresPremiacao.DataBind();
             gViewListarVendedoresPREMIACAO.DataBind();
             MostrarMensagem("Premiação já cadastrada ou não foi possível salvar. Confira o período e o vendedor.");
         }
@@ -417,18 +484,24 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
 
     protected void Button2_Click(object sender, EventArgs e)
     {
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(TextBox1, TextBox2, out dataInicial, out dataFinal)) return;
+
         ReportViewer1.LocalReport.ReportPath = @"admfinanceiro\Comissao\Report2.rdlc";
-        sqldsComissaoRV.SelectParameters["dtInicial"].DefaultValue = TextBox1.Text;
-        sqldsComissaoRV.SelectParameters["dtFinal"].DefaultValue = TextBox2.Text;
+        sqldsComissaoRV.SelectParameters["dtInicial"].DefaultValue = dataInicial.ToString("dd/MM/yyyy");
+        sqldsComissaoRV.SelectParameters["dtFinal"].DefaultValue = dataFinal.ToString("dd/MM/yyyy");
         ReportViewer1.LocalReport.Refresh();
     }
 
 
     protected void Button3_Click(object sender, EventArgs e)
     {
+        DateTime dataInicial, dataFinal;
+        if (!ValidarPeriodo(TextBox5, TextBox6, out dataInicial, out dataFinal)) return;
+
         ReportViewer2.LocalReport.ReportPath = @"admfinanceiro\Comissao\Report3.rdlc";
-        sqldsComissaoRV2.SelectParameters["dtInicial"].DefaultValue = TextBox5.Text;
-        sqldsComissaoRV2.SelectParameters["dtFinal"].DefaultValue = TextBox6.Text;
+        sqldsComissaoRV2.SelectParameters["dtInicial"].DefaultValue = dataInicial.ToString("dd/MM/yyyy");
+        sqldsComissaoRV2.SelectParameters["dtFinal"].DefaultValue = dataFinal.ToString("dd/MM/yyyy");
         ReportViewer2.LocalReport.Refresh();
     }
 
@@ -460,6 +533,139 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
         if (campo != null && String.IsNullOrWhiteSpace(campo.Text))
         {
             campo.Text = valor;
+        }
+    }
+
+    private bool ValidarPeriodo(TextBox campoInicial, TextBox campoFinal, out DateTime dataInicial, out DateTime dataFinal)
+    {
+        dataInicial = DateTime.MinValue;
+        dataFinal = DateTime.MinValue;
+
+        if (!TentarData(campoInicial == null ? "" : campoInicial.Text, out dataInicial))
+        {
+            MostrarMensagem("Informe uma data inicial válida no formato dd/mm/aaaa.");
+            if (campoInicial != null) campoInicial.Focus();
+            return false;
+        }
+
+        if (!TentarData(campoFinal == null ? "" : campoFinal.Text, out dataFinal))
+        {
+            MostrarMensagem("Informe uma data final válida no formato dd/mm/aaaa.");
+            if (campoFinal != null) campoFinal.Focus();
+            return false;
+        }
+
+        if (dataInicial > dataFinal)
+        {
+            MostrarMensagem("A data inicial não pode ser maior que a data final.");
+            if (campoInicial != null) campoInicial.Focus();
+            return false;
+        }
+
+        if (campoInicial != null) campoInicial.Text = dataInicial.ToString("dd/MM/yyyy");
+        if (campoFinal != null) campoFinal.Text = dataFinal.ToString("dd/MM/yyyy");
+        return true;
+    }
+
+    private bool TentarData(string texto, out DateTime data)
+    {
+        texto = (texto ?? "").Trim();
+        CultureInfo cultura = CultureInfo.GetCultureInfo("pt-BR");
+        return DateTime.TryParseExact(texto, "dd/MM/yyyy", cultura, DateTimeStyles.None, out data)
+            || DateTime.TryParse(texto, cultura, DateTimeStyles.None, out data);
+    }
+
+    private bool GarantirLinhaSelecionada(GridView grid, string mensagem)
+    {
+        if (grid == null || grid.SelectedRow == null)
+        {
+            MostrarMensagem(mensagem);
+            return false;
+        }
+
+        return true;
+    }
+
+    private string TextoCelula(GridView grid, int indice)
+    {
+        if (grid == null || grid.SelectedRow == null || grid.SelectedRow.Cells.Count <= indice) return "";
+        return HttpUtility.HtmlDecode(grid.SelectedRow.Cells[indice].Text ?? "").Replace("&nbsp;", "").Trim();
+    }
+
+    private bool GarantirComissaoGeralCarregada()
+    {
+        if (String.IsNullOrWhiteSpace(lblCodVend.Text))
+        {
+            MostrarMensagem("Selecione um vendedor na aba Comissão antes de recalcular ou salvar.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void NormalizarCamposComissaoGeral()
+    {
+        txtQtdeVN.Text = ValorInteiroTexto(txtQtdeVN.Text);
+        txtQtdeVU.Text = ValorInteiroTexto(txtQtdeVU.Text);
+        txtQtdeVD.Text = ValorInteiroTexto(txtQtdeVD.Text);
+        txtQtdeTotal.Text = ValorInteiroTexto(txtQtdeTotal.Text);
+        txtComissaoVN.Text = ValorDecimalTexto(txtComissaoVN.Text);
+        txtComissaoVU.Text = ValorDecimalTexto(txtComissaoVU.Text);
+        txtComissaoVD.Text = ValorDecimalTexto(txtComissaoVD.Text);
+        txtComissaoTotal.Text = ValorDecimalTexto(txtComissaoTotal.Text);
+        txtTotalLiquido.Text = ValorDecimalTexto(txtTotalLiquido.Text);
+        txtDif1.Text = ValorDecimalTexto(txtDif1.Text);
+        txtlb.Text = ValorDecimalTexto(txtlb.Text);
+        txtLb2.Text = ValorDecimalTexto(txtLb2.Text);
+    }
+
+    private double Numero(TextBox campo)
+    {
+        return campo == null ? 0 : Numero(campo.Text);
+    }
+
+    private double Numero(string valor)
+    {
+        valor = (valor ?? "").Trim();
+        if (valor.Length == 0) return 0;
+
+        valor = valor.Replace("R$", "").Replace("%", "").Trim();
+        CultureInfo cultura = CultureInfo.GetCultureInfo("pt-BR");
+        double numero;
+        if (Double.TryParse(valor, NumberStyles.Any, cultura, out numero)) return numero;
+
+        string normalizado = valor.Replace(".", "").Replace(",", ".");
+        if (Double.TryParse(normalizado, NumberStyles.Any, CultureInfo.InvariantCulture, out numero)) return numero;
+
+        return 0;
+    }
+
+    private int Inteiro(string valor)
+    {
+        return Convert.ToInt32(Math.Round(Numero(valor), 0));
+    }
+
+    private string ValorDecimalTexto(string valor)
+    {
+        return Numero(valor).ToString("N2");
+    }
+
+    private string ValorInteiroTexto(string valor)
+    {
+        return Inteiro(valor).ToString();
+    }
+
+    private void SelecionarMargem(int faixa)
+    {
+        string valor = faixa.ToString(CultureInfo.InvariantCulture);
+        if (faixa > 1)
+        {
+            valor = "0." + valor;
+        }
+
+        if (ddlistMargem.Items.FindByValue(valor) != null)
+        {
+            ddlistMargem.SelectedValue = valor;
         }
     }
 
