@@ -52,7 +52,7 @@
 
             var conteudo = alvo.innerHTML;
             var win = window.open('', '_blank');
-            win.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Comiss&atilde;o</title><style>body{font-family:Arial,Helvetica,sans-serif;color:#111827;margin:18px}table{border-collapse:collapse}td,th{padding:4px 6px}fieldset{border:1px solid #cbd5e1;border-radius:8px;margin:0 0 14px;padding:12px}input,select{border:0;background:transparent;font-weight:700}.venda{color:#111827}.devolucao{color:#a52828}.sessenta{color:#2f6b3c}.zerotrinta{color:#7c3f98}@media print{body{margin:8mm}.no-print{display:none!important}}</style></head><body>');
+            win.document.write('<!doctype html><html lang="pt-BR"><he' + 'ad><meta charset="utf-8"><style>body{font-family:Arial,Helvetica,sans-serif;color:#111827;margin:18px}table{border-collapse:collapse}td,th{padding:4px 6px}fieldset{border:1px solid #cbd5e1;border-radius:8px;margin:0 0 14px;padding:12px}input,select{border:0;background:transparent;font-weight:700}.venda{color:#111827}.devolucao{color:#a52828}.sessenta{color:#2f6b3c}.zerotrinta{color:#7c3f98}@media print{body{margin:8mm}.no-print{display:none!important}}</style></he' + 'ad><body>');
             win.document.write(conteudo);
             win.document.write('</body></html>');
             win.document.close();
