@@ -129,8 +129,8 @@
                                                 <section class="delivery-finance">
                                                     <div class="delivery-finance-heading">Autorização Financeira</div>
                                                     <div class="delivery-note">
-                                                        * Em caso de recebimento de veículo usado, a liberação concedida está vinculada ao recebimento do mesmo, em total conformidade com as normas exigidas.<br />
-                                                        * Somente liberar com o recibo de desconto assinado pelo cliente, quando aplicável.
+                                                        * Havendo veículo usado como parte do pagamento, a liberação fica condicionada ao recebimento físico do veículo e à conferência de sua documentação, conforme normas internas.<br />
+                                                        * Quando aplicável, liberar somente após o Recibo de Desconto estar assinado pelo cliente e conferido pelo responsável.
                                                     </div>
                                                     <div class="delivery-part">
                                                         <div class="delivery-title">Autorização do financeiro - Serviços adicionais</div>
