@@ -494,10 +494,23 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
         DateTime dataInicial, dataFinal;
         if (!ValidarPeriodo(TextBox1, TextBox2, out dataInicial, out dataFinal)) return;
 
-        ReportViewer1.LocalReport.ReportPath = @"admfinanceiro\Comissao\Report2.rdlc";
-        sqldsComissaoRV.SelectParameters["dtInicial"].DefaultValue = dataInicial.ToString("dd/MM/yyyy");
-        sqldsComissaoRV.SelectParameters["dtFinal"].DefaultValue = dataFinal.ToString("dd/MM/yyyy");
-        ReportViewer1.LocalReport.Refresh();
+        try
+        {
+            string inicial = dataInicial.ToString("dd/MM/yyyy");
+            string final = dataFinal.ToString("dd/MM/yyyy");
+            ReportViewer1.LocalReport.ReportPath = @"admfinanceiro\Comissao\Report2.rdlc";
+            ReportViewer1.LocalReport.DisplayName = "Comissoes_" + dataInicial.ToString("yyyyMMdd") + "_" + dataFinal.ToString("yyyyMMdd");
+            sqldsComissaoRV.SelectParameters["dtInicial"].DefaultValue = inicial;
+            sqldsComissaoRV.SelectParameters["dtFinal"].DefaultValue = final;
+            ReportViewer1.LocalReport.Refresh();
+            lblRelatorioComissaoStatus.Text = "Gerado de " + inicial + " a " + final;
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro(ex, "Gerar relatório de comissões");
+            lblRelatorioComissaoStatus.Text = "Não foi possível gerar agora";
+            MostrarMensagem("Não foi possível gerar o relatório de comissões agora. Confira o período e tente novamente.");
+        }
     }
 
 
@@ -506,10 +519,23 @@ public partial class admfinanceiro_Comissao_comissao : System.Web.UI.Page
         DateTime dataInicial, dataFinal;
         if (!ValidarPeriodo(TextBox5, TextBox6, out dataInicial, out dataFinal)) return;
 
-        ReportViewer2.LocalReport.ReportPath = @"admfinanceiro\Comissao\Report3.rdlc";
-        sqldsComissaoRV2.SelectParameters["dtInicial"].DefaultValue = dataInicial.ToString("dd/MM/yyyy");
-        sqldsComissaoRV2.SelectParameters["dtFinal"].DefaultValue = dataFinal.ToString("dd/MM/yyyy");
-        ReportViewer2.LocalReport.Refresh();
+        try
+        {
+            string inicial = dataInicial.ToString("dd/MM/yyyy");
+            string final = dataFinal.ToString("dd/MM/yyyy");
+            ReportViewer2.LocalReport.ReportPath = @"admfinanceiro\Comissao\Report3.rdlc";
+            ReportViewer2.LocalReport.DisplayName = "Premiacoes_" + dataInicial.ToString("yyyyMMdd") + "_" + dataFinal.ToString("yyyyMMdd");
+            sqldsComissaoRV2.SelectParameters["dtInicial"].DefaultValue = inicial;
+            sqldsComissaoRV2.SelectParameters["dtFinal"].DefaultValue = final;
+            ReportViewer2.LocalReport.Refresh();
+            lblRelatorioPremiacaoStatus.Text = "Gerado de " + inicial + " a " + final;
+        }
+        catch (Exception ex)
+        {
+            RegistrarErro(ex, "Gerar relatório de premiações");
+            lblRelatorioPremiacaoStatus.Text = "Não foi possível gerar agora";
+            MostrarMensagem("Não foi possível gerar o relatório de premiações agora. Confira o período e tente novamente.");
+        }
     }
 
     private void PreencherDatasPadrao()

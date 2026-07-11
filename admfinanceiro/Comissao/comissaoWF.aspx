@@ -12,11 +12,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Comiss&otilde;es WF | Grupo Bali</title>
     <link href="../../css/estilo.css" rel="stylesheet" />
-    <link href="../../css/comissao-wf.css?v=20260711-03" rel="stylesheet" />
+    <link href="../../css/comissao-wf.css?v=20260711-04" rel="stylesheet" />
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
     <script src="../../js/js.js"></script>
-    <script src="../../js/comissao-wf.js?v=20260711-03" defer="defer"></script>
+    <script src="../../js/comissao-wf.js?v=20260711-04" defer="defer"></script>
     <script type="text/javascript">
         function aguarde() {
             if (window.BaliComissao && window.BaliComissao.showLoading) {
@@ -886,33 +886,43 @@
                                 
                                 </headertemplate>
                                 <contenttemplate>
-                                    <table cellspacing="8">
-                                        <tr>
-                                            <td>Data Inicial:</td>
-                                            <td>Data Final:</td>
-                                        </tr>
-                                        <tr>
-                                            <td>
+                                    <div class="comissao-report-panel" data-report-panel="comissao">
+                                        <div class="comissao-report-head">
+                                            <div>
+                                                <span>Arquivo financeiro</span>
+                                                <h2>Relat&oacute;rio de comiss&otilde;es</h2>
+                                                <p>Escolha o per&iacute;odo e gere uma pr&eacute;via para confer&ecirc;ncia, exporta&ccedil;&atilde;o ou impress&atilde;o.</p>
+                                            </div>
+                                            <asp:Label ID="lblRelatorioComissaoStatus" runat="server" CssClass="comissao-report-status" Text="Aguardando gera&ccedil;&atilde;o"></asp:Label>
+                                        </div>
+                                        <div class="comissao-report-filter">
+                                            <label>
+                                                <span>Data inicial</span>
                                                 <asp:TextBox ID="TextBox1" CssClass="txts" runat="server"></asp:TextBox>
                                                 <asp:CalendarExtender ID="TextBox1_CalendarExtender" runat="server" Enabled="True" TargetControlID="TextBox1" Format="dd/MM/yyyy">
                                                 </asp:CalendarExtender>
-                                            </td>
-                                            <td>
+                                            </label>
+                                            <label>
+                                                <span>Data final</span>
                                                 <asp:TextBox ID="TextBox2" CssClass="txts" runat="server"></asp:TextBox>
                                                 <asp:CalendarExtender ID="TextBox2_CalendarExtender" runat="server" Enabled="True" TargetControlID="TextBox2" Format="dd/MM/yyyy">
                                                 </asp:CalendarExtender>
-                                                <asp:Button ID="Button2" runat="server" Text="Exibir" OnClick="Button2_Click" />
-                                            </td>
-                                        </tr>
-                                    </table>
-                                    <br />
-                                    <rsweb:reportviewer id="ReportViewer1" width="100%" runat="server" font-names="Verdana" font-size="8pt" waitmessagefont-names="Verdana" waitmessagefont-size="14pt">
-                                        <localreport reportpath="admfinanceiro\Comissao\Report2.rdlc">
-                                            <datasources>
-                                                <rsweb:reportdatasource datasourceid="sqldsComissaoRV" name="dsComissaoRV" />
-                                            </datasources>
-                                        </localreport>
-                                    </rsweb:reportviewer>
+                                            </label>
+                                            <asp:Button ID="Button2" runat="server" Text="Gerar relat&oacute;rio" OnClick="Button2_Click" />
+                                        </div>
+                                        <div class="comissao-report-tip">
+                                            Use os bot&otilde;es do pr&oacute;prio relat&oacute;rio para exportar ou imprimir. Se a pr&eacute;via ficar larga, arraste lateralmente dentro do quadro.
+                                        </div>
+                                        <div class="comissao-report-viewer">
+                                            <rsweb:reportviewer id="ReportViewer1" width="100%" height="720px" runat="server" font-names="Arial" font-size="8pt" waitmessagefont-names="Arial" waitmessagefont-size="12pt">
+                                                <localreport reportpath="admfinanceiro\Comissao\Report2.rdlc">
+                                                    <datasources>
+                                                        <rsweb:reportdatasource datasourceid="sqldsComissaoRV" name="dsComissaoRV" />
+                                                    </datasources>
+                                                </localreport>
+                                            </rsweb:reportviewer>
+                                        </div>
+                                    </div>
 
 
 
@@ -934,33 +944,43 @@
        
                                 </headertemplate>
                                 <contenttemplate>
-                                    <table cellspacing="8">
-                                        <tr>
-                                            <td>Data Inicial:</td>
-                                            <td>Data Final:</td>
-                                        </tr>
-                                        <tr>
-                                            <td>
+                                    <div class="comissao-report-panel" data-report-panel="premiacao">
+                                        <div class="comissao-report-head">
+                                            <div>
+                                                <span>Arquivo financeiro</span>
+                                                <h2>Relat&oacute;rio de premia&ccedil;&otilde;es</h2>
+                                                <p>Gere a pr&eacute;via consolidada de premia&ccedil;&otilde;es, retornos, b&ocirc;nus e avulsos no per&iacute;odo.</p>
+                                            </div>
+                                            <asp:Label ID="lblRelatorioPremiacaoStatus" runat="server" CssClass="comissao-report-status" Text="Aguardando gera&ccedil;&atilde;o"></asp:Label>
+                                        </div>
+                                        <div class="comissao-report-filter">
+                                            <label>
+                                                <span>Data inicial</span>
                                                 <asp:TextBox ID="TextBox5" CssClass="txts" runat="server"></asp:TextBox>
                                                 <asp:CalendarExtender ID="CalendarExtender7" runat="server" Enabled="True" TargetControlID="TextBox5" Format="dd/MM/yyyy">
                                                 </asp:CalendarExtender>
-                                            </td>
-                                            <td>
+                                            </label>
+                                            <label>
+                                                <span>Data final</span>
                                                 <asp:TextBox ID="TextBox6" CssClass="txts" runat="server"></asp:TextBox>
                                                 <asp:CalendarExtender ID="CalendarExtender8" runat="server" Enabled="True" TargetControlID="TextBox6" Format="dd/MM/yyyy">
                                                 </asp:CalendarExtender>
-                                                <asp:Button ID="Button7" runat="server" Text="Exibir" OnClick="Button3_Click" />
-                                            </td>
-                                        </tr>
-                                    </table>
-                                    <br />
-                                    <rsweb:reportviewer id="ReportViewer2" width="100%" runat="server" font-names="Verdana" font-size="8pt" waitmessagefont-names="Verdana" waitmessagefont-size="14pt">
-                                        <localreport reportpath="admfinanceiro\Comissao\Report3.rdlc">
-                                            <datasources>
-                                                <rsweb:reportdatasource datasourceid="sqldsComissaoRV2" name="dsComissaoRV2" />
-                                            </datasources>
-                                        </localreport>
-                                    </rsweb:reportviewer>
+                                            </label>
+                                            <asp:Button ID="Button7" runat="server" Text="Gerar relat&oacute;rio" OnClick="Button3_Click" />
+                                        </div>
+                                        <div class="comissao-report-tip">
+                                            Confira o per&iacute;odo antes de exportar. A pr&eacute;via abaixo preserva o desenho original do RDLC.
+                                        </div>
+                                        <div class="comissao-report-viewer">
+                                            <rsweb:reportviewer id="ReportViewer2" width="100%" height="720px" runat="server" font-names="Arial" font-size="8pt" waitmessagefont-names="Arial" waitmessagefont-size="12pt">
+                                                <localreport reportpath="admfinanceiro\Comissao\Report3.rdlc">
+                                                    <datasources>
+                                                        <rsweb:reportdatasource datasourceid="sqldsComissaoRV2" name="dsComissaoRV2" />
+                                                    </datasources>
+                                                </localreport>
+                                            </rsweb:reportviewer>
+                                        </div>
+                                    </div>
 
 
                                     <asp:SqlDataSource ID="sqldsComissaoRV2" runat="server" ConnectionString="<%$ ConnectionStrings:APPWFConnectionString %>" SelectCommand="admfinanceiro_select_comissao" SelectCommandType="StoredProcedure">

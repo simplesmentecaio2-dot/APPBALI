@@ -114,7 +114,7 @@
       if (!inicial || !final || inicial.getAttribute("data-comissao-periodo") === "1") return;
 
       inicial.setAttribute("data-comissao-periodo", "1");
-      var alvo = final.closest ? final.closest("table") : null;
+      var alvo = final.closest ? (final.closest("table") || final.closest(".comissao-report-filter")) : null;
       if (!alvo || !alvo.parentNode) return;
 
       var barra = document.createElement("div");
