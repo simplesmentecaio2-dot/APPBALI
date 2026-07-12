@@ -222,6 +222,14 @@ body.bali-print-page #guiadocomprador3b > div {
     border-color: #4b5563 !important;
 }
 
+body.bali-print-page #Declaracao .bali-declaracao-header {
+    display: block;
+    width: 100% !important;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto 14px;
+}
+
 body.bali-print-page .form-aviso,
 body.bali-print-page .form-despachante {
     overflow-wrap: anywhere;

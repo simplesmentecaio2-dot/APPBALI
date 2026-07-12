@@ -572,6 +572,36 @@
         ].join('');
     }
 
+    function encaixarCabecalhoDeclaracao() {
+        var declaracao = document.getElementById('Declaracao');
+        if (!declaracao || declaracao.getAttribute('data-header-inside') === '1') return;
+
+        var wrapper = declaracao.parentNode;
+        var cabecalho = null;
+        var anterior = wrapper ? wrapper.previousSibling : null;
+
+        while (anterior) {
+            if (anterior.nodeType === 1) {
+                var tag = (anterior.tagName || '').toLowerCase();
+                var src = (anterior.getAttribute && anterior.getAttribute('src') || '').toLowerCase();
+                if (tag === 'img' && src.indexOf('header-contrato') >= 0) {
+                    cabecalho = anterior;
+                    break;
+                }
+
+                if (tag !== 'br') break;
+            }
+
+            anterior = anterior.previousSibling;
+        }
+
+        if (!cabecalho) return;
+
+        adicionarClasse(cabecalho, 'bali-declaracao-header');
+        declaracao.insertBefore(cabecalho, declaracao.firstChild);
+        declaracao.setAttribute('data-header-inside', '1');
+    }
+
     function criarElemento(tag, classe, texto) {
         var elemento = document.createElement(tag);
         if (classe) elemento.className = classe;
@@ -646,6 +676,7 @@
         atualizarAnoAtual();
         criarGuiaCompradorHtml();
         criarDespachanteHtml();
+        encaixarCabecalhoDeclaracao();
         classificarEstruturaContrato();
 
         var campos = camposDeTexto();
