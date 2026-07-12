@@ -428,6 +428,78 @@
         }
     }
 
+    function criarDespachanteHtml() {
+        var painel = document.getElementById('Panel1');
+        var pagina = document.getElementById('Div5');
+        if (!painel || !pagina || pagina.getAttribute('data-despachante-html') === '1') return;
+
+        var imagemFinal = pagina.querySelector('img[src*="DESPACHANTEFINAL"]');
+        var usado = !!(imagemFinal && /FINALUSADO/i.test(imagemFinal.getAttribute('src') || ''));
+        var caminho = (window.location.pathname || '').toLowerCase();
+        var marca = caminho.indexOf('/jeep/') >= 0 ? 'JEEP' : (caminho.indexOf('/byd/') >= 0 ? 'BYD' : 'FIAT');
+
+        var nome = primeiroTexto(['txtdespachanteNOME']);
+        var rg = primeiroTexto(['txtdespachanteRG']);
+        var cpf = primeiroTexto(['txtdespachanteCPF']);
+        var endereco = primeiroTexto(['txtdespachanteENDERECO']);
+        var cep = primeiroTexto(['txtdespachanteCEP']);
+        var email = primeiroTexto(['txtdespachanteEMAIL']);
+        var fone = primeiroTexto(['txtdespachanteFONE']);
+        var chassi = primeiroTexto(['txtdespachanteCHASSI', 'txtdespachantePLACA']);
+        var modelo = primeiroTexto(['txtdespachanteMODELO']);
+        var anoModelo = primeiroTexto(['txtdespachanteANOMODELO']);
+        var modeloCompleto = (usado ? '' : marca + '- ') + modelo;
+
+        function valor(texto) {
+            return escaparHtml(texto || '');
+        }
+
+        function item(marcado, texto, destaque) {
+            return '<div class="bali-despachante-option"><span>(' + (marcado ? 'X' : '&nbsp;') + ')</span><strong class="' + (destaque ? 'is-strong' : '') + '">' + texto + '</strong></div>';
+        }
+
+        pagina.className = normalizarClasse((pagina.className || '') + ' bali-despachante-page');
+        pagina.setAttribute('data-despachante-html', '1');
+        pagina.removeAttribute('style');
+        pagina.innerHTML = [
+            '<img class="bali-despachante-header-img" src="../img/DESPACHANTECABECALHO.png" alt="Governo do Distrito Federal - Detran DF - VE 15" />',
+            '<table class="bali-despachante-table bali-despachante-service">',
+                '<tr><th colspan="4">SOLICITA&Ccedil;&Atilde;O DO SERVI&Ccedil;O</th></tr>',
+                '<tr>',
+                    '<td colspan="2" class="wide"><span>NOME:</span> <strong>' + valor(nome) + '</strong></td>',
+                    '<td rowspan="2" class="label-center">PROCURADOR:</td>',
+                    '<td class="checkline">SIM( )</td>',
+                '</tr>',
+                '<tr><td colspan="2">&nbsp;</td><td class="checkline">N&Atilde;O( )</td></tr>',
+                '<tr><td colspan="2"><span>RG:</span> <strong>' + valor(rg) + '</strong></td><td colspan="2"><span>CPF/CNPJ:</span> <strong>' + valor(cpf) + '</strong></td></tr>',
+                '<tr><td colspan="4"><span>&Oacute;RG&Atilde;O EXPEDIDOR:</span></td></tr>',
+                '<tr><td colspan="4"><span>ENDERE&Ccedil;O:</span> <strong>' + valor(endereco) + '</strong></td></tr>',
+                '<tr><td colspan="4"><span>CEP:</span> <strong>' + valor(cep) + '</strong></td></tr>',
+                '<tr><td colspan="2"><span>E-MAIL:</span> <strong>' + valor(email) + '</strong></td><td colspan="2"><span>FONE:</span> <strong>' + valor(fone) + '</strong></td></tr>',
+                '<tr><th colspan="4">DADOS DO VE&Iacute;CULO</th></tr>',
+                '<tr><td colspan="2"><span>CHASSI:</span> <strong>' + valor(chassi) + '</strong></td><td colspan="2"><span>PLACA:</span></td></tr>',
+                '<tr><td colspan="2"><span>MARCA/MODELO:</span> <strong>' + valor(modeloCompleto) + '</strong></td><td colspan="2"><span>ANO FAB:</span> <strong>' + valor(anoModelo) + '</strong></td></tr>',
+                '<tr><td colspan="4"><span>RENAVAM:</span><span class="bali-despachante-line"></span></td></tr>',
+            '</table>',
+            '<div class="bali-despachante-request">',
+                '<div class="bali-despachante-request-title">OBJETO DO REQUERIMENTO</div>',
+                '<p>Autorizo os despachantes <span class="under">WILLIAN WASTON DA SILVA</span> e <span class="under">FERNANDO ALVES RAFAEL DE SOUZA</span></p>',
+                '<p><strong>RG.:</strong> <span class="under small">611451 DF</span> e <span class="under small">2222922 DF</span> <strong>CPF:</strong> <span class="under small">226.954.001-87</span> e <span class="under small">010.613.891-03</span> <strong>CREDENCIAL N&ordm;:</strong> <span class="under tiny">63</span> e <span class="under tiny">476</span></p>',
+                '<p>a representar-me junto ao DETRAN-DF para atualiza&ccedil;&atilde;o do meu endere&ccedil;o, conforme artigos 241 e 242 do CTB e Lei Distrital n&ordm; 4.225, de 24/10/2008, conforme dados descritos acima do ve&iacute;culo de minha propriedade.</p>',
+                item(!usado, 'Primeiro emplacamento/registrar o ve&iacute;culo', false),
+                item(usado, 'Promover a transfer&ecirc;ncia da propriedade', false),
+                item(false, 'Emitir CRV e/ou CRLV', false),
+                item(false, 'Realizar vistorias e/ou inspe&ccedil;&atilde;o', false),
+                item(false, 'Outros servi&ccedil;os:', true),
+            '</div>',
+            '<p class="bali-despachante-declaration">Declaro sob as penas da lei que o contido acima &eacute; a express&atilde;o da verdade, assumindo todos e quaisquer &ocirc;nus decorrentes deste ato, isentando o <strong>DETRAN-DF</strong> e seus prepostos das responsabilidades de natureza <strong>C&Iacute;VIL, PENAL E/OU ADMINISTRATIVA</strong>, resultante desta solicita&ccedil;&atilde;o.</p>',
+            '<div class="bali-despachante-date">Bras&iacute;lia &ndash; DF, ______/______/20____</div>',
+            '<div class="bali-despachante-sign"><span></span><p>Assinatura do Propriet&aacute;rio/Representante legal</p></div>',
+            '<p class="bali-despachante-presence"><strong>Declaro que este documento foi assinado em minha presen&ccedil;a pelo propriet&aacute;rio acima identificado.</strong></p>',
+            '<div class="bali-despachante-sign bali-despachante-sign-final"><span></span><p>Carimbo e assinatura do despachante</p></div>'
+        ].join('');
+    }
+
     function criarElemento(tag, classe, texto) {
         var elemento = document.createElement(tag);
         if (classe) elemento.className = classe;
@@ -501,6 +573,7 @@
     function atualizarTextos() {
         atualizarAnoAtual();
         criarGuiaCompradorHtml();
+        criarDespachanteHtml();
         classificarEstruturaContrato();
 
         var campos = camposDeTexto();

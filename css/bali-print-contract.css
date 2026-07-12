@@ -227,6 +227,187 @@ body.bali-print-page .form-despachante {
     overflow-wrap: anywhere;
 }
 
+.bali-despachante-page {
+    width: 19cm;
+    min-height: 26.8cm;
+    padding: 12px 16px 14px;
+    border: 1px solid #111;
+    color: #111;
+    background: #fff;
+    box-sizing: border-box;
+    font-family: "Times New Roman", serif;
+    font-size: 13px;
+    line-height: 1.12;
+}
+
+.bali-despachante-header-img {
+    display: block;
+    width: 17.55cm;
+    max-width: 100%;
+    margin: 0 auto 10px;
+}
+
+.bali-despachante-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin: 0 0 8px;
+    font-family: "Times New Roman", serif;
+}
+
+.bali-despachante-table th,
+.bali-despachante-table td {
+    border: 1px solid #777;
+    padding: 2px 3px;
+    vertical-align: middle;
+}
+
+.bali-despachante-table th {
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.08;
+    text-align: center;
+}
+
+.bali-despachante-table td {
+    height: 20px;
+    font-size: 16px;
+}
+
+.bali-despachante-table span {
+    font-weight: 400;
+}
+
+.bali-despachante-table strong {
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.bali-despachante-service .wide {
+    width: 65%;
+}
+
+.bali-despachante-service .label-center {
+    width: 23%;
+    font-size: 17px;
+}
+
+.bali-despachante-service .checkline {
+    width: 12%;
+    font-size: 16px;
+}
+
+.bali-despachante-line {
+    display: inline-block;
+    width: 11.2cm;
+    height: 16px;
+    margin-left: 4px;
+    border: 1px solid #777;
+    vertical-align: middle;
+}
+
+.bali-despachante-request {
+    margin-top: 8px;
+    border: 1px solid #777;
+    font-size: 17px;
+    line-height: 1.15;
+}
+
+.bali-despachante-request-title {
+    border-bottom: 1px solid #777;
+    font-size: 20px;
+    font-weight: 800;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.bali-despachante-request p {
+    margin: 0;
+    padding: 5px 8px 2px;
+    text-align: justify;
+}
+
+.bali-despachante-request .under {
+    display: inline-block;
+    min-width: 185px;
+    border-bottom: 1px solid #777;
+    color: #444;
+    font-size: 13px;
+    text-align: center;
+}
+
+.bali-despachante-request .under.small {
+    min-width: 70px;
+}
+
+.bali-despachante-request .under.tiny {
+    min-width: 35px;
+}
+
+.bali-despachante-option {
+    display: flex;
+    align-items: center;
+    min-height: 19px;
+    border-top: 1px solid #777;
+    font-size: 17px;
+}
+
+.bali-despachante-option span {
+    width: 33px;
+    padding-left: 8px;
+    box-sizing: border-box;
+    font-weight: 800;
+}
+
+.bali-despachante-option strong {
+    font-weight: 400;
+}
+
+.bali-despachante-option strong.is-strong {
+    font-weight: 800;
+}
+
+.bali-despachante-declaration {
+    margin: 28px 10px 0;
+    font-size: 15px;
+    line-height: 1.12;
+    text-align: justify;
+    text-indent: 28px;
+}
+
+.bali-despachante-date {
+    margin: 24px 28px 0 0;
+    font-size: 18px;
+    text-align: right;
+}
+
+.bali-despachante-sign {
+    margin: 50px auto 0;
+    width: 16.5cm;
+    text-align: center;
+}
+
+.bali-despachante-sign span {
+    display: block;
+    border-top: 1px solid #777;
+}
+
+.bali-despachante-sign p {
+    margin: 2px 0 0;
+    font-size: 17px;
+}
+
+.bali-despachante-presence {
+    margin: 36px 0 0;
+    font-size: 14px;
+    text-align: center;
+}
+
+.bali-despachante-sign-final {
+    margin-top: 46px;
+}
+
 .bali-guide3-page {
     width: 19cm;
     min-height: 26.8cm;
