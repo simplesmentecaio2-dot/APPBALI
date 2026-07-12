@@ -428,7 +428,7 @@
                 documentosGuia(),
                 '<div class="bali-guide3-alert">',
                     '<span class="bali-guide3-check"></span>',
-                    '<strong>Todo ve&iacute;culo usado entregue como parte de pagamento deve passar por confer&ecirc;ncia documental e vistoria cautelar pr&eacute;via. O custo, quando aplic&aacute;vel, &eacute; de responsabilidade do cliente.</strong>',
+                    '<span>Todo ve&iacute;culo usado entregue como parte de pagamento deve passar por confer&ecirc;ncia documental e vistoria cautelar pr&eacute;via. O custo, quando aplic&aacute;vel, &eacute; de responsabilidade do cliente.</span>',
                 '</div>',
                 '<div class="bali-guide3-subtitle">RECEBIMENTO DO VE&Iacute;CULO USADO INCLUSO COMO PARTE DE PAGAMENTO <span>PLACA: ' + escaparHtml(placa) + '</span></div>',
                 '<div class="bali-guide3-list">',
