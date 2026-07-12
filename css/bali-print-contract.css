@@ -333,6 +333,11 @@ body.bali-print-page .form-despachante {
         break-inside: avoid-page;
     }
 
+    #pnlImpressao > .bali-contract-page-fit {
+        transform: scale(var(--bali-contract-page-scale, 1));
+        transform-origin: top center;
+    }
+
     #pnlImpressao > div,
     #pnlImpressao table {
         page-break-inside: auto !important;

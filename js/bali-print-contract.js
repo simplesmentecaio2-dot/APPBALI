@@ -264,6 +264,40 @@
         }
     }
 
+    function paginasPrincipaisContrato() {
+        return document.querySelectorAll('#pnlImpressao > #Div1, #pnlImpressao > #Div2, #pnlImpressao > #Div3');
+    }
+
+    function ajustarEscalaPaginasContrato() {
+        var paginas = paginasPrincipaisContrato();
+        if (!paginas.length) return;
+
+        var formulario = document.getElementById('form1') || document.forms[0] || document.body;
+        var larguraFormulario = formulario.getBoundingClientRect().width || 770;
+        var alturaUtilA4 = 1088;
+        var escalaMaxima = 1.035;
+
+        for (var i = 0; i < paginas.length; i++) {
+            var pagina = paginas[i];
+            var medidas = pagina.getBoundingClientRect();
+            var escalaLargura = medidas.width > 0 ? larguraFormulario / medidas.width : escalaMaxima;
+            var escalaAltura = medidas.height > 0 ? alturaUtilA4 / medidas.height : escalaMaxima;
+            var escala = Math.min(escalaMaxima, escalaLargura, escalaAltura);
+
+            if (escala > 1.006) {
+                pagina.style.setProperty('--bali-contract-page-scale', escala.toFixed(3));
+                adicionarClasse(pagina, 'bali-contract-page-fit');
+            }
+        }
+    }
+
+    function restaurarEscalaPaginasContrato() {
+        var paginas = paginasPrincipaisContrato();
+        for (var i = 0; i < paginas.length; i++) {
+            paginas[i].style.removeProperty('--bali-contract-page-scale');
+        }
+    }
+
     function criarElemento(tag, classe, texto) {
         var elemento = document.createElement(tag);
         if (classe) elemento.className = classe;
@@ -315,6 +349,7 @@
             atualizarTextos();
             prepararCamposFormulario();
             prepararTextosSimples();
+            ajustarEscalaPaginasContrato();
             window.print();
         };
 
@@ -364,9 +399,11 @@
         atualizarTextos();
         prepararCamposFormulario();
         prepararTextosSimples();
+        ajustarEscalaPaginasContrato();
         removerBarraImpressao();
     });
     window.addEventListener('afterprint', function () {
+        restaurarEscalaPaginasContrato();
         restaurarCamposFormulario();
         restaurarTextosSimples();
         criarBarraImpressao();
