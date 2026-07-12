@@ -19,7 +19,8 @@
     body.bali-print-page #pnlImpressao,
     body.bali-print-page #Panel1,
     body.bali-print-page #guiadocomprador,
-    body.bali-print-page #guiadocomprador2 {
+    body.bali-print-page #guiadocomprador2,
+    body.bali-print-page #guiadocomprador3 {
         width: 100%;
     }
 
@@ -27,7 +28,8 @@
     body.bali-print-page #Panel1 #Div5,
     body.bali-print-page #Panel1 #Declaracao,
     body.bali-print-page #guiadocomprador > span > div,
-    body.bali-print-page #guiadocomprador2 > span > div {
+    body.bali-print-page #guiadocomprador2 > span > div,
+    body.bali-print-page #guiadocomprador3 > div {
         margin-left: auto !important;
         margin-right: auto !important;
         background: #fff;
@@ -211,7 +213,8 @@ body.contrato-vd-print #pnlImpressao .bali-contract-signature-cell {
 
 body.bali-print-page #Declaracao,
 body.bali-print-page #guiadocomprador > span > div,
-body.bali-print-page #guiadocomprador2 > span > div {
+body.bali-print-page #guiadocomprador2 > span > div,
+body.bali-print-page #guiadocomprador3 > div {
     box-sizing: border-box;
     border-color: #4b5563 !important;
 }
@@ -219,6 +222,216 @@ body.bali-print-page #guiadocomprador2 > span > div {
 body.bali-print-page .form-aviso,
 body.bali-print-page .form-despachante {
     overflow-wrap: anywhere;
+}
+
+.bali-guide3-page {
+    width: 19cm;
+    min-height: 27.1cm;
+    padding: 12px 18px 14px;
+    border: 1px solid #111;
+    color: #111;
+    background: #fff;
+    font-family: "Times New Roman", serif;
+    font-size: 10px;
+    line-height: 1.14;
+    text-align: left;
+}
+
+.bali-guide3-header {
+    display: grid;
+    grid-template-columns: 150px 1fr 76px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.bali-guide3-logo {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    font-family: Arial, sans-serif;
+}
+
+.bali-guide3-logo strong {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.bali-guide3-logo small {
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.bali-guide3-slashes {
+    color: #d71920;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: -2px;
+}
+
+.bali-guide3-phones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.bali-guide3-phones span {
+    display: block;
+    padding: 5px 4px;
+    color: #ffd44a;
+    background: #ef332b;
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.05;
+    text-align: center;
+}
+
+.bali-guide3-phones strong {
+    display: block;
+    font-size: 13px;
+}
+
+.bali-guide3-brand {
+    color: #b21f3a;
+    font-family: Arial, sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    text-align: right;
+}
+
+.bali-guide3-title {
+    margin: 4px 0 6px;
+    border-top: 1px solid #222;
+    border-bottom: 1px solid #222;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.bali-guide3-title-small {
+    margin-top: 5px;
+}
+
+.bali-guide3-alert {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 12px;
+    align-items: start;
+    margin: 10px 18px 20px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.22;
+}
+
+.bali-guide3-subtitle {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    border-top: 1px solid #222;
+    border-bottom: 1px solid #222;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.35;
+    text-align: center;
+}
+
+.bali-guide3-row {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 8px;
+    align-items: start;
+    margin: 2px 0;
+    font-size: 9.3px;
+    line-height: 1.18;
+}
+
+.bali-guide3-check {
+    display: inline-block;
+    width: 18px;
+    height: 12px;
+    border: 2px solid #000;
+    box-sizing: border-box;
+}
+
+.bali-guide3-year {
+    font-size: 22px;
+    line-height: 0.8;
+}
+
+.bali-guide3-section-title {
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.bali-guide3-required {
+    display: grid;
+    grid-template-columns: 1fr 9.5cm;
+    gap: 8px;
+    align-items: end;
+}
+
+.bali-guide3-values {
+    padding: 14px 10px 10px;
+    border: 2px solid #111;
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+    font-weight: 800;
+    line-height: 1.35;
+    text-align: center;
+}
+
+.bali-guide3-values span {
+    display: block;
+}
+
+.bali-guide3-fees {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 30px;
+}
+
+.bali-guide3-data {
+    width: 100%;
+    margin-top: 6px;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.bali-guide3-data td {
+    border: 1px solid #666;
+    padding: 5px 7px;
+}
+
+.bali-guide3-warning {
+    margin-top: 7px;
+    padding: 7px 9px;
+    border: 1px solid #555;
+    font-size: 11px;
+    line-height: 1.2;
+    text-align: justify;
+}
+
+.bali-guide3-signature {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.bali-guide3-signature span {
+    display: block;
+    width: 11.2cm;
+    margin: 0 auto 5px;
+    border-top: 1px solid #000;
+}
+
+.bali-guide3-signature strong,
+.bali-guide3-signature small {
+    display: block;
 }
 
 @media print {
@@ -308,7 +521,8 @@ body.bali-print-page .form-despachante {
     #pnlImpressao,
     #Panel1,
     #guiadocomprador,
-    #guiadocomprador2 {
+    #guiadocomprador2,
+    #guiadocomprador3 {
         width: 100% !important;
         height: auto !important;
         margin: 0 !important;
@@ -325,7 +539,8 @@ body.bali-print-page .form-despachante {
     #Panel1 #Div5,
     #Panel1 #Declaracao,
     #guiadocomprador > span > div,
-    #guiadocomprador2 > span > div {
+    #guiadocomprador2 > span > div,
+    #guiadocomprador3 > div {
         margin: 0 auto !important;
         background: transparent !important;
         box-shadow: none !important;
@@ -365,7 +580,8 @@ body.bali-print-page .form-despachante {
     }
 
     #guiadocomprador,
-    #guiadocomprador2 {
+    #guiadocomprador2,
+    #guiadocomprador3 {
         page-break-before: always;
         break-before: page;
     }
