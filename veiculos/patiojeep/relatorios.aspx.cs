@@ -193,28 +193,7 @@ ORDER BY p.dt_baixa_venda DESC, p.ve_nr DESC;"));
 
     private DataRow SincronizarBaixasVenda()
     {
-        DataTable tabela = new DataTable();
-        Jeep banco = new Jeep();
-        try
-        {
-            banco.Conexao2();
-            SqlCommand cmd = new SqlCommand("dbo.veiculos_patio_sincronizar_baixas_venda", banco.oCon2);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandTimeout = 60;
-            cmd.Parameters.Add("@usuario", SqlDbType.VarChar, 100).Value = Convert.ToString(Session["usuario"]);
-            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-            adapter.Fill(tabela);
-        }
-        catch (Exception ex)
-        {
-            PatioJeepAuditoria.Registrar("RELATORIO_BAIXA_VENDA_ERRO", Session["usuario"], "BI", ex.Message);
-        }
-        finally
-        {
-            banco.FecharConexao2();
-        }
-
-        return tabela.Rows.Count > 0 ? tabela.Rows[0] : null;
+        return PatioBaixaVendaSincronizador.Sincronizar(Convert.ToString(Session["usuario"]));
     }
 
     private void RenderizarResumo(DataTable resumo, DataTable movimentosResumo, DataRow sincronizacao)

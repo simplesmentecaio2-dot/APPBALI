@@ -59,6 +59,14 @@ public partial class veiculos_contrato : System.Web.UI.Page
         Context.ApplicationInstance.CompleteRequest();
     }
 
+    protected void btnSincronizarPatio_Click(object sender, EventArgs e)
+    {
+        DataRow sincronizacao = PatioBaixaVendaSincronizador.Sincronizar(Convert.ToString(Session["usuario"]));
+        HttpRuntime.Cache.Remove("patio_home_indicadores_v4");
+        litSincronizacaoMensagem.Text = RenderMensagemSincronizacao(sincronizacao);
+        RenderizarIndicadores();
+    }
+
     private void RenderizarIndicadores()
     {
         string cacheKey = "patio_home_indicadores_v4";
@@ -212,6 +220,23 @@ ORDER BY dt DESC;");
 
         html.Append("</div></div>");
         return html.ToString();
+    }
+
+    private string RenderMensagemSincronizacao(DataRow sincronizacao)
+    {
+        if (sincronizacao == null)
+        {
+            return "<div class=\"patio-home-message is-warning\"><i class=\"fa fa-exclamation-triangle\"></i><span>N&atilde;o foi poss&iacute;vel sincronizar o p&aacute;tio com as vendas agora. Tente novamente em instantes.</span></div>";
+        }
+
+        int baixadosAgora = Inteiro(sincronizacao, "baixados_agora");
+        string ativos = Valor(sincronizacao, "ativos_patio");
+        string baixadosTotal = Valor(sincronizacao, "baixados_total");
+        string texto = baixadosAgora > 0
+            ? baixadosAgora.ToString("N0") + " ve&iacute;culo(s) baixado(s) automaticamente por venda nesta sincroniza&ccedil;&atilde;o."
+            : "Vendas conferidas. Nenhuma baixa nova encontrada nesta sincroniza&ccedil;&atilde;o.";
+
+        return "<div class=\"patio-home-message\"><i class=\"fa fa-check-circle\"></i><span>" + texto + " Ativos agora: <strong>" + Html(ativos) + "</strong>. Baixados por venda: <strong>" + Html(baixadosTotal) + "</strong>.</span></div>";
     }
 
     private string Alerta(string titulo, string valor, string detalhe, string classe)

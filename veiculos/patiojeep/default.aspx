@@ -188,6 +188,9 @@
                                             </div>
                                         </div>
                                         <div class="page-title-actions">
+                                            <asp:LinkButton ID="btnSincronizarPatio" runat="server" CssClass="btn btn-light" OnClick="btnSincronizarPatio_Click" OnClientClick="this.classList.add('disabled'); this.innerHTML='<i class=&quot;fa fa-spinner fa-spin mr-1&quot;></i>Sincronizando...';">
+                                                <i class="fa fa-sync-alt mr-1"></i>Sincronizar vendas
+                                            </asp:LinkButton>
                                         </div>
                                     </div>
                                 </div>
@@ -201,6 +204,7 @@
                                                 </div>
                                             </div>
                                             <div class="card-body">
+                                                <asp:Literal ID="litSincronizacaoMensagem" runat="server"></asp:Literal>
                                                 <asp:Literal ID="litBuscaMensagem" runat="server"></asp:Literal>
                                                 <div class="row align-items-end">
                                                     <div class="col-md-8 col-12 mb-2">
