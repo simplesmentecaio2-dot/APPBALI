@@ -590,14 +590,6 @@ body.bali-print-page .form-despachante {
     line-height: 1.18;
 }
 
-.bali-guide3-ipva {
-    margin: 8px 0;
-    padding: 6px 7px;
-    border: 1px solid #333;
-    background: #fafafa;
-    box-sizing: border-box;
-}
-
 .bali-guide3-check {
     display: inline-block;
     width: 18px;
