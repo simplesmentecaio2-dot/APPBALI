@@ -8,7 +8,8 @@ using System.Web.UI.WebControls;
 
 public partial class veiculos_patio_lojas : System.Web.UI.Page
 {
-    private const string SenhaManutencao = "@bali2025";
+    private const string SenhaTela = "@CPD2020";
+    private const string SessionLiberado = "patio_lojas_liberado";
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -19,17 +20,60 @@ public partial class veiculos_patio_lojas : System.Web.UI.Page
         }
 
         usuarioLogado.Text = Convert.ToString(Session["usuario"]);
+        ConfigurarAntiAutoFill();
+        AtualizarVisibilidade();
         GarantirTabelaAuditoria();
 
         if (!IsPostBack)
         {
             LimparFormulario();
-            CarregarTela();
+            if (TelaLiberada())
+            {
+                CarregarTela();
+            }
+            else
+            {
+                LimparConteudoBloqueado();
+            }
         }
+    }
+
+    protected void btnDesbloquear_Click(object sender, EventArgs e)
+    {
+        if (!String.Equals(txtSenhaAcesso.Text, SenhaTela, StringComparison.Ordinal))
+        {
+            PatioJeepAuditoria.Registrar("LOJA_SENHA_INVALIDA", Session["usuario"], "TELA", "Tentativa de abertura da tela de lojas.");
+            txtSenhaAcesso.Text = "";
+            Session.Remove(SessionLiberado);
+            AtualizarVisibilidade();
+            LimparConteudoBloqueado();
+            MostrarMensagem("error", "Senha incorreta", "A senha informada n\u00e3o libera a manuten\u00e7\u00e3o de lojas.");
+            return;
+        }
+
+        txtSenhaAcesso.Text = "";
+        Session[SessionLiberado] = "s";
+        AtualizarVisibilidade();
+        LimparFormulario();
+        CarregarTela();
+        RegistrarAuditoria(0, "ABRIR_TELA", null, null, null, null, "Tela de lojas liberada.");
+        MostrarMensagem("success", "Tela liberada", "Manuten\u00e7\u00e3o de lojas carregada com seguran\u00e7a.");
+    }
+
+    protected void btnBloquearTela_Click(object sender, EventArgs e)
+    {
+        RegistrarAuditoria(0, "BLOQUEAR_TELA", null, null, null, null, "Tela de lojas bloqueada manualmente.");
+        Session.Remove(SessionLiberado);
+        LimparFormulario();
+        LimparConteudoBloqueado();
+        AtualizarVisibilidade();
+        MostrarMensagem("info", "Tela bloqueada", "Informe a senha novamente para alterar lojas.");
     }
 
     protected void btnSalvar_Click(object sender, EventArgs e)
     {
+        if (!GarantirLiberado()) return;
+
         string descricao = NormalizarDescricao(txtDescricao.Text);
         if (descricao.Equals(""))
         {
@@ -49,19 +93,22 @@ public partial class veiculos_patio_lojas : System.Web.UI.Page
             InserirLoja(descricao);
         }
 
-        txtSenha.Text = "";
         CarregarTela();
     }
 
     protected void btnCancelar_Click(object sender, EventArgs e)
     {
+        if (!GarantirLiberado()) return;
+
         LimparFormulario();
-        MostrarMensagem("info", "Edição cancelada", "O formulário foi limpo para um novo cadastro.");
+        MostrarMensagem("info", "Edi\u00e7\u00e3o cancelada", "O formul\u00e1rio foi limpo para um novo cadastro.");
         CarregarTela();
     }
 
     protected void btnNovo_Click(object sender, EventArgs e)
     {
+        if (!GarantirLiberado()) return;
+
         LimparFormulario();
         MostrarMensagem("info", "Nova loja", "Digite o nome da loja e clique em Salvar.");
         CarregarTela();
@@ -69,15 +116,19 @@ public partial class veiculos_patio_lojas : System.Web.UI.Page
 
     protected void btnFiltrar_Click(object sender, EventArgs e)
     {
+        if (!GarantirLiberado()) return;
+
         CarregarTela();
     }
 
     protected void gridLojas_RowCommand(object sender, GridViewCommandEventArgs e)
     {
+        if (!GarantirLiberado()) return;
+
         int lojaId;
         if (!Int32.TryParse(Convert.ToString(e.CommandArgument), out lojaId))
         {
-            MostrarMensagem("error", "Ação inválida", "Não foi possível identificar a loja selecionada.");
+            MostrarMensagem("error", "A\u00e7\u00e3o inv\u00e1lida", "N\u00e3o foi poss\u00edvel identificar a loja selecionada.");
             CarregarTela();
             return;
         }
@@ -92,7 +143,6 @@ public partial class veiculos_patio_lojas : System.Web.UI.Page
         if (e.CommandName == "AtivarLoja")
         {
             AlterarSituacao(lojaId, true);
-            txtSenha.Text = "";
             CarregarTela();
             return;
         }
@@ -100,7 +150,6 @@ public partial class veiculos_patio_lojas : System.Web.UI.Page
         if (e.CommandName == "DesativarLoja")
         {
             AlterarSituacao(lojaId, false);
-            txtSenha.Text = "";
             CarregarTela();
         }
     }
@@ -119,7 +168,7 @@ public partial class veiculos_patio_lojas : System.Web.UI.Page
         LojaInfo existente = BuscarLojaPorDescricao(descricao);
         if (existente != null)
         {
-            MostrarMensagem("error", "Loja já existe", "Já existe uma loja cadastrada com esse nome. Use Editar ou Ativar caso ela esteja inativa.");
+            MostrarMensagem("error", "Loja j\u00e1 existe", "J\u00e1 existe uma loja cadastrada com esse nome. Use Editar ou Ativar caso ela esteja inativa.");
             PatioJeepAuditoria.Registrar("LOJA_INSERIR_DUPLICADA", Session["usuario"], existente.Id, "Descricao=" + descricao);
             return;
         }
@@ -134,13 +183,13 @@ SELECT CONVERT(int, SCOPE_IDENTITY());", banco.oCon2);
             cmd.Parameters.Add("@ds", SqlDbType.VarChar, 50).Value = descricao;
             int novoId = Convert.ToInt32(cmd.ExecuteScalar());
 
-            RegistrarAuditoria(novoId, "INSERIR", null, descricao, null, true, "Loja criada pela tela de manutenção.");
+            RegistrarAuditoria(novoId, "INSERIR", null, descricao, null, true, "Loja criada pela tela de manuten\u00e7\u00e3o.");
             MostrarMensagem("success", "Loja cadastrada", "Loja " + descricao + " cadastrada e ativada com sucesso.");
             LimparFormulario();
         }
         catch (Exception ex)
         {
-            MostrarMensagem("error", "Erro ao cadastrar", "Não foi possível cadastrar a loja agora.");
+            MostrarMensagem("error", "Erro ao cadastrar", "N\u00e3o foi poss\u00edvel cadastrar a loja agora.");
             PatioJeepAuditoria.Registrar("LOJA_INSERIR_ERRO", Session["usuario"], descricao, ex.Message);
         }
         finally
@@ -151,17 +200,10 @@ SELECT CONVERT(int, SCOPE_IDENTITY());", banco.oCon2);
 
     private void AtualizarLoja(int lojaId, string descricao)
     {
-        if (!SenhaValida())
-        {
-            MostrarMensagem("error", "Senha obrigatória", "Para editar uma loja, informe a senha de manutenção correta.");
-            txtSenha.Focus();
-            return;
-        }
-
         LojaInfo atual = BuscarLojaPorId(lojaId);
         if (atual == null)
         {
-            MostrarMensagem("error", "Loja não encontrada", "A loja selecionada não existe mais no cadastro.");
+            MostrarMensagem("error", "Loja n\u00e3o encontrada", "A loja selecionada n\u00e3o existe mais no cadastro.");
             LimparFormulario();
             return;
         }
@@ -169,7 +211,7 @@ SELECT CONVERT(int, SCOPE_IDENTITY());", banco.oCon2);
         LojaInfo duplicada = BuscarLojaPorDescricao(descricao);
         if (duplicada != null && duplicada.Id != lojaId)
         {
-            MostrarMensagem("error", "Nome já cadastrado", "Outra loja já usa esse nome. Escolha uma descrição diferente.");
+            MostrarMensagem("error", "Nome j\u00e1 cadastrado", "Outra loja j\u00e1 usa esse nome. Escolha uma descri\u00e7\u00e3o diferente.");
             return;
         }
 
@@ -182,13 +224,13 @@ SELECT CONVERT(int, SCOPE_IDENTITY());", banco.oCon2);
             cmd.Parameters.Add("@id", SqlDbType.Int).Value = lojaId;
             cmd.ExecuteNonQuery();
 
-            RegistrarAuditoria(lojaId, "EDITAR", atual.Descricao, descricao, atual.Ativo, atual.Ativo, "Descrição da loja alterada.");
+            RegistrarAuditoria(lojaId, "EDITAR", atual.Descricao, descricao, atual.Ativo, atual.Ativo, "Descri\u00e7\u00e3o da loja alterada.");
             MostrarMensagem("success", "Loja atualizada", "Loja " + descricao + " atualizada com sucesso.");
             LimparFormulario();
         }
         catch (Exception ex)
         {
-            MostrarMensagem("error", "Erro ao editar", "Não foi possível editar a loja agora.");
+            MostrarMensagem("error", "Erro ao editar", "N\u00e3o foi poss\u00edvel editar a loja agora.");
             PatioJeepAuditoria.Registrar("LOJA_EDITAR_ERRO", Session["usuario"], lojaId, ex.Message);
         }
         finally
@@ -199,23 +241,16 @@ SELECT CONVERT(int, SCOPE_IDENTITY());", banco.oCon2);
 
     private void AlterarSituacao(int lojaId, bool ativar)
     {
-        if (!SenhaValida())
-        {
-            MostrarMensagem("error", "Senha obrigatória", "Para ativar ou desativar uma loja, informe a senha de manutenção correta.");
-            txtSenha.Focus();
-            return;
-        }
-
         LojaInfo atual = BuscarLojaPorId(lojaId);
         if (atual == null)
         {
-            MostrarMensagem("error", "Loja não encontrada", "A loja selecionada não existe mais no cadastro.");
+            MostrarMensagem("error", "Loja n\u00e3o encontrada", "A loja selecionada n\u00e3o existe mais no cadastro.");
             return;
         }
 
         if (atual.Ativo == ativar)
         {
-            MostrarMensagem("info", "Nada alterado", "A loja já está " + (ativar ? "ativa." : "inativa."));
+            MostrarMensagem("info", "Nada alterado", "A loja j\u00e1 est\u00e1 " + (ativar ? "ativa." : "inativa."));
             return;
         }
 
@@ -234,7 +269,7 @@ SELECT CONVERT(int, SCOPE_IDENTITY());", banco.oCon2);
         }
         catch (Exception ex)
         {
-            MostrarMensagem("error", "Erro ao alterar situação", "Não foi possível alterar a situação da loja agora.");
+            MostrarMensagem("error", "Erro ao alterar situa\u00e7\u00e3o", "N\u00e3o foi poss\u00edvel alterar a situa\u00e7\u00e3o da loja agora.");
             PatioJeepAuditoria.Registrar("LOJA_SITUACAO_ERRO", Session["usuario"], lojaId, ex.Message);
         }
         finally
@@ -248,19 +283,24 @@ SELECT CONVERT(int, SCOPE_IDENTITY());", banco.oCon2);
         LojaInfo loja = BuscarLojaPorId(lojaId);
         if (loja == null)
         {
-            MostrarMensagem("error", "Loja não encontrada", "Não foi possível carregar a loja selecionada.");
+            MostrarMensagem("error", "Loja n\u00e3o encontrada", "N\u00e3o foi poss\u00edvel carregar a loja selecionada.");
             return;
         }
 
         hfLojaId.Value = loja.Id.ToString();
         txtDescricao.Text = loja.Descricao;
-        txtSenha.Text = "";
-        MostrarMensagem("info", "Editando loja", "Altere o nome e informe a senha de manutenção para salvar.");
+        MostrarMensagem("info", "Editando loja", "Altere o nome da loja e clique em Salvar.");
         txtDescricao.Focus();
     }
 
     private void CarregarTela()
     {
+        if (!TelaLiberada())
+        {
+            LimparConteudoBloqueado();
+            return;
+        }
+
         DataTable lojas = ObterLojas();
         gridLojas.DataSource = lojas;
         gridLojas.DataBind();
@@ -411,13 +451,13 @@ ORDER BY a.dt DESC, a.id DESC;", banco.oCon2);
 
         if (tabela.Rows.Count == 0)
         {
-            litLogs.Text = "<div class=\"alert alert-light mb-0\">Nenhuma alteração registrada até agora.</div>";
+            litLogs.Text = "<div class=\"alert alert-light mb-0\">Nenhuma altera&ccedil;&atilde;o registrada at&eacute; agora.</div>";
             return;
         }
 
         StringBuilder html = new StringBuilder();
         html.Append("<table class=\"table table-striped table-hover lojas-table\"><thead><tr>");
-        html.Append("<th>Data</th><th>Ação</th><th>Usuário</th><th>Loja</th><th>Antes</th><th>Depois</th><th>Detalhe</th><th>IP</th>");
+        html.Append("<th>Data</th><th>A&ccedil;&atilde;o</th><th>Usu&aacute;rio</th><th>Loja</th><th>Antes</th><th>Depois</th><th>Detalhe</th><th>IP</th>");
         html.Append("</tr></thead><tbody>");
 
         foreach (DataRow row in tabela.Rows)
@@ -547,9 +587,49 @@ END;", banco.oCon2);
         }
     }
 
-    private bool SenhaValida()
+    private bool TelaLiberada()
     {
-        return String.Equals(txtSenha.Text, SenhaManutencao, StringComparison.Ordinal);
+        return Convert.ToString(Session[SessionLiberado]) == "s";
+    }
+
+    private bool GarantirLiberado()
+    {
+        if (TelaLiberada()) return true;
+
+        AtualizarVisibilidade();
+        LimparConteudoBloqueado();
+        MostrarMensagem("error", "Tela bloqueada", "Informe a senha de libera\u00e7\u00e3o antes de alterar lojas.");
+        return false;
+    }
+
+    private void AtualizarVisibilidade()
+    {
+        bool liberada = TelaLiberada();
+        pnlBloqueio.Visible = !liberada;
+        pnlConteudo.Visible = liberada;
+    }
+
+    private void LimparConteudoBloqueado()
+    {
+        litResumo.Text = "";
+        litLogs.Text = "";
+        gridLojas.DataSource = null;
+        gridLojas.DataBind();
+    }
+
+    private void ConfigurarAntiAutoFill()
+    {
+        txtSenhaAcesso.Attributes["autocomplete"] = "new-password";
+        txtSenhaAcesso.Attributes["data-lpignore"] = "true";
+        txtSenhaAcesso.Attributes["data-form-type"] = "other";
+
+        txtDescricao.Attributes["autocomplete"] = "off";
+        txtDescricao.Attributes["data-lpignore"] = "true";
+        txtDescricao.Attributes["data-form-type"] = "other";
+
+        txtFiltro.Attributes["autocomplete"] = "off";
+        txtFiltro.Attributes["data-lpignore"] = "true";
+        txtFiltro.Attributes["data-form-type"] = "other";
     }
 
     private string NormalizarDescricao(string valor)
@@ -561,7 +641,6 @@ END;", banco.oCon2);
     {
         hfLojaId.Value = "";
         txtDescricao.Text = "";
-        txtSenha.Text = "";
     }
 
     private void MostrarMensagem(string tipo, string titulo, string texto)

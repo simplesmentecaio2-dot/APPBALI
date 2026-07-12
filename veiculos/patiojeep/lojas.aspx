@@ -71,16 +71,31 @@
             font-size: 1.05rem;
         }
 
+        .lojas-lock {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(220px, 320px) auto;
+            gap: .8rem;
+            align-items: end;
+            padding: 1.1rem;
+        }
+
+        .lojas-lock-intro {
+            color: #475569;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
         .lojas-form {
             display: grid;
-            grid-template-columns: minmax(0, 1.2fr) minmax(220px, .7fr) auto auto;
+            grid-template-columns: minmax(0, 1fr) auto auto;
             gap: .75rem;
             align-items: end;
             padding: 1rem;
         }
 
         .lojas-form label,
-        .lojas-filter label {
+        .lojas-filter label,
+        .lojas-lock label {
             display: block;
             margin-bottom: .35rem;
             color: #475569;
@@ -91,7 +106,8 @@
         }
 
         .lojas-form .form-control,
-        .lojas-filter .form-control {
+        .lojas-filter .form-control,
+        .lojas-lock .form-control {
             min-height: 44px;
             border-radius: 12px;
             font-weight: 800;
@@ -196,7 +212,8 @@
         @media (max-width: 900px) {
             .lojas-summary,
             .lojas-form,
-            .lojas-filter {
+            .lojas-filter,
+            .lojas-lock {
                 grid-template-columns: 1fr;
             }
         }
@@ -268,22 +285,37 @@
                                         <div><asp:Literal ID="litMensagemTexto" runat="server"></asp:Literal></div>
                                     </div>
                                 </asp:Panel>
-                                <div class="lojas-shell">
+                                <asp:Panel ID="pnlBloqueio" runat="server" CssClass="lojas-panel">
+                                    <div class="lojas-panel-header">
+                                        <strong><i class="fa fa-lock mr-1"></i> &Aacute;rea protegida</strong>
+                                    </div>
+                                    <div class="lojas-lock">
+                                        <div class="lojas-lock-intro">
+                                            Esta tela altera o cadastro de lojas usado no p&aacute;tio. Informe a senha de libera&ccedil;&atilde;o para continuar.
+                                        </div>
+                                        <div>
+                                            <label>Senha de libera&ccedil;&atilde;o</label>
+                                            <asp:TextBox ID="txtSenhaAcesso" runat="server" CssClass="form-control" TextMode="Password" autocomplete="new-password" data-lpignore="true" placeholder="Digite a senha"></asp:TextBox>
+                                        </div>
+                                        <asp:LinkButton ID="btnDesbloquear" runat="server" CssClass="btn btn-success" OnClick="btnDesbloquear_Click"><i class="fa fa-unlock mr-1"></i> Liberar</asp:LinkButton>
+                                    </div>
+                                </asp:Panel>
+
+                                <asp:Panel ID="pnlConteudo" runat="server" CssClass="lojas-shell" Visible="false">
                                     <asp:Literal ID="litResumo" runat="server"></asp:Literal>
                                     <div class="lojas-panel">
                                         <div class="lojas-panel-header">
                                             <strong><i class="fa fa-store mr-1"></i> Manuten&ccedil;&atilde;o de lojas</strong>
-                                            <asp:LinkButton ID="btnNovo" runat="server" CssClass="btn btn-light" OnClick="btnNovo_Click"><i class="fa fa-plus mr-1"></i> Novo</asp:LinkButton>
+                                            <div class="lojas-actions">
+                                                <asp:LinkButton ID="btnNovo" runat="server" CssClass="btn btn-light" OnClick="btnNovo_Click"><i class="fa fa-plus mr-1"></i> Novo</asp:LinkButton>
+                                                <asp:LinkButton ID="btnBloquearTela" runat="server" CssClass="btn btn-outline-secondary" OnClick="btnBloquearTela_Click" CausesValidation="false"><i class="fa fa-lock mr-1"></i> Bloquear tela</asp:LinkButton>
+                                            </div>
                                         </div>
                                         <asp:HiddenField ID="hfLojaId" runat="server" />
                                         <div class="lojas-form">
                                             <div>
                                                 <label>Nome da loja</label>
-                                                <asp:TextBox ID="txtDescricao" runat="server" CssClass="form-control" MaxLength="50" placeholder="Ex.: Park Sul"></asp:TextBox>
-                                            </div>
-                                            <div>
-                                                <label>Senha de manuten&ccedil;&atilde;o</label>
-                                                <asp:TextBox ID="txtSenha" runat="server" CssClass="form-control" TextMode="Password" placeholder="Obrigatória para editar/ativar/desativar"></asp:TextBox>
+                                                <asp:TextBox ID="txtDescricao" runat="server" CssClass="form-control" MaxLength="50" autocomplete="off" data-lpignore="true" data-form-type="other" placeholder="Ex.: Park Sul"></asp:TextBox>
                                             </div>
                                             <asp:LinkButton ID="btnSalvar" runat="server" CssClass="btn btn-success" OnClick="btnSalvar_Click"><i class="fa fa-save mr-1"></i> Salvar</asp:LinkButton>
                                             <asp:LinkButton ID="btnCancelar" runat="server" CssClass="btn btn-outline-secondary" OnClick="btnCancelar_Click"><i class="fa fa-times mr-1"></i> Cancelar</asp:LinkButton>
@@ -291,7 +323,7 @@
                                         <div class="lojas-filter">
                                             <div>
                                                 <label>Filtro</label>
-                                                <asp:TextBox ID="txtFiltro" runat="server" CssClass="form-control" placeholder="Buscar por nome ou código"></asp:TextBox>
+                                                <asp:TextBox ID="txtFiltro" runat="server" CssClass="form-control" autocomplete="off" data-lpignore="true" placeholder="Buscar por nome ou c&oacute;digo"></asp:TextBox>
                                             </div>
                                             <label class="mb-0">
                                                 <asp:CheckBox ID="chkInativas" runat="server" />
@@ -302,16 +334,16 @@
                                         <div class="lojas-table-wrap">
                                             <asp:GridView ID="gridLojas" runat="server" AutoGenerateColumns="false" CssClass="table table-striped table-hover lojas-table" GridLines="None" OnRowCommand="gridLojas_RowCommand">
                                                 <Columns>
-                                                    <asp:BoundField DataField="id" HeaderText="Código" />
+                                                    <asp:BoundField DataField="id" HeaderText="C&oacute;digo" />
                                                     <asp:BoundField DataField="ds" HeaderText="Loja" />
-                                                    <asp:TemplateField HeaderText="Situação">
+                                                    <asp:TemplateField HeaderText="Situa&ccedil;&atilde;o">
                                                         <ItemTemplate>
                                                             <span class='<%# Convert.ToBoolean(Eval("ativo")) ? "lojas-badge lojas-badge-active" : "lojas-badge lojas-badge-inactive" %>'>
                                                                 <%# Convert.ToBoolean(Eval("ativo")) ? "Ativa" : "Inativa" %>
                                                             </span>
                                                         </ItemTemplate>
                                                     </asp:TemplateField>
-                                                    <asp:TemplateField HeaderText="Ações">
+                                                    <asp:TemplateField HeaderText="A&ccedil;&otilde;es">
                                                         <ItemTemplate>
                                                             <div class="lojas-actions">
                                                                 <asp:LinkButton runat="server" CssClass="btn btn-sm btn-outline-primary" CommandName="EditarLoja" CommandArgument='<%# Eval("id") %>'><i class="fa fa-pen mr-1"></i>Editar</asp:LinkButton>
@@ -329,13 +361,13 @@
                                     </div>
                                     <div class="lojas-panel">
                                         <div class="lojas-panel-header">
-                                            <strong><i class="fa fa-history mr-1"></i> &Uacute;ltimas alterações</strong>
+                                            <strong><i class="fa fa-history mr-1"></i> &Uacute;ltimas altera&ccedil;&otilde;es</strong>
                                         </div>
                                         <div class="lojas-table-wrap">
                                             <asp:Literal ID="litLogs" runat="server"></asp:Literal>
                                         </div>
                                     </div>
-                                </div>
+                                </asp:Panel>
                             </div>
                         </ContentTemplate>
                     </asp:UpdatePanel>
