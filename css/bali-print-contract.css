@@ -294,6 +294,22 @@ body.contrato-vd-print #pnlImpressao > .bali-contract-page-has-via::before {
     line-height: 1.1;
 }
 
+body.contrato-vu-print #pnlImpressao > .bali-contract-page-has-via::after,
+body.contrato-vn-print #pnlImpressao > .bali-contract-page-has-via::after,
+body.contrato-vd-print #pnlImpressao > .bali-contract-page-has-via::after {
+    content: attr(data-bali-contrato);
+    position: absolute;
+    right: 2.2mm;
+    bottom: 1.4mm;
+    z-index: 2;
+    color: #6b7280;
+    background: rgba(255, 255, 255, 0.78);
+    font-family: Arial, sans-serif;
+    font-size: 6px;
+    font-weight: 700;
+    line-height: 1;
+}
+
 body.contrato-vu-print #pnlImpressao > div > img[src*="header-contrato"],
 body.contrato-vn-print #pnlImpressao > div > img[src*="header-contrato"],
 body.contrato-vd-print #pnlImpressao > div > img[src*="header-contrato"] {

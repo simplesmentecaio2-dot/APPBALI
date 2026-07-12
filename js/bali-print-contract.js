@@ -352,11 +352,34 @@
         return document.querySelectorAll('#pnlImpressao > #Div1, #pnlImpressao > #Div2, #pnlImpressao > #Div3');
     }
 
+    function parametroUrl(nome) {
+        var busca = (window.location.search || '').replace(/^\?/, '').split('&');
+        nome = String(nome || '').toLowerCase();
+
+        for (var i = 0; i < busca.length; i++) {
+            var parte = busca[i].split('=');
+            var chave = decodeURIComponent((parte[0] || '').replace(/\+/g, ' ')).toLowerCase();
+            if (chave !== nome) continue;
+            return decodeURIComponent((parte.slice(1).join('=') || '').replace(/\+/g, ' '));
+        }
+
+        return '';
+    }
+
+    function numeroContratoAtual() {
+        return String(parametroUrl('contrato') || '').replace(/[^\w.-]/g, '').slice(0, 30);
+    }
+
     function identificarViasContrato() {
         var paginas = paginasPrincipaisContrato();
+        var contrato = numeroContratoAtual();
+
         for (var i = 0; i < paginas.length; i++) {
             adicionarClasse(paginas[i], 'bali-contract-page-has-via');
             paginas[i].setAttribute('data-bali-via', 'VIA ' + (i + 1));
+            if (contrato) {
+                paginas[i].setAttribute('data-bali-contrato', 'Contrato ' + contrato);
+            }
         }
     }
 
