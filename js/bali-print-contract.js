@@ -338,6 +338,8 @@
         if (caminho.indexOf('/veiculos/') < 0) return;
 
         var guiaBase = document.getElementById('guiadocomprador2') || document.getElementById('guiadocomprador');
+        var guiaOriginal = document.getElementById('guiadocomprador');
+        var guiaOriginal2 = document.getElementById('guiadocomprador2');
         var temVeiculoUsado = document.getElementById('lbldeclaracaoveiculo') || document.getElementById('lbldeclaracaoveiculo2');
         if (!guiaBase || !temVeiculoUsado) return;
 
@@ -348,9 +350,8 @@
         var placa = primeiroTexto(['lbleclaracaoplaca', 'lbleclaracaoplaca2']);
         var anoAtual = new Date().getFullYear();
 
-        var secao = criarElemento('section', 'bali-guide3');
-        secao.id = 'guiadocomprador3';
-        secao.innerHTML = [
+        function montarGuia(viaTexto) {
+            return [
             '<div class="bali-guide3-page">',
                 '<div class="bali-guide3-header">',
                     '<div class="bali-guide3-logo"><span class="bali-guide3-slashes">////</span><strong>BALI</strong><small>FIAT</small></div>',
@@ -361,30 +362,32 @@
                     '</div>',
                     '<div class="bali-guide3-brand">FIAT</div>',
                 '</div>',
+                '<div class="bali-guide3-copy">' + viaTexto + '</div>',
                 '<div class="bali-guide3-title">DOCUMENTA&Ccedil;&Atilde;O NECESS&Aacute;RIA</div>',
                 '<div class="bali-guide3-alert">',
                     '<span class="bali-guide3-check"></span>',
-                    '<strong>Todo ve&iacute;culo usado oferecido como parte do pagamento na aquisi&ccedil;&atilde;o de outro deve passar por vistoria cautelar pr&eacute;via, cujo custo &eacute; de responsabilidade do cliente.</strong>',
+                    '<strong>Todo ve&iacute;culo usado entregue como parte de pagamento deve passar por vistoria cautelar pr&eacute;via. O custo, quando aplic&aacute;vel, &eacute; de responsabilidade do cliente.</strong>',
                 '</div>',
                 '<div class="bali-guide3-subtitle">RECEBIMENTO DO VE&Iacute;CULO USADO INCLUSO COMO PARTE DE PAGAMENTO <span>PLACA: ' + escaparHtml(placa) + '</span></div>',
                 '<div class="bali-guide3-list">',
-                    linhaChecklist('VE&Iacute;CULO SEM RESERVA OU CDC: DUT EM BRANCO, 2 VIAS DA PROCURA&Ccedil;&Atilde;O P&Uacute;BLICA PARA BALI BRAS&Iacute;LIA AUTOM&Oacute;VEIS LTDA CNPJ 72.624.521/0001-20, SEM VEDAR O SUBSTABELECIMENTO E SEM DATA DE VENCIMENTO.'),
-                    linhaChecklist('VE&Iacute;CULO LEASING: DUT EM BRANCO, 2 VIAS DA PROCURA&Ccedil;&Atilde;O P&Uacute;BLICA PARA BALI BRAS&Iacute;LIA AUTOM&Oacute;VEIS LTDA., SEM VEDAR O SUBSTABELECIMENTO E SEM DATA DE VENCIMENTO.'),
-                    linhaChecklist('LEASING BCO FIAT/ITA&Uacute;: A PROCURA&Ccedil;&Atilde;O DEVE SER FEITA NO CART&Oacute;RIO DO 1&ordm; OF&Iacute;CIO DE NOTAS E PROTESTOS, DENTRO DO PRAZO E COM DUT EM BRANCO.'),
-                    linhaChecklist('LEASING BCO FINASA/BRADESCO S/A: DUT EM BRANCO, 2 VIAS DA PROCURA&Ccedil;&Atilde;O P&Uacute;BLICA E RECONHECIMENTO DE FIRMA DA ASSINATURA DO CLIENTE NO TERMO DE REPASSE.'),
-                    linhaChecklist('<strong>LICENCIAMENTO (DOCUMENTO F&Iacute;SICO)</strong> - IPVA <strong class="bali-guide3-year">' + anoAtual + '</strong>, seguro obrigat&oacute;rio e licenciamento pagos. Caso possua parcelamento ou d&iacute;vida ativa, a responsabilidade de quita&ccedil;&atilde;o &eacute; do cliente.'),
-                    linhaChecklist('MULTAS DO DETRAN EM NOTIFICA&Ccedil;&Atilde;O, SUBJUDICE E DEFESA PR&Eacute;VIA DEVER&Atilde;O SER ATIVADAS E PAGAS PELO CLIENTE ANTES DA ENTREGA PARA A BALI AUTOM&Oacute;VEIS.'),
-                    linhaChecklist('QUITAR D&Eacute;BITOS (DETRAN/DNIT/DPRF/AGETOP-GO E OUTROS &Oacute;RG&Atilde;OS DE TR&Acirc;NSITO EM N&Iacute;VEL NACIONAL).'),
-                    linhaChecklist('VE&Iacute;CULOS DE OUTRA UF DEVER&Atilde;O SER TRANSFERIDOS ANTES DA ENTREGA PARA BALI.'),
-                    linhaChecklist('VE&Iacute;CULO COM ALIENA&Ccedil;&Atilde;O FIDUCI&Aacute;RIA QUITADO PELO PROPRIET&Aacute;RIO OU PELA BALI, QUANDO FINANCIADO NA CONTA BANC&Aacute;RIA DO CLIENTE, SOMENTE SER&Aacute; RECEBIDO AP&Oacute;S A BAIXA DO GRAVAME.'),
-                    linhaChecklist('TODO VE&Iacute;CULO GNV A G&Aacute;S SER&Aacute; RECEBIDO APENAS COM O CERTIFICADO DE VALIDADE DE 1 ANO, EMITIDO PELA FINATEC (UNB).'),
-                    linhaChecklist('VE&Iacute;CULOS EM NOME DE PESSOA JUR&Iacute;DICA COM VALOR ACIMA DE R$ 50.000,00: O CLIENTE DEVE EMITIR CERTID&Atilde;O NEGATIVA NO SITE DA RECEITA FEDERAL (CND) E TRAZER O COMPROVANTE NO DIA DA ENTREGA.'),
-                    linhaChecklist('No caso de ve&iacute;culos vendidos que n&atilde;o temos em estoque, ou seja, encomendados na montadora, e que for dado como parte de pagamento um ve&iacute;culo seminovo, o mesmo ter&aacute; que ser entregue com a cota do IPVA ' + anoAtual + ' vencida no m&ecirc;s paga.'),
+                    linhaChecklist('VE&Iacute;CULO SEM RESERVA OU CDC: DUT/CRV em branco, 2 vias da procura&ccedil;&atilde;o p&uacute;blica para Bali Bras&iacute;lia Autom&oacute;veis Ltda., CNPJ 72.624.521/0001-20, sem vedar substabelecimento e sem data de vencimento.'),
+                    linhaChecklist('VE&Iacute;CULO COM LEASING: DUT/CRV em branco, 2 vias da procura&ccedil;&atilde;o p&uacute;blica para Bali Bras&iacute;lia Autom&oacute;veis Ltda., sem vedar substabelecimento, sem data de vencimento e com reconhecimento de firma quando exigido.'),
+                    linhaChecklist('LEASING BANCO FIAT/ITA&Uacute;: a procura&ccedil;&atilde;o deve ser emitida conforme exig&ecirc;ncia do banco/cart&oacute;rio, dentro do prazo de validade e acompanhada do DUT/CRV em branco.'),
+                    linhaChecklist('LEASING FINASA/BRADESCO OU OUTROS BANCOS: apresentar DUT/CRV em branco, procura&ccedil;&atilde;o p&uacute;blica, termo de repasse quando houver e reconhecimento de firma da assinatura do cliente.'),
+                    linhaChecklist('<strong>LICENCIAMENTO (DOCUMENTO F&Iacute;SICO)</strong> - IPVA <strong class="bali-guide3-year">' + anoAtual + '</strong>, licenciamento, seguro obrigat&oacute;rio e demais encargos devem estar pagos ou regularizados. Parcelamentos e d&iacute;vidas ativas s&atilde;o de responsabilidade do cliente.'),
+                    linhaChecklist('MULTAS, AUTUA&Ccedil;&Otilde;ES, NOTIFICA&Ccedil;&Otilde;ES, DEFESA PR&Eacute;VIA, SUB JUDICE OU QUALQUER RESTRI&Ccedil;&Atilde;O devem ser regularizadas antes da entrega do ve&iacute;culo &agrave; Bali.'),
+                    linhaChecklist('QUITAR D&Eacute;BITOS junto ao DETRAN, DNIT, DPRF, DER, AGETOP-GO e demais &oacute;rg&atilde;os de tr&acirc;nsito em n&iacute;vel municipal, estadual ou nacional.'),
+                    linhaChecklist('VE&Iacute;CULOS DE OUTRA UF dever&atilde;o estar aptos para transfer&ecirc;ncia e poder&atilde;o exigir regulariza&ccedil;&atilde;o adicional antes do recebimento pela Bali.'),
+                    linhaChecklist('VE&Iacute;CULO COM ALIENA&Ccedil;&Atilde;O FIDUCI&Aacute;RIA somente ser&aacute; recebido ap&oacute;s quita&ccedil;&atilde;o e baixa do gravame, quando financiado ou quitado pelo propriet&aacute;rio/cliente.'),
+                    linhaChecklist('VE&Iacute;CULO COM GNV ser&aacute; recebido somente com certificado dentro da validade e documenta&ccedil;&atilde;o compat&iacute;vel com o cadastro do DETRAN.'),
+                    linhaChecklist('PESSOA JUR&Iacute;DICA com valor de venda acima de R$ 50.000,00 dever&aacute; apresentar certid&atilde;o negativa ou comprova&ccedil;&atilde;o exigida pelos &oacute;rg&atilde;os competentes, quando aplic&aacute;vel.'),
+                    linhaChecklist('VE&Iacute;CULO ENCOMENDADO OU SEM ESTOQUE IMEDIATO: se houver seminovo como parte de pagamento, o IPVA ' + anoAtual + ' dever&aacute; estar pago ou regularizado conforme data de vencimento das cotas.'),
+                    linhaChecklist('A Bali poder&aacute; recusar ou suspender o recebimento do ve&iacute;culo usado se houver diverg&ecirc;ncia documental, restri&ccedil;&atilde;o cadastral, d&eacute;bito pendente, avaria n&atilde;o informada ou aus&ecirc;ncia de item obrigat&oacute;rio.'),
                 '</div>',
                 '<div class="bali-guide3-required">',
                     '<div>',
                         '<div class="bali-guide3-section-title">ITENS OBRIGAT&Oacute;RIOS DO VE&Iacute;CULO</div>',
-                        linhaChecklist('MANUAL') + linhaChecklist('CHAVE SIMPLES (RESERVA)') + linhaChecklist('CART&Atilde;O CODE') + linhaChecklist('CHAVE CANIVETE') + linhaChecklist('MACACO, CHAVE DE RODA, TRI&Acirc;NGULO E ESTEPE'),
+                        linhaChecklist('MANUAL') + linhaChecklist('CHAVE SIMPLES/RESERVA') + linhaChecklist('CART&Atilde;O CODE, QUANDO HOUVER') + linhaChecklist('CHAVE CANIVETE OU CHAVE PRESENCIAL') + linhaChecklist('MACACO, CHAVE DE RODA, TRI&Acirc;NGULO E ESTEPE/KIT REPARO'),
                     '</div>',
                     '<div class="bali-guide3-values">',
                         '<strong>NA FALTA DE ALGUNS ITENS, OS VALORES S&Atilde;O:</strong>',
@@ -406,10 +409,22 @@
                 '<div class="bali-guide3-warning"><strong>ATEN&Ccedil;&Atilde;O:</strong> a entrega ou retirada do ve&iacute;culo usado e/ou do CRLV ser&aacute; realizada somente ao propriet&aacute;rio. No caso de retirada por terceiro, &eacute; obrigat&oacute;ria autoriza&ccedil;&atilde;o do propriet&aacute;rio com firma reconhecida em cart&oacute;rio, acompanhada de documento oficial de identifica&ccedil;&atilde;o.</div>',
                 '<div class="bali-guide3-signature"><span></span><strong>' + escaparHtml(cliente) + '</strong><small>Cliente/Propriet&aacute;rio</small></div>',
             '</div>'
-        ].join('');
+            ].join('');
+        }
 
         if (guiaBase.parentNode) {
-            guiaBase.parentNode.insertBefore(secao, guiaBase.nextSibling);
+            var parent = guiaBase.parentNode;
+            var secao = criarElemento('section', 'bali-guide3');
+            var secao2 = criarElemento('section', 'bali-guide3');
+            secao.id = 'guiadocomprador3';
+            secao2.id = 'guiadocomprador3b';
+            secao.innerHTML = montarGuia('1&ordf; VIA - CLIENTE/PROPRIET&Aacute;RIO');
+            secao2.innerHTML = montarGuia('2&ordf; VIA - ARQUIVO INTERNO');
+            parent.insertBefore(secao, guiaBase.nextSibling);
+            parent.insertBefore(secao2, secao.nextSibling);
+
+            if (guiaOriginal && guiaOriginal.parentNode) guiaOriginal.parentNode.removeChild(guiaOriginal);
+            if (guiaOriginal2 && guiaOriginal2.parentNode) guiaOriginal2.parentNode.removeChild(guiaOriginal2);
         }
     }
 
