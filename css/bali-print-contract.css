@@ -367,50 +367,50 @@ body.bali-print-page .bali-extra-sign-name {
 .bali-despachante-page {
     position: relative;
     width: 19cm;
-    min-height: 26.8cm;
-    padding: 14px 18px 15px;
+    min-height: 26.2cm;
+    padding: 10px 16px 12px;
     border: 1px solid #111;
     color: #111;
     background: #fff;
     box-sizing: border-box;
     font-family: "Times New Roman", serif;
-    font-size: 13.4px;
-    line-height: 1.18;
+    font-size: 13px;
+    line-height: 1.14;
 }
 
 .bali-despachante-header-img {
     display: block;
     width: 17.7cm;
     max-width: 100%;
-    margin: 0 auto 12px;
+    margin: 0 auto 7px;
 }
 
 .bali-despachante-table {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
-    margin: 0 0 10px;
+    margin: 0 0 6px;
     font-family: "Times New Roman", serif;
 }
 
 .bali-despachante-table th,
 .bali-despachante-table td {
     border: 1px solid #666;
-    padding: 3px 5px;
+    padding: 2px 5px;
     vertical-align: middle;
 }
 
 .bali-despachante-table th {
     background: #f7f7f7;
-    font-size: 16.5px;
+    font-size: 15.8px;
     font-weight: 700;
-    line-height: 1.15;
+    line-height: 1.08;
     text-align: center;
 }
 
 .bali-despachante-table td {
-    height: 21px;
-    font-size: 15.8px;
+    height: 18px;
+    font-size: 14.8px;
 }
 
 .bali-despachante-table span {
@@ -429,12 +429,12 @@ body.bali-print-page .bali-extra-sign-name {
 
 .bali-despachante-service .label-center {
     width: 23%;
-    font-size: 17px;
+    font-size: 15.8px;
 }
 
 .bali-despachante-service .checkline {
     width: 12%;
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .bali-despachante-line {
@@ -447,25 +447,25 @@ body.bali-print-page .bali-extra-sign-name {
 }
 
 .bali-despachante-request {
-    margin-top: 10px;
+    margin-top: 6px;
     border: 1px solid #666;
-    font-size: 16.2px;
-    line-height: 1.22;
+    font-size: 15.2px;
+    line-height: 1.15;
 }
 
 .bali-despachante-request-title {
     border-bottom: 1px solid #666;
     background: #f7f7f7;
-    font-size: 18.5px;
+    font-size: 17px;
     font-weight: 800;
-    line-height: 1.25;
+    line-height: 1.12;
     text-align: center;
     text-transform: uppercase;
 }
 
 .bali-despachante-request p {
     margin: 0;
-    padding: 6px 9px 4px;
+    padding: 4px 8px 3px;
     text-align: justify;
 }
 
@@ -489,9 +489,9 @@ body.bali-print-page .bali-extra-sign-name {
 .bali-despachante-option {
     display: flex;
     align-items: center;
-    min-height: 21px;
+    min-height: 18px;
     border-top: 1px solid #666;
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .bali-despachante-option span {
@@ -510,9 +510,9 @@ body.bali-print-page .bali-extra-sign-name {
 }
 
 .bali-despachante-declaration {
-    margin: 24px 12px 0;
-    font-size: 15.2px;
-    line-height: 1.24;
+    margin: 15px 12px 0;
+    font-size: 14.4px;
+    line-height: 1.18;
     text-align: justify;
     text-indent: 26px;
 }
@@ -521,9 +521,9 @@ body.bali-print-page .bali-extra-sign-name {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
-    margin: 20px 30px 0 0;
-    font-size: 17.5px;
-    line-height: 1.2;
+    margin: 12px 30px 0 0;
+    font-size: 16px;
+    line-height: 1.12;
     text-align: right;
 }
 
@@ -535,7 +535,7 @@ body.bali-print-page .bali-extra-sign-name {
 }
 
 .bali-despachante-sign {
-    margin: 48px auto 0;
+    margin: 35px auto 0;
     width: 16.5cm;
     text-align: center;
 }
@@ -547,17 +547,17 @@ body.bali-print-page .bali-extra-sign-name {
 
 .bali-despachante-sign p {
     margin: 3px 0 0;
-    font-size: 16.5px;
+    font-size: 15px;
 }
 
 .bali-despachante-presence {
-    margin: 34px 0 0;
-    font-size: 14.2px;
+    margin: 22px 0 0;
+    font-size: 13.4px;
     text-align: center;
 }
 
 .bali-despachante-sign-final {
-    margin-top: 44px;
+    margin-top: 30px;
 }
 
 .bali-guide3-page {
