@@ -660,7 +660,14 @@ body.bali-print-page .form-despachante {
 }
 
 .bali-guide3-signature {
-    margin-top: 26px;
+    margin-top: 18px;
+    text-align: center;
+}
+
+.bali-guide3-sign-date {
+    margin-bottom: 18px;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
     text-align: center;
 }
 

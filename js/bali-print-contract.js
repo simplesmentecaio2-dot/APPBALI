@@ -414,10 +414,10 @@
 
         function dadosGuia() {
             if (veiculo || placa) {
-                return '<table class="bali-guide3-data"><tr><td><strong>Data:</strong> Bras&iacute;lia, <strong>' + escaparHtml(data) + '</strong></td><td><strong>Cliente:</strong> <strong>' + escaparHtml(cliente) + '</strong></td></tr><tr><td><strong>CPF/CNPJ:</strong> <strong>' + escaparHtml(cpf) + '</strong></td><td><strong>Ve&iacute;culo usado:</strong> <strong>' + escaparHtml(veiculo) + '</strong> &nbsp; <strong>Placa:</strong> <strong>' + escaparHtml(placa) + '</strong></td></tr></table>';
+                return '<table class="bali-guide3-data"><tr><td><strong>Cliente:</strong> <strong>' + escaparHtml(cliente) + '</strong></td><td><strong>CPF/CNPJ:</strong> <strong>' + escaparHtml(cpf) + '</strong></td></tr><tr><td><strong>Ve&iacute;culo seminovo:</strong> <strong>' + escaparHtml(veiculo) + '</strong></td><td><strong>Placa:</strong> <strong>' + escaparHtml(placa) + '</strong></td></tr></table>';
             }
 
-            return '<table class="bali-guide3-data"><tr><td><strong>Data:</strong> Bras&iacute;lia, <strong>' + escaparHtml(data) + '</strong></td><td><strong>Cliente:</strong> <strong>' + escaparHtml(cliente) + '</strong></td></tr><tr><td colspan="2"><strong>CPF/CNPJ:</strong> <strong>' + escaparHtml(cpf) + '</strong></td></tr></table>';
+            return '<table class="bali-guide3-data"><tr><td><strong>Cliente:</strong> <strong>' + escaparHtml(cliente) + '</strong></td><td><strong>CPF/CNPJ:</strong> <strong>' + escaparHtml(cpf) + '</strong></td></tr></table>';
         }
 
         function montarGuia(viaTexto) {
@@ -469,9 +469,10 @@
                     linhaChecklist('<strong>VALOR CAUTELAR R$ 350,00</strong>'),
                     linhaChecklist('<strong>TRANSFER&Ecirc;NCIA DE UF: R$ 1.200,00</strong>'),
                 '</div>',
+                '<div class="bali-guide3-title bali-guide3-title-small">IDENTIFICA&Ccedil;&Atilde;O DO CLIENTE E VE&Iacute;CULO SEMINOVO</div>',
                 dadosGuia(),
                 '<div class="bali-guide3-warning"><strong>ATEN&Ccedil;&Atilde;O:</strong> a entrega ou retirada do ve&iacute;culo usado e/ou do CRLV ser&aacute; realizada somente ao propriet&aacute;rio. No caso de retirada por terceiro, &eacute; obrigat&oacute;ria autoriza&ccedil;&atilde;o do propriet&aacute;rio com firma reconhecida em cart&oacute;rio, acompanhada de documento oficial de identifica&ccedil;&atilde;o.</div>',
-                '<div class="bali-guide3-signature"><span></span><strong>' + escaparHtml(cliente) + '</strong><small>Cliente/Propriet&aacute;rio</small></div>',
+                '<div class="bali-guide3-signature"><div class="bali-guide3-sign-date">Bras&iacute;lia, <strong>' + escaparHtml(data) + '</strong></div><span></span><strong>' + escaparHtml(cliente) + '</strong><small>Cliente/Propriet&aacute;rio</small></div>',
             '</div>'
             ].join('');
         }
