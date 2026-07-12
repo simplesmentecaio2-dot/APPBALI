@@ -522,6 +522,13 @@
             return '<div class="bali-despachante-option"><span>(' + (marcado ? 'X' : '&nbsp;') + ')</span><strong class="' + (destaque ? 'is-strong' : '') + '">' + texto + '</strong></div>';
         }
 
+        function dataAtualNumerica() {
+            var hoje = new Date();
+            var dia = ('0' + hoje.getDate()).slice(-2);
+            var mes = ('0' + (hoje.getMonth() + 1)).slice(-2);
+            return dia + '/' + mes + '/' + hoje.getFullYear();
+        }
+
         pagina.className = normalizarClasse((pagina.className || '') + ' bali-despachante-page');
         pagina.setAttribute('data-despachante-html', '1');
         pagina.removeAttribute('style');
@@ -557,7 +564,7 @@
                 item(false, 'Outros servi&ccedil;os:', true),
             '</div>',
             '<p class="bali-despachante-declaration">Declaro sob as penas da lei que o contido acima &eacute; a express&atilde;o da verdade, assumindo todos e quaisquer &ocirc;nus decorrentes deste ato, isentando o <strong>DETRAN-DF</strong> e seus prepostos das responsabilidades de natureza <strong>C&Iacute;VIL, PENAL E/OU ADMINISTRATIVA</strong>, resultante desta solicita&ccedil;&atilde;o.</p>',
-            '<div class="bali-despachante-date">Bras&iacute;lia &ndash; DF, ______/______/20____</div>',
+            '<div class="bali-despachante-date"><span>Bras&iacute;lia &ndash; DF,</span><strong>' + dataAtualNumerica() + '</strong></div>',
             '<div class="bali-despachante-sign"><span></span><p>Assinatura do Propriet&aacute;rio/Representante legal</p></div>',
             '<p class="bali-despachante-presence"><strong>Declaro que este documento foi assinado em minha presen&ccedil;a pelo propriet&aacute;rio acima identificado.</strong></p>',
             '<div class="bali-despachante-sign bali-despachante-sign-final"><span></span><p>Carimbo e assinatura do despachante</p></div>'
