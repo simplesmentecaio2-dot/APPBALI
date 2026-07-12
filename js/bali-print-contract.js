@@ -335,13 +335,36 @@
         if (document.getElementById('guiadocomprador3')) return;
 
         var caminho = (window.location.pathname || '').toLowerCase();
-        if (caminho.indexOf('/veiculos/') < 0) return;
+        var guiaMarca = caminho.indexOf('/jeep/') >= 0 ? {
+            slug: 'jeep',
+            nome: 'JEEP',
+            logo: 'BALI JEEP',
+            empresa: 'Bali Motors Ltda.',
+            empresaAlta: 'BALI MOTORS',
+            cnpj: '36.444.055/0001-38',
+            cor: '#1f3f2d'
+        } : (caminho.indexOf('/byd/') >= 0 ? {
+            slug: 'byd',
+            nome: 'BYD',
+            logo: 'BALI BYD',
+            empresa: 'Bali Eletrics Ltda.',
+            empresaAlta: 'BALI ELETRICS',
+            cnpj: '54.168.855/0001-55',
+            cor: '#1d4f8f'
+        } : {
+            slug: 'fiat',
+            nome: 'FIAT',
+            logo: 'BALI FIAT',
+            empresa: 'Bali Bras&iacute;lia Autom&oacute;veis Ltda.',
+            empresaAlta: 'BALI BRAS&Iacute;LIA AUTOM&Oacute;VEIS',
+            cnpj: '72.624.521/0001-20',
+            cor: '#b21f3a'
+        });
 
         var guiaBase = document.getElementById('guiadocomprador2') || document.getElementById('guiadocomprador');
         var guiaOriginal = document.getElementById('guiadocomprador');
         var guiaOriginal2 = document.getElementById('guiadocomprador2');
-        var temVeiculoUsado = document.getElementById('lbldeclaracaoveiculo') || document.getElementById('lbldeclaracaoveiculo2');
-        if (!guiaBase || !temVeiculoUsado) return;
+        if (!guiaBase) return;
 
         var cliente = primeiroTexto(['lbldeclaracaocliente', 'lbldeclaracaocliente2']);
         var cpf = primeiroTexto(['lbldeclaracaocpf2', 'lbldeclaracaocpf22']);
@@ -350,28 +373,74 @@
         var placa = primeiroTexto(['lbleclaracaoplaca', 'lbleclaracaoplaca2']);
         var anoAtual = new Date().getFullYear();
 
+        function cabecalhoGuia() {
+            if (guiaMarca.slug === 'fiat') {
+                return [
+                    '<div class="bali-guide3-header">',
+                        '<div class="bali-guide3-logo"><span class="bali-guide3-slashes">////</span><strong>BALI</strong><small>FIAT</small></div>',
+                        '<div class="bali-guide3-phones">',
+                            '<span>SIA (MATRIZ)<strong>(61) 3362-6200</strong></span>',
+                            '<span>CIDADE DO AUTOM&Oacute;VEL<strong>(61) 3363-9099</strong></span>',
+                            '<span>SAAN<strong>(61) 3213-7800</strong></span>',
+                        '</div>',
+                        '<div class="bali-guide3-brand">FIAT</div>',
+                    '</div>'
+                ].join('');
+            }
+
+            return [
+                '<div class="bali-guide3-header bali-guide3-header-simple">',
+                    '<div class="bali-guide3-logo"><strong>' + guiaMarca.logo + '</strong></div>',
+                    '<div class="bali-guide3-brand">' + guiaMarca.nome + '</div>',
+                '</div>'
+            ].join('');
+        }
+
+        function documentosGuia() {
+            if (guiaMarca.slug === 'fiat') {
+                return [
+                    '<div class="bali-guide3-title">DOCUMENTA&Ccedil;&Atilde;O NECESS&Aacute;RIA</div>',
+                    '<div class="bali-guide3-alert">',
+                        '<span class="bali-guide3-check"></span>',
+                        '<strong>Todo ve&iacute;culo usado entregue como parte de pagamento deve passar por vistoria cautelar pr&eacute;via. O custo, quando aplic&aacute;vel, &eacute; de responsabilidade do cliente.</strong>',
+                    '</div>'
+                ].join('');
+            }
+
+            return [
+                '<div class="bali-guide3-docs">',
+                    '<div class="bali-guide3-title">DOCUMENTA&Ccedil;&Atilde;O NECESS&Aacute;RIA</div>',
+                    linhaChecklist('C&Oacute;PIA CNH (CARTEIRA DE HABILITA&Ccedil;&Atilde;O)'),
+                    linhaChecklist('COMPROVANTE DE RESID&Ecirc;NCIA (CONTA DE &Aacute;GUA OU LUZ, TELEFONE, CART&Atilde;O DE CR&Eacute;DITO COM CONSUMO) <strong>ATUALIZADOS</strong>'),
+                    linhaChecklist('IR - IMPOSTO DE RENDA'),
+                    '<div class="bali-guide3-title">DOCUMENTA&Ccedil;&Atilde;O NECESS&Aacute;RIA</div>',
+                    linhaChecklist('C&Oacute;PIA CNH (CARTEIRA DE HABILITA&Ccedil;&Atilde;O)'),
+                    linhaChecklist('COMPROVANTE DE RESID&Ecirc;NCIA (CONTA DE &Aacute;GUA OU LUZ, TELEFONE, CART&Atilde;O DE CR&Eacute;DITO COM CONSUMO) <strong>ATUALIZADOS</strong>'),
+                    linhaChecklist('IR - IMPOSTO DE RENDA'),
+                    linhaChecklist('CONTRATO DO BANCO ASSINADO'),
+                    linhaChecklist('COMPROVANTE DE RENDA'),
+                '</div>'
+            ].join('');
+        }
+
+        function dadosGuia() {
+            if (veiculo || placa) {
+                return '<table class="bali-guide3-data"><tr><td><strong>Data:</strong> Bras&iacute;lia, <strong>' + escaparHtml(data) + '</strong></td><td><strong>Cliente:</strong> <strong>' + escaparHtml(cliente) + '</strong></td></tr><tr><td><strong>CPF/CNPJ:</strong> <strong>' + escaparHtml(cpf) + '</strong></td><td><strong>Ve&iacute;culo usado:</strong> <strong>' + escaparHtml(veiculo) + '</strong> &nbsp; <strong>Placa:</strong> <strong>' + escaparHtml(placa) + '</strong></td></tr></table>';
+            }
+
+            return '<table class="bali-guide3-data"><tr><td><strong>Data:</strong> Bras&iacute;lia, <strong>' + escaparHtml(data) + '</strong></td><td><strong>Cliente:</strong> <strong>' + escaparHtml(cliente) + '</strong></td></tr><tr><td colspan="2"><strong>CPF/CNPJ:</strong> <strong>' + escaparHtml(cpf) + '</strong></td></tr></table>';
+        }
+
         function montarGuia(viaTexto) {
             return [
-            '<div class="bali-guide3-page">',
-                '<div class="bali-guide3-header">',
-                    '<div class="bali-guide3-logo"><span class="bali-guide3-slashes">////</span><strong>BALI</strong><small>FIAT</small></div>',
-                    '<div class="bali-guide3-phones">',
-                        '<span>SIA (MATRIZ)<strong>(61) 3362-6200</strong></span>',
-                        '<span>CIDADE DO AUTOM&Oacute;VEL<strong>(61) 3363-9099</strong></span>',
-                        '<span>SAAN<strong>(61) 3213-7800</strong></span>',
-                    '</div>',
-                    '<div class="bali-guide3-brand">FIAT</div>',
-                '</div>',
+            '<div class="bali-guide3-page bali-guide3-page-' + guiaMarca.slug + '" style="--bali-guide-brand:' + guiaMarca.cor + '">',
+                cabecalhoGuia(),
                 '<div class="bali-guide3-copy">' + viaTexto + '</div>',
-                '<div class="bali-guide3-title">DOCUMENTA&Ccedil;&Atilde;O NECESS&Aacute;RIA</div>',
-                '<div class="bali-guide3-alert">',
-                    '<span class="bali-guide3-check"></span>',
-                    '<strong>Todo ve&iacute;culo usado entregue como parte de pagamento deve passar por vistoria cautelar pr&eacute;via. O custo, quando aplic&aacute;vel, &eacute; de responsabilidade do cliente.</strong>',
-                '</div>',
+                documentosGuia(),
                 '<div class="bali-guide3-subtitle">RECEBIMENTO DO VE&Iacute;CULO USADO INCLUSO COMO PARTE DE PAGAMENTO <span>PLACA: ' + escaparHtml(placa) + '</span></div>',
                 '<div class="bali-guide3-list">',
-                    linhaChecklist('VE&Iacute;CULO SEM RESERVA OU CDC: DUT/CRV em branco, 2 vias da procura&ccedil;&atilde;o p&uacute;blica para Bali Bras&iacute;lia Autom&oacute;veis Ltda., CNPJ 72.624.521/0001-20, sem vedar substabelecimento e sem data de vencimento.'),
-                    linhaChecklist('VE&Iacute;CULO COM LEASING: DUT/CRV em branco, 2 vias da procura&ccedil;&atilde;o p&uacute;blica para Bali Bras&iacute;lia Autom&oacute;veis Ltda., sem vedar substabelecimento, sem data de vencimento e com reconhecimento de firma quando exigido.'),
+                    linhaChecklist('VE&Iacute;CULO SEM RESERVA OU CDC: DUT/CRV em branco, 2 vias da procura&ccedil;&atilde;o p&uacute;blica para ' + guiaMarca.empresa + ', CNPJ ' + guiaMarca.cnpj + ', sem vedar substabelecimento e sem data de vencimento.'),
+                    linhaChecklist('VE&Iacute;CULO COM LEASING: DUT/CRV em branco, 2 vias da procura&ccedil;&atilde;o p&uacute;blica para ' + guiaMarca.empresa + ', sem vedar substabelecimento, sem data de vencimento e com reconhecimento de firma quando exigido.'),
                     linhaChecklist('LEASING BANCO FIAT/ITA&Uacute;: a procura&ccedil;&atilde;o deve ser emitida conforme exig&ecirc;ncia do banco/cart&oacute;rio, dentro do prazo de validade e acompanhada do DUT/CRV em branco.'),
                     linhaChecklist('LEASING FINASA/BRADESCO OU OUTROS BANCOS: apresentar DUT/CRV em branco, procura&ccedil;&atilde;o p&uacute;blica, termo de repasse quando houver e reconhecimento de firma da assinatura do cliente.'),
                     linhaChecklist('<strong>LICENCIAMENTO (DOCUMENTO F&Iacute;SICO)</strong> - IPVA <strong class="bali-guide3-year">' + anoAtual + '</strong>, licenciamento, seguro obrigat&oacute;rio e demais encargos devem estar pagos ou regularizados. Parcelamentos e d&iacute;vidas ativas s&atilde;o de responsabilidade do cliente.'),
@@ -394,7 +463,7 @@
                         '<span>MANUAL, CONSULTAR.</span>',
                         '<span>CHAVE SIMPLES RESERVA, CONSULTAR.</span>',
                         '<span>CART&Atilde;O CODE, CONSULTAR.</span>',
-                        '<span>CHAVE CANIVETE GAMA FIAT, CONSULTAR.</span>',
+                        '<span>CHAVE CANIVETE OU PRESENCIAL, CONSULTAR.</span>',
                     '</div>',
                 '</div>',
                 '<div class="bali-guide3-title bali-guide3-title-small">TAXAS</div>',
@@ -405,7 +474,7 @@
                     linhaChecklist('<strong>VALOR CAUTELAR R$ 350,00</strong>'),
                     linhaChecklist('<strong>TRANSFER&Ecirc;NCIA DE UF: R$ 1.200,00</strong>'),
                 '</div>',
-                '<table class="bali-guide3-data"><tr><td><strong>Data:</strong> Bras&iacute;lia, <strong>' + escaparHtml(data) + '</strong></td><td><strong>Cliente:</strong> <strong>' + escaparHtml(cliente) + '</strong></td></tr><tr><td><strong>CPF/CNPJ:</strong> <strong>' + escaparHtml(cpf) + '</strong></td><td><strong>Ve&iacute;culo usado:</strong> <strong>' + escaparHtml(veiculo) + '</strong> &nbsp; <strong>Placa:</strong> <strong>' + escaparHtml(placa) + '</strong></td></tr></table>',
+                dadosGuia(),
                 '<div class="bali-guide3-warning"><strong>ATEN&Ccedil;&Atilde;O:</strong> a entrega ou retirada do ve&iacute;culo usado e/ou do CRLV ser&aacute; realizada somente ao propriet&aacute;rio. No caso de retirada por terceiro, &eacute; obrigat&oacute;ria autoriza&ccedil;&atilde;o do propriet&aacute;rio com firma reconhecida em cart&oacute;rio, acompanhada de documento oficial de identifica&ccedil;&atilde;o.</div>',
                 '<div class="bali-guide3-signature"><span></span><strong>' + escaparHtml(cliente) + '</strong><small>Cliente/Propriet&aacute;rio</small></div>',
             '</div>'

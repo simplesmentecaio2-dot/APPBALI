@@ -429,6 +429,12 @@ body.bali-print-page .form-despachante {
     margin-bottom: 4px;
 }
 
+.bali-guide3-header-simple {
+    grid-template-columns: 1fr 92px;
+    border-bottom: 2px solid var(--bali-guide-brand, #111);
+    padding-bottom: 4px;
+}
+
 .bali-guide3-logo {
     display: flex;
     align-items: baseline;
@@ -447,7 +453,7 @@ body.bali-print-page .form-despachante {
 }
 
 .bali-guide3-slashes {
-    color: #d71920;
+    color: var(--bali-guide-brand, #d71920);
     font-size: 22px;
     font-weight: 900;
     letter-spacing: -2px;
@@ -477,7 +483,7 @@ body.bali-print-page .form-despachante {
 }
 
 .bali-guide3-brand {
-    color: #b21f3a;
+    color: var(--bali-guide-brand, #b21f3a);
     font-family: Arial, sans-serif;
     font-size: 30px;
     font-weight: 900;
@@ -506,6 +512,29 @@ body.bali-print-page .form-despachante {
 
 .bali-guide3-title-small {
     margin-top: 5px;
+}
+
+.bali-guide3-docs {
+    margin-bottom: 3px;
+}
+
+.bali-guide3-docs .bali-guide3-title {
+    margin: 3px 0 3px;
+    font-size: 10px;
+    line-height: 1.25;
+}
+
+.bali-guide3-docs .bali-guide3-row {
+    grid-template-columns: 18px 1fr;
+    margin: 0 0 1px;
+    font-size: 7.4px;
+    line-height: 1.08;
+}
+
+.bali-guide3-docs .bali-guide3-check {
+    width: 16px;
+    height: 9px;
+    border-width: 2px;
 }
 
 .bali-guide3-alert {
