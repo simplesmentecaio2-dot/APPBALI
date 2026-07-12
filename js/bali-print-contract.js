@@ -46,12 +46,6 @@
         return elemento.getAttribute(nome) !== null;
     }
 
-    function removerClasse(elemento, classe) {
-        if (elemento && temClasse(elemento, classe)) {
-            elemento.className = normalizarClasse((' ' + elemento.className + ' ').replace(' ' + classe + ' ', ' '));
-        }
-    }
-
     function proximoElemento(campo) {
         var elemento = campo.nextSibling;
         while (elemento && elemento.nodeType !== 1) {
@@ -183,7 +177,7 @@
             elemento.setAttribute('data-print-original-text', texto);
         }
 
-        if (!textoLimpo || textoLimpo === 'Label') {
+        if (!textoLimpo || textoLimpo.toLowerCase() === 'label') {
             elemento.setAttribute('data-print-empty-text', '1');
             definirTextoElemento(elemento, '-');
             textoLimpo = '-';
@@ -229,6 +223,19 @@
         return obterTextoElemento(elemento).replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '').toUpperCase();
     }
 
+    function contem(texto, trecho) {
+        return texto.indexOf(trecho) >= 0;
+    }
+
+    function ehTituloSecao(texto) {
+        if (texto === 'DADOS DO CLIENTE') return true;
+        if (contem(texto, 'DADOS DO VE')) return true;
+        if (contem(texto, 'PRE') && contem(texto, 'FORMAS DE PAGAMENTOS')) return true;
+        if (contem(texto, 'AUTORIZA') && contem(texto, 'CLIENTE')) return true;
+        if (contem(texto, 'NOTA PROMISS')) return true;
+        return false;
+    }
+
     function estiloInline(elemento) {
         return (elemento.getAttribute('style') || '').toLowerCase();
     }
@@ -247,11 +254,7 @@
                 adicionarClasse(celula, 'bali-contract-main-title');
             }
 
-            if (texto === 'DADOS DO CLIENTE' ||
-                texto === 'DADOS DO VEÍCULO' ||
-                texto === 'PREÇO E FORMAS DE PAGAMENTOS' ||
-                texto === 'AUTORIZAÇÃO DO CLIENTE' ||
-                texto === 'NOTA PROMISSÓRIA') {
+            if (ehTituloSecao(texto)) {
                 adicionarClasse(celula, 'bali-contract-section-title');
             }
 

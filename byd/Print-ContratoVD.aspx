@@ -8,7 +8,7 @@
 <head runat="server">
     <link href="../css/estilo.css" rel="stylesheet" />
     <link href="../css/bali-print-contract.css?v=20260711-printpolish01" rel="stylesheet" />
-    <script src="../js/bali-print-contract.js?v=20260711-printpolish01"></script>
+    <script src="../js/bali-print-contract.js?v=20260711-printpolish02"></script>
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
@@ -889,7 +889,7 @@
 
                             __________________________________________________<br />
                             <br />
-                            <asp:Label ID="Label3" runat="server" CssClass="form-aviso" Text="GERÊNCA DE VENDAS"></asp:Label>
+                            <asp:Label ID="Label3" runat="server" CssClass="form-aviso" Text="GERÊNCIA DE VENDAS"></asp:Label>
                         </td>
                     </tr>
                 </table>
@@ -1281,7 +1281,7 @@
 
                             __________________________________________________<br />
                             <br />
-                            <asp:Label ID="Label4" runat="server" CssClass="form-aviso" Text="GERÊNCA DE VENDAS"></asp:Label>
+                            <asp:Label ID="Label4" runat="server" CssClass="form-aviso" Text="GERÊNCIA DE VENDAS"></asp:Label>
                         </td>
                     </tr>
                 </table>
