@@ -839,7 +839,8 @@ body.bali-print-page .bali-extra-sign-name {
 
     @page {
         size: A4 portrait;
-        margin: 0;
+        /* Respiro tecnico para impressoras fisicas nao cortarem a borda superior. */
+        margin: 2.5mm 0 0 0;
     }
 
     html,
