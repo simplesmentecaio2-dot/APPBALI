@@ -255,17 +255,21 @@
         return texto.indexOf(trecho) >= 0;
     }
 
-    function ehTituloSecao(texto) {
-        if (texto === 'DADOS DO CLIENTE') return true;
-        if (contem(texto, 'DADOS DO VE')) return true;
-        if (contem(texto, 'PRE') && contem(texto, 'FORMAS DE PAGAMENTOS')) return true;
-        if (contem(texto, 'AUTORIZA') && contem(texto, 'CLIENTE')) return true;
-        if (contem(texto, 'NOTA PROMISS')) return true;
-        return false;
+    function tituloCurto(texto, limite) {
+        return texto.length <= (limite || 60);
     }
 
     function ehNotaPromissoria(texto) {
-        return contem(texto, 'NOTA PROMISS');
+        return texto.indexOf('NOTA PROMISS') === 0 && tituloCurto(texto, 40);
+    }
+
+    function ehTituloSecao(texto) {
+        if (texto === 'DADOS DO CLIENTE') return true;
+        if (contem(texto, 'DADOS DO VE') && tituloCurto(texto)) return true;
+        if (contem(texto, 'PRE') && contem(texto, 'FORMAS DE PAGAMENTOS') && tituloCurto(texto)) return true;
+        if (contem(texto, 'AUTORIZA') && contem(texto, 'CLIENTE') && tituloCurto(texto)) return true;
+        if (ehNotaPromissoria(texto)) return true;
+        return false;
     }
 
     function ehClausulaSensivel(texto) {
@@ -373,6 +377,16 @@
         var campos = document.querySelectorAll('.bali-current-year');
         for (var i = 0; i < campos.length; i++) {
             definirTextoElemento(campos[i], ano);
+        }
+
+        var menosQuatro = document.querySelectorAll('.bali-current-year-minus-4');
+        for (var q = 0; q < menosQuatro.length; q++) {
+            definirTextoElemento(menosQuatro[q], String(Number(ano) - 4));
+        }
+
+        var menosTres = document.querySelectorAll('.bali-current-year-minus-3');
+        for (var t = 0; t < menosTres.length; t++) {
+            definirTextoElemento(menosTres[t], String(Number(ano) - 3));
         }
     }
 

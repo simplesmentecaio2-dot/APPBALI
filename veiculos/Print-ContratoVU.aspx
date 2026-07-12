@@ -7,8 +7,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <link href="../css/estilo.css" rel="stylesheet" />
-    <link href="../css/bali-print-contract.css?v=20260712-printux01" rel="stylesheet" />
-    <script src="../js/bali-print-contract.js?v=20260712-printux01"></script>
+    <link href="../css/bali-print-contract.css?v=20260712-vugarantia01" rel="stylesheet" />
+    <script src="../js/bali-print-contract.js?v=20260712-vugarantia01"></script>
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
@@ -379,7 +379,7 @@
                             5) O Cliente compromete-se a entregar, em dação em pagamento, o veículo placa
                      <asp:Label ID="lblPlaca" runat="server" CssClass="form-contrato" Text=""></asp:Label>
                             , conforme negociação descrita neste contrato, sob pena de a compra não ser concretizada nos termos, condições e benefícios pactuados.<br />
-                            6) Garantia: ano/modelo até 2022/2023: 3 meses para motor/câmbio. Fabricação a partir de 2023: 6 meses para motor/câmbio, desde que preservadas as características originais e não haja danos por uso indevido, imperícia, negligência ou abuso após a retirada da Concessionária.
+                            6) Garantia: ano/modelo até <span class="bali-current-year-minus-4">2022</span>/<span class="bali-current-year-minus-3">2023</span>: 3 meses para motor/câmbio. Fabricação a partir de <span class="bali-current-year-minus-3">2023</span>: 6 meses para motor/câmbio, desde que preservadas as características originais e não haja danos por uso indevido, imperícia, negligência ou abuso após a retirada da Concessionária.
                         
                         </span>
                         </td>
@@ -776,7 +776,7 @@
                             5) O Cliente compromete-se a entregar, em dação em pagamento, o veículo placa
                      <asp:Label ID="lblPlaca2" CssClass="form-contrato" runat="server" Text=""></asp:Label>
                             , conforme negociação descrita neste contrato, sob pena de a compra não ser concretizada nos termos, condições e benefícios pactuados.<br />
-                            6) Garantia: ano/modelo até 2022/2023: 3 meses para motor/câmbio. Fabricação a partir de 2023: 6 meses para motor/câmbio, desde que preservadas as características originais e não haja danos por uso indevido, imperícia, negligência ou abuso após a retirada da Concessionária.
+                            6) Garantia: ano/modelo até <span class="bali-current-year-minus-4">2022</span>/<span class="bali-current-year-minus-3">2023</span>: 3 meses para motor/câmbio. Fabricação a partir de <span class="bali-current-year-minus-3">2023</span>: 6 meses para motor/câmbio, desde que preservadas as características originais e não haja danos por uso indevido, imperícia, negligência ou abuso após a retirada da Concessionária.
                         </span>
                         </td>
                     </tr>
@@ -1172,7 +1172,7 @@
                             5) O Cliente compromete-se a entregar, em dação em pagamento, o veículo placa
                      <asp:Label ID="lblPlaca3" CssClass="form-contrato" runat="server" Text=""></asp:Label>
                             , conforme negociação descrita neste contrato, sob pena de a compra não ser concretizada nos termos, condições e benefícios pactuados.<br />
-                            6) Garantia: ano/modelo até 2022/2023: 3 meses para motor/câmbio. Fabricação a partir de 2023: 6 meses para motor/câmbio, desde que preservadas as características originais e não haja danos por uso indevido, imperícia, negligência ou abuso após a retirada da Concessionária.
+                            6) Garantia: ano/modelo até <span class="bali-current-year-minus-4">2022</span>/<span class="bali-current-year-minus-3">2023</span>: 3 meses para motor/câmbio. Fabricação a partir de <span class="bali-current-year-minus-3">2023</span>: 6 meses para motor/câmbio, desde que preservadas as características originais e não haja danos por uso indevido, imperícia, negligência ou abuso após a retirada da Concessionária.
                             <br />
 
                         </span>
