@@ -472,7 +472,7 @@
                 '<div class="bali-guide3-title bali-guide3-title-small">IDENTIFICA&Ccedil;&Atilde;O DO CLIENTE E VE&Iacute;CULO SEMINOVO</div>',
                 dadosGuia(),
                 '<div class="bali-guide3-warning"><strong>ATEN&Ccedil;&Atilde;O:</strong> a entrega ou retirada do ve&iacute;culo usado e/ou do CRLV ser&aacute; realizada somente ao propriet&aacute;rio. No caso de retirada por terceiro, &eacute; obrigat&oacute;ria autoriza&ccedil;&atilde;o do propriet&aacute;rio com firma reconhecida em cart&oacute;rio, acompanhada de documento oficial de identifica&ccedil;&atilde;o.</div>',
-                '<div class="bali-guide3-signature"><div class="bali-guide3-sign-date">Bras&iacute;lia, <strong>' + escaparHtml(data) + '</strong></div><span></span><strong>' + escaparHtml(cliente) + '</strong><small>Cliente/Propriet&aacute;rio</small></div>',
+                '<div class="bali-guide3-signature"><div class="bali-guide3-sign-date">Bras&iacute;lia, <strong>' + escaparHtml(data) + '</strong></div><span></span><strong class="bali-guide3-sign-name">' + escaparHtml(String(cliente || '-').toUpperCase()) + '</strong><small>Cliente/Propriet&aacute;rio</small></div>',
             '</div>'
             ].join('');
         }

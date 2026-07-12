@@ -688,6 +688,12 @@ body.bali-print-page .form-despachante {
     display: block;
 }
 
+.bali-guide3-sign-name {
+    font-size: 12.5px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
 @media print {
     :root {
         --bali-print-sheet-width: 204mm;
