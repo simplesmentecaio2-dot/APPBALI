@@ -597,6 +597,7 @@ body.patio-modern-page.patio-brand-byd {
   display: flex;
   gap: 10px;
   align-items: center;
+  flex-wrap: wrap;
   margin-bottom: 12px;
   padding: 11px 13px;
   border: 1px solid rgba(217, 119, 6, .22);
@@ -605,6 +606,47 @@ body.patio-modern-page.patio-brand-byd {
   color: #92400e;
   font-size: 13px;
   font-weight: 800;
+}
+
+.patio-modern-page .patio-home-message span {
+  flex: 1 1 260px;
+}
+
+.patio-modern-page .patio-home-message small {
+  color: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  opacity: .72;
+}
+
+.patio-modern-page .patio-home-message.is-success {
+  border-color: rgba(22, 163, 74, .22);
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.patio-modern-page .patio-home-message.is-success i {
+  color: #16a34a;
+}
+
+.patio-modern-page .patio-home-message.is-processing {
+  border-color: rgba(37, 99, 235, .2);
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.patio-modern-page .patio-home-message.is-processing i {
+  color: #2563eb;
+}
+
+.patio-modern-page .patio-home-message.is-error {
+  border-color: rgba(220, 38, 38, .22);
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.patio-modern-page .patio-home-message.is-error i {
+  color: #dc2626;
 }
 
 .patio-modern-page .patio-home-message.is-warning i {

@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 public static class PatioBaixaVendaSincronizador
 {
@@ -11,6 +12,7 @@ public static class PatioBaixaVendaSincronizador
     {
         GarantirEstrutura(usuario);
 
+        Stopwatch tempo = Stopwatch.StartNew();
         DataTable tabela = new DataTable();
         Jeep banco = new Jeep();
 
@@ -18,32 +20,53 @@ public static class PatioBaixaVendaSincronizador
         {
             banco.Conexao2();
             SqlCommand cmd = new SqlCommand(@"
+SET NOCOUNT ON;
+
 DECLARE @baixados TABLE
 (
     ve_nr varchar(50) NOT NULL,
     chassi varchar(30) NULL
 );
 
+DECLARE @ativos TABLE
+(
+    ve_nr varchar(50) NOT NULL PRIMARY KEY,
+    veiculo_codigo int NOT NULL
+);
+
+DECLARE @vendidos TABLE
+(
+    veiculo_codigo int NOT NULL PRIMARY KEY,
+    chassi varchar(30) NULL
+);
+
+INSERT INTO @ativos (ve_nr, veiculo_codigo)
+SELECT DISTINCT CONVERT(varchar(50), p.ve_nr), CAST(p.ve_nr AS int)
+FROM dbo.veiculos_patio_locacao p WITH (NOLOCK)
+WHERE ISNULL(p.baixado_venda, 0) = 0
+  AND ISNUMERIC(p.ve_nr) = 1;
+
+INSERT INTO @vendidos (veiculo_codigo, chassi)
+SELECT vv.veiculo_codigo,
+       MAX(LEFT(ISNULL(vv.veiculo_chassi, ''), 30)) AS chassi
+FROM GrupoBali_DealernetWF.dbo.VendasVeiculos vv WITH (NOLOCK)
+INNER JOIN @ativos a
+    ON a.veiculo_codigo = vv.veiculo_codigo
+GROUP BY vv.veiculo_codigo;
+
 UPDATE p
    SET baixado_venda = 1,
        dt_baixa_venda = GETDATE(),
-       chassi_baixa = LEFT(v.Veiculo_Chassi, 30),
+       chassi_baixa = v.chassi,
        baixa_origem = 'VENDAS_DEALERNET',
        baixa_observacao = 'Baixa automatica por venda no Dealernet'
 OUTPUT CONVERT(varchar(50), inserted.ve_nr), inserted.chassi_baixa
   INTO @baixados(ve_nr, chassi)
-FROM dbo.veiculos_patio_locacao p
-INNER JOIN GrupoBali_DealernetWF.dbo.Veiculo v WITH (NOLOCK)
-    ON v.Veiculo_Codigo = CASE WHEN ISNUMERIC(p.ve_nr) = 1 THEN CAST(p.ve_nr AS int) ELSE NULL END
+FROM dbo.veiculos_patio_locacao p WITH (UPDLOCK, ROWLOCK, READPAST)
+INNER JOIN @vendidos v
+    ON v.veiculo_codigo = CASE WHEN ISNUMERIC(p.ve_nr) = 1 THEN CAST(p.ve_nr AS int) ELSE -1 END
 WHERE ISNULL(p.baixado_venda, 0) = 0
-  AND NULLIF(LTRIM(RTRIM(ISNULL(v.Veiculo_Chassi, ''))), '') IS NOT NULL
-  AND EXISTS
-  (
-      SELECT 1
-      FROM GrupoBali_DealernetWF.dbo.VendasVeiculos vv WITH (NOLOCK)
-      WHERE REPLACE(REPLACE(REPLACE(UPPER(LTRIM(RTRIM(ISNULL(vv.veiculo_chassi, '')))), '-', ''), ' ', ''), '.', '') =
-            REPLACE(REPLACE(REPLACE(UPPER(LTRIM(RTRIM(ISNULL(v.Veiculo_Chassi, '')))), '-', ''), ' ', ''), '.', '')
-  );
+  AND ISNUMERIC(p.ve_nr) = 1;
 
 INSERT INTO dbo.veiculos_patio_baixa_venda_log (ve_nr, chassi, usuario, origem, observacao)
 SELECT b.ve_nr,
@@ -57,16 +80,22 @@ SELECT
     (SELECT COUNT(1) FROM @baixados) AS baixados_agora,
     (SELECT COUNT(1) FROM dbo.veiculos_patio_locacao WITH (NOLOCK) WHERE ISNULL(baixado_venda, 0) = 0) AS ativos_patio,
     (SELECT COUNT(1) FROM dbo.veiculos_patio_locacao WITH (NOLOCK) WHERE ISNULL(baixado_venda, 0) = 1) AS baixados_total,
-    (SELECT MAX(dt_baixa) FROM dbo.veiculos_patio_baixa_venda_log WITH (NOLOCK)) AS ultima_baixa;", banco.oCon2);
-            cmd.CommandTimeout = 90;
+    (SELECT MAX(dt_baixa) FROM dbo.veiculos_patio_baixa_venda_log WITH (NOLOCK)) AS ultima_baixa,
+    CAST(1 AS bit) AS sucesso,
+    CAST(NULL AS varchar(200)) AS erro;", banco.oCon2);
+            cmd.CommandTimeout = 45;
             cmd.Parameters.Add("@usuario", SqlDbType.VarChar, 100).Value = usuario ?? "";
 
             SqlDataAdapter adapter = new SqlDataAdapter(cmd);
             adapter.Fill(tabela);
+            tempo.Stop();
+            AdicionarDuracao(tabela, tempo.ElapsedMilliseconds);
         }
         catch (Exception ex)
         {
+            tempo.Stop();
             PatioJeepAuditoria.Registrar("PATIO_BAIXA_VENDA_ERRO", usuario, "SINCRONIZACAO", ex.Message);
+            tabela = CriarResultadoErro(tempo.ElapsedMilliseconds);
         }
         finally
         {
@@ -74,6 +103,42 @@ SELECT
         }
 
         return tabela.Rows.Count > 0 ? tabela.Rows[0] : null;
+    }
+
+    private static void AdicionarDuracao(DataTable tabela, long duracaoMs)
+    {
+        if (!tabela.Columns.Contains("duracao_ms"))
+        {
+            tabela.Columns.Add("duracao_ms", typeof(long));
+        }
+
+        foreach (DataRow row in tabela.Rows)
+        {
+            row["duracao_ms"] = duracaoMs;
+        }
+    }
+
+    private static DataTable CriarResultadoErro(long duracaoMs)
+    {
+        DataTable tabela = new DataTable();
+        tabela.Columns.Add("baixados_agora", typeof(int));
+        tabela.Columns.Add("ativos_patio", typeof(int));
+        tabela.Columns.Add("baixados_total", typeof(int));
+        tabela.Columns.Add("ultima_baixa", typeof(DateTime));
+        tabela.Columns.Add("sucesso", typeof(bool));
+        tabela.Columns.Add("erro", typeof(string));
+        tabela.Columns.Add("duracao_ms", typeof(long));
+
+        DataRow row = tabela.NewRow();
+        row["baixados_agora"] = 0;
+        row["ativos_patio"] = 0;
+        row["baixados_total"] = 0;
+        row["sucesso"] = false;
+        row["erro"] = "Nao foi possivel sincronizar o patio com as vendas agora.";
+        row["duracao_ms"] = duracaoMs;
+        tabela.Rows.Add(row);
+
+        return tabela;
     }
 
     public static void GarantirEstrutura(string usuario)

@@ -188,7 +188,7 @@
                                             </div>
                                         </div>
                                         <div class="page-title-actions">
-                                            <asp:LinkButton ID="btnSincronizarPatio" runat="server" CssClass="btn btn-light" OnClick="btnSincronizarPatio_Click" OnClientClick="this.classList.add('disabled'); this.innerHTML='<i class=&quot;fa fa-spinner fa-spin mr-1&quot;></i>Sincronizando...';">
+                                            <asp:LinkButton ID="btnSincronizarPatio" runat="server" CssClass="btn btn-light" OnClick="btnSincronizarPatio_Click" OnClientClick="return iniciarSincronizacaoPatio(this);">
                                                 <i class="fa fa-sync-alt mr-1"></i>Sincronizar vendas
                                             </asp:LinkButton>
                                         </div>
@@ -204,6 +204,10 @@
                                                 </div>
                                             </div>
                                             <div class="card-body">
+                                                <div id="patioSyncClientStatus" class="patio-home-message is-processing" style="display:none;">
+                                                    <i class="fa fa-spinner fa-spin"></i>
+                                                    <span>Sincronizando o p&aacute;tio com as vendas. Aguarde alguns instantes...</span>
+                                                </div>
                                                 <asp:Literal ID="litSincronizacaoMensagem" runat="server"></asp:Literal>
                                                 <asp:Literal ID="litBuscaMensagem" runat="server"></asp:Literal>
                                                 <div class="row align-items-end">
@@ -291,6 +295,52 @@
     <script src="../assets/jspdf.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
     <script src="./assets/js/patio-jeep-ux.js?v=20260709-1"></script>
+    <script>
+        function iniciarSincronizacaoPatio(botao) {
+            window.patioSyncRunning = true;
+            var status = document.getElementById('patioSyncClientStatus');
+            if (status) {
+                status.style.display = 'flex';
+                status.className = 'patio-home-message is-processing';
+                status.innerHTML = '<i class="fa fa-spinner fa-spin"></i><span>Sincronizando o p&aacute;tio com as vendas. Aguarde alguns instantes...</span>';
+            }
+
+            if (botao) {
+                botao.classList.add('disabled');
+                botao.style.pointerEvents = 'none';
+                botao.setAttribute('aria-busy', 'true');
+                botao.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i>Sincronizando...';
+            }
+
+            return true;
+        }
+
+        (function () {
+            if (!window.Sys || !Sys.WebForms) {
+                return;
+            }
+
+            var prm = Sys.WebForms.PageRequestManager.getInstance();
+            prm.add_endRequest(function (sender, args) {
+                if (!window.patioSyncRunning) {
+                    return;
+                }
+
+                window.patioSyncRunning = false;
+                if (!args.get_error()) {
+                    return;
+                }
+
+                args.set_errorHandled(true);
+                var status = document.getElementById('patioSyncClientStatus');
+                if (status) {
+                    status.style.display = 'flex';
+                    status.className = 'patio-home-message is-error';
+                    status.innerHTML = '<i class="fa fa-exclamation-triangle"></i><span>N&atilde;o foi poss&iacute;vel concluir a sincroniza&ccedil;&atilde;o. Recarregue a tela e tente novamente.</span>';
+                }
+            });
+        })();
+    </script>
 
 </body>
 

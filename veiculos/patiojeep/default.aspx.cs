@@ -226,17 +226,23 @@ ORDER BY dt DESC;");
     {
         if (sincronizacao == null)
         {
-            return "<div class=\"patio-home-message is-warning\"><i class=\"fa fa-exclamation-triangle\"></i><span>N&atilde;o foi poss&iacute;vel sincronizar o p&aacute;tio com as vendas agora. Tente novamente em instantes.</span></div>";
+            return "<div class=\"patio-home-message is-error\"><i class=\"fa fa-exclamation-triangle\"></i><span>N&atilde;o foi poss&iacute;vel sincronizar o p&aacute;tio com as vendas agora. Tente novamente em instantes.</span></div>";
+        }
+
+        if (!Booleano(sincronizacao, "sucesso"))
+        {
+            return "<div class=\"patio-home-message is-error\"><i class=\"fa fa-exclamation-triangle\"></i><span>Sincroniza&ccedil;&atilde;o n&atilde;o conclu&iacute;da. Nenhuma baixa foi aplicada agora. Tente novamente em instantes.</span><small>Tempo: " + Html(TempoExecucao(sincronizacao)) + "</small></div>";
         }
 
         int baixadosAgora = Inteiro(sincronizacao, "baixados_agora");
         string ativos = Valor(sincronizacao, "ativos_patio");
         string baixadosTotal = Valor(sincronizacao, "baixados_total");
+        string ultimaBaixa = DataHora(sincronizacao, "ultima_baixa");
         string texto = baixadosAgora > 0
-            ? baixadosAgora.ToString("N0") + " ve&iacute;culo(s) baixado(s) automaticamente por venda nesta sincroniza&ccedil;&atilde;o."
-            : "Vendas conferidas. Nenhuma baixa nova encontrada nesta sincroniza&ccedil;&atilde;o.";
+            ? "Conclu&iacute;do: " + baixadosAgora.ToString("N0") + " ve&iacute;culo(s) baixado(s) automaticamente por venda."
+            : "Conclu&iacute;do: vendas conferidas e nenhuma baixa nova encontrada.";
 
-        return "<div class=\"patio-home-message\"><i class=\"fa fa-check-circle\"></i><span>" + texto + " Ativos agora: <strong>" + Html(ativos) + "</strong>. Baixados por venda: <strong>" + Html(baixadosTotal) + "</strong>.</span></div>";
+        return "<div class=\"patio-home-message is-success\"><i class=\"fa fa-check-circle\"></i><span>" + texto + " Ativos agora: <strong>" + Html(ativos) + "</strong>. Baixados por venda: <strong>" + Html(baixadosTotal) + "</strong>. &Uacute;ltima baixa: <strong>" + Html(ultimaBaixa) + "</strong>.</span><small>Tempo: " + Html(TempoExecucao(sincronizacao)) + "</small></div>";
     }
 
     private string Alerta(string titulo, string valor, string detalhe, string classe)
@@ -289,6 +295,24 @@ ORDER BY dt DESC;");
     {
         int valor;
         return Int32.TryParse(Valor(row, coluna), out valor) ? valor : 0;
+    }
+
+    private bool Booleano(DataRow row, string coluna)
+    {
+        bool valor;
+        return Boolean.TryParse(Valor(row, coluna), out valor) && valor;
+    }
+
+    private string TempoExecucao(DataRow row)
+    {
+        int duracaoMs = Inteiro(row, "duracao_ms");
+        if (duracaoMs <= 0)
+        {
+            return "menos de 1s";
+        }
+
+        decimal segundos = Math.Round(duracaoMs / 1000m, 1);
+        return segundos.ToString("0.0") + "s";
     }
 
     private string DataHora(DataRow row, string coluna)

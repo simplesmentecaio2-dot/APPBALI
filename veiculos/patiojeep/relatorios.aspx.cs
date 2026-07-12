@@ -233,6 +233,12 @@ ORDER BY p.dt_baixa_venda DESC, p.ve_nr DESC;"));
             return;
         }
 
+        if (!Booleano(sincronizacao, "sucesso"))
+        {
+            litBaixaVendaStatus.Text = "<div class=\"patio-sync-status is-warning\"><i class=\"fa fa-exclamation-triangle\"></i><span>Sincroniza&ccedil;&atilde;o n&atilde;o conclu&iacute;da. O BI permaneceu com os dados existentes.</span><strong>Tempo: " + Html(TempoExecucao(sincronizacao)) + "</strong></div>";
+            return;
+        }
+
         int baixadosAgora = Inteiro(sincronizacao["baixados_agora"]);
         int ativos = Inteiro(sincronizacao["ativos_patio"]);
         int baixadosTotal = Inteiro(sincronizacao["baixados_total"]);
@@ -240,7 +246,7 @@ ORDER BY p.dt_baixa_venda DESC, p.ve_nr DESC;"));
             ? baixadosAgora.ToString("N0") + " ve&iacute;culo(s) baixado(s) automaticamente por venda nesta atualiza&ccedil;&atilde;o."
             : "Vendas conferidas. Nenhuma baixa nova encontrada nesta atualiza&ccedil;&atilde;o.";
 
-        litBaixaVendaStatus.Text = "<div class=\"patio-sync-status\"><i class=\"fa fa-check-circle\"></i><span>" + mensagem + "</span><strong>" + ativos.ToString("N0") + " ativos / " + baixadosTotal.ToString("N0") + " baixados</strong></div>";
+        litBaixaVendaStatus.Text = "<div class=\"patio-sync-status\"><i class=\"fa fa-check-circle\"></i><span>" + mensagem + "</span><strong>" + ativos.ToString("N0") + " ativos / " + baixadosTotal.ToString("N0") + " baixados &middot; " + Html(TempoExecucao(sincronizacao)) + "</strong></div>";
     }
 
     private string CardKpi(string titulo, string valor, string legenda)
@@ -474,6 +480,34 @@ END;", banco.oCon2);
 
         int numero;
         return Int32.TryParse(valor.ToString(), out numero) ? numero : 0;
+    }
+
+    private bool Booleano(DataRow row, string coluna)
+    {
+        if (row == null || !row.Table.Columns.Contains(coluna) || row[coluna] == DBNull.Value)
+        {
+            return false;
+        }
+
+        bool valor;
+        return Boolean.TryParse(row[coluna].ToString(), out valor) && valor;
+    }
+
+    private string TempoExecucao(DataRow row)
+    {
+        if (row == null || !row.Table.Columns.Contains("duracao_ms"))
+        {
+            return "tempo nao informado";
+        }
+
+        int duracaoMs = Inteiro(row["duracao_ms"]);
+        if (duracaoMs <= 0)
+        {
+            return "menos de 1s";
+        }
+
+        decimal segundos = Math.Round(duracaoMs / 1000m, 1);
+        return segundos.ToString("0.0") + "s";
     }
 
     private string DataCurta(DataRow row, string coluna)
