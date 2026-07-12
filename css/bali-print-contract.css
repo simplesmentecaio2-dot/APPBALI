@@ -605,8 +605,13 @@ body.bali-print-page .form-despachante {
 }
 
 .bali-guide3-year {
-    font-size: 22px;
-    line-height: 0.8;
+    font-size: inherit;
+    font-weight: 700;
+    line-height: inherit;
+}
+
+.bali-current-year {
+    font-weight: 700;
 }
 
 .bali-guide3-required {
