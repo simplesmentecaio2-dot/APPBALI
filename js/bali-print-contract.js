@@ -323,6 +323,14 @@
         return '<div class="bali-guide3-row"><span class="bali-guide3-check"></span><span>' + texto + '</span></div>';
     }
 
+    function atualizarAnoAtual() {
+        var ano = String(new Date().getFullYear());
+        var campos = document.querySelectorAll('.bali-current-year');
+        for (var i = 0; i < campos.length; i++) {
+            definirTextoElemento(campos[i], ano);
+        }
+    }
+
     function criarGuiaCompradorHtml() {
         if (document.getElementById('guiadocomprador3')) return;
 
@@ -338,6 +346,7 @@
         var data = primeiroTexto(['lbldeclaracaodata', 'lbldeclaracaodata2']);
         var veiculo = primeiroTexto(['lbldeclaracaoveiculo', 'lbldeclaracaoveiculo2']);
         var placa = primeiroTexto(['lbleclaracaoplaca', 'lbleclaracaoplaca2']);
+        var anoAtual = new Date().getFullYear();
 
         var secao = criarElemento('section', 'bali-guide3');
         secao.id = 'guiadocomprador3';
@@ -363,14 +372,14 @@
                     linhaChecklist('VE&Iacute;CULO LEASING: DUT EM BRANCO, 2 VIAS DA PROCURA&Ccedil;&Atilde;O P&Uacute;BLICA PARA BALI BRAS&Iacute;LIA AUTOM&Oacute;VEIS LTDA., SEM VEDAR O SUBSTABELECIMENTO E SEM DATA DE VENCIMENTO.'),
                     linhaChecklist('LEASING BCO FIAT/ITA&Uacute;: A PROCURA&Ccedil;&Atilde;O DEVE SER FEITA NO CART&Oacute;RIO DO 1&ordm; OF&Iacute;CIO DE NOTAS E PROTESTOS, DENTRO DO PRAZO E COM DUT EM BRANCO.'),
                     linhaChecklist('LEASING BCO FINASA/BRADESCO S/A: DUT EM BRANCO, 2 VIAS DA PROCURA&Ccedil;&Atilde;O P&Uacute;BLICA E RECONHECIMENTO DE FIRMA DA ASSINATURA DO CLIENTE NO TERMO DE REPASSE.'),
-                    linhaChecklist('<strong>LICENCIAMENTO (DOCUMENTO F&Iacute;SICO)</strong> - IPVA <strong class="bali-guide3-year">2026</strong>, seguro obrigat&oacute;rio e licenciamento pagos. Caso possua parcelamento ou d&iacute;vida ativa, a responsabilidade de quita&ccedil;&atilde;o &eacute; do cliente.'),
+                    linhaChecklist('<strong>LICENCIAMENTO (DOCUMENTO F&Iacute;SICO)</strong> - IPVA <strong class="bali-guide3-year">' + anoAtual + '</strong>, seguro obrigat&oacute;rio e licenciamento pagos. Caso possua parcelamento ou d&iacute;vida ativa, a responsabilidade de quita&ccedil;&atilde;o &eacute; do cliente.'),
                     linhaChecklist('MULTAS DO DETRAN EM NOTIFICA&Ccedil;&Atilde;O, SUBJUDICE E DEFESA PR&Eacute;VIA DEVER&Atilde;O SER ATIVADAS E PAGAS PELO CLIENTE ANTES DA ENTREGA PARA A BALI AUTOM&Oacute;VEIS.'),
                     linhaChecklist('QUITAR D&Eacute;BITOS (DETRAN/DNIT/DPRF/AGETOP-GO E OUTROS &Oacute;RG&Atilde;OS DE TR&Acirc;NSITO EM N&Iacute;VEL NACIONAL).'),
                     linhaChecklist('VE&Iacute;CULOS DE OUTRA UF DEVER&Atilde;O SER TRANSFERIDOS ANTES DA ENTREGA PARA BALI.'),
                     linhaChecklist('VE&Iacute;CULO COM ALIENA&Ccedil;&Atilde;O FIDUCI&Aacute;RIA QUITADO PELO PROPRIET&Aacute;RIO OU PELA BALI, QUANDO FINANCIADO NA CONTA BANC&Aacute;RIA DO CLIENTE, SOMENTE SER&Aacute; RECEBIDO AP&Oacute;S A BAIXA DO GRAVAME.'),
                     linhaChecklist('TODO VE&Iacute;CULO GNV A G&Aacute;S SER&Aacute; RECEBIDO APENAS COM O CERTIFICADO DE VALIDADE DE 1 ANO, EMITIDO PELA FINATEC (UNB).'),
                     linhaChecklist('VE&Iacute;CULOS EM NOME DE PESSOA JUR&Iacute;DICA COM VALOR ACIMA DE R$ 50.000,00: O CLIENTE DEVE EMITIR CERTID&Atilde;O NEGATIVA NO SITE DA RECEITA FEDERAL (CND) E TRAZER O COMPROVANTE NO DIA DA ENTREGA.'),
-                    linhaChecklist('No caso de ve&iacute;culos vendidos que n&atilde;o temos em estoque, ou seja, encomendados na montadora, e que for dado como parte de pagamento um ve&iacute;culo seminovo, o mesmo ter&aacute; que ser entregue com a cota do IPVA 2022 vencida no m&ecirc;s paga.'),
+                    linhaChecklist('No caso de ve&iacute;culos vendidos que n&atilde;o temos em estoque, ou seja, encomendados na montadora, e que for dado como parte de pagamento um ve&iacute;culo seminovo, o mesmo ter&aacute; que ser entregue com a cota do IPVA ' + anoAtual + ' vencida no m&ecirc;s paga.'),
                 '</div>',
                 '<div class="bali-guide3-required">',
                     '<div>',
@@ -475,6 +484,7 @@
     }
 
     function atualizarTextos() {
+        atualizarAnoAtual();
         criarGuiaCompradorHtml();
         classificarEstruturaContrato();
 

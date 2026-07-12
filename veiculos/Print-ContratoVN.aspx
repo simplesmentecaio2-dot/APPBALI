@@ -8,7 +8,7 @@
 <head runat="server">
     <link href="../css/estilo.css" rel="stylesheet" />
     <link href="../css/bali-print-contract.css?v=20260712-guide3html01" rel="stylesheet" />
-    <script src="../js/bali-print-contract.js?v=20260712-guide3html01"></script>
+    <script src="../js/bali-print-contract.js?v=20260712-year02"></script>
     <script src="../../js/jquery-1.10.2.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.js"></script>
     <script src="../../jsPrice/jquery.price_format.1.7.min.js"></script>
@@ -375,7 +375,7 @@
                         6) O Cliente compromete-se a entregar em Dação em Pagamento o veículo Placa
                      <asp:Label ID="lblPlaca" runat="server"  CssClass="form-contrato" Text=""></asp:Label>
                         , conforme negociação descrita neste contrato, sob pena de a venda não ser concretizada nas condições e benefícios pactuados.<br />
-                        7) A eventual isenção do IPVA 2026 depende do atendimento às regras da Lei Distrital nº 4.733/2011 e não contempla o Seguro Obrigatório 2026.<br />
+                        7) A eventual isenção do IPVA <span class="bali-current-year">2026</span> depende do atendimento às regras da Lei Distrital nº 4.733/2011 e não contempla o Seguro Obrigatório <span class="bali-current-year">2026</span>.<br />
                         <span style="font-size: 12px; font-weight: bold;"> 8) Estou ciente de que o serviço de emplacamento e despachante oferecido pela Bali é opcional, podendo ser contratado diretamente junto ao Detran/DF.
 			                        
                         </span></span>
@@ -745,7 +745,7 @@
                         6) O Cliente compromete-se a entregar em Dação em Pagamento o veículo Placa
                      <asp:Label ID="lblPlaca2"  CssClass="form-contrato" runat="server" Text=""></asp:Label>
                         , conforme negociação descrita neste contrato, sob pena de a venda não ser concretizada nas condições e benefícios pactuados.<br />
-                        7) A eventual isenção do IPVA 2026 depende do atendimento às regras da Lei Distrital nº 4.733/2011 e não contempla o Seguro Obrigatório 2026.<br />
+                        7) A eventual isenção do IPVA <span class="bali-current-year">2026</span> depende do atendimento às regras da Lei Distrital nº 4.733/2011 e não contempla o Seguro Obrigatório <span class="bali-current-year">2026</span>.<br />
                         <span style="font-size: 12px; font-weight: bold;">8) Estou ciente de que o serviço de emplacamento e despachante oferecido pela Bali é opcional, podendo ser contratado diretamente junto ao Detran/DF.
                         </span </span>
                     </td>
@@ -1114,7 +1114,7 @@
                         6) O Cliente compromete-se a entregar em Dação em Pagamento o veículo Placa
                      <asp:Label ID="lblPlaca3" CssClass="form-contrato" runat="server" Text=""></asp:Label>
                         , conforme negociação descrita neste contrato, sob pena de a venda não ser concretizada nas condições e benefícios pactuados.<br />
-                        7) A eventual isenção do IPVA 2026 depende do atendimento às regras da Lei Distrital nº 4.733/2011 e não contempla o Seguro Obrigatório 2026.<br />
+                        7) A eventual isenção do IPVA <span class="bali-current-year">2026</span> depende do atendimento às regras da Lei Distrital nº 4.733/2011 e não contempla o Seguro Obrigatório <span class="bali-current-year">2026</span>.<br />
                         <span style="font-size: 12px; font-weight: bold;">8) Estou ciente de que o serviço de emplacamento e despachante oferecido pela Bali é opcional, podendo ser contratado diretamente junto ao Detran/DF.
                         </span </span>
                     </td>
