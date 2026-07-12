@@ -264,6 +264,14 @@
         return false;
     }
 
+    function ehNotaPromissoria(texto) {
+        return contem(texto, 'NOTA PROMISS');
+    }
+
+    function ehClausulaSensivel(texto) {
+        return (contem(texto, 'DESIST') || contem(texto, 'CANCELAMENTO')) && contem(texto, 'MULTA');
+    }
+
     function estiloInline(elemento) {
         return (elemento.getAttribute('style') || '').toLowerCase();
     }
@@ -284,6 +292,14 @@
 
             if (ehTituloSecao(texto)) {
                 adicionarClasse(celula, 'bali-contract-section-title');
+            }
+
+            if (ehNotaPromissoria(texto)) {
+                adicionarClasse(celula, 'bali-contract-note-title');
+            }
+
+            if (ehClausulaSensivel(texto)) {
+                adicionarClasse(celula, 'bali-contract-sensitive-clause');
             }
 
             if (estilo.indexOf('padding-bottom: 40px') >= 0) {

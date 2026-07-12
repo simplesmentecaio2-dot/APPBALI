@@ -213,6 +213,33 @@ body.contrato-vd-print #pnlImpressao .bali-contract-signature-cell {
     line-height: 1.12;
 }
 
+body.contrato-vu-print #pnlImpressao .bali-contract-note-title,
+body.contrato-vn-print #pnlImpressao .bali-contract-note-title,
+body.contrato-vd-print #pnlImpressao .bali-contract-note-title {
+    background-color: #c9d0da !important;
+    border-top-color: #374151 !important;
+    border-bottom-color: #374151 !important;
+}
+
+body.contrato-vu-print #pnlImpressao .bali-contract-sensitive-clause,
+body.contrato-vn-print #pnlImpressao .bali-contract-sensitive-clause,
+body.contrato-vd-print #pnlImpressao .bali-contract-sensitive-clause {
+    text-decoration: underline;
+    text-decoration-thickness: 0.5px;
+    text-underline-offset: 1px;
+}
+
+body.contrato-vu-print #pnlImpressao .bali-contract-signature-cell .form-aviso,
+body.contrato-vn-print #pnlImpressao .bali-contract-signature-cell .form-aviso,
+body.contrato-vd-print #pnlImpressao .bali-contract-signature-cell .form-aviso,
+body.contrato-vu-print #pnlImpressao .bali-contract-signature-cell span,
+body.contrato-vn-print #pnlImpressao .bali-contract-signature-cell span,
+body.contrato-vd-print #pnlImpressao .bali-contract-signature-cell span {
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
 body.bali-print-page #Declaracao,
 body.bali-print-page #guiadocomprador > span > div,
 body.bali-print-page #guiadocomprador2 > span > div,
