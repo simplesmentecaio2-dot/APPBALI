@@ -38,13 +38,6 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
             string aba = Request.QueryString["aba"];
             AtivarAba(String.IsNullOrWhiteSpace(aba) ? "registrar" : aba);
 
-            string buscaGlobal = Request.QueryString["buscar"];
-            if (!String.IsNullOrWhiteSpace(buscaGlobal))
-            {
-                txtGlobalBusca.Text = buscaGlobal;
-                btnGlobalBuscar_Click(btnGlobalBuscar, EventArgs.Empty);
-            }
-
             string serie = Request.QueryString["serie"];
             if (!String.IsNullOrWhiteSpace(serie))
             {
@@ -572,7 +565,7 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
 
     private void RenderizarBase()
     {
-        litIndicadores.Text = RenderIndicadores();
+        litIndicadores.Text = "";
         litUltimosAcessados.Text = RenderUltimosAcessados();
         litRelatorioPeriodo.Text = Html(PeriodoAtualTexto());
     }

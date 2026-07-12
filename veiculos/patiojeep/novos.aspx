@@ -188,11 +188,26 @@
             .novos-stepper { grid-template-columns:repeat(2,minmax(0,1fr)); }
         }
         @media (max-width:767.98px) {
-            .novos-tabs { display:grid; grid-template-columns:1fr 1fr; }
-            .novos-tab { border-radius:14px; }
-            .novos-card-header, .novos-vehicle-main, .novos-detail-header { display:grid; grid-template-columns:1fr; align-items:start; }
+            .app-page-title { margin-bottom:.65rem !important; padding:.75rem .85rem !important; }
+            .page-title-icon { width:42px !important; height:42px !important; margin-right:.75rem !important; }
+            .page-title-subheading { display:none !important; }
+            .novos-shell { gap:.75rem; }
+            .novos-tabs {
+                display:flex; flex-wrap:nowrap; gap:.5rem; overflow-x:auto; margin:0 -.75rem;
+                padding:.05rem .75rem .35rem; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity;
+            }
+            .novos-tabs::-webkit-scrollbar { display:none; }
+            .novos-tab { min-width:128px; border-radius:14px; padding:.68rem .82rem; scroll-snap-align:start; }
+            .novos-card { border-radius:14px; box-shadow:0 10px 26px rgba(15,23,42,.07); }
+            .novos-card-header, .novos-vehicle-main, .novos-detail-header { display:grid; grid-template-columns:1fr; align-items:start; padding:.85rem; }
+            .novos-card-header .novos-pill { display:none; }
+            .novos-card-title { font-size:1rem; }
+            .novos-card-body { padding:.9rem; }
             .novos-field, .novos-field.is-wide { grid-column:1/-1; }
+            .novos-input, .novos-select, .novos-textarea { min-height:50px; font-size:16px; }
             .novos-kpis, .novos-stepper { grid-template-columns:1fr; }
+            .novos-step { padding:.58rem .65rem; font-size:.82rem; }
+            .novos-step b { width:24px; height:24px; }
             .novos-actions .novos-btn { flex:1 1 100%; }
             .novos-table, .novos-table thead, .novos-table tbody, .novos-table th, .novos-table td, .novos-table tr { display:block; min-width:0; width:100%; }
             .novos-table thead { display:none; }
@@ -316,9 +331,9 @@
                                 </div>
 
                                 <div class="novos-shell">
-                                    <asp:Literal ID="litIndicadores" runat="server"></asp:Literal>
+                                    <asp:Literal ID="litIndicadores" runat="server" Visible="false"></asp:Literal>
 
-                                    <div class="novos-card novos-global">
+                                    <asp:Panel ID="pnlBuscaGlobal" runat="server" Visible="false" CssClass="novos-card novos-global">
                                         <div class="novos-card-header">
                                             <div>
                                                 <small>Busca global do p&aacute;tio</small>
@@ -340,7 +355,7 @@
                                             </div>
                                             <asp:Literal ID="litGlobalResultado" runat="server"></asp:Literal>
                                         </div>
-                                    </div>
+                                    </asp:Panel>
 
                                     <asp:Literal ID="litResumoFixo" runat="server"></asp:Literal>
 
@@ -522,6 +537,10 @@
                                                 <asp:Literal ID="litRegistroVeiculo" runat="server"></asp:Literal>
                                             </div>
                                         </div>
+                                        <div class="novos-mobile-actions">
+                                            <asp:LinkButton ID="btnMobileGlobal" runat="server" CssClass="novos-btn novos-btn-light js-safe-submit" OnClick="btnPesquisarRegistro_Click"><i class="fa fa-search-location"></i>Buscar</asp:LinkButton>
+                                            <asp:LinkButton ID="btnMobileSalvar" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnSalvarRegistro_Click"><i class="far fa-save"></i>Salvar</asp:LinkButton>
+                                        </div>
                                     </asp:Panel>
 
                                     <asp:Panel ID="pnlTransferir" runat="server">
@@ -695,10 +714,6 @@
                                 </div>
                             </asp:Panel>
 
-                            <div class="novos-mobile-actions">
-                                <asp:LinkButton ID="btnMobileGlobal" runat="server" CssClass="novos-btn novos-btn-light" OnClick="btnGlobalBuscar_Click"><i class="fa fa-search"></i>Buscar</asp:LinkButton>
-                                <asp:LinkButton ID="btnMobileSalvar" runat="server" CssClass="novos-btn novos-btn-primary js-safe-submit" OnClick="btnSalvarRegistro_Click"><i class="far fa-save"></i>Salvar</asp:LinkButton>
-                            </div>
                         </ContentTemplate>
                     </asp:UpdatePanel>
                     <asp:UpdateProgress ID="UpdateProgress1" DisplayAfter="120" DynamicLayout="true" runat="server" AssociatedUpdatePanelID="updatePanel">
