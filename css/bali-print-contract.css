@@ -235,6 +235,23 @@ body.bali-print-page .form-despachante {
     overflow-wrap: anywhere;
 }
 
+.bali-print-image-fallback {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 18.2cm;
+    margin: 2mm auto;
+    padding: 5px 8px;
+    border: 1px solid #777;
+    color: #111;
+    background: #fff;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+}
+
 .bali-despachante-page {
     width: 19cm;
     min-height: 26.8cm;
@@ -899,6 +916,16 @@ textarea.contrato-texto-justificado {
     text-align-last: left;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+}
+
+.contrato-texto-renderizado-longo {
+    font-size: 92%;
+    line-height: 1.02;
+}
+
+.contrato-texto-renderizado-muito-longo {
+    font-size: 86%;
+    line-height: 1;
 }
 
 .contrato-texto-renderizado:empty::before {

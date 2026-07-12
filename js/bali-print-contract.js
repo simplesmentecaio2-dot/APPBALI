@@ -40,6 +40,21 @@
         }
     }
 
+    function removerClasse(elemento, classe) {
+        if (elemento && elemento.className) {
+            elemento.className = normalizarClasse((' ' + elemento.className + ' ').replace(' ' + classe + ' ', ' '));
+        }
+    }
+
+    function textoCompacto(texto) {
+        return String(texto || '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+    }
+
+    function valorVazioOuPadrao(texto) {
+        var limpo = textoCompacto(texto);
+        return !limpo || limpo.toLowerCase() === 'label';
+    }
+
     function temAtributo(elemento, nome) {
         if (!elemento) return false;
         if (elemento.hasAttribute) return elemento.hasAttribute(nome);
@@ -69,11 +84,24 @@
     function ajustarCampo(campo) {
         if (!campo) return;
         var texto = obterTexto(campo);
+        if (valorVazioOuPadrao(texto)) texto = '-';
+
         var render = criarRender(campo);
         if ('textContent' in render) {
             render.textContent = texto;
         } else {
             render.innerText = texto;
+        }
+
+        removerClasse(render, 'contrato-texto-renderizado-longo');
+        removerClasse(render, 'contrato-texto-renderizado-muito-longo');
+
+        var linhas = String(texto || '').split(/\r\n|\r|\n/).length;
+        var tamanho = textoCompacto(texto).length;
+        if (tamanho > 200 || linhas > 5) {
+            adicionarClasse(render, 'contrato-texto-renderizado-muito-longo');
+        } else if (tamanho > 120 || linhas > 3) {
+            adicionarClasse(render, 'contrato-texto-renderizado-longo');
         }
 
         campo.style.height = '0px';
@@ -103,7 +131,7 @@
             campo.setAttribute('data-print-font-size', campo.style.fontSize || '');
         }
 
-        if (/^\s*$/.test(valor)) {
+        if (valorVazioOuPadrao(valor)) {
             if (!temAtributo(campo, 'data-print-original-value')) {
                 campo.setAttribute('data-print-original-value', valor);
             }
@@ -112,7 +140,7 @@
             valor = '-';
         }
 
-        var tamanho = valor.replace(/\s+/g, ' ').length;
+        var tamanho = textoCompacto(valor).length;
         if (tamanho > 52) {
             campo.style.fontSize = '7px';
         } else if (tamanho > 42) {
@@ -167,7 +195,7 @@
         if (!elemento) return;
 
         var texto = obterTextoElemento(elemento);
-        var textoLimpo = texto.replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+        var textoLimpo = textoCompacto(texto);
 
         if (!temAtributo(elemento, 'data-print-font-size')) {
             elemento.setAttribute('data-print-font-size', elemento.style.fontSize || '');
@@ -177,7 +205,7 @@
             elemento.setAttribute('data-print-original-text', texto);
         }
 
-        if (!textoLimpo || textoLimpo.toLowerCase() === 'label') {
+        if (valorVazioOuPadrao(texto)) {
             elemento.setAttribute('data-print-empty-text', '1');
             definirTextoElemento(elemento, '-');
             textoLimpo = '-';
@@ -602,6 +630,35 @@
         declaracao.setAttribute('data-header-inside', '1');
     }
 
+    function configurarFallbackImagensContrato() {
+        var escopos = ['pnlImpressao', 'Panel1', 'guiadocomprador3', 'guiadocomprador3b'];
+        for (var e = 0; e < escopos.length; e++) {
+            var escopo = document.getElementById(escopos[e]);
+            if (!escopo) continue;
+
+            var imagens = escopo.getElementsByTagName('img');
+            for (var i = 0; i < imagens.length; i++) {
+                var imagem = imagens[i];
+                if (imagem.getAttribute('data-fallback-configurado') === '1') continue;
+                imagem.setAttribute('data-fallback-configurado', '1');
+
+                imagem.onerror = function () {
+                    if (this.getAttribute('data-fallback-aplicado') === '1') return;
+                    this.setAttribute('data-fallback-aplicado', '1');
+                    this.style.display = 'none';
+
+                    var aviso = document.createElement('div');
+                    aviso.className = 'bali-print-image-fallback';
+                    aviso.appendChild(document.createTextNode(this.getAttribute('alt') || 'Imagem do documento não carregada'));
+
+                    if (this.parentNode) {
+                        this.parentNode.insertBefore(aviso, this.nextSibling);
+                    }
+                };
+            }
+        }
+    }
+
     function criarElemento(tag, classe, texto) {
         var elemento = document.createElement(tag);
         if (classe) elemento.className = classe;
@@ -677,6 +734,7 @@
         criarGuiaCompradorHtml();
         criarDespachanteHtml();
         encaixarCabecalhoDeclaracao();
+        configurarFallbackImagensContrato();
         classificarEstruturaContrato();
 
         var campos = camposDeTexto();
