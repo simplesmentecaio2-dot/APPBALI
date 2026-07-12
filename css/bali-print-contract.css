@@ -528,6 +528,12 @@ body.bali-print-page .form-despachante {
     margin-top: 5px;
 }
 
+.bali-guide3-title-required {
+    margin: 7px 0 4px;
+    font-size: 10.8px;
+    line-height: 1.35;
+}
+
 .bali-guide3-docs {
     margin-bottom: 6px;
 }
@@ -603,19 +609,12 @@ body.bali-print-page .form-despachante {
     line-height: 0.8;
 }
 
-.bali-guide3-section-title {
-    font-family: Arial, sans-serif;
-    font-size: 11px;
-    font-weight: 800;
-    text-align: center;
-}
-
 .bali-guide3-required {
     display: grid;
     grid-template-columns: 1fr 9.5cm;
     gap: 8px;
     align-items: end;
-    margin-top: 7px;
+    margin-top: 0;
 }
 
 .bali-guide3-values {
