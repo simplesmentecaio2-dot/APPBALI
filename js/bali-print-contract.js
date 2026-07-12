@@ -398,28 +398,16 @@
         }
 
         function documentosGuia() {
-            if (guiaMarca.slug === 'fiat') {
-                return [
-                    '<div class="bali-guide3-title">DOCUMENTA&Ccedil;&Atilde;O NECESS&Aacute;RIA</div>',
-                    '<div class="bali-guide3-alert">',
-                        '<span class="bali-guide3-check"></span>',
-                        '<strong>Todo ve&iacute;culo usado entregue como parte de pagamento deve passar por vistoria cautelar pr&eacute;via. O custo, quando aplic&aacute;vel, &eacute; de responsabilidade do cliente.</strong>',
-                    '</div>'
-                ].join('');
-            }
-
             return [
                 '<div class="bali-guide3-docs">',
-                    '<div class="bali-guide3-title">DOCUMENTA&Ccedil;&Atilde;O NECESS&Aacute;RIA</div>',
+                    '<div class="bali-guide3-title">DOCUMENTA&Ccedil;&Atilde;O NECESS&Aacute;RIA DO CLIENTE</div>',
                     linhaChecklist('C&Oacute;PIA CNH (CARTEIRA DE HABILITA&Ccedil;&Atilde;O)'),
-                    linhaChecklist('COMPROVANTE DE RESID&Ecirc;NCIA (CONTA DE &Aacute;GUA OU LUZ, TELEFONE, CART&Atilde;O DE CR&Eacute;DITO COM CONSUMO) <strong>ATUALIZADOS</strong>'),
-                    linhaChecklist('IR - IMPOSTO DE RENDA'),
-                    '<div class="bali-guide3-title">DOCUMENTA&Ccedil;&Atilde;O NECESS&Aacute;RIA</div>',
-                    linhaChecklist('C&Oacute;PIA CNH (CARTEIRA DE HABILITA&Ccedil;&Atilde;O)'),
-                    linhaChecklist('COMPROVANTE DE RESID&Ecirc;NCIA (CONTA DE &Aacute;GUA OU LUZ, TELEFONE, CART&Atilde;O DE CR&Eacute;DITO COM CONSUMO) <strong>ATUALIZADOS</strong>'),
-                    linhaChecklist('IR - IMPOSTO DE RENDA'),
-                    linhaChecklist('CONTRATO DO BANCO ASSINADO'),
-                    linhaChecklist('COMPROVANTE DE RENDA'),
+                    linhaChecklist('COMPROVANTE DE RESID&Ecirc;NCIA atualizado, preferencialmente com consumo recente e em nome do cliente ou com v&iacute;nculo comprovado.'),
+                    linhaChecklist('CPF/CNPJ, contrato social, procura&ccedil;&atilde;o ou documento de representa&ccedil;&atilde;o, quando aplic&aacute;vel.'),
+                    linhaChecklist('COMPROVANTE DE RENDA, IR ou documentos complementares quando exigidos pela financeira, pela concession&aacute;ria ou pelo procedimento interno.'),
+                    '<div class="bali-guide3-title">DOCUMENTA&Ccedil;&Atilde;O FINANCEIRA / OPERACIONAL</div>',
+                    linhaChecklist('CONTRATO DO BANCO assinado, quando houver financiamento, cons&oacute;rcio, leasing ou opera&ccedil;&atilde;o equivalente.'),
+                    linhaChecklist('Comprovantes de pagamento, quita&ccedil;&atilde;o, aprova&ccedil;&atilde;o financeira e demais documentos devem estar leg&iacute;veis e compat&iacute;veis com a negocia&ccedil;&atilde;o.'),
                 '</div>'
             ].join('');
         }
@@ -438,6 +426,10 @@
                 cabecalhoGuia(),
                 '<div class="bali-guide3-copy">' + viaTexto + '</div>',
                 documentosGuia(),
+                '<div class="bali-guide3-alert">',
+                    '<span class="bali-guide3-check"></span>',
+                    '<strong>Todo ve&iacute;culo usado entregue como parte de pagamento deve passar por confer&ecirc;ncia documental e vistoria cautelar pr&eacute;via. O custo, quando aplic&aacute;vel, &eacute; de responsabilidade do cliente.</strong>',
+                '</div>',
                 '<div class="bali-guide3-subtitle">RECEBIMENTO DO VE&Iacute;CULO USADO INCLUSO COMO PARTE DE PAGAMENTO <span>PLACA: ' + escaparHtml(placa) + '</span></div>',
                 '<div class="bali-guide3-list">',
                     linhaChecklist('VE&Iacute;CULO SEM RESERVA OU CDC: DUT/CRV em branco, 2 vias da procura&ccedil;&atilde;o p&uacute;blica para ' + guiaMarca.empresa + ', CNPJ ' + guiaMarca.cnpj + ', sem vedar substabelecimento e sem data de vencimento.'),
@@ -451,7 +443,9 @@
                     linhaChecklist('VE&Iacute;CULO COM ALIENA&Ccedil;&Atilde;O FIDUCI&Aacute;RIA somente ser&aacute; recebido ap&oacute;s quita&ccedil;&atilde;o e baixa do gravame, quando financiado ou quitado pelo propriet&aacute;rio/cliente.'),
                     linhaChecklist('VE&Iacute;CULO COM GNV ser&aacute; recebido somente com certificado dentro da validade e documenta&ccedil;&atilde;o compat&iacute;vel com o cadastro do DETRAN.'),
                     linhaChecklist('PESSOA JUR&Iacute;DICA com valor de venda acima de R$ 50.000,00 dever&aacute; apresentar certid&atilde;o negativa ou comprova&ccedil;&atilde;o exigida pelos &oacute;rg&atilde;os competentes, quando aplic&aacute;vel.'),
-                    linhaChecklist('VE&Iacute;CULO ENCOMENDADO OU SEM ESTOQUE IMEDIATO: se houver seminovo como parte de pagamento, o IPVA ' + anoAtual + ' dever&aacute; estar pago ou regularizado conforme data de vencimento das cotas.'),
+                    linhaChecklist('VE&Iacute;CULO ENCOMENDADO OU SEM ESTOQUE IMEDIATO: se houver seminovo como parte de pagamento, o IPVA ' + anoAtual + ' dever&aacute; estar pago ou regularizado conforme vencimento das cotas.'),
+                    linhaChecklist('Diverg&ecirc;ncias de chassi, placa, quilometragem, motor, cor, avarias, acess&oacute;rios ou qualquer dado relevante poder&atilde;o suspender o recebimento at&eacute; nova confer&ecirc;ncia.'),
+                    linhaChecklist('O cliente declara que os documentos apresentados e as informa&ccedil;&otilde;es prestadas s&atilde;o verdadeiros, completos e compat&iacute;veis com a negocia&ccedil;&atilde;o.'),
                     linhaChecklist('A Bali poder&aacute; recusar ou suspender o recebimento do ve&iacute;culo usado se houver diverg&ecirc;ncia documental, restri&ccedil;&atilde;o cadastral, d&eacute;bito pendente, avaria n&atilde;o informada ou aus&ecirc;ncia de item obrigat&oacute;rio.'),
                 '</div>',
                 '<div class="bali-guide3-required">',
