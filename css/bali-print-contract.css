@@ -181,6 +181,46 @@ body.contrato-vd-print #pnlImpressao td[style*="padding-bottom: 40px"] {
     color: #000 !important;
 }
 
+body.contrato-vu-print #pnlImpressao td,
+body.contrato-vn-print #pnlImpressao td,
+body.contrato-vd-print #pnlImpressao td {
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+}
+
+body.contrato-vu-print #pnlImpressao .bali-contract-main-title,
+body.contrato-vn-print #pnlImpressao .bali-contract-main-title,
+body.contrato-vd-print #pnlImpressao .bali-contract-main-title {
+    letter-spacing: 0;
+    line-height: 1.12;
+}
+
+body.contrato-vu-print #pnlImpressao .bali-contract-section-title,
+body.contrato-vn-print #pnlImpressao .bali-contract-section-title,
+body.contrato-vd-print #pnlImpressao .bali-contract-section-title {
+    letter-spacing: 0;
+    line-height: 1.08;
+    vertical-align: middle;
+}
+
+body.contrato-vu-print #pnlImpressao .bali-contract-signature-cell,
+body.contrato-vn-print #pnlImpressao .bali-contract-signature-cell,
+body.contrato-vd-print #pnlImpressao .bali-contract-signature-cell {
+    line-height: 1.12;
+}
+
+body.bali-print-page #Declaracao,
+body.bali-print-page #guiadocomprador > span > div,
+body.bali-print-page #guiadocomprador2 > span > div {
+    box-sizing: border-box;
+    border-color: #4b5563 !important;
+}
+
+body.bali-print-page .form-aviso,
+body.bali-print-page .form-despachante {
+    overflow-wrap: anywhere;
+}
+
 @media print {
     :root {
         --bali-print-sheet-width: 204mm;

@@ -40,6 +40,12 @@
         }
     }
 
+    function temAtributo(elemento, nome) {
+        if (!elemento) return false;
+        if (elemento.hasAttribute) return elemento.hasAttribute(nome);
+        return elemento.getAttribute(nome) !== null;
+    }
+
     function removerClasse(elemento, classe) {
         if (elemento && temClasse(elemento, classe)) {
             elemento.className = normalizarClasse((' ' + elemento.className + ' ').replace(' ' + classe + ' ', ' '));
@@ -86,6 +92,10 @@
         return document.querySelectorAll('input.form-contrato, input.form-contrata, input.form-despachante, input.form-aviso, textarea.form-contrato, textarea.form-contrata, textarea.form-despachante, textarea.form-aviso');
     }
 
+    function camposTextoSimples() {
+        return document.querySelectorAll('span.form-contrato, span.form-contrata, span.form-despachante, span.form-aviso, label.form-contrato, label.form-contrata, label.form-despachante, label.form-aviso');
+    }
+
     function deveIgnorarCampo(campo) {
         var tipo = (campo.getAttribute('type') || '').toLowerCase();
         return tipo === 'hidden' || tipo === 'button' || tipo === 'submit' || tipo === 'image' || tipo === 'checkbox' || tipo === 'radio';
@@ -95,12 +105,12 @@
         if (!campo || deveIgnorarCampo(campo)) return;
 
         var valor = typeof campo.value === 'string' ? campo.value : '';
-        if (!campo.getAttribute('data-print-font-size')) {
+        if (!temAtributo(campo, 'data-print-font-size')) {
             campo.setAttribute('data-print-font-size', campo.style.fontSize || '');
         }
 
         if (/^\s*$/.test(valor)) {
-            if (!campo.getAttribute('data-print-original-value')) {
+            if (!temAtributo(campo, 'data-print-original-value')) {
                 campo.setAttribute('data-print-original-value', valor);
             }
             campo.setAttribute('data-print-empty-value', '1');
@@ -139,6 +149,114 @@
             if (fonteOriginal !== null) {
                 campo.style.fontSize = fonteOriginal;
                 campo.removeAttribute('data-print-font-size');
+            }
+        }
+    }
+
+    function obterTextoElemento(elemento) {
+        if (!elemento) return '';
+        if (typeof elemento.textContent === 'string') return elemento.textContent;
+        if (typeof elemento.innerText === 'string') return elemento.innerText;
+        return '';
+    }
+
+    function definirTextoElemento(elemento, texto) {
+        if (!elemento) return;
+        if ('textContent' in elemento) {
+            elemento.textContent = texto;
+        } else {
+            elemento.innerText = texto;
+        }
+    }
+
+    function prepararTextoSimples(elemento) {
+        if (!elemento) return;
+
+        var texto = obterTextoElemento(elemento);
+        var textoLimpo = texto.replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+
+        if (!temAtributo(elemento, 'data-print-font-size')) {
+            elemento.setAttribute('data-print-font-size', elemento.style.fontSize || '');
+        }
+
+        if (!temAtributo(elemento, 'data-print-original-text')) {
+            elemento.setAttribute('data-print-original-text', texto);
+        }
+
+        if (!textoLimpo || textoLimpo === 'Label') {
+            elemento.setAttribute('data-print-empty-text', '1');
+            definirTextoElemento(elemento, '-');
+            textoLimpo = '-';
+        }
+
+        if (textoLimpo.length > 64) {
+            elemento.style.fontSize = '8px';
+        } else if (textoLimpo.length > 48) {
+            elemento.style.fontSize = '8.5px';
+        }
+    }
+
+    function prepararTextosSimples() {
+        var campos = camposTextoSimples();
+        for (var i = 0; i < campos.length; i++) {
+            prepararTextoSimples(campos[i]);
+        }
+    }
+
+    function restaurarTextosSimples() {
+        var campos = camposTextoSimples();
+        for (var i = 0; i < campos.length; i++) {
+            var campo = campos[i];
+
+            if (campo.getAttribute('data-print-empty-text') === '1') {
+                definirTextoElemento(campo, campo.getAttribute('data-print-original-text') || '');
+                campo.removeAttribute('data-print-empty-text');
+            }
+
+            if (campo.getAttribute('data-print-original-text') !== null) {
+                campo.removeAttribute('data-print-original-text');
+            }
+
+            var fonteOriginal = campo.getAttribute('data-print-font-size');
+            if (fonteOriginal !== null) {
+                campo.style.fontSize = fonteOriginal;
+                campo.removeAttribute('data-print-font-size');
+            }
+        }
+    }
+
+    function textoNormalizado(elemento) {
+        return obterTextoElemento(elemento).replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '').toUpperCase();
+    }
+
+    function estiloInline(elemento) {
+        return (elemento.getAttribute('style') || '').toLowerCase();
+    }
+
+    function classificarEstruturaContrato() {
+        var escopo = document.getElementById('pnlImpressao');
+        if (!escopo) return;
+
+        var celulas = escopo.getElementsByTagName('td');
+        for (var i = 0; i < celulas.length; i++) {
+            var celula = celulas[i];
+            var texto = textoNormalizado(celula);
+            var estilo = estiloInline(celula);
+
+            if (texto.indexOf('CONTRATO DE VENDA') === 0) {
+                adicionarClasse(celula, 'bali-contract-main-title');
+            }
+
+            if (texto === 'DADOS DO CLIENTE' ||
+                texto === 'DADOS DO VEÍCULO' ||
+                texto === 'PREÇO E FORMAS DE PAGAMENTOS' ||
+                texto === 'AUTORIZAÇÃO DO CLIENTE' ||
+                texto === 'NOTA PROMISSÓRIA') {
+                adicionarClasse(celula, 'bali-contract-section-title');
+            }
+
+            if (estilo.indexOf('padding-bottom: 40px') >= 0) {
+                adicionarClasse(celula, 'bali-contract-signature-cell');
             }
         }
     }
@@ -193,6 +311,7 @@
         botao.onclick = function () {
             atualizarTextos();
             prepararCamposFormulario();
+            prepararTextosSimples();
             window.print();
         };
 
@@ -212,6 +331,8 @@
     }
 
     function atualizarTextos() {
+        classificarEstruturaContrato();
+
         var campos = camposDeTexto();
         for (var i = 0; i < campos.length; i++) {
             ajustarCampo(campos[i]);
@@ -239,10 +360,12 @@
     window.addEventListener('beforeprint', function () {
         atualizarTextos();
         prepararCamposFormulario();
+        prepararTextosSimples();
         removerBarraImpressao();
     });
     window.addEventListener('afterprint', function () {
         restaurarCamposFormulario();
+        restaurarTextosSimples();
         criarBarraImpressao();
     });
 })();
