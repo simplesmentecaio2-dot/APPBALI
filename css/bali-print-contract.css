@@ -157,26 +157,26 @@ body.bali-print-page textarea.form-aviso {
 body.contrato-vu-print #pnlImpressao table[border="1"],
 body.contrato-vn-print #pnlImpressao table[border="1"],
 body.contrato-vd-print #pnlImpressao table[border="1"] {
-    border-color: #4b5563 !important;
+    border-color: #5f6673 !important;
 }
 
 body.contrato-vu-print #pnlImpressao table[border="1"] td,
 body.contrato-vn-print #pnlImpressao table[border="1"] td,
 body.contrato-vd-print #pnlImpressao table[border="1"] td {
-    border-color: #4b5563 !important;
+    border-color: #5f6673 !important;
 }
 
 body.contrato-vu-print #pnlImpressao td[style*="background-color: silver"],
 body.contrato-vn-print #pnlImpressao td[style*="background-color: silver"],
 body.contrato-vd-print #pnlImpressao td[style*="background-color: silver"] {
     color: #111827 !important;
-    background-color: #d9dde3 !important;
+    background-color: #e5e9ef !important;
 }
 
 body.contrato-vu-print #pnlImpressao td[style*="font-size: 14px"][style*="background-color: silver"],
 body.contrato-vn-print #pnlImpressao td[style*="font-size: 14px"][style*="background-color: silver"],
 body.contrato-vd-print #pnlImpressao td[style*="font-size: 14px"][style*="background-color: silver"] {
-    background-color: #cbd2dc !important;
+    background-color: #d7dde6 !important;
 }
 
 body.contrato-vu-print #pnlImpressao td[style*="padding-bottom: 40px"],
@@ -207,16 +207,46 @@ body.contrato-vd-print #pnlImpressao .bali-contract-section-title {
     vertical-align: middle;
 }
 
+body.contrato-vu-print #pnlImpressao .bali-contract-authorization-title,
+body.contrato-vn-print #pnlImpressao .bali-contract-authorization-title,
+body.contrato-vd-print #pnlImpressao .bali-contract-authorization-title {
+    border-top-color: #374151 !important;
+}
+
+body.contrato-vu-print #pnlImpressao .bali-contract-delivery-cell,
+body.contrato-vn-print #pnlImpressao .bali-contract-delivery-cell,
+body.contrato-vd-print #pnlImpressao .bali-contract-delivery-cell {
+    background-color: #f8fafc !important;
+    font-weight: 700;
+}
+
+body.contrato-vu-print #pnlImpressao .bali-contract-free-text-cell,
+body.contrato-vn-print #pnlImpressao .bali-contract-free-text-cell,
+body.contrato-vd-print #pnlImpressao .bali-contract-free-text-cell {
+    background-color: #fcfcfd !important;
+    line-height: 1.16;
+    vertical-align: top;
+}
+
 body.contrato-vu-print #pnlImpressao .bali-contract-signature-cell,
 body.contrato-vn-print #pnlImpressao .bali-contract-signature-cell,
 body.contrato-vd-print #pnlImpressao .bali-contract-signature-cell {
     line-height: 1.12;
+    vertical-align: bottom;
+}
+
+body.contrato-vu-print #pnlImpressao .bali-contract-footer-info-cell,
+body.contrato-vn-print #pnlImpressao .bali-contract-footer-info-cell,
+body.contrato-vd-print #pnlImpressao .bali-contract-footer-info-cell {
+    background-color: #fafafa !important;
+    border-top-color: #6b7280 !important;
+    line-height: 1.15;
 }
 
 body.contrato-vu-print #pnlImpressao .bali-contract-note-title,
 body.contrato-vn-print #pnlImpressao .bali-contract-note-title,
 body.contrato-vd-print #pnlImpressao .bali-contract-note-title {
-    background-color: #c9d0da !important;
+    background-color: #d4dae3 !important;
     border-top-color: #374151 !important;
     border-bottom-color: #374151 !important;
 }
@@ -240,6 +270,40 @@ body.contrato-vd-print #pnlImpressao .bali-contract-signature-cell span {
     text-transform: uppercase;
 }
 
+body.contrato-vu-print #pnlImpressao > .bali-contract-page-has-via,
+body.contrato-vn-print #pnlImpressao > .bali-contract-page-has-via,
+body.contrato-vd-print #pnlImpressao > .bali-contract-page-has-via {
+    position: relative;
+}
+
+body.contrato-vu-print #pnlImpressao > .bali-contract-page-has-via::before,
+body.contrato-vn-print #pnlImpressao > .bali-contract-page-has-via::before,
+body.contrato-vd-print #pnlImpressao > .bali-contract-page-has-via::before {
+    content: attr(data-bali-via);
+    position: absolute;
+    top: 1.4mm;
+    right: 2.2mm;
+    z-index: 2;
+    padding: 1px 4px;
+    border: 1px solid #d1d5db;
+    color: #4b5563;
+    background: rgba(255, 255, 255, 0.88);
+    font-family: Arial, sans-serif;
+    font-size: 7px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+body.contrato-vu-print #pnlImpressao > div > img[src*="header-contrato"],
+body.contrato-vn-print #pnlImpressao > div > img[src*="header-contrato"],
+body.contrato-vd-print #pnlImpressao > div > img[src*="header-contrato"] {
+    display: block;
+    width: 18.2cm !important;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto 2px;
+}
+
 body.bali-print-page #Declaracao,
 body.bali-print-page #guiadocomprador > span > div,
 body.bali-print-page #guiadocomprador2 > span > div,
@@ -247,6 +311,21 @@ body.bali-print-page #guiadocomprador3 > div,
 body.bali-print-page #guiadocomprador3b > div {
     box-sizing: border-box;
     border-color: #4b5563 !important;
+    position: relative;
+}
+
+body.bali-print-page #Declaracao::after,
+body.bali-print-page #guiadocomprador3 > div::after,
+body.bali-print-page #guiadocomprador3b > div::after,
+body.bali-print-page .bali-despachante-page::after {
+    content: "Modelo rev. 07/2026";
+    position: absolute;
+    right: 4mm;
+    bottom: 2mm;
+    color: #6b7280;
+    font-family: Arial, sans-serif;
+    font-size: 7px;
+    line-height: 1;
 }
 
 body.bali-print-page #Declaracao .bali-declaracao-header {
@@ -260,6 +339,12 @@ body.bali-print-page #Declaracao .bali-declaracao-header {
 body.bali-print-page .form-aviso,
 body.bali-print-page .form-despachante {
     overflow-wrap: anywhere;
+}
+
+body.bali-print-page .bali-extra-sign-name {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 .bali-print-image-fallback {
@@ -280,6 +365,7 @@ body.bali-print-page .form-despachante {
 }
 
 .bali-despachante-page {
+    position: relative;
     width: 19cm;
     min-height: 26.8cm;
     padding: 14px 18px 15px;

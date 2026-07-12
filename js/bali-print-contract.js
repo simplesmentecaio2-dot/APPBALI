@@ -263,17 +263,37 @@
         return texto.indexOf('NOTA PROMISS') === 0 && tituloCurto(texto, 40);
     }
 
+    function ehAutorizacaoCliente(texto) {
+        return contem(texto, 'AUTORIZA') && contem(texto, 'CLIENTE') && tituloCurto(texto);
+    }
+
     function ehTituloSecao(texto) {
         if (texto === 'DADOS DO CLIENTE') return true;
         if (contem(texto, 'DADOS DO VE') && tituloCurto(texto)) return true;
         if (contem(texto, 'PRE') && contem(texto, 'FORMAS DE PAGAMENTOS') && tituloCurto(texto)) return true;
-        if (contem(texto, 'AUTORIZA') && contem(texto, 'CLIENTE') && tituloCurto(texto)) return true;
+        if (ehAutorizacaoCliente(texto)) return true;
         if (ehNotaPromissoria(texto)) return true;
         return false;
     }
 
     function ehClausulaSensivel(texto) {
         return (contem(texto, 'DESIST') || contem(texto, 'CANCELAMENTO')) && contem(texto, 'MULTA');
+    }
+
+    function ehPrevisaoEntrega(texto) {
+        return contem(texto, 'PREVIS') && contem(texto, 'ENTREGA');
+    }
+
+    function ehCampoLivreContrato(texto) {
+        return texto.indexOf('OPCIONAIS') === 0 ||
+            texto.indexOf('CORTESIAS') === 0 ||
+            texto.indexOf('OBS') === 0;
+    }
+
+    function ehRodapeContrato(texto) {
+        return texto.indexOf('VENDEDOR:') === 0 ||
+            contem(texto, 'GERENCIA DE VENDAS') ||
+            contem(texto, 'GERÊNCIA DE VENDAS');
     }
 
     function estiloInline(elemento) {
@@ -298,12 +318,28 @@
                 adicionarClasse(celula, 'bali-contract-section-title');
             }
 
+            if (ehAutorizacaoCliente(texto)) {
+                adicionarClasse(celula, 'bali-contract-authorization-title');
+            }
+
             if (ehNotaPromissoria(texto)) {
                 adicionarClasse(celula, 'bali-contract-note-title');
             }
 
             if (ehClausulaSensivel(texto)) {
                 adicionarClasse(celula, 'bali-contract-sensitive-clause');
+            }
+
+            if (ehPrevisaoEntrega(texto)) {
+                adicionarClasse(celula, 'bali-contract-delivery-cell');
+            }
+
+            if (ehCampoLivreContrato(texto)) {
+                adicionarClasse(celula, 'bali-contract-free-text-cell');
+            }
+
+            if (ehRodapeContrato(texto)) {
+                adicionarClasse(celula, 'bali-contract-footer-info-cell');
             }
 
             if (estilo.indexOf('padding-bottom: 40px') >= 0) {
@@ -314,6 +350,14 @@
 
     function paginasPrincipaisContrato() {
         return document.querySelectorAll('#pnlImpressao > #Div1, #pnlImpressao > #Div2, #pnlImpressao > #Div3');
+    }
+
+    function identificarViasContrato() {
+        var paginas = paginasPrincipaisContrato();
+        for (var i = 0; i < paginas.length; i++) {
+            adicionarClasse(paginas[i], 'bali-contract-page-has-via');
+            paginas[i].setAttribute('data-bali-via', 'VIA ' + (i + 1));
+        }
     }
 
     function ajustarEscalaPaginasContrato() {
@@ -689,6 +733,21 @@
         }
     }
 
+    function padronizarAssinaturasExtras() {
+        var seletores = [
+            '#Declaracao [id*="lblCliente4"]',
+            '#Declaracao [id*="lbldeclaracaocliente1"]',
+            '#Declaracao [id*="lbldeclaracaocliente12"]',
+            '#guiadocomprador3 .bali-guia-assinatura-nome',
+            '#guiadocomprador3b .bali-guia-assinatura-nome'
+        ];
+
+        var elementos = document.querySelectorAll(seletores.join(','));
+        for (var i = 0; i < elementos.length; i++) {
+            adicionarClasse(elementos[i], 'bali-extra-sign-name');
+        }
+    }
+
     function criarElemento(tag, classe, texto) {
         var elemento = document.createElement(tag);
         if (classe) elemento.className = classe;
@@ -766,6 +825,8 @@
         encaixarCabecalhoDeclaracao();
         configurarFallbackImagensContrato();
         classificarEstruturaContrato();
+        identificarViasContrato();
+        padronizarAssinaturasExtras();
 
         var campos = camposDeTexto();
         for (var i = 0; i < campos.length; i++) {
