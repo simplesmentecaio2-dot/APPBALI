@@ -114,7 +114,7 @@
                             <div style="margin-top: 14px; font-size: 13px;"><asp:Label ID="lblData" runat="server"></asp:Label></div>
                             <div style="margin-top: 30px; text-align: center; font-size: 12.5px;">
                                 <div style="width: 64%; margin: 0 auto; border-top: 1px solid #111; padding-top: 7px;">
-                                    <strong>GERÊNCIA DE VENDAS</strong><br />
+                                    <strong>GER&Ecirc;NCIA DE VENDAS</strong><br />
                                     Gerente de Vendas<br />
                                     <asp:Label ID="lblUnidadeAssinatura" runat="server"></asp:Label> - <asp:Label ID="lblEmpresaAssinatura" runat="server"></asp:Label>
                                 </div>
