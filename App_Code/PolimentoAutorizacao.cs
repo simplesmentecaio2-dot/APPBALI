@@ -171,7 +171,7 @@ END;", con))
                 cmd.Parameters.Add("@proposta_codigo", SqlDbType.NVarChar, 40).Value = Limitar(Valor(dados, "Proposta_Codigo"), 40);
                 cmd.Parameters.Add("@nota_fiscal", SqlDbType.NVarChar, 40).Value = Limitar(Valor(dados, "Nota Fiscal"), 40);
                 cmd.Parameters.Add("@cliente", SqlDbType.NVarChar, 180).Value = Limitar(Valor(dados, "Cliente"), 180);
-                cmd.Parameters.Add("@veiculo", SqlDbType.NVarChar, 240).Value = Limitar(Valor(dados, "Ve\u00edculo"), 240);
+                cmd.Parameters.Add("@veiculo", SqlDbType.NVarChar, 240).Value = Limitar(Valor(dados, "Ve\u00edculo", "Veiculo"), 240);
                 cmd.Parameters.Add("@chassi", SqlDbType.NVarChar, 60).Value = Limitar(Valor(dados, "Chassi"), 60);
                 cmd.Parameters.Add("@placa", SqlDbType.NVarChar, 20).Value = Limitar(Valor(dados, "Placa"), 20);
                 cmd.Parameters.Add("@cor", SqlDbType.NVarChar, 80).Value = Limitar(NormalizarCor(Valor(dados, "Cor")), 80);
@@ -301,6 +301,12 @@ ORDER BY gerado_em DESC, id_polimento DESC;", con))
     {
         if (row == null || !row.Table.Columns.Contains(coluna) || row[coluna] == DBNull.Value) return "";
         return Convert.ToString(row[coluna]).Trim();
+    }
+
+    private static string Valor(DataRow row, string colunaPrincipal, string colunaAlternativa)
+    {
+        string valor = Valor(row, colunaPrincipal);
+        return String.IsNullOrWhiteSpace(valor) ? Valor(row, colunaAlternativa) : valor;
     }
 
     private static object ValorDecimal(DataRow row, string coluna)

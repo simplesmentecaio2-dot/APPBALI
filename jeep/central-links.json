@@ -45,6 +45,13 @@
       "icon": "paint"
     },
     {
+      "id": "autorizacao-polimento-avulso",
+      "title": "Autorização de Polimento - Avulso",
+      "caption": "Por chassi ou placa",
+      "url": "Autorizacao_polimento_avulsoJEEP.aspx",
+      "icon": "paint"
+    },
+    {
       "id": "padrao-4-entrega-do-veiculo",
       "title": "Entrega do Veículo",
       "caption": "Entrega",
