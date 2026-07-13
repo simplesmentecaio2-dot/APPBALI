@@ -44,7 +44,7 @@ public abstract class PolimentoAvulsoBase : Page
 
         if (!BuscaValida(busca))
         {
-            Avisar("Informe uma placa ou chassi válido para gerar a autorização.", "error");
+            Avisar("Informe uma placa ou chassi v\u00e1lido para gerar a autoriza\u00e7\u00e3o.", "error");
             return;
         }
 
@@ -53,7 +53,7 @@ public abstract class PolimentoAvulsoBase : Page
             DataRow dados = ConsultarVeiculo(busca);
             if (dados == null)
             {
-                Avisar("Nenhum veículo encontrado no estoque para a placa ou chassi informado.", "error");
+                Avisar("Nenhum ve\u00edculo encontrado no estoque para a placa ou chassi informado.", "error");
                 return;
             }
 
@@ -84,12 +84,12 @@ public abstract class PolimentoAvulsoBase : Page
             CarregarBI(false);
             if (!registrado)
             {
-                Avisar("Autorização gerada, mas não foi possível registrar nos dados gerenciais agora.", "error");
+                Avisar("Autoriza\u00e7\u00e3o gerada, mas n\u00e3o foi poss\u00edvel registrar nos dados gerenciais agora.", "error");
             }
         }
         catch
         {
-            Avisar("Não foi possível gerar a autorização agora. Confira a placa ou o chassi e tente novamente.", "error");
+            Avisar("N\u00e3o foi poss\u00edvel gerar a autoriza\u00e7\u00e3o agora. Confira a placa ou o chassi e tente novamente.", "error");
         }
     }
 
@@ -258,7 +258,7 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC;";
             GridView("gvPolimentoResumo").DataBind();
             GridView("gvPolimentoDetalhes").DataSource = null;
             GridView("gvPolimentoDetalhes").DataBind();
-            if (avisarErro) Avisar("Não foi possível carregar os dados de polimento agora.", "error");
+            if (avisarErro) Avisar("N\u00e3o foi poss\u00edvel carregar os dados de polimento agora.", "error");
         }
     }
 
@@ -289,7 +289,7 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC;";
         DropDownList ddl = DropDown("ddlTipoPolimento");
         string tipo = ddl == null ? "" : (ddl.SelectedValue ?? "").Trim();
         if (tipo.Equals("Polimento do Black Piano", StringComparison.OrdinalIgnoreCase)) return "Polimento do Black Piano";
-        return "Polimento completo do veículo";
+        return "Polimento completo do ve\u00edculo";
     }
 
     private string Valor(DataRow row, string coluna)
@@ -317,7 +317,7 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC;";
 
     private string DataExtenso(DateTime data)
     {
-        return "Brasília-DF, " + data.ToString("dd 'de' MMMM 'de' yyyy", new CultureInfo("pt-BR")) + ".";
+        return "Bras\u00edlia-DF, " + data.ToString("dd 'de' MMMM 'de' yyyy", new CultureInfo("pt-BR")) + ".";
     }
 
     private string NormalizarBusca(string valor)
@@ -371,7 +371,7 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC;";
         Control controle = FindControl(id);
         if (controle != null) return controle;
         controle = BuscarControleRecursivo(this, id);
-        if (controle == null) throw new InvalidOperationException("Controle não encontrado: " + id);
+        if (controle == null) throw new InvalidOperationException("Controle n\u00e3o encontrado: " + id);
         return controle;
     }
 

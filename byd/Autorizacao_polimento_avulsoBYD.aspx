@@ -28,7 +28,7 @@
             <table id="table-menu">
                 <tr>
                     <td id="table-menu-logo"><font id="logo" style="font-family: Arial black; font-size: 32px; font-style: italic; color: white; margin-left: 13px;"><a href="../../Default.aspx" class="linkHome">BALI</a></font><font style="font-family: Calibri; font-size: 14px; margin-left: 5px; font-style: italic; color: white;">APP</font></td>
-                    <td id="table-menu-usuario" class="idUser">Usuário:
+                    <td id="table-menu-usuario" class="idUser">Usu&aacute;rio:
                         <asp:Label ID="lblUsuario" CssClass="idUser" runat="server"></asp:Label>
                         C&oacute;digo:
                         <asp:Label ID="lblTipo" CssClass="idUser" runat="server" Style="margin-right: 13px;"></asp:Label><a class="bali-logout-link" href="/logout.aspx?voltar=/byd/loginAppcontrato.aspx">Sair</a></td>
@@ -40,7 +40,7 @@
         <div id="menu">
             <button type="button" class="bali-back-button" onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='principal.aspx'; }">&larr; Voltar</button>
             <div style="text-align: right; margin-right: 15px;">
-                <asp:Label ID="lblFrmID" runat="server" Text="Autorização de Polimento - Avulso"></asp:Label>
+                <asp:Label ID="lblFrmID" runat="server" Text="Autoriza&#231;&#227;o de Polimento - Avulso"></asp:Label>
             </div>
         </div>
 
@@ -62,11 +62,11 @@
                         <label class="polimento-avulso-field">
                             <span>Tipo de polimento</span>
                             <asp:DropDownList ID="ddlTipoPolimento" runat="server">
-                                <asp:ListItem Text="Polimento completo do veículo" Value="Polimento completo do veículo"></asp:ListItem>
+                                <asp:ListItem Text="Polimento completo do ve&#237;culo" Value="Polimento completo do ve&#237;culo"></asp:ListItem>
                                 <asp:ListItem Text="Polimento do Black Piano" Value="Polimento do Black Piano"></asp:ListItem>
                             </asp:DropDownList>
                         </label>
-                        <asp:Button ID="btnGerar" runat="server" OnClientClick="aguarde();" Text="Gerar autorização" OnClick="btnGerar_Click" CssClass="btns" />
+                        <asp:Button ID="btnGerar" runat="server" OnClientClick="aguarde();" Text="Gerar autoriza&#231;&#227;o" OnClick="btnGerar_Click" CssClass="btns" />
                     </div>
                     <div class="polimento-avulso-note">Informe a placa ou o chassi completo. O sistema localizar&aacute; o ve&iacute;culo em estoque e preencher&aacute; a autoriza&ccedil;&atilde;o automaticamente.</div>
                     <br />
@@ -110,7 +110,7 @@
                             <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">A presente autoriza&ccedil;&atilde;o tem por finalidade permitir a realiza&ccedil;&atilde;o do servi&ccedil;o necess&aacute;rio &agrave; adequada apresenta&ccedil;&atilde;o est&eacute;tica do ve&iacute;culo, visando sua prepara&ccedil;&atilde;o para exposi&ccedil;&atilde;o, comercializa&ccedil;&atilde;o, entrega ou demais finalidades operacionais da &aacute;rea de vendas.</p>
                             <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">Declaro, na qualidade de gerente respons&aacute;vel, que tomei ci&ecirc;ncia da solicita&ccedil;&atilde;o e <strong>autorizo expressamente</strong> a execu&ccedil;&atilde;o do polimento no ve&iacute;culo acima identificado, ficando registrado que o servi&ccedil;o somente dever&aacute; ser realizado ap&oacute;s a assinatura desta autoriza&ccedil;&atilde;o.</p>
                             <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">Esta autoriza&ccedil;&atilde;o dever&aacute; ser arquivada no sistema interno da empresa para fins de controle, rastreabilidade e comprova&ccedil;&atilde;o da aprova&ccedil;&atilde;o gerencial.</p>
-                            <p style="text-align: center; margin: 4px 0 3px;"><strong style="display: block; font-size: 24px; line-height: 1.05; text-transform: uppercase; letter-spacing: 0;">Servi&ccedil;o autorizado: <asp:Label ID="lblTipoPolimento" runat="server" Text="Polimento completo do veículo"></asp:Label>.</strong></p>
+                            <p style="text-align: center; margin: 4px 0 3px;"><strong style="display: block; font-size: 24px; line-height: 1.05; text-transform: uppercase; letter-spacing: 0;">Servi&ccedil;o autorizado: <asp:Label ID="lblTipoPolimento" runat="server" Text="Polimento completo do ve&#237;culo"></asp:Label>.</strong></p>
                             <div style="margin-top: 14px; font-size: 13px;"><asp:Label ID="lblData" runat="server"></asp:Label></div>
                             <div style="margin-top: 30px; text-align: center; font-size: 12.5px;">
                                 <div style="width: 64%; margin: 0 auto; border-top: 1px solid #111; padding-top: 7px;">
@@ -133,36 +133,36 @@
                         <asp:Button ID="btnAtualizarBI" runat="server" Text="Atualizar dados" CssClass="btns" OnClick="btnAtualizarBI_Click" OnClientClick="document.getElementById('hdnPolimentoTab').value='dados';" />
                     </fieldset>
                     <div class="polimento-bi-grid">
-                        <article><small>Autorizações</small><strong><asp:Label ID="lblBITotal" runat="server" Text="0"></asp:Label></strong></article>
+                        <article><small>Autoriza&ccedil;&otilde;es</small><strong><asp:Label ID="lblBITotal" runat="server" Text="0"></asp:Label></strong></article>
                         <article><small>Cores diferentes</small><strong><asp:Label ID="lblBICores" runat="server" Text="0"></asp:Label></strong></article>
                         <article><small>Cor mais frequente</small><strong><asp:Label ID="lblBITopCor" runat="server" Text="-"></asp:Label></strong></article>
                     </div>
                     <div class="polimento-bi-section">
-                        <h3>Resumo por mês e cor</h3>
-                        <asp:GridView ID="gvPolimentoResumo" runat="server" AutoGenerateColumns="False" CssClass="bali-data-table" GridLines="None" EmptyDataText="Nenhuma autorização encontrada neste período.">
+                        <h3>Resumo por m&ecirc;s e cor</h3>
+                        <asp:GridView ID="gvPolimentoResumo" runat="server" AutoGenerateColumns="False" CssClass="bali-data-table" GridLines="None" EmptyDataText="Nenhuma autoriza&#231;&#227;o encontrada neste per&#237;odo.">
                             <Columns>
-                                <asp:BoundField DataField="Mes" HeaderText="Mês" />
+                                <asp:BoundField DataField="Mes" HeaderText="M&#234;s" />
                                 <asp:BoundField DataField="TipoPolimento" HeaderText="Tipo" />
                                 <asp:BoundField DataField="Cor" HeaderText="Cor" />
                                 <asp:BoundField DataField="Quantidade" HeaderText="Quantidade" />
-                                <asp:BoundField DataField="UltimaGeracao" HeaderText="Última geração" />
+                                <asp:BoundField DataField="UltimaGeracao" HeaderText="&#218;ltima gera&#231;&#227;o" />
                             </Columns>
                         </asp:GridView>
                     </div>
                     <div class="polimento-bi-section">
-                        <h3>Últimas autorizações do período</h3>
-                        <asp:GridView ID="gvPolimentoDetalhes" runat="server" AutoGenerateColumns="False" CssClass="bali-data-table" GridLines="None" EmptyDataText="Nenhuma autorização encontrada neste período.">
+                        <h3>&#218;ltimas autoriza&#231;&#245;es do per&#237;odo</h3>
+                        <asp:GridView ID="gvPolimentoDetalhes" runat="server" AutoGenerateColumns="False" CssClass="bali-data-table" GridLines="None" EmptyDataText="Nenhuma autoriza&#231;&#227;o encontrada neste per&#237;odo.">
                             <Columns>
                                 <asp:BoundField DataField="GeradoEm" HeaderText="Gerado em" />
                                 <asp:BoundField DataField="Pedido" HeaderText="Pedido" />
                                 <asp:BoundField DataField="Loja" HeaderText="Loja" />
                                 <asp:BoundField DataField="TipoPolimento" HeaderText="Tipo" />
                                 <asp:BoundField DataField="Cor" HeaderText="Cor" />
-                                <asp:BoundField DataField="Veiculo" HeaderText="Veículo" />
+                                <asp:BoundField DataField="Veiculo" HeaderText="Ve&#237;culo" />
                                 <asp:BoundField DataField="Chassi" HeaderText="Chassi" />
                                 <asp:BoundField DataField="Cliente" HeaderText="Cliente" />
-                                <asp:BoundField DataField="Usuario" HeaderText="Usuário" />
-                                <asp:BoundField DataField="Geracoes" HeaderText="Gerações" />
+                                <asp:BoundField DataField="Usuario" HeaderText="Usu&#225;rio" />
+                                <asp:BoundField DataField="Geracoes" HeaderText="Gera&#231;&#245;es" />
                             </Columns>
                         </asp:GridView>
                     </div>
