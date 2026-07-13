@@ -74,6 +74,11 @@
                         <div style="text-align: center; font-size: 17px; font-weight: bold; text-transform: uppercase; margin: 10px 0 14px;">
                             Autorização Interna para Execução de Polimento Veicular
                         </div>
+                        <div style="border: 1px solid #222; background: #f7f7f7; padding: 6px 10px; margin: 0 0 10px; text-align: center; text-transform: uppercase;">
+                            <span style="display: block; font-size: 9.5px; letter-spacing: .08em;">Tipo da autoriza&ccedil;&atilde;o</span>
+                            <strong style="display: block; font-size: 14px; line-height: 1.15;">Autoriza&ccedil;&atilde;o de venda</strong>
+                            <span style="display: block; font-size: 10px; text-transform: none;">Gerada a partir do pedido e da loja informados.</span>
+                        </div>
 
                         <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">
                             Pelo presente documento, fica autorizada a execução do serviço de <strong>polimento veicular</strong> no veículo abaixo identificado, conforme dados extraídos do sistema interno da empresa.
