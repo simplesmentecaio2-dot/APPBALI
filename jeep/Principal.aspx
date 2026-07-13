@@ -88,7 +88,7 @@
                             <span class="central-link-icon"></span>
                             <span><span class="central-link-title">Prospec&ccedil;&atilde;o</span><span class="central-link-caption">Vendas</span></span>
                         </a>
-                        <a class="central-link-card" href="bi.aspx" data-icon="bi">
+                        <a class="central-link-card" href="loginBI.aspx" data-icon="bi">
                             <span class="central-link-icon"></span>
                             <span><span class="central-link-title">BI</span><span class="central-link-caption">Indicadores</span></span>
                         </a>

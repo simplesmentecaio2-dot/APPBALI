@@ -83,7 +83,7 @@
       "id": "padrao-9-bi",
       "title": "BI",
       "caption": "Indicadores",
-      "url": "bi.aspx",
+      "url": "loginBI.aspx",
       "icon": "bi"
     }
   ],
