@@ -109,14 +109,11 @@
                                 <td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblUnidade" runat="server"></asp:Label></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Valor registrado</strong></td>
-                                <td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblValor" runat="server"></asp:Label></td>
-                            </tr>
-                            <tr>
                                 <td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Vendedor</strong></td>
                                 <td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblVendedor" runat="server"></asp:Label></td>
                             </tr>
                         </table>
+                        <asp:Label ID="lblValor" runat="server" Visible="false"></asp:Label>
 
                         <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">
                             A presente autorização tem por finalidade permitir a realização do serviço necessário à adequada apresentação estética do veículo, visando sua preparação para exposição, comercialização, entrega ou demais finalidades operacionais da área de vendas.
