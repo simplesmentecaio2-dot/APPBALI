@@ -7,7 +7,7 @@
     <title>Autoriza&ccedil;&atilde;o de Polimento - Avulso - Jeep</title>
     <link href="../css/estilo.css" rel="stylesheet" />
     <link href="../css/bali-utility.css?v=20260713-polimento-avulso01" rel="stylesheet" />
-    <script src="../js/bali-utility-print.js?v=20260707-polimento01"></script>
+    <script src="../js/bali-utility-print.js?v=20260713-polimento02"></script>
     <style>
         .polimento-avulso-grid { display: grid; grid-template-columns: minmax(220px, 1.3fr) minmax(220px, 1fr) auto; gap: 14px; align-items: end; }
         .polimento-avulso-field span { display: block; font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: #5f6f8a; margin-bottom: 6px; }
@@ -204,15 +204,3 @@
     </script>
 </body>
 </html>
-
-<script language="javascript" type="text/jscript">
-    function imprimePanel() {
-        var printContent = document.getElementById("<%=pnlImpressao.ClientID%>");
-        var printWindow = window.open('formPadrao.aspx', 'AutorizacaoPolimentoAvulso', 'left=50000,top=50000,width=0,height=0');
-        printWindow.document.write(printContent.innerHTML);
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
-    }
-</script>

@@ -22,6 +22,10 @@
     return bySuffix('txtLoja');
   }
 
+  function buscaVeiculoField() {
+    return bySuffix('txtBusca');
+  }
+
   function gerarButton() {
     return bySuffix('btnGerar');
   }
@@ -54,6 +58,10 @@
 
   function somenteDigitos(valor) {
     return (valor || '').replace(/\D/g, '');
+  }
+
+  function normalizarIdentificacaoVeiculo(valor) {
+    return (valor || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 17);
   }
 
   function escaparHtml(valor) {
@@ -192,6 +200,12 @@
       overlay.innerHTML = '<div><span></span><strong>Consultando pedido</strong><small>Aguarde enquanto buscamos os dados.</small></div>';
       document.body.appendChild(overlay);
     }
+
+    var buscaVeiculo = buscaVeiculoField();
+    var titulo = overlay.querySelector('strong');
+    var apoio = overlay.querySelector('small');
+    if (titulo) titulo.textContent = buscaVeiculo ? 'Consultando ve\u00edculo' : 'Consultando pedido';
+    if (apoio) apoio.textContent = buscaVeiculo ? 'Aguarde enquanto localizamos a placa ou o chassi.' : 'Aguarde enquanto buscamos os dados.';
     overlay.classList.add('is-visible');
   }
 
@@ -226,9 +240,11 @@
 
     var pedido = pedidoField();
     var loja = lojaField();
+    var buscaVeiculo = buscaVeiculoField();
     var mensagens = [];
     var pedidoValor = pedido ? pedido.value.trim() : '';
     var lojaValor = loja ? loja.value.trim() : '';
+    var buscaValor = buscaVeiculo ? buscaVeiculo.value.trim() : '';
 
     if (pedido) {
       if (!pedidoValor) mensagens.push('Informe o pedido.');
@@ -242,15 +258,23 @@
       else if (lojaValor.length > 3) mensagens.push('O c\u00f3digo da loja deve ter at\u00e9 3 d\u00edgitos.');
     }
 
+    if (buscaVeiculo) {
+      if (!buscaValor) mensagens.push('Informe a placa ou o chassi.');
+      else if (buscaValor.length !== 7 && buscaValor.length !== 17) mensagens.push('Informe uma placa com 7 caracteres ou um chassi com 17 caracteres.');
+    }
+
     if (mensagens.length) {
       window.baliUtilityFeedback(mensagens.join(' '), 'error');
       if (pedido && (!pedidoValor || pedidoValor !== somenteDigitos(pedidoValor))) pedido.focus();
       else if (loja) loja.focus();
+      else if (buscaVeiculo) buscaVeiculo.focus();
       return false;
     }
 
     if (previewGerada() && document.body.getAttribute('data-bali-preview-key') === consultaKeyAtual()) {
-      window.baliUtilityFeedback('A prévia desse pedido e loja já está carregada. Confira os dados ou imprima o documento.', 'info');
+      window.baliUtilityFeedback(buscaVeiculo ?
+        'A prévia desse veículo já está carregada. Confira os dados ou imprima o documento.' :
+        'A prévia desse pedido e loja já está carregada. Confira os dados ou imprima o documento.', 'info');
       return false;
     }
 
@@ -284,6 +308,7 @@
   function normalizarCamposConsulta() {
     var pedido = pedidoField();
     var loja = lojaField();
+    var buscaVeiculo = buscaVeiculoField();
 
     if (pedido) pedido.value = somenteDigitos(pedido.value).slice(0, 12);
     if (loja) {
@@ -291,15 +316,18 @@
       if (lojaLimpa.length === 1) lojaLimpa = '0' + lojaLimpa;
       loja.value = lojaLimpa;
     }
+    if (buscaVeiculo) buscaVeiculo.value = normalizarIdentificacaoVeiculo(buscaVeiculo.value);
   }
 
   function consultaKeyAtual() {
     var pedido = pedidoField();
     var loja = lojaField();
+    var buscaVeiculo = buscaVeiculoField();
     return [
       window.location.pathname,
       pedido ? pedido.value.trim() : '',
-      loja ? loja.value.trim() : ''
+      loja ? loja.value.trim() : '',
+      buscaVeiculo ? buscaVeiculo.value.trim() : ''
     ].join('|');
   }
 
@@ -341,6 +369,7 @@
   function decorarCampos() {
     var pedido = pedidoField();
     var loja = lojaField();
+    var buscaVeiculo = buscaVeiculoField();
 
     if (pedido) {
       pedido.setAttribute('autocomplete', 'off');
@@ -371,6 +400,23 @@
           invalidarPrevia();
         });
         loja.addEventListener('blur', normalizarCamposConsulta);
+      }
+    }
+
+    if (buscaVeiculo) {
+      buscaVeiculo.setAttribute('autocomplete', 'off');
+      buscaVeiculo.setAttribute('autocapitalize', 'characters');
+      buscaVeiculo.setAttribute('spellcheck', 'false');
+      buscaVeiculo.setAttribute('maxlength', '17');
+      if (!buscaVeiculo.getAttribute('placeholder')) buscaVeiculo.setAttribute('placeholder', 'Ex.: ABC1D23 ou chassi completo');
+      if (buscaVeiculo.getAttribute('data-bali-vehicle-bound') !== '1') {
+        buscaVeiculo.setAttribute('data-bali-vehicle-bound', '1');
+        buscaVeiculo.addEventListener('input', function () {
+          var limpo = normalizarIdentificacaoVeiculo(buscaVeiculo.value);
+          if (buscaVeiculo.value !== limpo) buscaVeiculo.value = limpo;
+          invalidarPrevia();
+        });
+        buscaVeiculo.addEventListener('blur', normalizarCamposConsulta);
       }
     }
   }
@@ -932,7 +978,7 @@
       }
 
       if (key !== 'enter') return;
-      if (alvo !== pedidoField() && alvo !== lojaField()) return;
+      if (alvo !== pedidoField() && alvo !== lojaField() && alvo !== buscaVeiculoField()) return;
 
       event.preventDefault();
       var botao = gerarButton();
