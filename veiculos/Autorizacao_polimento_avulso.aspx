@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta charset="utf-8" />
-    <title>Autorização de Polimento - Avulso - Fiat</title>
+    <title>Autoriza&ccedil;&atilde;o de Polimento - Avulso - Fiat</title>
     <link href="../css/estilo.css" rel="stylesheet" />
     <link href="../css/bali-utility.css?v=20260713-polimento-avulso01" rel="stylesheet" />
     <script src="../js/bali-utility-print.js?v=20260707-polimento01"></script>
@@ -46,14 +46,14 @@
 
         <div id="TabRecibo">
             <asp:HiddenField ID="hdnPolimentoTab" runat="server" ClientIDMode="Static" Value="autorizacao" />
-            <div class="polimento-tabs" role="tablist" aria-label="Navegação da autorização de polimento avulsa">
-                <button type="button" class="polimento-tab is-active" data-polimento-tab="autorizacao">Autorização</button>
+            <div class="polimento-tabs" role="tablist" aria-label="Navega&ccedil;&atilde;o da autoriza&ccedil;&atilde;o de polimento avulsa">
+                <button type="button" class="polimento-tab is-active" data-polimento-tab="autorizacao">Autoriza&ccedil;&atilde;o</button>
                 <button type="button" class="polimento-tab" data-polimento-tab="dados">Dados</button>
             </div>
 
             <div class="polimento-tab-panel is-active" data-polimento-panel="autorizacao">
                 <fieldset>
-                    <legend>Autorização avulsa</legend>
+                    <legend>Autoriza&ccedil;&atilde;o avulsa</legend>
                     <div class="polimento-avulso-grid">
                         <label class="polimento-avulso-field">
                             <span>Chassi ou placa</span>
@@ -68,9 +68,9 @@
                         </label>
                         <asp:Button ID="btnGerar" runat="server" OnClientClick="aguarde();" Text="Gerar autorização" OnClick="btnGerar_Click" CssClass="btns" />
                     </div>
-                    <div class="polimento-avulso-note">Informe a placa ou o chassi completo. O sistema localizará o veículo em estoque e preencherá a autorização automaticamente.</div>
+                    <div class="polimento-avulso-note">Informe a placa ou o chassi completo. O sistema localizar&aacute; o ve&iacute;culo em estoque e preencher&aacute; a autoriza&ccedil;&atilde;o automaticamente.</div>
                     <br />
-                    <button type="button" class="bali-print-action" onclick="javascript: imprimePanel()">Imprimir autorização</button>
+                    <button type="button" class="bali-print-action" onclick="javascript: imprimePanel()">Imprimir autoriza&ccedil;&atilde;o</button>
                     <asp:Panel ID="pnlImpressao" runat="server" Width="100%" Height="100%">
                         <div style="width: 18.6cm; min-height: 0; height: 25.7cm; box-sizing: border-box; border: 1px solid #111; font-family: 'Times New Roman', serif; padding: .65cm; color: #111; background: #fff; overflow: hidden;" id="autorizacao-polimento">
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 8px; margin-bottom: 14px;">
@@ -79,7 +79,7 @@
                                     <div style="font-size: 10px; text-transform: uppercase; margin-top: 2px;"><asp:Label ID="lblEmpresa" runat="server"></asp:Label></div>
                                 </div>
                                 <div style="font-size: 10.5px; text-align: right;">
-                                    Identificação: <strong><asp:Label ID="lblPedidoPrint" runat="server" Text="AVULSO"></asp:Label></strong><br />
+                                    Identifica&ccedil;&atilde;o: <strong><asp:Label ID="lblPedidoPrint" runat="server" Text="AVULSO"></asp:Label></strong><br />
                                     Busca: <strong><asp:Label ID="lblOrigemPrint" runat="server"></asp:Label></strong><br />
                                     Nota Fiscal: <strong><asp:Label ID="lblNota" runat="server"></asp:Label></strong><br />
                                     Proposta: <strong><asp:Label ID="lblProposta" runat="server"></asp:Label></strong>
@@ -96,7 +96,7 @@
 
                             <table style="width: 100%; border-collapse: collapse; margin: 12px 0 14px; font-size: 11.5px;">
                                 <tr><td style="border: 1px solid #444; padding: 4px 6px; width: 25%; background: #f2f2f2;"><strong>Cliente</strong></td><td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblCliente" runat="server"></asp:Label></td></tr>
-                                <tr><td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Veículo</strong></td><td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblVeiculo" runat="server"></asp:Label></td></tr>
+                                <tr><td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Ve&iacute;culo</strong></td><td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblVeiculo" runat="server"></asp:Label></td></tr>
                                 <tr><td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Ano/Modelo</strong></td><td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblAno" runat="server"></asp:Label></td></tr>
                                 <tr><td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Cor</strong></td><td style="border: 1px solid #444; padding: 4px 6px; font-size: 12.5px; font-weight: bold;"><asp:Label ID="lblCor" runat="server"></asp:Label></td></tr>
                                 <tr><td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Chassi</strong></td><td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblChassi" runat="server"></asp:Label></td></tr>
@@ -127,7 +127,7 @@
             <div class="polimento-tab-panel" data-polimento-panel="dados">
                 <div class="polimento-bi-shell">
                     <fieldset>
-                        <legend>Dados da autorização</legend>
+                        <legend>Dados da autoriza&ccedil;&atilde;o</legend>
                         Data inicial: <asp:TextBox ID="txtBIDataInicial" runat="server"></asp:TextBox>
                         Data final: <asp:TextBox ID="txtBIDataFinal" runat="server"></asp:TextBox>
                         <asp:Button ID="btnAtualizarBI" runat="server" Text="Atualizar dados" CssClass="btns" OnClick="btnAtualizarBI_Click" OnClientClick="document.getElementById('hdnPolimentoTab').value='dados';" />
