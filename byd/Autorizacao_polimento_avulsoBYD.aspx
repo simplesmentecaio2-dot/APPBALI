@@ -87,11 +87,11 @@
                             </div>
 
                             <div style="text-align: center; font-size: 17px; font-weight: bold; text-transform: uppercase; margin: 10px 0 14px;">
-                                Autorização Interna para Execução de Polimento Veicular
+                                Autoriza&ccedil;&atilde;o Interna para Execu&ccedil;&atilde;o de Polimento Veicular
                             </div>
 
                             <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">
-                                Pelo presente documento, fica autorizada a execução do serviço de <strong>polimento veicular</strong> no veículo abaixo identificado, conforme dados extraídos do sistema interno da empresa por placa ou chassi.
+                                Pelo presente documento, fica autorizada a execu&ccedil;&atilde;o do servi&ccedil;o de <strong>polimento veicular</strong> no ve&iacute;culo abaixo identificado, conforme dados extra&iacute;dos do sistema interno da empresa por placa ou chassi.
                             </p>
 
                             <table style="width: 100%; border-collapse: collapse; margin: 12px 0 14px; font-size: 11.5px;">
@@ -107,10 +107,10 @@
                                 <tr><td style="border: 1px solid #444; padding: 4px 6px; background: #f2f2f2;"><strong>Vendedor</strong></td><td style="border: 1px solid #444; padding: 4px 6px;"><asp:Label ID="lblVendedor" runat="server"></asp:Label></td></tr>
                             </table>
 
-                            <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">A presente autorização tem por finalidade permitir a realização do serviço necessário à adequada apresentação estética do veículo, visando sua preparação para exposição, comercialização, entrega ou demais finalidades operacionais da área de vendas.</p>
-                            <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">Declaro, na qualidade de gerente responsável, que tomei ciência da solicitação e <strong>autorizo expressamente</strong> a execução do polimento no veículo acima identificado, ficando registrado que o serviço somente deverá ser realizado após a assinatura desta autorização.</p>
-                            <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">Esta autorização deverá ser arquivada no sistema interno da empresa para fins de controle, rastreabilidade e comprovação da aprovação gerencial.</p>
-                            <p style="text-align: center; margin: 4px 0 3px;"><strong style="display: block; font-size: 24px; line-height: 1.05; text-transform: uppercase; letter-spacing: 0;">Serviço autorizado: <asp:Label ID="lblTipoPolimento" runat="server" Text="Polimento completo do veículo"></asp:Label>.</strong></p>
+                            <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">A presente autoriza&ccedil;&atilde;o tem por finalidade permitir a realiza&ccedil;&atilde;o do servi&ccedil;o necess&aacute;rio &agrave; adequada apresenta&ccedil;&atilde;o est&eacute;tica do ve&iacute;culo, visando sua prepara&ccedil;&atilde;o para exposi&ccedil;&atilde;o, comercializa&ccedil;&atilde;o, entrega ou demais finalidades operacionais da &aacute;rea de vendas.</p>
+                            <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">Declaro, na qualidade de gerente respons&aacute;vel, que tomei ci&ecirc;ncia da solicita&ccedil;&atilde;o e <strong>autorizo expressamente</strong> a execu&ccedil;&atilde;o do polimento no ve&iacute;culo acima identificado, ficando registrado que o servi&ccedil;o somente dever&aacute; ser realizado ap&oacute;s a assinatura desta autoriza&ccedil;&atilde;o.</p>
+                            <p style="font-size: 13px; line-height: 1.28; text-align: justify; margin: 7px 0;">Esta autoriza&ccedil;&atilde;o dever&aacute; ser arquivada no sistema interno da empresa para fins de controle, rastreabilidade e comprova&ccedil;&atilde;o da aprova&ccedil;&atilde;o gerencial.</p>
+                            <p style="text-align: center; margin: 4px 0 3px;"><strong style="display: block; font-size: 24px; line-height: 1.05; text-transform: uppercase; letter-spacing: 0;">Servi&ccedil;o autorizado: <asp:Label ID="lblTipoPolimento" runat="server" Text="Polimento completo do veículo"></asp:Label>.</strong></p>
                             <div style="margin-top: 14px; font-size: 13px;"><asp:Label ID="lblData" runat="server"></asp:Label></div>
                             <div style="margin-top: 30px; text-align: center; font-size: 12.5px;">
                                 <div style="width: 64%; margin: 0 auto; border-top: 1px solid #111; padding-top: 7px;">
