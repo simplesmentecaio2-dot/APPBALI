@@ -38,7 +38,7 @@
                         <p>Acesse ranking, workflow, contratos, recibos, prospec&ccedil;&atilde;o e informa&ccedil;&otilde;es operacionais da Bali Jeep.</p>
                     </div>
                     <div class="central-summary" aria-label="Resumo dos atalhos">
-                        <div class="central-summary-item"><strong>11</strong><span>atalhos</span></div>
+                        <div class="central-summary-item"><strong>12</strong><span>atalhos</span></div>
                         <div class="central-summary-item"><strong>Jeep</strong><span>opera&ccedil;&atilde;o</span></div>
                     </div>
                 </section>
@@ -63,10 +63,6 @@
                         <a class="central-link-card" href="contrato.aspx" data-icon="contract">
                             <span class="central-link-icon"></span>
                             <span><span class="central-link-title">Contrato</span><span class="central-link-caption">Compra e venda</span></span>
-                        </a>
-                        <a class="central-link-card" href="../minhas-vendas.aspx?marca=jeep" data-icon="my-sales">
-                            <span class="central-link-icon"></span>
-                            <span><span class="central-link-title">Minhas vendas</span><span class="central-link-caption">BI do vendedor</span></span>
                         </a>
                         <a class="central-link-card" href="recibo_DescontoJEEP.aspx" data-icon="receipt">
                             <span class="central-link-icon"></span>

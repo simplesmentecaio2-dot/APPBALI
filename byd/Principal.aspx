@@ -38,7 +38,7 @@
                         <p>Acesse workflow, contratos, recibos, pedido de venda direta, test drive e informa&ccedil;&otilde;es operacionais da Bali BYD.</p>
                     </div>
                     <div class="central-summary" aria-label="Resumo dos atalhos">
-                        <div class="central-summary-item"><strong>10</strong><span>atalhos</span></div>
+                        <div class="central-summary-item"><strong>11</strong><span>atalhos</span></div>
                         <div class="central-summary-item"><strong>BYD</strong><span>opera&ccedil;&atilde;o</span></div>
                     </div>
                 </section>
@@ -59,10 +59,6 @@
                         <a class="central-link-card" href="contrato.aspx" data-icon="contract">
                             <span class="central-link-icon"></span>
                             <span><span class="central-link-title">Contrato</span><span class="central-link-caption">Compra e venda</span></span>
-                        </a>
-                        <a class="central-link-card" href="../minhas-vendas.aspx?marca=byd" data-icon="my-sales">
-                            <span class="central-link-icon"></span>
-                            <span><span class="central-link-title">Minhas vendas</span><span class="central-link-caption">BI do vendedor</span></span>
                         </a>
                         <a class="central-link-card" href="http://129.13.147.127/intranet/formbyd/" data-icon="direct-sale">
                             <span class="central-link-icon"></span>

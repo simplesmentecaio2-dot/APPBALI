@@ -38,7 +38,7 @@
                         <p>Acesse contratos, recibos, entregas, test drive, financeiro, lojas e ferramentas operacionais da Bali Fiat.</p>
                     </div>
                     <div class="central-summary" aria-label="Resumo dos atalhos">
-                        <div class="central-summary-item"><strong>10</strong><span>atalhos</span></div>
+                        <div class="central-summary-item"><strong>11</strong><span>atalhos</span></div>
                         <div class="central-summary-item"><strong>Fiat</strong><span>vendas</span></div>
                     </div>
                 </section>
@@ -55,10 +55,6 @@
                         <a class="central-link-card" href="contrato.aspx" data-icon="contract">
                             <span class="central-link-icon"></span>
                             <span><span class="central-link-title">Contrato</span><span class="central-link-caption">Compra e venda</span></span>
-                        </a>
-                        <a class="central-link-card" href="../minhas-vendas.aspx?marca=fiat" data-icon="my-sales">
-                            <span class="central-link-icon"></span>
-                            <span><span class="central-link-title">Minhas vendas</span><span class="central-link-caption">BI do vendedor</span></span>
                         </a>
                         <a class="central-link-card" href="recibo_Desconto.aspx" data-icon="receipt">
                             <span class="central-link-icon"></span>

@@ -10,13 +10,6 @@
       "icon": "contract"
     },
     {
-      "id": "padrao-minhas-vendas",
-      "title": "Minhas vendas",
-      "caption": "BI do vendedor",
-      "url": "../minhas-vendas.aspx?marca=fiat",
-      "icon": "my-sales"
-    },
-    {
       "id": "padrao-2-recibo-de-desconto",
       "title": "Recibo de Desconto",
       "caption": "Financeiro",
