@@ -80,6 +80,40 @@
             border:1px solid #cfe2c3; border-radius:18px; background:linear-gradient(135deg,#f8fff5,#fff);
             padding:1rem; margin-top:1rem;
         }
+        .patio-photo-uploader {
+            border:1px dashed #b7c8aa; border-radius:16px; background:linear-gradient(135deg,#f8fff5,#fff);
+            padding:.9rem; display:grid; grid-template-columns:96px minmax(0,1fr); gap:.85rem; align-items:center;
+        }
+        .patio-photo-preview {
+            width:96px; height:72px; border-radius:14px; border:1px solid #dbe4ef; background:#f1f5f9;
+            object-fit:cover; display:block;
+        }
+        .patio-photo-preview:not(.is-ready) { display:none; }
+        .patio-photo-placeholder {
+            width:96px; height:72px; border-radius:14px; border:1px solid #dbe4ef; background:#eef6e9;
+            color:#203729; display:flex; align-items:center; justify-content:center; font-size:1.4rem;
+        }
+        .patio-photo-uploader.has-photo .patio-photo-placeholder { display:none; }
+        .patio-photo-content { display:grid; gap:.55rem; min-width:0; }
+        .patio-photo-content strong { color:#0f172a; font-weight:950; }
+        .patio-photo-content small { color:#64748b; font-weight:800; }
+        .patio-photo-actions { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; }
+        .patio-photo-picker { position:relative; overflow:hidden; cursor:pointer; margin:0; }
+        .patio-photo-picker input { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; }
+        .patio-vehicle-cell { display:flex; align-items:center; gap:.75rem; min-width:220px; }
+        .patio-vehicle-cell > div:last-child { min-width:0; }
+        .patio-vehicle-photo {
+            flex:0 0 auto; width:72px; height:54px; border-radius:12px; border:1px solid #dbe4ef;
+            background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#6f9151;
+            overflow:hidden; text-decoration:none !important;
+        }
+        .patio-vehicle-photo img { width:100%; height:100%; object-fit:cover; display:block; }
+        .patio-vehicle-photo.is-empty { color:#94a3b8; background:#f8fafc; }
+        .patio-detail-photo {
+            border:1px solid #cfe2c3; border-radius:18px; overflow:hidden; background:#f8fafc; margin:.9rem 0 0;
+        }
+        .patio-detail-photo img { width:100%; max-height:320px; object-fit:cover; display:block; }
+        .patio-detail-photo-caption { padding:.6rem .75rem; color:#475569; font-weight:900; background:#fff; }
         .novos-vehicle-main { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:1rem; align-items:start; }
         .novos-vehicle-main strong { display:block; color:#0f172a; font-size:1.15rem; font-weight:950; }
         .novos-vehicle-main small { display:block; color:#64748b; font-weight:800; margin-top:.2rem; }
@@ -209,6 +243,9 @@
             .novos-step { padding:.58rem .65rem; font-size:.82rem; }
             .novos-step b { width:24px; height:24px; }
             .novos-actions .novos-btn { flex:1 1 100%; }
+            .patio-photo-uploader { grid-template-columns:1fr; }
+            .patio-photo-preview, .patio-photo-placeholder { width:100%; height:180px; }
+            .patio-vehicle-cell { align-items:flex-start; }
             .novos-table, .novos-table thead, .novos-table tbody, .novos-table th, .novos-table td, .novos-table tr { display:block; min-width:0; width:100%; }
             .novos-table thead { display:none; }
             .novos-table tr { border:1px solid #dbe4ef; border-radius:16px; margin-bottom:.85rem; background:#fff; overflow:hidden; }
@@ -241,6 +278,9 @@
         <asp:HiddenField ID="hfRegistroVeNr" runat="server" />
         <asp:HiddenField ID="hfRegistroSerie" runat="server" />
         <asp:HiddenField ID="hfRegistroNf" runat="server" />
+        <asp:HiddenField ID="hfRegistroFotoBase64" runat="server" />
+        <asp:HiddenField ID="hfRegistroFotoNome" runat="server" />
+        <asp:HiddenField ID="hfRegistroFotoTamanho" runat="server" />
         <asp:HiddenField ID="hfTransferenciaVeNr" runat="server" />
         <asp:HiddenField ID="hfTransferenciaOrigem" runat="server" />
         <asp:HiddenField ID="hfTransferenciaSerie" runat="server" />
@@ -528,6 +568,26 @@
                                                         <label class="novos-label" for="<%= ddlRegistroLoja.ClientID %>">Loja inicial</label>
                                                         <asp:DropDownList ID="ddlRegistroLoja" runat="server" CssClass="novos-select"></asp:DropDownList>
                                                     </div>
+                                                    <div class="novos-field is-full">
+                                                        <label class="novos-label">Foto da localiza&ccedil;&atilde;o</label>
+                                                        <div class="patio-photo-uploader" data-patio-photo="1" data-photo-hidden="<%= hfRegistroFotoBase64.ClientID %>" data-photo-name="<%= hfRegistroFotoNome.ClientID %>" data-photo-size="<%= hfRegistroFotoTamanho.ClientID %>">
+                                                            <div>
+                                                                <span class="patio-photo-placeholder"><i class="fa fa-camera"></i></span>
+                                                                <img class="patio-photo-preview" data-photo-preview alt="Pr&eacute;via da foto do ve&iacute;culo" />
+                                                            </div>
+                                                            <div class="patio-photo-content">
+                                                                <strong>Foto opcional para localizar o carro no p&aacute;tio</strong>
+                                                                <small data-photo-status>Opcional: tire uma foto ou escolha da galeria.</small>
+                                                                <div class="patio-photo-actions">
+                                                                    <label class="novos-btn novos-btn-light patio-photo-picker">
+                                                                        <i class="fa fa-camera"></i> Tirar ou escolher foto
+                                                                        <input type="file" data-photo-input accept="image/*" capture="environment" />
+                                                                    </label>
+                                                                    <button type="button" class="novos-btn novos-btn-light" data-photo-clear><i class="fa fa-times"></i>Remover</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div class="novos-actions">
                                                     <button type="button" id="openBarcodeScanner" data-toggle="modal" data-target="#myModal" class="novos-btn novos-btn-light"><i class="fa fa-barcode"></i>Ler pela c&acirc;mera</button>
@@ -803,6 +863,7 @@
         };
     </script>
     <script src="./assets/js/patio-barcode-scanner.js?v=20260706-1" charset="utf-8"></script>
+    <script src="./assets/js/patio-photo-upload.js?v=20260714-1" charset="utf-8"></script>
     <script src="./assets/js/patio-jeep-ux.js?v=20260709-1"></script>
     <script>
         (function () {

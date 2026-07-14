@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Web;
 
 public static class PatioBaixaVendaSincronizador
 {
@@ -90,6 +91,7 @@ SELECT
             adapter.Fill(tabela);
             tempo.Stop();
             AdicionarDuracao(tabela, tempo.ElapsedMilliseconds);
+            AdicionarFotosRemovidas(tabela, PatioFotoHelper.LimparFotosBaixadas(HttpContext.Current, usuario));
         }
         catch (Exception ex)
         {
@@ -115,6 +117,19 @@ SELECT
         foreach (DataRow row in tabela.Rows)
         {
             row["duracao_ms"] = duracaoMs;
+        }
+    }
+
+    private static void AdicionarFotosRemovidas(DataTable tabela, int fotosRemovidas)
+    {
+        if (!tabela.Columns.Contains("fotos_removidas"))
+        {
+            tabela.Columns.Add("fotos_removidas", typeof(int));
+        }
+
+        foreach (DataRow row in tabela.Rows)
+        {
+            row["fotos_removidas"] = fotosRemovidas;
         }
     }
 

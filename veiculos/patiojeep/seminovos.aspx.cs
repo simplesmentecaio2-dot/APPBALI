@@ -17,6 +17,15 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
         }
 
         usuarioLogado.Text = Html(Convert.ToString(Session["usuario"]));
+        try
+        {
+            PatioFotoHelper.GarantirEstrutura();
+        }
+        catch (Exception ex)
+        {
+            RegistrarAuditoria("FOTO_ESTRUTURA_ERRO", null, "SEMINOVOS", ex.Message);
+        }
+
         ScriptManager scriptManager = ScriptManager.GetCurrent(Page);
         if (scriptManager != null)
         {
@@ -101,8 +110,22 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
         string resultado = resposta.Rows.Count > 0 ? Valor(resposta.Rows[0], "resultado") : "";
         if (resultado == "s")
         {
+            int idRegistro = resposta.Rows.Count > 0 ? ToInt(Valor(resposta.Rows[0], "id")) : 0;
             RegistrarAuditoria("REGISTRO_SALVO", veiculo, hfRegistroReferencia.Value, "Loja inicial=" + loja);
-            MostrarMensagem("success", "Registro salvo", "Seminovo registrado no p\u00e1tio com sucesso.");
+            PatioFotoResultado foto = PatioFotoHelper.SalvarFotoBase64(Context, "SEMINOVO", Convert.ToString(veiculo), idRegistro > 0 ? (int?)idRegistro : null, hfRegistroFotoBase64.Value, UsuarioAtual());
+            if (foto.Sucesso && !foto.SemFoto)
+            {
+                RegistrarAuditoria("FOTO_SALVA", veiculo, hfRegistroReferencia.Value, foto.Url);
+                MostrarMensagem("success", "Registro salvo", "Seminovo registrado no p\u00e1tio com foto comprimida.");
+            }
+            else if (!foto.Sucesso)
+            {
+                MostrarMensagem("warning", "Registro salvo sem foto", foto.Mensagem);
+            }
+            else
+            {
+                MostrarMensagem("success", "Registro salvo", "Seminovo registrado no p\u00e1tio com sucesso.");
+            }
             txtRegistroBusca.Text = "";
             txtRegistroObservacao.Text = "";
             LimparRegistro(false);
@@ -308,6 +331,8 @@ public partial class veiculos_patio_seminovos : System.Web.UI.Page
         if (resultado == "s")
         {
             RegistrarAuditoria("BAIXA_MANUAL", ToIntNullable(hfOperVeNr.Value), txtOperBusca.Text, "Motivo=" + txtOperMotivoBaixa.Text);
+            int seminovoId;
+            PatioFotoHelper.RemoverFotosDoVeiculo(Context, "SEMINOVO", null, Int32.TryParse(hfOperVeNr.Value, out seminovoId) ? (int?)seminovoId : null, "BAIXA_MANUAL", UsuarioAtual());
             MostrarMensagem("success", "Baixa registrada", "A baixa manual foi gravada e auditada.");
             LimparOperacional();
             CarregarConsulta();
@@ -818,10 +843,19 @@ SELECT TOP 1
     p.observacao,
     ISNULL(p.status_operacional, 'NO_PATIO') AS status_operacional,
     COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad) AS ultima_movimentacao,
-    DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado
+    DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado,
+    foto.caminho AS foto_url
 FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
 LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
     ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+OUTER APPLY (
+    SELECT TOP 1 f.caminho
+    FROM dbo.veiculos_patio_foto f WITH (NOLOCK)
+    WHERE f.ativo = 1
+      AND f.tipo = 'SEMINOVO'
+      AND (f.seminovo_id = p.id OR (f.seminovo_id IS NULL AND f.ve_nr = CONVERT(varchar(50), p.ve_nr)))
+    ORDER BY f.dt_cad DESC, f.id DESC
+) foto
 WHERE p.ativo = 1
   AND @valor <> ''
   AND (
@@ -863,10 +897,19 @@ ORDER BY p.dt_cad DESC, p.id DESC;",
         p.observacao,
         ISNULL(p.status_operacional, 'NO_PATIO') AS status_operacional,
         COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad) AS ultima_movimentacao,
-        DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado
+        DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado,
+        foto.caminho AS foto_url
     FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
     LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
         ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+    OUTER APPLY (
+        SELECT TOP 1 f.caminho
+        FROM dbo.veiculos_patio_foto f WITH (NOLOCK)
+        WHERE f.ativo = 1
+          AND f.tipo = 'SEMINOVO'
+          AND (f.seminovo_id = p.id OR (f.seminovo_id IS NULL AND f.ve_nr = CONVERT(varchar(50), p.ve_nr)))
+        ORDER BY f.dt_cad DESC, f.id DESC
+    ) foto
     WHERE p.ativo = 1
       AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
       AND (@status = '' OR ISNULL(p.status_operacional, 'NO_PATIO') = @status)
@@ -932,10 +975,19 @@ SELECT TOP 5000
     p.observacao,
     ISNULL(p.status_operacional, 'NO_PATIO') AS status_operacional,
     COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad) AS ultima_movimentacao,
-    DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado
+    DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado,
+    foto.caminho AS foto_url
 FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
 LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
     ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+OUTER APPLY (
+    SELECT TOP 1 f.caminho
+    FROM dbo.veiculos_patio_foto f WITH (NOLOCK)
+    WHERE f.ativo = 1
+      AND f.tipo = 'SEMINOVO'
+      AND (f.seminovo_id = p.id OR (f.seminovo_id IS NULL AND f.ve_nr = CONVERT(varchar(50), p.ve_nr)))
+    ORDER BY f.dt_cad DESC, f.id DESC
+) foto
 WHERE p.ativo = 1
   AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
   AND (@status = '' OR ISNULL(p.status_operacional, 'NO_PATIO') = @status)
@@ -981,10 +1033,19 @@ SELECT TOP (@limite)
     p.observacao,
     ISNULL(p.status_operacional, 'NO_PATIO') AS status_operacional,
     COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad) AS ultima_movimentacao,
-    DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado
+    DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = p.id), p.dt_cad), GETDATE()) AS dias_parado,
+    foto.caminho AS foto_url
 FROM dbo.veiculos_patio_seminovos_locacao p WITH (NOLOCK)
 LEFT JOIN dbo.veiculos_patio_loja l WITH (NOLOCK)
     ON l.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+OUTER APPLY (
+    SELECT TOP 1 f.caminho
+    FROM dbo.veiculos_patio_foto f WITH (NOLOCK)
+    WHERE f.ativo = 1
+      AND f.tipo = 'SEMINOVO'
+      AND (f.seminovo_id = p.id OR (f.seminovo_id IS NULL AND f.ve_nr = CONVERT(varchar(50), p.ve_nr)))
+    ORDER BY f.dt_cad DESC, f.id DESC
+) foto
 WHERE p.ativo = 1
   AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
 ORDER BY p.dt_cad DESC, p.id DESC;",
@@ -1158,8 +1219,8 @@ WHERE p.ativo = 1
         StringBuilder html = new StringBuilder();
         html.Append("<div class=\"semi-vehicle-card\">");
         html.Append("<div class=\"semi-vehicle-main\">");
-        html.Append("<div><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong>");
-        html.Append("<small>").Append(Html(subtitulo)).Append("</small></div>");
+        html.Append("<div class=\"patio-vehicle-cell\">").Append(FotoThumb(row, false)).Append("<div><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong>");
+        html.Append("<small>").Append(Html(subtitulo)).Append("</small></div></div>");
         html.Append("<span class=\"semi-pill\"><i class=\"fa fa-car\"></i> C&oacute;d. ").Append(Html(Valor(row, "ve_nr"))).Append("</span>");
         html.Append("</div>");
         html.Append("<div class=\"semi-pill-list\">");
@@ -1188,6 +1249,34 @@ WHERE p.ativo = 1
     private string RenderConsulta(DataTable tabela)
     {
         return RenderConsulta(tabela, 0);
+    }
+
+    private string FotoUrl(DataRow row)
+    {
+        if (row == null || row.Table == null || !row.Table.Columns.Contains("foto_url")) return "";
+        string url = Valor(row, "foto_url");
+        if (String.IsNullOrWhiteSpace(url)) return "";
+        url = url.Trim();
+        if (!url.StartsWith("/veiculos/patiojeep/uploads/fotos/", StringComparison.OrdinalIgnoreCase)) return "";
+        return url;
+    }
+
+    private string FotoThumb(DataRow row, bool mostrarVazio)
+    {
+        string url = FotoUrl(row);
+        if (String.IsNullOrWhiteSpace(url))
+        {
+            return mostrarVazio ? "<span class=\"patio-vehicle-photo is-empty\"><i class=\"fa fa-camera\"></i></span>" : "";
+        }
+
+        return "<a class=\"patio-vehicle-photo\" href=\"" + Html(url) + "\" target=\"_blank\" rel=\"noopener\" title=\"Abrir foto\"><img src=\"" + Html(url) + "\" alt=\"Foto do ve&iacute;culo\" loading=\"lazy\" /></a>";
+    }
+
+    private string FotoDetalhe(DataRow row)
+    {
+        string url = FotoUrl(row);
+        if (String.IsNullOrWhiteSpace(url)) return "";
+        return "<div class=\"patio-detail-photo\"><img src=\"" + Html(url) + "\" alt=\"Foto do ve&iacute;culo\" loading=\"lazy\" /><div class=\"patio-detail-photo-caption\"><i class=\"fa fa-camera\"></i> Foto registrada para localiza&ccedil;&atilde;o no p&aacute;tio</div></div>";
     }
 
     private string RenderConsulta(DataTable tabela, int detalheId)
@@ -1221,7 +1310,7 @@ WHERE p.ativo = 1
                 html.Append("<a class=\"semi-mini-action\" href=\"#\" data-copy=\"").Append(Html(placa)).Append("\" data-copy-label=\"Placa\"><i class=\"far fa-copy\"></i>Placa</a>");
             }
             html.Append("</span></td>");
-            html.Append("<td data-label=\"Ve&iacute;culo\"><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong><small>C&oacute;d. ").Append(Html(Valor(row, "ve_nr"))).Append("</small></td>");
+            html.Append("<td data-label=\"Ve&iacute;culo\"><div class=\"patio-vehicle-cell\">").Append(FotoThumb(row, true)).Append("<div><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong><small>C&oacute;d. ").Append(Html(Valor(row, "ve_nr"))).Append("</small></div></div></td>");
             html.Append("<td data-label=\"Chassi\">").Append(Html(chassi)).Append("</td>");
             html.Append("<td data-label=\"Placa\">").Append(Html(placa)).Append("</td>");
             html.Append("<td data-label=\"Renavam\">").Append(Html(renavam)).Append("</td>");
@@ -1262,6 +1351,7 @@ WHERE p.ativo = 1
             html.Append(Pill("Obs.", Valor(row, "observacao")));
         }
         html.Append("</div>");
+        html.Append(FotoDetalhe(row));
         html.Append("<div class=\"semi-actions\">");
         html.Append("<a class=\"semi-btn semi-btn-light\" href=\"#\" data-copy=\"").Append(Html(Valor(row, "ve_chassi"))).Append("\" data-copy-label=\"Chassi\"><i class=\"far fa-copy\"></i>Copiar chassi</a>");
         if (!String.IsNullOrWhiteSpace(Valor(row, "ve_placa")))
@@ -1476,6 +1566,9 @@ ORDER BY dt DESC, id DESC;",
     {
         hfRegistroVeNr.Value = "";
         hfRegistroReferencia.Value = "";
+        hfRegistroFotoBase64.Value = "";
+        hfRegistroFotoNome.Value = "";
+        hfRegistroFotoTamanho.Value = "";
         litRegistroVeiculo.Text = "";
         btnSalvarRegistro.Enabled = false;
         if (limparBusca)

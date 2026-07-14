@@ -20,6 +20,15 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
         }
 
         usuarioLogado.Text = Html(Convert.ToString(Session["usuario"]));
+        try
+        {
+            PatioFotoHelper.GarantirEstrutura();
+        }
+        catch (Exception ex)
+        {
+            PatioJeepAuditoria.Registrar("PATIO_FOTO_ESTRUTURA_ERRO", Session["usuario"], "NOVOS", ex.Message);
+        }
+
         ScriptManager scriptManager = ScriptManager.GetCurrent(Page);
         if (scriptManager != null)
         {
@@ -44,6 +53,14 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
                 txtTransferenciaSerie.Text = serie;
                 AtivarAba("transferir");
                 BuscarTransferencia(false);
+            }
+
+            string registro = Request.QueryString["registro"];
+            if (!String.IsNullOrWhiteSpace(registro))
+            {
+                txtRegistroSerie.Text = registro;
+                AtivarAba("registrar");
+                btnPesquisarRegistro_Click(btnPesquisarRegistro, EventArgs.Empty);
             }
 
             string historico = Request.QueryString["historico"];
@@ -212,7 +229,20 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
         if (resultado == "s")
         {
             PatioJeepAuditoria.Registrar("NOVOS_REGISTRO_SALVO", Session["usuario"], veiculo, "Loja=" + loja);
-            MostrarMensagem("success", "Registro salvo", "Ve\u00edculo novo registrado no p\u00e1tio com sucesso.");
+            PatioFotoResultado foto = PatioFotoHelper.SalvarFotoBase64(Context, "NOVO", Convert.ToString(veiculo), null, hfRegistroFotoBase64.Value, UsuarioAtual());
+            if (foto.Sucesso && !foto.SemFoto)
+            {
+                PatioJeepAuditoria.Registrar("NOVOS_FOTO_SALVA", Session["usuario"], veiculo, foto.Url);
+                MostrarMensagem("success", "Registro salvo", "Ve\u00edculo novo registrado no p\u00e1tio com foto comprimida.");
+            }
+            else if (!foto.Sucesso)
+            {
+                MostrarMensagem("warning", "Registro salvo sem foto", foto.Mensagem);
+            }
+            else
+            {
+                MostrarMensagem("success", "Registro salvo", "Ve\u00edculo novo registrado no p\u00e1tio com sucesso.");
+            }
             txtRegistroSerie.Text = "";
             LimparRegistro(false);
             RenderStepper(4);
@@ -474,6 +504,9 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
         if (resultado == "s")
         {
             PatioJeepAuditoria.Registrar("PATIO_BAIXA_MANUAL", Session["usuario"], hfOperVeNr.Value, hfOperTipo.Value + "; Motivo=" + txtOperMotivoBaixa.Text);
+            int seminovoId;
+            int? idSeminovo = String.Equals(hfOperTipo.Value, "SEMINOVO", StringComparison.OrdinalIgnoreCase) && Int32.TryParse(hfOperVeNr.Value, out seminovoId) ? (int?)seminovoId : null;
+            PatioFotoHelper.RemoverFotosDoVeiculo(Context, hfOperTipo.Value, String.Equals(hfOperTipo.Value, "NOVO", StringComparison.OrdinalIgnoreCase) ? hfOperVeNr.Value : null, idSeminovo, "BAIXA_MANUAL", UsuarioAtual());
             MostrarMensagem("success", "Baixa registrada", "A baixa manual foi gravada e auditada.");
             LimparOperacional();
             CarregarTodos();
@@ -1093,6 +1126,34 @@ SELECT
         return RenderConsulta(tabela, 0);
     }
 
+    private string FotoUrl(DataRow row)
+    {
+        if (row == null || row.Table == null || !row.Table.Columns.Contains("foto_url")) return "";
+        string url = Valor(row, "foto_url");
+        if (String.IsNullOrWhiteSpace(url)) return "";
+        url = url.Trim();
+        if (!url.StartsWith("/veiculos/patiojeep/uploads/fotos/", StringComparison.OrdinalIgnoreCase)) return "";
+        return url;
+    }
+
+    private string FotoThumb(DataRow row, bool mostrarVazio)
+    {
+        string url = FotoUrl(row);
+        if (String.IsNullOrWhiteSpace(url))
+        {
+            return mostrarVazio ? "<span class=\"patio-vehicle-photo is-empty\"><i class=\"fa fa-camera\"></i></span>" : "";
+        }
+
+        return "<a class=\"patio-vehicle-photo\" href=\"" + Html(url) + "\" target=\"_blank\" rel=\"noopener\" title=\"Abrir foto\"><img src=\"" + Html(url) + "\" alt=\"Foto do ve&iacute;culo\" loading=\"lazy\" /></a>";
+    }
+
+    private string FotoDetalhe(DataRow row)
+    {
+        string url = FotoUrl(row);
+        if (String.IsNullOrWhiteSpace(url)) return "";
+        return "<div class=\"patio-detail-photo\"><img src=\"" + Html(url) + "\" alt=\"Foto do ve&iacute;culo\" loading=\"lazy\" /><div class=\"patio-detail-photo-caption\"><i class=\"fa fa-camera\"></i> Foto registrada para localiza&ccedil;&atilde;o no p&aacute;tio</div></div>";
+    }
+
     private string RenderConsulta(DataTable tabela, int detalheId)
     {
         if (tabela.Rows.Count == 0)
@@ -1123,7 +1184,7 @@ SELECT
             }
             html.Append("<a class=\"novos-mini-action\" href=\"novos.aspx?aba=relatorios\"><i class=\"fa fa-chart-line\"></i>Relat&oacute;rio</a>");
             html.Append("</span></td>");
-            html.Append("<td data-label=\"Ve&iacute;culo\"><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong><small>C&oacute;d. ").Append(Html(veNr)).Append(" | S&eacute;rie ").Append(Html(serie)).Append("</small></td>");
+            html.Append("<td data-label=\"Ve&iacute;culo\"><div class=\"patio-vehicle-cell\">").Append(FotoThumb(row, true)).Append("<div><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong><small>C&oacute;d. ").Append(Html(veNr)).Append(" | S&eacute;rie ").Append(Html(serie)).Append("</small></div></div></td>");
             html.Append("<td data-label=\"Chassi\">").Append(Html(chassi)).Append("</td>");
             html.Append("<td data-label=\"Placa\">").Append(Html(placa)).Append("</td>");
             html.Append("<td data-label=\"Renavam\">").Append(Html(Valor(row, "ve_renavam"))).Append("</td>");
@@ -1157,6 +1218,7 @@ SELECT
         html.Append(Pill("Cor", Valor(row, "cor_ds")));
         html.Append(Pill("&Uacute;ltima mov.", DataCurta(row, "ultima_movimentacao")));
         html.Append("</div>");
+        html.Append(FotoDetalhe(row));
         html.Append("<div class=\"novos-history-title\"><span><i class=\"fa fa-route\"></i> Hist&oacute;rico de transfer&ecirc;ncias</span>");
         html.Append("<a class=\"novos-mini-action\" href=\"novos.aspx?aba=transferir&amp;serie=").Append(HttpUtility.UrlEncode(Valor(row, "ve_serie"))).Append("\"><i class=\"fa fa-exchange-alt\"></i>Transferir este carro</a></div>");
         html.Append("<div class=\"novos-table-wrap\">").Append(RenderHistoricoNovoTabela(veNr)).Append("</div>");
@@ -1231,7 +1293,7 @@ SELECT
             }
             html.Append("</span></td>");
             html.Append("<td data-label=\"Tipo\"><span class=\"novos-pill\"><i class=\"fa ").Append(tipo == "SEMINOVO" ? "fa-car-side" : "fa-car").Append("\"></i>").Append(Html(tipo == "SEMINOVO" ? "Seminovo" : "Novo")).Append("</span></td>");
-            html.Append("<td data-label=\"Ve&iacute;culo\"><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong><small>C&oacute;d. ").Append(Html(veNr)).Append(" | Ref. ").Append(Html(Valor(row, "codigo_origem"))).Append("</small></td>");
+            html.Append("<td data-label=\"Ve&iacute;culo\"><div class=\"patio-vehicle-cell\">").Append(FotoThumb(row, true)).Append("<div><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong><small>C&oacute;d. ").Append(Html(veNr)).Append(" | Ref. ").Append(Html(Valor(row, "codigo_origem"))).Append("</small></div></div></td>");
             html.Append("<td data-label=\"Chassi\">").Append(Html(chassi)).Append("</td>");
             html.Append("<td data-label=\"Placa\">").Append(Html(Valor(row, "ve_placa"))).Append("</td>");
             html.Append("<td data-label=\"Loja atual\"><span class=\"novos-pill\">").Append(Html(Valor(row, "loja_atual"))).Append("</span></td>");
@@ -1300,10 +1362,14 @@ SELECT
         string veNr = Valor(row, "ve_nr");
         string serie = Valor(row, "ve_serie");
         string chassi = Valor(row, "ve_chassi");
+        if (String.IsNullOrWhiteSpace(serie) && !String.IsNullOrWhiteSpace(chassi))
+        {
+            serie = NormalizarSerie(chassi);
+        }
         html.Append("<div class=\"novos-vehicle-card\">");
         html.Append("<div class=\"novos-vehicle-main\">");
-        html.Append("<div><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong>");
-        html.Append("<small>").Append(Html(subtitulo)).Append("</small></div>");
+        html.Append("<div class=\"patio-vehicle-cell\">").Append(FotoThumb(row, false)).Append("<div><strong>").Append(Html(Valor(row, "ve_ds"))).Append("</strong>");
+        html.Append("<small>").Append(Html(subtitulo)).Append("</small></div></div>");
         html.Append("<span class=\"novos-pill\"><i class=\"fa fa-car\"></i> ").Append(Html(titulo)).Append("</span>");
         html.Append("</div><div class=\"novos-pill-list\">");
         html.Append(Pill("C&oacute;digo", veNr));
@@ -1326,7 +1392,7 @@ SELECT
         }
         else if (origem == "dealernet")
         {
-            html.Append("<a class=\"novos-btn novos-btn-light\" href=\"novos.aspx?aba=registrar\"><i class=\"fa fa-folder-plus\"></i>Registrar em Novos</a>");
+            html.Append("<a class=\"novos-btn novos-btn-light\" href=\"novos.aspx?aba=registrar&amp;registro=").Append(HttpUtility.UrlEncode(serie)).Append("\"><i class=\"fa fa-folder-plus\"></i>Registrar em Novos</a>");
         }
         if (!String.IsNullOrWhiteSpace(chassi)) html.Append("<a class=\"novos-btn novos-btn-light\" href=\"#\" data-copy=\"").Append(Html(chassi)).Append("\" data-copy-label=\"Chassi\"><i class=\"far fa-copy\"></i>Copiar chassi</a>");
         if (!String.IsNullOrWhiteSpace(Valor(row, "ve_placa"))) html.Append("<a class=\"novos-btn novos-btn-light\" href=\"#\" data-copy=\"").Append(Html(Valor(row, "ve_placa"))).Append("\" data-copy-label=\"Placa\"><i class=\"far fa-copy\"></i>Copiar placa</a>");
@@ -1571,7 +1637,8 @@ SELECT TOP (@limite)
     COALESCE(lj.ds, 'Sem loja') AS loja_atual,
     p.fun_cad,
     p.dt_cad,
-    (SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_transferencia t WITH (NOLOCK) WHERE t.ve_nr = p.ve_nr) AS ultima_movimentacao
+    (SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_transferencia t WITH (NOLOCK) WHERE t.ve_nr = p.ve_nr) AS ultima_movimentacao,
+    foto.caminho AS foto_url
 FROM dbo.veiculos_patio_locacao p WITH (NOLOCK)
 INNER JOIN GrupoBali_DealernetWF.dbo.Veiculo v WITH (NOLOCK)
     ON ISNUMERIC(p.ve_nr) = 1 AND CAST(p.ve_nr AS int) = v.Veiculo_Codigo
@@ -1579,6 +1646,14 @@ LEFT JOIN GrupoBali_DealernetWF.dbo.Cor c WITH (NOLOCK)
     ON v.Veiculo_CorCodExterna = c.Cor_Codigo
 LEFT JOIN dbo.veiculos_patio_loja lj WITH (NOLOCK)
     ON lj.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+OUTER APPLY (
+    SELECT TOP 1 f.caminho
+    FROM dbo.veiculos_patio_foto f WITH (NOLOCK)
+    WHERE f.ativo = 1
+      AND f.tipo = 'NOVO'
+      AND f.ve_nr = CONVERT(varchar(50), p.ve_nr)
+    ORDER BY f.dt_cad DESC, f.id DESC
+) foto
 WHERE p.baixado_venda = 0
   AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
   AND (
@@ -1618,7 +1693,8 @@ ORDER BY p.dt_cad DESC, p.ve_nr DESC;",
         COALESCE(lj.ds, 'Sem loja') AS loja_atual,
         p.fun_cad,
         p.dt_cad,
-        (SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_transferencia t WITH (NOLOCK) WHERE t.ve_nr = p.ve_nr) AS ultima_movimentacao
+        (SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_transferencia t WITH (NOLOCK) WHERE t.ve_nr = p.ve_nr) AS ultima_movimentacao,
+        foto.caminho AS foto_url
     FROM dbo.veiculos_patio_locacao p WITH (NOLOCK)
     INNER JOIN GrupoBali_DealernetWF.dbo.Veiculo v WITH (NOLOCK)
         ON ISNUMERIC(p.ve_nr) = 1 AND CAST(p.ve_nr AS int) = v.Veiculo_Codigo
@@ -1626,6 +1702,14 @@ ORDER BY p.dt_cad DESC, p.ve_nr DESC;",
         ON v.Veiculo_CorCodExterna = c.Cor_Codigo
     LEFT JOIN dbo.veiculos_patio_loja lj WITH (NOLOCK)
         ON lj.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+    OUTER APPLY (
+        SELECT TOP 1 f.caminho
+        FROM dbo.veiculos_patio_foto f WITH (NOLOCK)
+        WHERE f.ativo = 1
+          AND f.tipo = 'NOVO'
+          AND f.ve_nr = CONVERT(varchar(50), p.ve_nr)
+        ORDER BY f.dt_cad DESC, f.id DESC
+    ) foto
     WHERE p.baixado_venda = 0
       AND (@loja = 0 OR COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id) = @loja)
       AND (
@@ -1932,7 +2016,8 @@ ORDER BY rn;",
         COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_transferencia t WITH (NOLOCK) WHERE t.ve_nr = p.ve_nr), p.dt_cad) AS ultima_movimentacao,
         ISNULL(p.status_operacional, 'NO_PATIO') COLLATE DATABASE_DEFAULT AS status_operacional,
         ISNULL(p.observacao, '') COLLATE DATABASE_DEFAULT AS observacao,
-        DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_transferencia t WITH (NOLOCK) WHERE t.ve_nr = p.ve_nr), p.dt_cad), GETDATE()) AS dias_parado
+        DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_transferencia t WITH (NOLOCK) WHERE t.ve_nr = p.ve_nr), p.dt_cad), GETDATE()) AS dias_parado,
+        ISNULL(foto.caminho, '') COLLATE DATABASE_DEFAULT AS foto_url
     FROM dbo.veiculos_patio_locacao p WITH (NOLOCK)
     INNER JOIN GrupoBali_DealernetWF.dbo.Veiculo v WITH (NOLOCK)
         ON ISNUMERIC(p.ve_nr) = 1 AND CAST(p.ve_nr AS int) = v.Veiculo_Codigo
@@ -1940,6 +2025,14 @@ ORDER BY rn;",
         ON v.Veiculo_CorCodExterna = c.Cor_Codigo
     LEFT JOIN dbo.veiculos_patio_loja lj WITH (NOLOCK)
         ON lj.id = COALESCE(NULLIF(p.loja_atual_id, 0), p.loja_id)
+    OUTER APPLY (
+        SELECT TOP 1 f.caminho
+        FROM dbo.veiculos_patio_foto f WITH (NOLOCK)
+        WHERE f.ativo = 1
+          AND f.tipo = 'NOVO'
+          AND f.ve_nr = CONVERT(varchar(50), p.ve_nr)
+        ORDER BY f.dt_cad DESC, f.id DESC
+    ) foto
     WHERE p.baixado_venda = 0
 
     UNION ALL
@@ -1961,10 +2054,19 @@ ORDER BY rn;",
         COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = s.id), s.dt_cad) AS ultima_movimentacao,
         ISNULL(s.status_operacional, 'NO_PATIO') COLLATE DATABASE_DEFAULT AS status_operacional,
         ISNULL(s.observacao, '') COLLATE DATABASE_DEFAULT AS observacao,
-        DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = s.id), s.dt_cad), GETDATE()) AS dias_parado
+        DATEDIFF(day, COALESCE((SELECT MAX(t.dt_transf) FROM dbo.veiculos_patio_seminovos_transferencia t WITH (NOLOCK) WHERE t.seminovo_id = s.id), s.dt_cad), GETDATE()) AS dias_parado,
+        ISNULL(foto.caminho, '') COLLATE DATABASE_DEFAULT AS foto_url
     FROM dbo.veiculos_patio_seminovos_locacao s WITH (NOLOCK)
     LEFT JOIN dbo.veiculos_patio_loja lj WITH (NOLOCK)
         ON lj.id = COALESCE(NULLIF(s.loja_atual_id, 0), s.loja_id)
+    OUTER APPLY (
+        SELECT TOP 1 f.caminho
+        FROM dbo.veiculos_patio_foto f WITH (NOLOCK)
+        WHERE f.ativo = 1
+          AND f.tipo = 'SEMINOVO'
+          AND (f.seminovo_id = s.id OR (f.seminovo_id IS NULL AND f.ve_nr = CONVERT(varchar(50), s.ve_nr)))
+        ORDER BY f.dt_cad DESC, f.id DESC
+    ) foto
     WHERE s.ativo = 1
 ),
 filtrado AS
@@ -2184,6 +2286,9 @@ WHERE id = @id
         hfRegistroVeNr.Value = "";
         hfRegistroSerie.Value = "";
         hfRegistroNf.Value = "";
+        hfRegistroFotoBase64.Value = "";
+        hfRegistroFotoNome.Value = "";
+        hfRegistroFotoTamanho.Value = "";
         litRegistroVeiculo.Text = "";
         btnSalvarRegistro.Enabled = false;
         btnMobileSalvar.Enabled = false;
