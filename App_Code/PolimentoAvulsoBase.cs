@@ -32,6 +32,7 @@ public abstract class PolimentoAvulsoBase : Page
             Label("lblTipoPolimento").Text = TipoPolimentoSelecionado();
             TextBox("txtBIDataInicial").Text = PrimeiroDiaMes().ToString("dd/MM/yyyy");
             TextBox("txtBIDataFinal").Text = DateTime.Today.ToString("dd/MM/yyyy");
+            Panel("pnlVeiculosEncontrados").Visible = false;
             CarregarBI(false);
         }
     }
@@ -44,52 +45,72 @@ public abstract class PolimentoAvulsoBase : Page
 
         if (!BuscaValida(busca))
         {
-            Avisar("Informe uma placa ou chassi v\u00e1lido para gerar a autoriza\u00e7\u00e3o.", "error");
+            Avisar("Informe uma placa v\u00e1lida ou uma s\u00e9rie/chassi com pelo menos 6 caracteres.", "error");
             return;
         }
 
         try
         {
-            DataRow dados = ConsultarVeiculo(busca);
-            if (dados == null)
+            Hidden("hdnVeiculoSelecionado").Value = "";
+            DataTable encontrados = ConsultarVeiculos(busca);
+            GridView("gvVeiculosEncontrados").DataSource = encontrados;
+            GridView("gvVeiculosEncontrados").DataBind();
+            Panel("pnlVeiculosEncontrados").Visible = encontrados.Rows.Count > 0;
+
+            if (encontrados.Rows.Count == 0)
             {
                 Avisar("Nenhum ve\u00edculo encontrado no estoque para a placa ou chassi informado.", "error");
                 return;
             }
 
-            string lojaCodigo = TextoOuTraco(Valor(dados, "Loja_Codigo"));
-            string pedidoLog = "AVULSO-" + DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-
-            Label("lblPedidoPrint").Text = "AVULSO";
-            Label("lblOrigemPrint").Text = busca;
-            Label("lblCliente").Text = TextoOuTraco(Valor(dados, "Cliente"));
-            Label("lblVeiculo").Text = TextoOuTraco(Valor(dados, "Veiculo"));
-            Label("lblChassi").Text = TextoOuTraco(Valor(dados, "Chassi"));
-            Label("lblCor").Text = TextoOuTraco(Valor(dados, "Cor"));
-            Label("lblAno").Text = TextoOuTraco(Valor(dados, "Ano / Modelo"));
-            Label("lblNota").Text = TextoOuTraco(Valor(dados, "Nota Fiscal"));
-            Label("lblPlaca").Text = TextoOuTraco(Valor(dados, "Placa"));
-            Label("lblVendedor").Text = TextoOuTraco(Valor(dados, "Vendedor"));
-            Label("lblProposta").Text = TextoOuTraco(Valor(dados, "Proposta_Codigo"));
-            Label("lblUnidade").Text = TextoOuTraco(Valor(dados, "Unidade"));
-            Label("lblEstoque").Text = TextoOuTraco(Valor(dados, "Estoque"));
-            Label("lblUnidadeAssinatura").Text = TextoOuTraco(Valor(dados, "Unidade"));
-            Label("lblValor").Text = ValorMoeda(dados, "Valor");
-            Label("lblEmpresa").Text = EmpresaDocumento;
-            Label("lblEmpresaAssinatura").Text = EmpresaDocumento;
-            Label("lblData").Text = DataExtenso(DateTime.Today);
-            Label("lblTipoPolimento").Text = tipoPolimento;
-
-            bool registrado = PolimentoAutorizacao.RegistrarGeracao(MarcaPolimento, pedidoLog, lojaCodigo, tipoPolimento, dados, Context);
-            CarregarBI(false);
-            if (!registrado)
-            {
-                Avisar("Autoriza\u00e7\u00e3o gerada, mas n\u00e3o foi poss\u00edvel registrar nos dados gerenciais agora.", "error");
-            }
+            Avisar(encontrados.Rows.Count == 1
+                ? "Confira o ve\u00edculo encontrado e clique em Selecionar para gerar a autoriza\u00e7\u00e3o."
+                : "Encontramos mais de um ve\u00edculo. Selecione a linha correta antes de gerar a autoriza\u00e7\u00e3o.", "info");
         }
         catch
         {
-            Avisar("N\u00e3o foi poss\u00edvel gerar a autoriza\u00e7\u00e3o agora. Confira a placa ou o chassi e tente novamente.", "error");
+            Avisar("N\u00e3o foi poss\u00edvel consultar os ve\u00edculos agora. Confira a placa ou o chassi e tente novamente.", "error");
+        }
+    }
+
+    protected void gvVeiculosEncontrados_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (!String.Equals(e.CommandName, "SelecionarVeiculo", StringComparison.OrdinalIgnoreCase)) return;
+
+        string busca = NormalizarBusca(TextBox("txtBusca").Text);
+        TextBox("txtBusca").Text = busca;
+        string codigo = Convert.ToString(e.CommandArgument);
+        Hidden("hdnVeiculoSelecionado").Value = codigo;
+
+        if (!BuscaValida(busca))
+        {
+            Avisar("Informe uma placa v\u00e1lida ou uma s\u00e9rie/chassi com pelo menos 6 caracteres antes de selecionar o ve\u00edculo.", "error");
+            return;
+        }
+
+        int veiculoCodigo;
+        if (!Int32.TryParse(codigo, NumberStyles.Integer, CultureInfo.InvariantCulture, out veiculoCodigo) || veiculoCodigo <= 0)
+        {
+            Avisar("N\u00e3o foi poss\u00edvel identificar o ve\u00edculo selecionado. Pesquise novamente.", "error");
+            return;
+        }
+
+        try
+        {
+            DataRow dados = ConsultarVeiculoSelecionado(busca, veiculoCodigo);
+            if (dados == null)
+            {
+                Avisar("O ve\u00edculo selecionado n\u00e3o est\u00e1 mais dispon\u00edvel nesta consulta. Pesquise novamente.", "error");
+                return;
+            }
+
+            GerarAutorizacao(busca, dados, TipoPolimentoSelecionado());
+            Panel("pnlVeiculosEncontrados").Visible = false;
+            Avisar("Autoriza\u00e7\u00e3o carregada para o ve\u00edculo selecionado. Confira os dados antes de imprimir.", "info");
+        }
+        catch
+        {
+            Avisar("N\u00e3o foi poss\u00edvel gerar a autoriza\u00e7\u00e3o para o ve\u00edculo selecionado agora.", "error");
         }
     }
 
@@ -100,11 +121,11 @@ public abstract class PolimentoAvulsoBase : Page
         ScriptManager.RegisterStartupScript(this, GetType(), "polimentoDados", "window.abrirPolimentoTab && window.abrirPolimentoTab('dados');", true);
     }
 
-    private DataRow ConsultarVeiculo(string buscaNormalizada)
+    private DataTable ConsultarVeiculos(string buscaNormalizada)
     {
         string connectionString = ConfigurationManager.ConnectionStrings["GrupoBali_DealernetWFConnectionString"].ConnectionString;
         using (SqlConnection connection = new SqlConnection(connectionString))
-        using (SqlCommand command = new SqlCommand(QueryVeiculo(), connection))
+        using (SqlCommand command = new SqlCommand(QueryVeiculo("TOP 20", FiltroBusca()), connection))
         using (SqlDataAdapter adapter = new SqlDataAdapter(command))
         {
             command.CommandType = CommandType.Text;
@@ -113,14 +134,66 @@ public abstract class PolimentoAvulsoBase : Page
 
             DataTable tabela = new DataTable();
             adapter.Fill(tabela);
+            return tabela;
+        }
+    }
+
+    private DataRow ConsultarVeiculoSelecionado(string buscaNormalizada, int veiculoCodigo)
+    {
+        string connectionString = ConfigurationManager.ConnectionStrings["GrupoBali_DealernetWFConnectionString"].ConnectionString;
+        using (SqlConnection connection = new SqlConnection(connectionString))
+        using (SqlCommand command = new SqlCommand(QueryVeiculo("TOP 1", FiltroBusca() + " AND dbo.Veiculo.Veiculo_Codigo = @veiculo_codigo"), connection))
+        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+        {
+            command.CommandType = CommandType.Text;
+            command.CommandTimeout = 60;
+            command.Parameters.Add("@busca", SqlDbType.VarChar, 40).Value = buscaNormalizada;
+            command.Parameters.Add("@veiculo_codigo", SqlDbType.Int).Value = veiculoCodigo;
+
+            DataTable tabela = new DataTable();
+            adapter.Fill(tabela);
             return tabela.Rows.Count > 0 ? tabela.Rows[0] : null;
         }
     }
 
-    private string QueryVeiculo()
+    private void GerarAutorizacao(string busca, DataRow dados, string tipoPolimento)
+    {
+        string lojaCodigo = TextoOuTraco(Valor(dados, "Loja_Codigo"));
+        string pedidoLog = "AVULSO-" + DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+
+        Label("lblPedidoPrint").Text = "AVULSO";
+        Label("lblOrigemPrint").Text = busca;
+        Label("lblCliente").Text = TextoOuTraco(Valor(dados, "Cliente"));
+        Label("lblVeiculo").Text = TextoOuTraco(Valor(dados, "Veiculo"));
+        Label("lblChassi").Text = TextoOuTraco(Valor(dados, "Chassi"));
+        Label("lblCor").Text = TextoOuTraco(Valor(dados, "Cor"));
+        Label("lblAno").Text = TextoOuTraco(Valor(dados, "Ano / Modelo"));
+        Label("lblNota").Text = TextoOuTraco(Valor(dados, "Nota Fiscal"));
+        Label("lblPlaca").Text = TextoOuTraco(Valor(dados, "Placa"));
+        Label("lblVendedor").Text = TextoOuTraco(Valor(dados, "Vendedor"));
+        Label("lblProposta").Text = TextoOuTraco(Valor(dados, "Proposta_Codigo"));
+        Label("lblUnidade").Text = TextoOuTraco(Valor(dados, "Unidade"));
+        Label("lblEstoque").Text = TextoOuTraco(Valor(dados, "Estoque"));
+        Label("lblUnidadeAssinatura").Text = TextoOuTraco(Valor(dados, "Unidade"));
+        Label("lblValor").Text = ValorMoeda(dados, "Valor");
+        Label("lblEmpresa").Text = EmpresaDocumento;
+        Label("lblEmpresaAssinatura").Text = EmpresaDocumento;
+        Label("lblData").Text = DataExtenso(DateTime.Today);
+        Label("lblTipoPolimento").Text = tipoPolimento;
+
+        bool registrado = PolimentoAutorizacao.RegistrarGeracao(MarcaPolimento, pedidoLog, lojaCodigo, tipoPolimento, dados, Context);
+        CarregarBI(false);
+        if (!registrado)
+        {
+            Avisar("Autoriza\u00e7\u00e3o gerada, mas n\u00e3o foi poss\u00edvel registrar nos dados gerenciais agora.", "error");
+        }
+    }
+
+    private string QueryVeiculo(string top, string filtro)
     {
         return @"
-SELECT TOP 1
+SELECT " + top + @"
+    dbo.Veiculo.Veiculo_Codigo AS [Veiculo_Codigo],
     CASE VecEst.VeiculoEstoque_EmpresaCod
         WHEN '01' THEN 'JEEP SAAN'
         WHEN '02' THEN 'PARK SUL'
@@ -213,12 +286,29 @@ OUTER APPLY (
       AND MVP.ModeloVeiculoPreco_ValorVenda <> 0
     ORDER BY MVP.ModeloVeiculoPreco_Data DESC
 ) PrecoGeral
+" + filtro + @"
+ORDER BY
+    CASE
+        WHEN UPPER(REPLACE(REPLACE(REPLACE(REPLACE(ISNULL(Veiculo.Veiculo_Chassi, ''), ' ', ''), '-', ''), '.', ''), '/', '')) = @busca THEN 0
+        WHEN UPPER(REPLACE(REPLACE(REPLACE(REPLACE(ISNULL(Veiculo.Veiculo_Placa, ''), ' ', ''), '-', ''), '.', ''), '/', '')) = @busca THEN 1
+        ELSE 2
+    END,
+    VecEst.VeiculoEstoque_EmpresaCod,
+    dbo.Veiculo.Veiculo_Codigo DESC;";
+    }
+
+    private string FiltroBusca()
+    {
+        return @"
 WHERE VecEst.Transito = 0
   AND (
         UPPER(REPLACE(REPLACE(REPLACE(REPLACE(ISNULL(Veiculo.Veiculo_Chassi, ''), ' ', ''), '-', ''), '.', ''), '/', '')) = @busca
         OR UPPER(REPLACE(REPLACE(REPLACE(REPLACE(ISNULL(Veiculo.Veiculo_Placa, ''), ' ', ''), '-', ''), '.', ''), '/', '')) = @busca
-      )
-ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC;";
+        OR (
+            LEN(@busca) >= 6
+            AND UPPER(REPLACE(REPLACE(REPLACE(REPLACE(ISNULL(Veiculo.Veiculo_Chassi, ''), ' ', ''), '-', ''), '.', ''), '/', '')) LIKE '%' + @busca
+        )
+      )";
     }
 
     private void CarregarBI(bool avisarErro)
@@ -332,7 +422,7 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC;";
 
     private bool BuscaValida(string busca)
     {
-        return busca.Length == 7 || busca.Length == 17;
+        return busca.Length >= 6 && busca.Length <= 17;
     }
 
     private void Avisar(string mensagem, string tipo)
@@ -359,6 +449,11 @@ ORDER BY VecEst.VeiculoEstoque_EmpresaCod, dbo.Veiculo.Veiculo_Codigo DESC;";
     private GridView GridView(string id)
     {
         return (GridView)Controle(id);
+    }
+
+    private Panel Panel(string id)
+    {
+        return (Panel)Controle(id);
     }
 
     private DropDownList DropDown(string id)

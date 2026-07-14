@@ -260,7 +260,7 @@
 
     if (buscaVeiculo) {
       if (!buscaValor) mensagens.push('Informe a placa ou o chassi.');
-      else if (buscaValor.length !== 7 && buscaValor.length !== 17) mensagens.push('Informe uma placa com 7 caracteres ou um chassi com 17 caracteres.');
+      else if (buscaValor.length < 6 || buscaValor.length > 17) mensagens.push('Informe uma placa ou uma s\u00e9rie/chassi com 6 a 17 caracteres.');
     }
 
     if (mensagens.length) {

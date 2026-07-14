@@ -7,11 +7,16 @@
     <title>Autoriza&ccedil;&atilde;o de Polimento - Avulso - Fiat</title>
     <link href="../css/estilo.css" rel="stylesheet" />
     <link href="../css/bali-utility.css?v=20260713-polimento-avulso01" rel="stylesheet" />
-    <script src="../js/bali-utility-print.js?v=20260713-polimento02"></script>
+    <script src="../js/bali-utility-print.js?v=20260714-polimento03"></script>
     <style>
         .polimento-avulso-grid { display: grid; grid-template-columns: minmax(220px, 1.3fr) minmax(220px, 1fr) auto; gap: 14px; align-items: end; }
         .polimento-avulso-field span { display: block; font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: #5f6f8a; margin-bottom: 6px; }
         .polimento-avulso-note { margin: 14px 0 0; padding: 12px 14px; border: 1px solid #dbe4f0; border-radius: 8px; background: #f8fafc; color: #46566f; font-size: 12px; line-height: 1.45; }
+        .polimento-veiculo-lista { margin: 14px 0; padding: 14px; border: 1px solid #dbe4f0; border-radius: 8px; background: #fff; box-shadow: 0 12px 30px rgba(15, 23, 42, .07); }
+        .polimento-veiculo-lista h3 { margin: 0 0 4px; font-size: 17px; color: #101828; }
+        .polimento-veiculo-lista p { margin: 0 0 12px; color: #5f6f8a; font-size: 12px; }
+        .polimento-select-btn { border: 1px solid #cbd5e1; border-radius: 7px; background: #f8fafc; color: #18233a; font-weight: 900; padding: 7px 10px; cursor: pointer; }
+        .polimento-select-btn:hover { background: #eef4ff; border-color: #9db5df; }
         @media (max-width: 760px) { .polimento-avulso-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -46,6 +51,7 @@
 
         <div id="TabRecibo">
             <asp:HiddenField ID="hdnPolimentoTab" runat="server" ClientIDMode="Static" Value="autorizacao" />
+            <asp:HiddenField ID="hdnVeiculoSelecionado" runat="server" ClientIDMode="Static" />
             <div class="polimento-tabs" role="tablist" aria-label="Navega&ccedil;&atilde;o da autoriza&ccedil;&atilde;o de polimento avulsa">
                 <button type="button" class="polimento-tab is-active" data-polimento-tab="autorizacao">Autoriza&ccedil;&atilde;o</button>
                 <button type="button" class="polimento-tab" data-polimento-tab="dados">Dados</button>
@@ -56,8 +62,8 @@
                     <legend>Autoriza&ccedil;&atilde;o avulsa</legend>
                     <div class="polimento-avulso-grid">
                         <label class="polimento-avulso-field">
-                            <span>Chassi ou placa</span>
-                            <asp:TextBox ID="txtBusca" runat="server" MaxLength="20" autocomplete="off" placeholder="Ex.: 9BD... ou ABC1D23"></asp:TextBox>
+                            <span>S&eacute;rie, chassi ou placa</span>
+                            <asp:TextBox ID="txtBusca" runat="server" MaxLength="20" autocomplete="off" placeholder="Ex.: 4186153, 9BD... ou ABC1D23"></asp:TextBox>
                         </label>
                         <label class="polimento-avulso-field">
                             <span>Tipo de polimento</span>
@@ -66,9 +72,29 @@
                                 <asp:ListItem Text="Polimento do Black Piano" Value="Polimento do Black Piano"></asp:ListItem>
                             </asp:DropDownList>
                         </label>
-                        <asp:Button ID="btnGerar" runat="server" OnClientClick="aguarde();" Text="Gerar autoriza&#231;&#227;o" OnClick="btnGerar_Click" CssClass="btns" />
+                        <asp:Button ID="btnGerar" runat="server" OnClientClick="aguarde();" Text="Buscar ve&#237;culo" OnClick="btnGerar_Click" CssClass="btns" />
                     </div>
-                    <div class="polimento-avulso-note">Informe a placa ou o chassi completo. O sistema localizar&aacute; o ve&iacute;culo em estoque e preencher&aacute; a autoriza&ccedil;&atilde;o automaticamente.</div>
+                    <div class="polimento-avulso-note">Informe a placa, o chassi completo ou a s&eacute;rie final do chassi. O sistema listar&aacute; os ve&iacute;culos encontrados para voc&ecirc; conferir e selecionar antes de gerar a autoriza&ccedil;&atilde;o.</div>
+                    <asp:Panel ID="pnlVeiculosEncontrados" runat="server" CssClass="polimento-veiculo-lista" Visible="false">
+                        <h3>Selecione o ve&iacute;culo correto</h3>
+                        <p>Confira loja, modelo, chassi, placa e cor antes de carregar a autoriza&ccedil;&atilde;o.</p>
+                        <asp:GridView ID="gvVeiculosEncontrados" runat="server" AutoGenerateColumns="False" CssClass="bali-data-table" GridLines="None" OnRowCommand="gvVeiculosEncontrados_RowCommand">
+                            <Columns>
+                                <asp:TemplateField HeaderText="A&ccedil;&atilde;o">
+                                    <ItemTemplate>
+                                        <asp:Button ID="btnSelecionarVeiculo" runat="server" Text="Selecionar" CssClass="polimento-select-btn" CommandName="SelecionarVeiculo" CommandArgument='<%# Eval("Veiculo_Codigo") %>' OnClientClick="aguarde();" />
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                                <asp:BoundField DataField="Unidade" HeaderText="Loja" />
+                                <asp:BoundField DataField="Veiculo" HeaderText="Ve&iacute;culo" />
+                                <asp:BoundField DataField="Chassi" HeaderText="Chassi" />
+                                <asp:BoundField DataField="Placa" HeaderText="Placa" />
+                                <asp:BoundField DataField="Cor" HeaderText="Cor" />
+                                <asp:BoundField DataField="Ano / Modelo" HeaderText="Ano/Modelo" />
+                                <asp:BoundField DataField="Estoque" HeaderText="Estoque" />
+                            </Columns>
+                        </asp:GridView>
+                    </asp:Panel>
                     <br />
                     <button type="button" class="bali-print-action" onclick="javascript: imprimePanel()">Imprimir autoriza&ccedil;&atilde;o</button>
                     <asp:Panel ID="pnlImpressao" runat="server" Width="100%" Height="100%">
