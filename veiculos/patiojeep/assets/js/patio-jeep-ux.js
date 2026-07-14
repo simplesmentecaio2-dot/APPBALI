@@ -157,6 +157,9 @@
   }
 
   function enhanceActions() {
+    var currentPage = ((location.pathname || '').split('/').pop() || '').toLowerCase();
+    if (currentPage === 'novos.aspx' || currentPage === 'seminovos.aspx') return;
+
     var form = document.querySelector('form');
     if (!form) return;
     if (form._patioSubmitBound) return;

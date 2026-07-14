@@ -1269,7 +1269,7 @@
                             </div>
                         </div>
                     </div>
-                    <asp:UpdateProgress ID="UpdateProgress1" DisplayAfter="120" DynamicLayout="true" runat="server" AssociatedUpdatePanelID="updatePanel">
+                    <asp:UpdateProgress ID="UpdateProgress1" DisplayAfter="900" DynamicLayout="true" runat="server" AssociatedUpdatePanelID="updatePanel">
                         <ProgressTemplate>
                             <div class="semi-progress" role="status" aria-live="polite">
                                 <span class="semi-progress-spinner" aria-hidden="true"></span>
@@ -1293,7 +1293,7 @@
     <script src="../assets/bootstrap.min.js"></script>
     <script src="../assets/scripts/main.js"></script>
     <script src="./assets/js/patio-photo-upload.js?v=20260714-3" charset="utf-8"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260709-1"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260714-4"></script>
     <script>
         (function () {
             function textOf(el) { return el ? (el.textContent || '').trim() : ''; }

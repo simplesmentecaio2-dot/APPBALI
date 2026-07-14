@@ -246,7 +246,6 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
             txtRegistroSerie.Text = "";
             LimparRegistro(false);
             RenderStepper(4);
-            CarregarConsulta();
             return;
         }
 

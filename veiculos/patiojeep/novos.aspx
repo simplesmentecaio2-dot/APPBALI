@@ -776,7 +776,7 @@
 
                         </ContentTemplate>
                     </asp:UpdatePanel>
-                    <asp:UpdateProgress ID="UpdateProgress1" DisplayAfter="120" DynamicLayout="true" runat="server" AssociatedUpdatePanelID="updatePanel">
+                    <asp:UpdateProgress ID="UpdateProgress1" DisplayAfter="900" DynamicLayout="true" runat="server" AssociatedUpdatePanelID="updatePanel">
                         <ProgressTemplate>
                             <div class="novos-alert" style="position:fixed;right:1rem;bottom:4rem;z-index:1055;background:#fff;box-shadow:0 18px 44px rgba(15,23,42,.18);">
                                 <i class="fa fa-spinner fa-spin mt-1"></i><div><strong>Processando</strong><span>Aguarde alguns instantes.</span></div>
@@ -864,7 +864,7 @@
     </script>
     <script src="./assets/js/patio-barcode-scanner.js?v=20260706-1" charset="utf-8"></script>
     <script src="./assets/js/patio-photo-upload.js?v=20260714-3" charset="utf-8"></script>
-    <script src="./assets/js/patio-jeep-ux.js?v=20260709-1"></script>
+    <script src="./assets/js/patio-jeep-ux.js?v=20260714-4"></script>
     <script>
         (function () {
             function textOf(el) { return el ? (el.textContent || '').trim() : ''; }
