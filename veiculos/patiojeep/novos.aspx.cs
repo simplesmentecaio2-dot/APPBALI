@@ -179,7 +179,7 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
         btnSalvarRegistro.Enabled = true;
         btnMobileSalvar.Enabled = true;
         litRegistroVeiculo.Text = RenderVeiculoCard(veiculo, "Ve\u00edculo encontrado", "Confira os dados e selecione a loja inicial.", "dealernet");
-        litResumoFixo.Text = RenderResumoFixo(veiculo, "Pronto para registro");
+        litResumoFixo.Text = "";
         RenderStepper(3);
         MostrarMensagem("success", "Dados carregados", "Ve\u00edculo encontrado. Agora selecione a loja inicial e salve o registro.");
     }
@@ -1390,7 +1390,7 @@ SELECT
         {
             html.Append("<a class=\"novos-btn novos-btn-light\" href=\"seminovos.aspx?aba=transferir&amp;busca=").Append(HttpUtility.UrlEncode(Valor(row, "ve_chassi"))).Append("\"><i class=\"fa fa-car-side\"></i>Abrir em Seminovos</a>");
         }
-        else if (origem == "dealernet")
+        else if (origem == "dealernet" && !String.Equals(hfAbaAtual.Value, "registrar", StringComparison.OrdinalIgnoreCase))
         {
             html.Append("<a class=\"novos-btn novos-btn-light\" href=\"novos.aspx?aba=registrar&amp;registro=").Append(HttpUtility.UrlEncode(serie)).Append("\"><i class=\"fa fa-folder-plus\"></i>Registrar em Novos</a>");
         }
@@ -1609,7 +1609,7 @@ ORDER BY dt DESC, id DESC;",
         btnSalvarRegistro.Enabled = true;
         btnMobileSalvar.Enabled = true;
         litRegistroVeiculo.Text = RenderVeiculoCard(dados, "Ve\u00edculo encontrado", "Dados recarregados para salvar o registro.", "dealernet");
-        litResumoFixo.Text = RenderResumoFixo(dados, "Pronto para registro");
+        litResumoFixo.Text = "";
         RenderStepper(3);
 
         return Int32.TryParse(hfRegistroVeNr.Value, out veiculo);
