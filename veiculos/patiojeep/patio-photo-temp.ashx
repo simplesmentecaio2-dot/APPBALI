@@ -25,8 +25,9 @@ public class PatioPhotoTempUpload : IHttpHandler, IRequiresSessionState
             return;
         }
 
+        HttpPostedFile arquivo = context.Request.Files["arquivo"];
         string foto = context.Request.Form["foto"];
-        if (String.IsNullOrWhiteSpace(foto))
+        if ((arquivo == null || arquivo.ContentLength <= 0) && String.IsNullOrWhiteSpace(foto))
         {
             context.Response.StatusCode = 400;
             Escrever(context, false, "", 0, "Nenhuma foto recebida.");
@@ -34,7 +35,9 @@ public class PatioPhotoTempUpload : IHttpHandler, IRequiresSessionState
         }
 
         string usuario = Convert.ToString(context.Session["usuario"]);
-        PatioFotoResultado resultado = PatioFotoHelper.SalvarFotoTemporariaBase64(context, foto, usuario);
+        PatioFotoResultado resultado = arquivo != null && arquivo.ContentLength > 0
+            ? PatioFotoHelper.SalvarFotoTemporariaArquivo(context, arquivo, usuario)
+            : PatioFotoHelper.SalvarFotoTemporariaBase64(context, foto, usuario);
         if (!resultado.Sucesso)
         {
             context.Response.StatusCode = 400;

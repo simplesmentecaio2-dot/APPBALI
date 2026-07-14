@@ -863,7 +863,7 @@
         };
     </script>
     <script src="./assets/js/patio-barcode-scanner.js?v=20260706-1" charset="utf-8"></script>
-    <script src="./assets/js/patio-photo-upload.js?v=20260714-2" charset="utf-8"></script>
+    <script src="./assets/js/patio-photo-upload.js?v=20260714-3" charset="utf-8"></script>
     <script src="./assets/js/patio-jeep-ux.js?v=20260709-1"></script>
     <script>
         (function () {

@@ -185,6 +185,52 @@ END;", banco.oCon2))
         }
     }
 
+    public static PatioFotoResultado SalvarFotoTemporariaArquivo(HttpContext contexto, HttpPostedFile arquivoEnviado, string usuario)
+    {
+        if (arquivoEnviado == null || arquivoEnviado.ContentLength <= 0)
+        {
+            return Falha("Nenhuma foto foi enviada.");
+        }
+
+        if (arquivoEnviado.ContentLength > 16 * 1024 * 1024)
+        {
+            return Falha("A foto ficou grande demais. Escolha uma imagem menor.");
+        }
+
+        try
+        {
+            byte[] origem;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                arquivoEnviado.InputStream.CopyTo(ms);
+                origem = ms.ToArray();
+            }
+
+            string nome = "TEMP_" + Guid.NewGuid().ToString("N") + ".jpg";
+            DateTime agora = DateTime.Now;
+            string caminhoFisico = Path.Combine(PastaTemporariaFisica(contexto, agora), nome);
+            int largura;
+            int altura;
+            SalvarBytesComoJpeg(origem, caminhoFisico, out largura, out altura);
+            LimparTemporariasAntigas(contexto);
+
+            FileInfo arquivo = new FileInfo(caminhoFisico);
+            return new PatioFotoResultado
+            {
+                Sucesso = true,
+                SemFoto = false,
+                Mensagem = "Foto temporaria salva.",
+                Url = CaminhoTemporarioVirtual(agora, nome),
+                Bytes = arquivo.Length
+            };
+        }
+        catch (Exception ex)
+        {
+            PatioJeepAuditoria.Registrar("PATIO_FOTO_TEMP_ARQUIVO_ERRO", usuario, "TEMP", ex.Message);
+            return Falha("Nao consegui preparar a foto agora. Tente novamente.");
+        }
+    }
+
     public static void RemoverFotosDoVeiculo(HttpContext contexto, string tipo, string veNr, int? seminovoId, string motivo, string usuario)
     {
         try

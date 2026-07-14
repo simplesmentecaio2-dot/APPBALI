@@ -1,9 +1,7 @@
 (function () {
     'use strict';
 
-    var MAX_SIDE = 900;
-    var JPEG_QUALITY = 0.42;
-    var MAX_FILE_SIZE = 12 * 1024 * 1024;
+    var MAX_FILE_SIZE = 16 * 1024 * 1024;
     var UPLOAD_ENDPOINT = './patio-photo-temp.ashx';
 
     function $(root, selector) {
@@ -33,6 +31,10 @@
         if (nameHidden) nameHidden.value = '';
         if (sizeHidden) sizeHidden.value = '';
         if (preview) {
+            if (preview.getAttribute('data-object-url')) {
+                try { URL.revokeObjectURL(preview.getAttribute('data-object-url')); } catch (ignore) { }
+                preview.removeAttribute('data-object-url');
+            }
             preview.removeAttribute('src');
             preview.classList.remove('is-ready');
         }
@@ -41,44 +43,14 @@
         setText(status, 'Opcional: tire uma foto ou escolha da galeria.');
     }
 
-    function readImage(file) {
-        return new Promise(function (resolve, reject) {
-            var reader = new FileReader();
-            reader.onload = function () {
-                var img = new Image();
-                img.onload = function () { resolve(img); };
-                img.onerror = reject;
-                img.src = reader.result;
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-
-    function compressImage(img) {
-        var width = img.naturalWidth || img.width;
-        var height = img.naturalHeight || img.height;
-        var scale = Math.min(1, MAX_SIDE / Math.max(width, height));
-        var targetWidth = Math.max(1, Math.round(width * scale));
-        var targetHeight = Math.max(1, Math.round(height * scale));
-        var canvas = document.createElement('canvas');
-        canvas.width = targetWidth;
-        canvas.height = targetHeight;
-        var ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(0, 0, targetWidth, targetHeight);
-        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
-        return canvas.toDataURL('image/jpeg', JPEG_QUALITY);
-    }
-
-    function uploadTemp(dataUrl, fileName) {
+    function uploadTemp(file) {
         if (!window.fetch || !window.FormData) {
             return Promise.reject(new Error('upload indisponivel'));
         }
 
         var form = new FormData();
-        form.append('foto', dataUrl);
-        form.append('nome', fileName || 'foto.jpg');
+        form.append('arquivo', file, file.name || 'foto.jpg');
+        form.append('nome', file.name || 'foto.jpg');
 
         return fetch(UPLOAD_ENDPOINT, {
             method: 'POST',
@@ -112,36 +84,29 @@
 
         box.classList.add('is-loading');
         box.setAttribute('data-photo-uploading', '1');
-        setText(status, 'Comprimindo foto no celular...');
+        if (hidden) hidden.value = '';
+        if (nameHidden) nameHidden.value = file.name || 'foto.jpg';
+        if (sizeHidden) sizeHidden.value = String(file.size || 0);
+        if (preview && window.URL && URL.createObjectURL) {
+            var objectUrl = URL.createObjectURL(file);
+            preview.src = objectUrl;
+            preview.setAttribute('data-object-url', objectUrl);
+            preview.classList.add('is-ready');
+        }
+        box.classList.add('has-photo');
+        setText(status, 'Enviando foto para o servidor. Voce pode continuar preenchendo.');
 
-        readImage(file)
-            .then(compressImage)
-            .then(function (dataUrl) {
-                if (nameHidden) nameHidden.value = file.name || 'foto.jpg';
-                if (sizeHidden) sizeHidden.value = String(file.size || 0);
-                if (preview) {
-                    preview.src = dataUrl;
-                    preview.classList.add('is-ready');
-                }
-                box.classList.add('has-photo');
-                setText(status, 'Enviando foto comprimida para o servidor...');
-
-                return uploadTemp(dataUrl, file.name).then(function (result) {
-                    if (hidden) hidden.value = result.url;
-                    box.classList.remove('is-loading');
-                    box.removeAttribute('data-photo-uploading');
-                    setText(status, 'Foto pronta no servidor (' + humanSize(result.bytes || Math.round(dataUrl.length * 0.75)) + ').');
-                }).catch(function () {
-                    if (hidden) hidden.value = dataUrl;
-                    box.classList.remove('is-loading');
-                    box.removeAttribute('data-photo-uploading');
-                    setText(status, 'Foto pronta localmente (' + humanSize(Math.round(dataUrl.length * 0.75)) + '). Se a conexao estiver lenta, aguarde antes de salvar.');
-                });
+        uploadTemp(file)
+            .then(function (result) {
+                if (hidden) hidden.value = result.url;
+                box.classList.remove('is-loading');
+                box.removeAttribute('data-photo-uploading');
+                setText(status, 'Foto pronta no servidor (' + humanSize(result.bytes || file.size) + ').');
             })
             .catch(function () {
                 box.classList.remove('is-loading');
                 box.removeAttribute('data-photo-uploading');
-                setText(status, 'Nao consegui preparar esta foto. Tente outra imagem.');
+                setText(status, 'Nao consegui enviar a foto. Tente novamente ou salve sem foto.');
             });
     }
 
