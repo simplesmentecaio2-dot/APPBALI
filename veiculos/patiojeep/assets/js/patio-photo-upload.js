@@ -1,9 +1,10 @@
 (function () {
     'use strict';
 
-    var MAX_SIDE = 1280;
-    var JPEG_QUALITY = 0.55;
+    var MAX_SIDE = 900;
+    var JPEG_QUALITY = 0.42;
     var MAX_FILE_SIZE = 12 * 1024 * 1024;
+    var UPLOAD_ENDPOINT = './patio-photo-temp.ashx';
 
     function $(root, selector) {
         return root.querySelector(selector);
@@ -36,6 +37,7 @@
             preview.classList.remove('is-ready');
         }
         box.classList.remove('has-photo', 'is-loading');
+        box.removeAttribute('data-photo-uploading');
         setText(status, 'Opcional: tire uma foto ou escolha da galeria.');
     }
 
@@ -69,6 +71,28 @@
         return canvas.toDataURL('image/jpeg', JPEG_QUALITY);
     }
 
+    function uploadTemp(dataUrl, fileName) {
+        if (!window.fetch || !window.FormData) {
+            return Promise.reject(new Error('upload indisponivel'));
+        }
+
+        var form = new FormData();
+        form.append('foto', dataUrl);
+        form.append('nome', fileName || 'foto.jpg');
+
+        return fetch(UPLOAD_ENDPOINT, {
+            method: 'POST',
+            body: form,
+            credentials: 'same-origin'
+        }).then(function (response) {
+            if (!response.ok) throw new Error('upload falhou');
+            return response.json();
+        }).then(function (json) {
+            if (!json || !json.ok || !json.url) throw new Error((json && json.message) || 'upload falhou');
+            return json;
+        });
+    }
+
     function handleFile(box, file) {
         var hidden = document.getElementById(box.getAttribute('data-photo-hidden'));
         var nameHidden = document.getElementById(box.getAttribute('data-photo-name'));
@@ -87,24 +111,36 @@
         }
 
         box.classList.add('is-loading');
+        box.setAttribute('data-photo-uploading', '1');
         setText(status, 'Comprimindo foto no celular...');
 
         readImage(file)
             .then(compressImage)
             .then(function (dataUrl) {
-                if (hidden) hidden.value = dataUrl;
                 if (nameHidden) nameHidden.value = file.name || 'foto.jpg';
                 if (sizeHidden) sizeHidden.value = String(file.size || 0);
                 if (preview) {
                     preview.src = dataUrl;
                     preview.classList.add('is-ready');
                 }
-                box.classList.remove('is-loading');
                 box.classList.add('has-photo');
-                setText(status, 'Foto pronta para salvar (' + humanSize(Math.round(dataUrl.length * 0.75)) + ' comprimida).');
+                setText(status, 'Enviando foto comprimida para o servidor...');
+
+                return uploadTemp(dataUrl, file.name).then(function (result) {
+                    if (hidden) hidden.value = result.url;
+                    box.classList.remove('is-loading');
+                    box.removeAttribute('data-photo-uploading');
+                    setText(status, 'Foto pronta no servidor (' + humanSize(result.bytes || Math.round(dataUrl.length * 0.75)) + ').');
+                }).catch(function () {
+                    if (hidden) hidden.value = dataUrl;
+                    box.classList.remove('is-loading');
+                    box.removeAttribute('data-photo-uploading');
+                    setText(status, 'Foto pronta localmente (' + humanSize(Math.round(dataUrl.length * 0.75)) + '). Se a conexao estiver lenta, aguarde antes de salvar.');
+                });
             })
             .catch(function () {
                 box.classList.remove('is-loading');
+                box.removeAttribute('data-photo-uploading');
                 setText(status, 'Nao consegui preparar esta foto. Tente outra imagem.');
             });
     }
@@ -133,6 +169,23 @@
         for (var i = 0; i < boxes.length; i++) bindUploader(boxes[i]);
     }
 
+    function hasPendingUpload() {
+        return !!document.querySelector('[data-patio-photo][data-photo-uploading="1"]');
+    }
+
+    document.addEventListener('click', function (event) {
+        var button = event.target && event.target.closest ? event.target.closest('.js-safe-submit') : null;
+        if (!button || !hasPendingUpload()) return;
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+        if (window.patioToast) {
+            window.patioToast('Aguarde a foto terminar de enviar antes de salvar.', 'warning');
+        } else {
+            alert('Aguarde a foto terminar de enviar antes de salvar.');
+        }
+    }, true);
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', bindAll);
     } else {
@@ -145,6 +198,7 @@
 
     window.PatioPhotoUpload = {
         bindAll: bindAll,
-        reset: resetUploader
+        reset: resetUploader,
+        hasPending: hasPendingUpload
     };
 })();

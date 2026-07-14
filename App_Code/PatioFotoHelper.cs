@@ -16,13 +16,14 @@ public class PatioFotoResultado
     public bool SemFoto { get; set; }
     public string Mensagem { get; set; }
     public string Url { get; set; }
+    public long Bytes { get; set; }
 }
 
 public static class PatioFotoHelper
 {
     private const int MaxDataUrlLength = 5000000;
-    private const int MaxSide = 1024;
-    private const long JpegQuality = 52L;
+    private const int MaxSide = 900;
+    private const long JpegQuality = 45L;
     private static readonly object EstruturaLock = new object();
     private static bool EstruturaVerificada = false;
 
@@ -95,6 +96,11 @@ END;", banco.oCon2))
         {
             GarantirEstrutura();
 
+            if (EhUrlTemporaria(dataUrl))
+            {
+                return ConfirmarFotoTemporaria(contexto, tipo, veNr, seminovoId, dataUrl, usuario);
+            }
+
             if (dataUrl.Length > MaxDataUrlLength)
             {
                 return Falha("A foto ficou grande demais. Tire outra foto um pouco mais distante ou escolha uma imagem menor.");
@@ -109,46 +115,13 @@ END;", banco.oCon2))
             byte[] origem = Convert.FromBase64String(dataUrl.Substring(virgula + 1));
             if (origem.Length == 0) return vazio;
 
-            string pastaFisica = PastaFisica(contexto, DateTime.Now);
-            Directory.CreateDirectory(pastaFisica);
-
             string tipoSeguro = ApenasSeguro(tipo, "PATIO");
             string refSeguro = ApenasSeguro(!String.IsNullOrWhiteSpace(veNr) ? veNr : Convert.ToString(seminovoId.GetValueOrDefault()), "SEMREF");
             string nome = tipoSeguro + "_" + refSeguro + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".jpg";
-            string caminhoFisico = Path.Combine(pastaFisica, nome);
-
+            string caminhoFisico = Path.Combine(PastaFisica(contexto, DateTime.Now), nome);
             int largura;
             int altura;
-            using (MemoryStream entrada = new MemoryStream(origem))
-            using (Image imagem = Image.FromStream(entrada, true, true))
-            {
-                CorrigirOrientacao(imagem);
-                Size tamanho = TamanhoReduzido(imagem.Width, imagem.Height);
-                largura = tamanho.Width;
-                altura = tamanho.Height;
-
-                using (Bitmap destino = new Bitmap(tamanho.Width, tamanho.Height))
-                using (Graphics g = Graphics.FromImage(destino))
-                {
-                    g.Clear(Color.White);
-                    g.CompositingQuality = CompositingQuality.HighQuality;
-                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    g.SmoothingMode = SmoothingMode.HighQuality;
-                    g.DrawImage(imagem, 0, 0, tamanho.Width, tamanho.Height);
-
-                    ImageCodecInfo codec = ImageCodecInfo.GetImageEncoders().FirstOrDefault(c => c.FormatID == ImageFormat.Jpeg.Guid);
-                    if (codec == null)
-                    {
-                        destino.Save(caminhoFisico, ImageFormat.Jpeg);
-                    }
-                    else
-                    {
-                        EncoderParameters parametros = new EncoderParameters(1);
-                        parametros.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, JpegQuality);
-                        destino.Save(caminhoFisico, codec, parametros);
-                    }
-                }
-            }
+            SalvarBytesComoJpeg(origem, caminhoFisico, out largura, out altura);
 
             FileInfo arquivo = new FileInfo(caminhoFisico);
             string url = CaminhoVirtual(DateTime.Now, nome);
@@ -163,6 +136,52 @@ END;", banco.oCon2))
         {
             PatioJeepAuditoria.Registrar("PATIO_FOTO_ERRO", usuario, veNr ?? Convert.ToString(seminovoId.GetValueOrDefault()), ex.Message);
             return Falha("O registro foi salvo, mas nao consegui gravar a foto. Tente anexar a foto novamente depois.");
+        }
+    }
+
+    public static PatioFotoResultado SalvarFotoTemporariaBase64(HttpContext contexto, string dataUrl, string usuario)
+    {
+        if (String.IsNullOrWhiteSpace(dataUrl))
+        {
+            return Falha("Nenhuma foto foi enviada.");
+        }
+
+        try
+        {
+            if (dataUrl.Length > MaxDataUrlLength)
+            {
+                return Falha("A foto ficou grande demais. Tire outra foto ou escolha uma imagem menor.");
+            }
+
+            int virgula = dataUrl.IndexOf(',');
+            if (virgula < 0 || !dataUrl.Substring(0, Math.Min(30, dataUrl.Length)).StartsWith("data:image/", StringComparison.OrdinalIgnoreCase))
+            {
+                return Falha("A imagem enviada nao parece ser uma foto valida.");
+            }
+
+            byte[] origem = Convert.FromBase64String(dataUrl.Substring(virgula + 1));
+            string nome = "TEMP_" + Guid.NewGuid().ToString("N") + ".jpg";
+            DateTime agora = DateTime.Now;
+            string caminhoFisico = Path.Combine(PastaTemporariaFisica(contexto, agora), nome);
+            int largura;
+            int altura;
+            SalvarBytesComoJpeg(origem, caminhoFisico, out largura, out altura);
+            LimparTemporariasAntigas(contexto);
+
+            FileInfo arquivo = new FileInfo(caminhoFisico);
+            return new PatioFotoResultado
+            {
+                Sucesso = true,
+                SemFoto = false,
+                Mensagem = "Foto temporaria salva.",
+                Url = CaminhoTemporarioVirtual(agora, nome),
+                Bytes = arquivo.Length
+            };
+        }
+        catch (Exception ex)
+        {
+            PatioJeepAuditoria.Registrar("PATIO_FOTO_TEMP_ERRO", usuario, "TEMP", ex.Message);
+            return Falha("Nao consegui preparar a foto agora. Tente novamente.");
         }
     }
 
@@ -230,6 +249,77 @@ WHERE f.ativo = 1
     private static PatioFotoResultado Falha(string mensagem)
     {
         return new PatioFotoResultado { Sucesso = false, SemFoto = false, Mensagem = mensagem };
+    }
+
+    private static PatioFotoResultado ConfirmarFotoTemporaria(HttpContext contexto, string tipo, string veNr, int? seminovoId, string tempUrl, string usuario)
+    {
+        string origemFisica = FisicoSeguroDaUrl(contexto, tempUrl);
+        if (String.IsNullOrWhiteSpace(origemFisica) || !File.Exists(origemFisica))
+        {
+            return Falha("A foto temporaria expirou ou nao foi encontrada. Escolha a foto novamente.");
+        }
+
+        string tipoSeguro = ApenasSeguro(tipo, "PATIO");
+        string refSeguro = ApenasSeguro(!String.IsNullOrWhiteSpace(veNr) ? veNr : Convert.ToString(seminovoId.GetValueOrDefault()), "SEMREF");
+        string nome = tipoSeguro + "_" + refSeguro + "_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".jpg";
+        string destinoFisico = Path.Combine(PastaFisica(contexto, DateTime.Now), nome);
+        Directory.CreateDirectory(Path.GetDirectoryName(destinoFisico));
+
+        int largura = 0;
+        int altura = 0;
+        using (Image imagem = Image.FromFile(origemFisica))
+        {
+            largura = imagem.Width;
+            altura = imagem.Height;
+        }
+
+        List<string> fotosAnteriores = BuscarFotosAtivas(tipoSeguro, veNr, seminovoId);
+        DesativarFotosAtivas(tipoSeguro, veNr, seminovoId, "SUBSTITUIDA");
+        RemoverArquivos(contexto, fotosAnteriores);
+
+        if (File.Exists(destinoFisico)) File.Delete(destinoFisico);
+        File.Move(origemFisica, destinoFisico);
+
+        FileInfo arquivo = new FileInfo(destinoFisico);
+        string url = CaminhoVirtual(DateTime.Now, nome);
+        InserirFoto(tipoSeguro, veNr, seminovoId, url, arquivo.Length, largura, altura, usuario);
+        return new PatioFotoResultado { Sucesso = true, SemFoto = false, Mensagem = "Foto confirmada.", Url = url, Bytes = arquivo.Length };
+    }
+
+    private static void SalvarBytesComoJpeg(byte[] origem, string caminhoFisico, out int largura, out int altura)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(caminhoFisico));
+
+        using (MemoryStream entrada = new MemoryStream(origem))
+        using (Image imagem = Image.FromStream(entrada, true, true))
+        {
+            CorrigirOrientacao(imagem);
+            Size tamanho = TamanhoReduzido(imagem.Width, imagem.Height);
+            largura = tamanho.Width;
+            altura = tamanho.Height;
+
+            using (Bitmap destino = new Bitmap(tamanho.Width, tamanho.Height))
+            using (Graphics g = Graphics.FromImage(destino))
+            {
+                g.Clear(Color.White);
+                g.CompositingQuality = CompositingQuality.HighSpeed;
+                g.InterpolationMode = InterpolationMode.HighQualityBilinear;
+                g.SmoothingMode = SmoothingMode.HighSpeed;
+                g.DrawImage(imagem, 0, 0, tamanho.Width, tamanho.Height);
+
+                ImageCodecInfo codec = ImageCodecInfo.GetImageEncoders().FirstOrDefault(c => c.FormatID == ImageFormat.Jpeg.Guid);
+                if (codec == null)
+                {
+                    destino.Save(caminhoFisico, ImageFormat.Jpeg);
+                }
+                else
+                {
+                    EncoderParameters parametros = new EncoderParameters(1);
+                    parametros.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, JpegQuality);
+                    destino.Save(caminhoFisico, codec, parametros);
+                }
+            }
+        }
     }
 
     private static void InserirFoto(string tipo, string veNr, int? seminovoId, string url, long bytes, int largura, int altura, string usuario)
@@ -359,6 +449,11 @@ UPDATE dbo.veiculos_patio_foto
         return Path.Combine(PastaRaizFisica(contexto), data.ToString("yyyy"), data.ToString("MM"));
     }
 
+    private static string PastaTemporariaFisica(HttpContext contexto, DateTime data)
+    {
+        return Path.Combine(PastaRaizFisica(contexto), "temp", data.ToString("yyyy"), data.ToString("MM"));
+    }
+
     private static string PastaRaizFisica(HttpContext contexto)
     {
         return Path.Combine(AppRoot(contexto), "veiculos", "patiojeep", "uploads", "fotos");
@@ -376,6 +471,56 @@ UPDATE dbo.veiculos_patio_foto
     private static string CaminhoVirtual(DateTime data, string nome)
     {
         return "/veiculos/patiojeep/uploads/fotos/" + data.ToString("yyyy") + "/" + data.ToString("MM") + "/" + nome;
+    }
+
+    private static string CaminhoTemporarioVirtual(DateTime data, string nome)
+    {
+        return "/veiculos/patiojeep/uploads/fotos/temp/" + data.ToString("yyyy") + "/" + data.ToString("MM") + "/" + nome;
+    }
+
+    private static bool EhUrlTemporaria(string valor)
+    {
+        return !String.IsNullOrWhiteSpace(valor)
+            && valor.Trim().StartsWith("/veiculos/patiojeep/uploads/fotos/temp/", StringComparison.OrdinalIgnoreCase)
+            && valor.Trim().EndsWith(".jpg", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string FisicoSeguroDaUrl(HttpContext contexto, string url)
+    {
+        if (String.IsNullOrWhiteSpace(url)) return "";
+        string normalizada = url.Trim();
+        if (!normalizada.StartsWith("/veiculos/patiojeep/uploads/fotos/", StringComparison.OrdinalIgnoreCase)) return "";
+
+        string relativo = normalizada.TrimStart('/', '\\').Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
+        string fisico = Path.GetFullPath(Path.Combine(AppRoot(contexto), relativo));
+        string raiz = Path.GetFullPath(PastaRaizFisica(contexto)).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+        if (!fisico.StartsWith(raiz, StringComparison.OrdinalIgnoreCase)) return "";
+        return fisico;
+    }
+
+    private static void LimparTemporariasAntigas(HttpContext contexto)
+    {
+        try
+        {
+            string pasta = Path.Combine(PastaRaizFisica(contexto), "temp");
+            if (!Directory.Exists(pasta)) return;
+
+            DateTime limite = DateTime.Now.AddDays(-2);
+            foreach (string arquivo in Directory.GetFiles(pasta, "*.jpg", SearchOption.AllDirectories))
+            {
+                try
+                {
+                    FileInfo info = new FileInfo(arquivo);
+                    if (info.LastWriteTime < limite) info.Delete();
+                }
+                catch
+                {
+                }
+            }
+        }
+        catch
+        {
+        }
     }
 
     private static string ApenasSeguro(string valor, string fallback)
