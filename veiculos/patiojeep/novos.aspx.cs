@@ -35,6 +35,8 @@ public partial class veiculos_patio_novos : System.Web.UI.Page
             scriptManager.RegisterPostBackControl(btnTodosExportar);
             scriptManager.RegisterPostBackControl(btnExportarConsulta);
             scriptManager.RegisterPostBackControl(btnExportarBI);
+            scriptManager.RegisterPostBackControl(btnSalvarRegistro);
+            scriptManager.RegisterPostBackControl(btnMobileSalvar);
         }
 
         if (!IsPostBack)
