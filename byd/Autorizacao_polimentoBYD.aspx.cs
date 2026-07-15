@@ -254,6 +254,7 @@ GROUP BY
     private string TipoPolimentoSelecionado()
     {
         string tipo = ddlTipoPolimento == null ? "" : (ddlTipoPolimento.SelectedValue ?? "").Trim();
+        if (tipo.Equals("HIGIENIZAÇÃO COMPLETA", StringComparison.OrdinalIgnoreCase)) return "HIGIENIZAÇÃO COMPLETA";
         if (tipo.Equals("Polimento do Black Piano", StringComparison.OrdinalIgnoreCase)) return "Polimento do Black Piano";
         return "Polimento completo do veículo";
     }

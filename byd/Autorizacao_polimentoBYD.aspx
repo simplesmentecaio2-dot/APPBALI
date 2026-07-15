@@ -53,6 +53,7 @@
                 Tipo: <asp:DropDownList ID="ddlTipoPolimento" runat="server">
                     <asp:ListItem Text="Polimento completo do veículo" Value="Polimento completo do veículo"></asp:ListItem>
                     <asp:ListItem Text="Polimento do Black Piano" Value="Polimento do Black Piano"></asp:ListItem>
+                    <asp:ListItem Text="HIGIENIZAÇÃO COMPLETA" Value="HIGIENIZAÇÃO COMPLETA"></asp:ListItem>
                 </asp:DropDownList>
                 <asp:Button ID="btnGerar" runat="server" OnClientClick="aguarde();" Text="Gerar" OnClick="btnGerar_Click" CssClass="btns" />
                 <br /><br />
