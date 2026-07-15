@@ -328,8 +328,9 @@ ORDER BY gerado_em DESC, id_polimento DESC;", con))
     private static string NormalizarTipoPolimento(string tipoPolimento)
     {
         tipoPolimento = (tipoPolimento ?? "").Trim();
-        if (tipoPolimento.Equals("HIGIENIZAÇÃO COMPLETA", StringComparison.OrdinalIgnoreCase)) return "HIGIENIZAÇÃO COMPLETA";
-        if (tipoPolimento.Equals("Polimento do Black Piano", StringComparison.OrdinalIgnoreCase)) return "Polimento do Black Piano";
+        string tipoBusca = tipoPolimento.ToUpperInvariant();
+        if (tipoBusca.Contains("HIGIENIZA")) return "HIGIENIZAÇÃO COMPLETA";
+        if (tipoBusca.Contains("BLACK")) return "Polimento do Black Piano";
         return "Polimento completo do veículo";
     }
 
