@@ -378,6 +378,7 @@ WHERE VecEst.Transito = 0
     {
         DropDownList ddl = DropDown("ddlTipoPolimento");
         string tipo = ddl == null ? "" : (ddl.SelectedValue ?? "").Trim();
+        if (tipo.Equals("HIGIENIZA\u00c7\u00c3O COMPLETA", StringComparison.OrdinalIgnoreCase)) return "HIGIENIZA\u00c7\u00c3O COMPLETA";
         if (tipo.Equals("Polimento do Black Piano", StringComparison.OrdinalIgnoreCase)) return "Polimento do Black Piano";
         return "Polimento completo do ve\u00edculo";
     }

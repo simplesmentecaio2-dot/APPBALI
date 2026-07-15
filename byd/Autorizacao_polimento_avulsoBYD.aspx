@@ -70,6 +70,7 @@
                             <asp:DropDownList ID="ddlTipoPolimento" runat="server">
                                 <asp:ListItem Text="Polimento completo do ve&#237;culo" Value="Polimento completo do ve&#237;culo"></asp:ListItem>
                                 <asp:ListItem Text="Polimento do Black Piano" Value="Polimento do Black Piano"></asp:ListItem>
+                                <asp:ListItem Text="HIGIENIZA&#199;&#195;O COMPLETA" Value="HIGIENIZA&#199;&#195;O COMPLETA"></asp:ListItem>
                             </asp:DropDownList>
                         </label>
                         <asp:Button ID="btnGerar" runat="server" OnClientClick="aguarde();" Text="Buscar ve&#237;culo" OnClick="btnGerar_Click" CssClass="btns" />
