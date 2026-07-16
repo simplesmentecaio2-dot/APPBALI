@@ -513,8 +513,8 @@
                                 <input type="search" id="txtFiltroTabela" class="leads-input" placeholder="Filtrar por nota, fornecedor, loja, refer&ecirc;ncia..." autocomplete="off" />
                             </label>
                             <div class="leads-actions">
-                                <asp:Button ID="GerarArquivo" runat="server" OnClick="GerarArquivo_Click" OnClientClick="return leadsValidarPeriodo();" Text="Consultar" CssClass="leads-btn" />
-                                <asp:Button ID="BtnExcel" runat="server" OnClick="BtnExcel_Click" OnClientClick="return leadsValidarPeriodo();" Text="Exportar Excel" CssClass="leads-btn leads-btn-secondary" />
+                                <asp:Button ID="GerarArquivo" runat="server" OnClick="GerarArquivo_Click" OnClientClick="return leadsValidarPeriodo('consulta');" Text="Consultar" CssClass="leads-btn" />
+                                <asp:Button ID="BtnExcel" runat="server" OnClick="BtnExcel_Click" OnClientClick="return leadsValidarPeriodo('excel');" Text="Exportar Excel" CssClass="leads-btn leads-btn-secondary" />
                             </div>
                         </div>
                         <div class="leads-helper">
@@ -645,6 +645,11 @@
             if (ag) ag.style.display = 'grid';
         }
 
+        function leadsOcultarLoading() {
+            var ag = document.getElementById('ag');
+            if (ag) ag.style.display = 'none';
+        }
+
         function leadsMensagem(texto) {
             var msg = document.getElementById('<%= lblMensagem.ClientID %>');
             if (!msg) return;
@@ -652,18 +657,24 @@
             msg.innerHTML = texto || '';
         }
 
-        function leadsValidarPeriodo() {
+        function leadsValidarPeriodo(acao) {
             var inicio = document.getElementById('<%= txtDtInicial.ClientID %>');
             var fim = document.getElementById('<%= txtDtFinal.ClientID %>');
             if (!inicio || !fim || !inicio.value || !fim.value) {
                 leadsMensagem('Informe data inicial e data final antes de consultar.');
+                leadsOcultarLoading();
                 return false;
             }
             if (inicio.value > fim.value) {
                 leadsMensagem('A data inicial n&atilde;o pode ser maior que a data final.');
+                leadsOcultarLoading();
                 return false;
             }
             leadsMensagem('');
+            if (acao === 'excel') {
+                leadsOcultarLoading();
+                return true;
+            }
             leadsMostrarLoading();
             return true;
         }
