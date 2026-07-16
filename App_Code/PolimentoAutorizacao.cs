@@ -205,7 +205,7 @@ END;", con))
         using (SqlCommand cmd = new SqlCommand(@"
 SELECT
     CONVERT(char(7), gerado_em, 120) AS Mes,
-    ISNULL(NULLIF(tipo_polimento, N''), N'Polimento completo do veículo') AS TipoPolimento,
+    ISNULL(NULLIF(tipo_polimento, N''), N'Polimento completo do ve' + NCHAR(237) + N'culo') AS TipoPolimento,
     ISNULL(NULLIF(cor, N''), N'SEM COR') AS Cor,
     COUNT(1) AS Quantidade,
     CONVERT(varchar(10), MAX(ultima_geracao_em), 103) + ' ' + CONVERT(varchar(5), MAX(ultima_geracao_em), 108) AS [UltimaGeracao]
@@ -213,7 +213,7 @@ FROM dbo.polimento_autorizacao_log
 WHERE marca = @marca
   AND gerado_em >= @inicio
   AND gerado_em < @fim
-GROUP BY CONVERT(char(7), gerado_em, 120), ISNULL(NULLIF(tipo_polimento, N''), N'Polimento completo do veículo'), ISNULL(NULLIF(cor, N''), N'SEM COR')
+GROUP BY CONVERT(char(7), gerado_em, 120), ISNULL(NULLIF(tipo_polimento, N''), N'Polimento completo do ve' + NCHAR(237) + N'culo'), ISNULL(NULLIF(cor, N''), N'SEM COR')
 ORDER BY Mes DESC, Quantidade DESC, TipoPolimento ASC, Cor ASC;", con))
         using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
         {
@@ -239,7 +239,7 @@ SELECT TOP (200)
     CONVERT(varchar(10), gerado_em, 103) + ' ' + CONVERT(varchar(5), gerado_em, 108) AS [GeradoEm],
     pedido AS [Pedido],
     loja AS [Loja],
-    ISNULL(NULLIF(tipo_polimento, N''), N'Polimento completo do veículo') AS [TipoPolimento],
+    ISNULL(NULLIF(tipo_polimento, N''), N'Polimento completo do ve' + NCHAR(237) + N'culo') AS [TipoPolimento],
     ISNULL(NULLIF(cor, N''), N'SEM COR') AS [Cor],
     veiculo AS [Veiculo],
     chassi AS [Chassi],
@@ -329,9 +329,9 @@ ORDER BY gerado_em DESC, id_polimento DESC;", con))
     {
         tipoPolimento = (tipoPolimento ?? "").Trim();
         string tipoBusca = tipoPolimento.ToUpperInvariant();
-        if (tipoBusca.Contains("HIGIENIZA")) return "HIGIENIZAÇÃO COMPLETA";
+        if (tipoBusca.Contains("HIGIENIZA")) return "HIGIENIZA\u00c7\u00c3O COMPLETA";
         if (tipoBusca.Contains("BLACK")) return "Polimento do Black Piano";
-        return "Polimento completo do veículo";
+        return "Polimento completo do ve\u00edculo";
     }
 
     private static string ValorSessao(HttpContext contexto, string chave)
