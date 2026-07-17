@@ -10,6 +10,8 @@ const SHORTCUTS_FETCH_TIMEOUT = 10000;
 const MAINTENANCE_PASSWORD = '@bali2025';
 const DEFAULT_NOTICE_IMAGE = 'resources/imagens/AVISOIMPORTANTE2.jpg';
 const NOTICE_FILE_LIMIT = 8 * 1024 * 1024;
+const NOTICE_ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+const NOTICE_ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 const CURATED_ICONS = [
   { value: 'bi-grid-1x2-fill', label: 'Atalho geral' },
   { value: 'bi-car-front-fill', label: 'Veiculo / vendas' },
@@ -321,6 +323,24 @@ function cacheBustUrl(url, shouldBust) {
   return `${url}${url.includes('?') ? '&' : '?'}v=${Date.now()}`;
 }
 
+function setNoticeImageSource(element, imageUrl) {
+  if (!element) return;
+  element.onerror = () => {
+    if (element.src.indexOf(DEFAULT_NOTICE_IMAGE) >= 0) return;
+    element.onerror = null;
+    element.src = DEFAULT_NOTICE_IMAGE;
+  };
+  element.src = imageUrl || DEFAULT_NOTICE_IMAGE;
+}
+
+function isNoticeFileAllowed(file) {
+  if (!file) return true;
+  const extension = safeTrim(file.name).split('.').pop().toLowerCase();
+  const hasAllowedExtension = NOTICE_ALLOWED_EXTENSIONS.includes(extension);
+  const hasAllowedType = !file.type || NOTICE_ALLOWED_TYPES.includes(file.type);
+  return hasAllowedExtension && hasAllowedType;
+}
+
 function setNoticeStatus(message, type) {
   if (!noticeMaintenanceStatus) return;
   noticeMaintenanceStatus.textContent = message || '';
@@ -339,8 +359,8 @@ function applyNoticeConfig(config, options = {}) {
   noticeConfig = sanitizeNoticeConfig(config);
   const imageUrl = cacheBustUrl(noticeConfig.image, Boolean(options.cacheBust));
 
-  if (noticeImage) noticeImage.src = imageUrl;
-  if (noticePreviewImage) noticePreviewImage.src = imageUrl;
+  setNoticeImageSource(noticeImage, imageUrl);
+  setNoticeImageSource(noticePreviewImage, imageUrl);
   if (noticeAutoOpen) noticeAutoOpen.checked = noticeConfig.autoOpen;
 
   updateNoticeSummary();
@@ -438,6 +458,11 @@ async function saveNoticeConfig(event) {
     return;
   }
 
+  if (file && !isNoticeFileAllowed(file)) {
+    setNoticeStatus('Use apenas imagens JPG, PNG, GIF ou WEBP.', 'error');
+    return;
+  }
+
   const formData = new FormData();
   formData.append('mode', 'notice');
   formData.append('password', MAINTENANCE_PASSWORD);
@@ -465,6 +490,7 @@ async function saveNoticeConfig(event) {
     }, { cacheBust: true });
 
     if (noticeImageFile) noticeImageFile.value = '';
+    writeShortcutCache(shortcuts, noticeConfig);
     setNoticeStatus('Aviso salvo com sucesso.', 'ok');
   } catch (error) {
     setNoticeStatus(error.message || 'Não foi possível salvar o aviso.', 'error');
@@ -1563,7 +1589,7 @@ function initializeMaintenance() {
     noticeImageFile.addEventListener('change', () => {
       const file = noticeImageFile.files ? noticeImageFile.files[0] : null;
       if (!file) {
-        if (noticePreviewImage) noticePreviewImage.src = noticeConfig.image;
+        setNoticeImageSource(noticePreviewImage, noticeConfig.image);
         setNoticeStatus('', '');
         return;
       }
@@ -1571,11 +1597,18 @@ function initializeMaintenance() {
       if (file.size > NOTICE_FILE_LIMIT) {
         setNoticeStatus('Imagem muito grande. Use um arquivo de até 8 MB.', 'error');
         noticeImageFile.value = '';
-        if (noticePreviewImage) noticePreviewImage.src = noticeConfig.image;
+        setNoticeImageSource(noticePreviewImage, noticeConfig.image);
         return;
       }
 
-      if (noticePreviewImage) noticePreviewImage.src = URL.createObjectURL(file);
+      if (!isNoticeFileAllowed(file)) {
+        setNoticeStatus('Use apenas imagens JPG, PNG, GIF ou WEBP.', 'error');
+        noticeImageFile.value = '';
+        setNoticeImageSource(noticePreviewImage, noticeConfig.image);
+        return;
+      }
+
+      setNoticeImageSource(noticePreviewImage, URL.createObjectURL(file));
       setNoticeStatus('Prévia carregada. Clique em salvar aviso para gravar.', '');
     });
   }

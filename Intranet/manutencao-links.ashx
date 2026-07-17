@@ -281,7 +281,7 @@ public class IntranetManutencaoLinks : IHttpHandler
                 return padrao;
             }
 
-            aviso.image = Limpar(aviso.image).Length == 0 ? padrao.image : Limpar(aviso.image);
+            aviso.image = NormalizarImagemAviso(context, aviso.image, padrao.image);
             return aviso;
         }
         catch
@@ -327,6 +327,42 @@ public class IntranetManutencaoLinks : IHttpHandler
     private string CaminhoArquivoAviso(HttpContext context)
     {
         return context.Server.MapPath("~/intranet/resources/data/notice.json");
+    }
+
+    private string NormalizarImagemAviso(HttpContext context, string imagem, string fallback)
+    {
+        string caminhoRelativo = Limpar(imagem).Replace("\\", "/");
+        string caminhoPadrao = Limpar(fallback).Length == 0 ? "resources/imagens/AVISOIMPORTANTE2.jpg" : Limpar(fallback).Replace("\\", "/");
+
+        if (caminhoRelativo.Length == 0)
+        {
+            return caminhoPadrao;
+        }
+
+        if (!caminhoRelativo.StartsWith("resources/imagens/", StringComparison.OrdinalIgnoreCase) ||
+            caminhoRelativo.IndexOf("..", StringComparison.Ordinal) >= 0 ||
+            caminhoRelativo.IndexOf(":", StringComparison.Ordinal) >= 0 ||
+            !ExtensaoPermitida(Path.GetExtension(caminhoRelativo).ToLowerInvariant()))
+        {
+            return caminhoPadrao;
+        }
+
+        try
+        {
+            string pastaImagens = Path.GetFullPath(context.Server.MapPath("~/intranet/resources/imagens"));
+            string destino = Path.GetFullPath(context.Server.MapPath("~/intranet/" + caminhoRelativo));
+
+            if (!destino.StartsWith(pastaImagens, StringComparison.OrdinalIgnoreCase))
+            {
+                return caminhoPadrao;
+            }
+
+            return File.Exists(destino) ? caminhoRelativo : caminhoPadrao;
+        }
+        catch
+        {
+            return caminhoPadrao;
+        }
     }
 
     private string DataAtual()
