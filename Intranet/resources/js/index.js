@@ -369,20 +369,48 @@ function applyNoticeConfig(config, options = {}) {
   updateNoticeSummary();
 }
 
+function showNoticeModal() {
+  if (!noticeModal) return false;
+
+  if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+    let modalInstance = null;
+
+    if (typeof bootstrap.Modal.getOrCreateInstance === 'function') {
+      modalInstance = bootstrap.Modal.getOrCreateInstance(noticeModal);
+    } else if (typeof bootstrap.Modal.getInstance === 'function') {
+      modalInstance = bootstrap.Modal.getInstance(noticeModal) || new bootstrap.Modal(noticeModal);
+    } else {
+      modalInstance = new bootstrap.Modal(noticeModal);
+    }
+
+    if (modalInstance && typeof modalInstance.show === 'function') {
+      modalInstance.show();
+      return true;
+    }
+  }
+
+  const noticeButton = document.querySelector('[data-bs-target="#noticeModal"], [data-target="#noticeModal"]');
+  if (noticeButton && typeof noticeButton.click === 'function') {
+    noticeButton.click();
+    return noticeModal.classList.contains('show') || document.body.classList.contains('modal-open');
+  }
+
+  return false;
+}
+
 function openNoticeAutomatically(attempt = 0) {
   if (noticeAutoOpenTriggered || !noticeConfig.autoOpen || !noticeModal) return;
 
-  if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
-    if (attempt < 20) {
-      window.setTimeout(() => openNoticeAutomatically(attempt + 1), 250);
-    }
-    return;
-  }
-
-  noticeAutoOpenTriggered = true;
   window.setTimeout(() => {
-    bootstrap.Modal.getOrCreateInstance(noticeModal).show();
-  }, 350);
+    if (showNoticeModal()) {
+      noticeAutoOpenTriggered = true;
+      return;
+    }
+
+    if (attempt < 20) {
+      openNoticeAutomatically(attempt + 1);
+    }
+  }, 300);
 }
 
 function getShortcutSections() {
