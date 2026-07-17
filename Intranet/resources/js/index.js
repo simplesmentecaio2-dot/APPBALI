@@ -104,6 +104,7 @@ let maintenanceBusy = false;
 let favoriteShortcuts = new Set();
 let recentShortcuts = [];
 let restoringSections = false;
+let noticeAutoOpenTriggered = false;
 
 function normalizeText(value) {
   return (value || '')
@@ -312,9 +313,11 @@ function writeOpenSections() {
 
 function sanitizeNoticeConfig(raw) {
   const source = raw || {};
+  const autoOpenValue = source.autoOpen;
+  const autoOpenText = safeTrim(autoOpenValue).toLowerCase();
   return {
     image: safeTrim(source.image) || DEFAULT_NOTICE_IMAGE,
-    autoOpen: source.autoOpen === true || source.autoOpen === 'true'
+    autoOpen: autoOpenValue === true || autoOpenValue === 1 || ['true', '1', 'sim', 'on', 'yes'].includes(autoOpenText)
   };
 }
 
@@ -366,8 +369,17 @@ function applyNoticeConfig(config, options = {}) {
   updateNoticeSummary();
 }
 
-function openNoticeAutomatically() {
-  if (!noticeConfig.autoOpen || !noticeModal || typeof bootstrap === 'undefined') return;
+function openNoticeAutomatically(attempt = 0) {
+  if (noticeAutoOpenTriggered || !noticeConfig.autoOpen || !noticeModal) return;
+
+  if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+    if (attempt < 20) {
+      window.setTimeout(() => openNoticeAutomatically(attempt + 1), 250);
+    }
+    return;
+  }
+
+  noticeAutoOpenTriggered = true;
   window.setTimeout(() => {
     bootstrap.Modal.getOrCreateInstance(noticeModal).show();
   }, 350);
